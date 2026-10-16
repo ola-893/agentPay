@@ -1,19 +1,19 @@
 import { expect } from 'chai';
-import { FlowPaySDK } from '../src/FlowPaySDK';
+import { AgentPaySDK } from '../src/AgentPaySDK';
 import { Wallet, ethers } from 'ethers';
 import axios from 'axios';
 
 describe('Safety & Auto-renewal Systems', () => {
-    let sdk: FlowPaySDK;
+    let sdk: AgentPaySDK;
     let createStreamSpy: any;
 
     beforeEach(() => {
         // Init SDK with strict limits
-        sdk = new FlowPaySDK({
+        sdk = new AgentPaySDK({
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545',
             spendingLimits: {
-                dailyLimit: ethers.parseEther("1.0"), // 1 MNEE Limit
+                dailyLimit: ethers.parseEther("1.0"), // 1 tUSD Limit
                 totalLimit: ethers.parseEther("10.0")
             }
         });

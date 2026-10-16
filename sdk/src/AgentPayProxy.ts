@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { FlowPaySDK } from './FlowPaySDK';
+import { AgentPaySDK } from './AgentPaySDK';
 import { ethers } from 'ethers';
 import axios from 'axios';
 
-export class FlowPayProxy {
-    private sdk: FlowPaySDK;
+export class AgentPayProxy {
+    private sdk: AgentPaySDK;
     private marginPercent: number;
 
-    constructor(sdk: FlowPaySDK, marginPercent: number = 10) {
+    constructor(sdk: AgentPaySDK, marginPercent: number = 10) {
         this.sdk = sdk;
         this.marginPercent = marginPercent;
     }
@@ -24,7 +24,7 @@ export class FlowPayProxy {
             return "0"; // Free?
         } catch (error: any) {
             if (axios.isAxiosError(error) && error.response && error.response.status === 402) {
-                const downstreamRate = error.response.headers['x-flowpay-rate'];
+                const downstreamRate = error.response.headers['x-agentpay-rate'];
                 if (!downstreamRate) return "0.0001"; // Fallback
 
                 const rateBn = ethers.parseEther(downstreamRate);
@@ -49,7 +49,7 @@ export class FlowPayProxy {
         // We assume we are already paid (Middleware passed).
         // Now we use our SDK to pay the downstream.
 
-        console.log(`[FlowPayProxy] Forwarding to ${downstreamUrl}...`);
+        console.log(`[AgentPayProxy] Forwarding to ${downstreamUrl}...`);
 
         return await this.sdk.makeRequest(downstreamUrl, {
             method,

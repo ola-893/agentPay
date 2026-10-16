@@ -1,25 +1,25 @@
 const { ethers } = require('ethers');
 
 /**
- * FlowPay x402 Express Middleware
+ * AgentPay x402 Express Middleware
  * @param {Object} config Middleware configuration
  * @param {Object} config.routes Map of routes to pricing config
- * @param {string} config.mneeAddress MNEE Token Address
- * @param {string} config.flowPayContractAddress FlowPayStream Contract Address
+ * @param {string} config.tokenAddress tUSD Token Address
+ * @param {string} config.agentPayContractAddress AgentPayStream Contract Address
  * @param {string} config.rpcUrl RPC URL for blockchain connection
  * @param {string} config.apiKey Optional API Key for authentication
  * @param {string} config.privateKey Optional private key for server-side signing if needed (not used for verification)
  */
-const flowPayMiddleware = (config) => {
+const agentPayMiddleware = (config) => {
     // Initialize provider and contract OR use mock
-    let flowPayContract;
+    let agentPayContract;
 
     if (config.mockContract) {
-        flowPayContract = config.mockContract;
+        agentPayContract = config.mockContract;
     } else {
         const provider = new ethers.JsonRpcProvider(config.rpcUrl);
-        flowPayContract = new ethers.Contract(
-            config.flowPayContractAddress,
+        agentPayContract = new ethers.Contract(
+            config.agentPayContractAddress,
             [
                 "function isStreamActive(uint256 streamId) external view returns (bool)",
                 "function getClaimableBalance(uint256 streamId) external view returns (uint256)",
@@ -56,15 +56,15 @@ const flowPayMiddleware = (config) => {
             }
         }
 
-        const streamIdHeader = req.headers['x-flowpay-stream-id'];
-        const txHashHeader = req.headers['x-flowpay-tx-hash'];
+        const streamIdHeader = req.headers['x-agentpay-stream-id'];
+        const txHashHeader = req.headers['x-agentpay-tx-hash'];
 
         // 1. Check for Direct Payment (Tx Hash) (Requirement: Hybrid Mode)
         if (txHashHeader) {
             try {
                 // In a real implementation, we would:
                 // 1. Fetch tx receipt from provider
-                // 2. Verify receiver == config.mneeAddress (or recipient)
+                // 2. Verify receiver == config.tokenAddress (or recipient)
                 // 3. Verify amount >= routeConfig.price
                 // 4. Verify status == 1 (success)
                 // 5. Verify tx hash hasn't been used before (replay protection)
@@ -77,7 +77,7 @@ const flowPayMiddleware = (config) => {
                 if (config.mockContract) {
                     // Mock validation
                     isValidPayment = true;
-                    console.log(`[FlowPay] Validated Direct Payment Tx: ${txHashHeader}`);
+                    console.log(`[AgentPay] Validated Direct Payment Tx: ${txHashHeader}`);
                 } else {
                     // Real provider validation (TODO: Implement full verification)
                     // For now, optimistic acceptance for valid-looking hashes
@@ -87,8 +87,8 @@ const flowPayMiddleware = (config) => {
                 }
 
                 if (isValidPayment) {
-                    console.log(`[FlowPay] Request accepted for ${path} using Direct Payment Tx: ${txHashHeader}`);
-                    req.flowPay = { txHash: txHashHeader, mode: 'direct' };
+                    console.log(`[AgentPay] Request accepted for ${path} using Direct Payment Tx: ${txHashHeader}`);
+                    req.agentPay = { txHash: txHashHeader, mode: 'direct' };
                     return next();
                 }
             } catch (e) {
@@ -107,7 +107,7 @@ const flowPayMiddleware = (config) => {
         try {
             // 2. Verify Stream ID
             const streamId = BigInt(streamIdHeader);
-            const isActive = await flowPayContract.isStreamActive(streamId);
+            const isActive = await agentPayContract.isStreamActive(streamId);
 
             if (!isActive) {
                 // Stream exists but is inactive
@@ -121,16 +121,16 @@ const flowPayMiddleware = (config) => {
             // Optional: Verify balance is sufficient (via getClaimableBalance or local tracking)
 
             // Track metrics (simple console log for MVP)
-            console.log(`[FlowPay] Request accepted for ${path} using Stream #${streamId}`);
+            console.log(`[AgentPay] Request accepted for ${path} using Stream #${streamId}`);
 
             // Attach stream info to request for downstream use
-            req.flowPay = {
+            req.agentPay = {
                 streamId: streamId.toString()
             };
 
             next();
         } catch (error) {
-            console.error("[FlowPay] Stream verification failed:", error);
+            console.error("[AgentPay] Stream verification failed:", error);
             // Fallback to 402 if verification crashes (safe default)
             const requiredAmountFallback = ethers.parseEther(routeConfig.price || '0');
             return send402Response(res, routeConfig, config, requiredAmountFallback);
@@ -140,22 +140,22 @@ const flowPayMiddleware = (config) => {
 
 function send402Response(res, routeConfig, config, requiredAmount) {
     res.set('X-Payment-Required', 'true');
-    res.set('X-FlowPay-Mode', routeConfig.mode || 'streaming');
-    res.set('X-FlowPay-Rate', ethers.formatEther(requiredAmount)); // Send resolved rate
-    res.set('X-MNEE-Address', config.mneeAddress || '');
-    res.set('X-FlowPay-Contract', config.flowPayContractAddress || '');
+    res.set('X-AgentPay-Mode', routeConfig.mode || 'streaming');
+    res.set('X-AgentPay-Rate', ethers.formatEther(requiredAmount)); // Send resolved rate
+    res.set('X-Payment-Token', config.tokenAddress || '');
+    res.set('X-AgentPay-Contract', config.agentPayContractAddress || '');
     // Standard 402 body
     res.status(402).json({
         message: "Payment Required",
         requirements: {
             mode: routeConfig.mode || 'streaming',
             price: ethers.formatEther(requiredAmount), // Use the resolved rate
-            currency: "MNEE",
-            contract: config.flowPayContractAddress,
-            recipient: config.mneeAddress // Assuming server wallet is MNEE recipient
+            currency: "tUSD",
+            contract: config.agentPayContractAddress,
+            recipient: config.tokenAddress // Assuming server wallet is tUSD recipient
         }
     });
 }
 
-module.exports = flowPayMiddleware;
+module.exports = agentPayMiddleware;
 

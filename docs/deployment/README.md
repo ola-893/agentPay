@@ -1,6 +1,6 @@
 # Deployment Overview
 
-FlowPay can be deployed to various Ethereum networks.
+AgentPay can be deployed to various Ethereum networks.
 
 ## Supported Networks
 
@@ -15,8 +15,8 @@ FlowPay can be deployed to various Ethereum networks.
 
 | Contract | Address |
 |----------|---------|
-| MockMNEE | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
-| FlowPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
+| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
+| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
 
 ## Deployment Guides
 
@@ -41,7 +41,7 @@ npx hardhat run scripts/deploy.js --network sepolia
 ├─────────────────────────────────────────┤
 │                                         │
 │  ┌─────────────┐  ┌─────────────────┐   │
-│  │  MockMNEE   │  │  FlowPayStream  │   │
+│  │  MockUSD   │  │  AgentPayStream  │   │
 │  │  (ERC-20)   │──│  (Streaming)    │   │
 │  └─────────────┘  └─────────────────┘   │
 │         │                 │             │

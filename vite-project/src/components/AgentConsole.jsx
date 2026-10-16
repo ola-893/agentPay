@@ -16,7 +16,7 @@ const AgentAvatar = ({ agentId, status }) => {
 
     return (
         <div className="relative">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-flowpay-500 to-accent-500 flex items-center justify-center text-2xl font-bold text-white shadow-glow">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-agentpay-500 to-accent-500 flex items-center justify-center text-2xl font-bold text-white shadow-glow">
                 {initial}
             </div>
             <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full ${statusColors[status]} border-2 border-surface-800 ${status === 'active' ? 'animate-pulse' : ''}`} />
@@ -25,9 +25,9 @@ const AgentAvatar = ({ agentId, status }) => {
 };
 
 // Quick Stat Card
-const StatCard = ({ icon: Icon, label, value, trend, color = 'flowpay' }) => {
+const StatCard = ({ icon: Icon, label, value, trend, color = 'agentpay' }) => {
     const colorClasses = {
-        flowpay: 'text-flowpay-400',
+        agentpay: 'text-agentpay-400',
         accent: 'text-accent-400',
         success: 'text-success-400',
         warning: 'text-warning-400',
@@ -60,12 +60,12 @@ const BudgetGauge = ({ spent, limit, label }) => {
             <div className="flex justify-between text-sm">
                 <span className="text-white/60">{label}</span>
                 <span className={`font-mono ${isCritical ? 'text-error-400' : isWarning ? 'text-warning-400' : 'text-white'}`}>
-                    {spent.toFixed(2)} / {limit} MNEE
+                    {spent.toFixed(2)} / {limit} tUSD
                 </span>
             </div>
             <div className="h-3 bg-surface-700 rounded-full overflow-hidden">
                 <div
-                    className={`h-full rounded-full transition-all duration-500 ${isCritical ? 'bg-error-gradient' : isWarning ? 'bg-warning-gradient' : 'bg-flowpay-gradient'
+                    className={`h-full rounded-full transition-all duration-500 ${isCritical ? 'bg-error-gradient' : isWarning ? 'bg-warning-gradient' : 'bg-agentpay-gradient'
                         }`}
                     style={{ width: `${percentage}%` }}
                 />
@@ -157,7 +157,7 @@ const AlertThresholds = ({ thresholds, onChange }) => {
                                     onChange(thresholds.filter(t => t !== pct));
                                 }
                             }}
-                            className="rounded border-white/20 bg-white/5 text-flowpay-500 focus:ring-flowpay-500/50"
+                            className="rounded border-white/20 bg-white/5 text-agentpay-500 focus:ring-agentpay-500/50"
                         />
                         <span className="text-white/70">{pct}%</span>
                     </label>
@@ -188,7 +188,7 @@ const RecentAlerts = ({ alerts }) => {
         `}>
                     {alert.type === 'error' ? <AlertTriangle className="w-4 h-4 text-error-400 shrink-0 mt-0.5" /> : 
                      alert.type === 'warning' ? <AlertTriangle className="w-4 h-4 text-warning-400 shrink-0 mt-0.5" /> : 
-                     <Info className="w-4 h-4 text-flowpay-400 shrink-0 mt-0.5" />}
+                     <Info className="w-4 h-4 text-agentpay-400 shrink-0 mt-0.5" />}
                     <div>
                         <div className="text-white/80">{alert.message}</div>
                         <div className="text-xs text-white/40 mt-1">{alert.time}</div>
@@ -353,7 +353,7 @@ export function AgentConsole({ config, setConfig, isPaused, setIsPaused, sdk }) 
                                     {status === 'active' ? '● Active' : '⏸ Paused'}
                                 </span>
                             </div>
-                            <div className="text-sm text-white/50 mt-1">SDK Version 1.0.0 • FlowPay Agent</div>
+                            <div className="text-sm text-white/50 mt-1">SDK Version 1.0.0 • AgentPay Agent</div>
                         </div>
 
                         <button onClick={handleSave} className="btn-outline flex items-center gap-2">
@@ -363,7 +363,7 @@ export function AgentConsole({ config, setConfig, isPaused, setIsPaused, sdk }) 
 
                     {/* Quick Stats */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-                        <StatCard icon={Coins} label="Daily Spend" value={`$${spending.daily}`} trend={-12} color="flowpay" />
+                        <StatCard icon={Coins} label="Daily Spend" value={`$${spending.daily}`} trend={-12} color="agentpay" />
                         <StatCard icon={ArrowRightLeft} label="Active Streams" value={spending.streams} trend={8} color="accent" />
                         <StatCard icon={Mail} label="Total Requests" value={spending.requests.toLocaleString()} color="success" />
                         <StatCard icon={Zap} label="Avg Response" value="142ms" color="warning" />

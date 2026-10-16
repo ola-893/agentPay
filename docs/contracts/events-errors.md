@@ -1,6 +1,6 @@
 # Events & Errors
 
-Reference for FlowPayStream contract events and error messages.
+Reference for AgentPayStream contract events and error messages.
 
 ## Events
 
@@ -26,7 +26,7 @@ event StreamCreated(
 | streamId | Yes | Unique stream identifier |
 | sender | Yes | Stream creator address |
 | recipient | Yes | Payment receiver address |
-| totalAmount | No | Total MNEE locked |
+| totalAmount | No | Total tUSD locked |
 | startTime | No | Stream start timestamp |
 | stopTime | No | Stream end timestamp |
 | metadata | No | JSON metadata string |
@@ -39,7 +39,7 @@ event StreamCreated(
     streamId: 42n,
     sender: '0x1234...',
     recipient: '0x5678...',
-    totalAmount: 10000000000000000000n, // 10 MNEE
+    totalAmount: 10000000000000000000n, // 10 tUSD
     startTime: 1704067200n,
     stopTime: 1704070800n,
     metadata: '{"purpose":"API access"}'
@@ -95,29 +95,29 @@ event StreamCancelled(
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `FlowPayStream: Total amount must be greater than 0.` | Amount is zero | Provide positive amount |
-| `FlowPayStream: Recipient cannot be the zero address.` | Invalid recipient | Use valid address |
-| `FlowPayStream: Duration must be greater than 0.` | Duration is zero | Provide positive duration |
-| `FlowPayStream: flowRate would be zero.` | Amount too small for duration | Increase amount or decrease duration |
-| `FlowPayStream: Transfer failed. check allowance` | Insufficient approval | Approve tokens first |
+| `AgentPayStream: Total amount must be greater than 0.` | Amount is zero | Provide positive amount |
+| `AgentPayStream: Recipient cannot be the zero address.` | Invalid recipient | Use valid address |
+| `AgentPayStream: Duration must be greater than 0.` | Duration is zero | Provide positive duration |
+| `AgentPayStream: flowRate would be zero.` | Amount too small for duration | Increase amount or decrease duration |
+| `AgentPayStream: Transfer failed. check allowance` | Insufficient approval | Approve tokens first |
 
 ### Withdrawal Errors
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `FlowPayStream: Stream is not active.` | Stream ended or cancelled | Check stream status |
-| `FlowPayStream: Caller is not the recipient.` | Wrong caller | Use recipient wallet |
-| `FlowPayStream: No funds to withdraw.` | Nothing claimable yet | Wait for funds to stream |
-| `FlowPayStream: Transfer failed.` | Token transfer issue | Check contract balance |
+| `AgentPayStream: Stream is not active.` | Stream ended or cancelled | Check stream status |
+| `AgentPayStream: Caller is not the recipient.` | Wrong caller | Use recipient wallet |
+| `AgentPayStream: No funds to withdraw.` | Nothing claimable yet | Wait for funds to stream |
+| `AgentPayStream: Transfer failed.` | Token transfer issue | Check contract balance |
 
 ### Cancellation Errors
 
 | Error | Cause | Solution |
 |-------|-------|----------|
-| `FlowPayStream: Stream already cancelled.` | Already inactive | No action needed |
-| `FlowPayStream: Caller cannot cancel this stream.` | Not sender or recipient | Use authorized wallet |
-| `FlowPayStream: Recipient transfer failed on cancel.` | Transfer issue | Check token state |
-| `FlowPayStream: Sender refund failed on cancel.` | Transfer issue | Check token state |
+| `AgentPayStream: Stream already cancelled.` | Already inactive | No action needed |
+| `AgentPayStream: Caller cannot cancel this stream.` | Not sender or recipient | Use authorized wallet |
+| `AgentPayStream: Recipient transfer failed on cancel.` | Transfer issue | Check token state |
+| `AgentPayStream: Sender refund failed on cancel.` | Transfer issue | Check token state |
 
 ## Listening to Events
 
@@ -128,13 +128,13 @@ event StreamCancelled(
 contract.on('StreamCreated', (streamId, sender, recipient, amount, start, stop, metadata) => {
   console.log(`New stream #${streamId} created`);
   console.log(`From: ${sender} To: ${recipient}`);
-  console.log(`Amount: ${ethers.formatEther(amount)} MNEE`);
+  console.log(`Amount: ${ethers.formatEther(amount)} tUSD`);
 });
 
 // Listen for withdrawals
 contract.on('Withdrawn', (streamId, recipient, amount) => {
   console.log(`Withdrawal from stream #${streamId}`);
-  console.log(`${ethers.formatEther(amount)} MNEE to ${recipient}`);
+  console.log(`${ethers.formatEther(amount)} tUSD to ${recipient}`);
 });
 
 // Listen for cancellations

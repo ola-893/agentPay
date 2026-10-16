@@ -9,7 +9,7 @@ export default function AgentConsolePage() {
   const { walletAddress, isInitialLoad } = useWallet();
   
   const [agentConfig, setAgentConfig] = useState({
-    agentId: 'FlowPay-Agent-001',
+    agentId: 'AgentPay-Agent-001',
     spendingLimits: { dailyLimit: '100', perRequestLimit: '1' }
   });
   const [isPaused, setIsPaused] = useState(false);
@@ -126,11 +126,11 @@ export default function AgentConsolePage() {
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-white/70">Daily Limit</span>
-                <span className="font-mono text-cyan-300">{agentConfig.spendingLimits.dailyLimit} MNEE</span>
+                <span className="font-mono text-cyan-300">{agentConfig.spendingLimits.dailyLimit} tUSD</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-white/70">Per Request</span>
-                <span className="font-mono text-cyan-300">{agentConfig.spendingLimits.perRequestLimit} MNEE</span>
+                <span className="font-mono text-cyan-300">{agentConfig.spendingLimits.perRequestLimit} tUSD</span>
               </div>
             </div>
           </div>

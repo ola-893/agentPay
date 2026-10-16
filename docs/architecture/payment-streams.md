@@ -1,10 +1,10 @@
 # Payment Streams
 
-Payment streams are the core innovation of FlowPay.
+Payment streams are the core innovation of AgentPay.
 
 ## What is a Payment Stream?
 
-A payment stream is a continuous flow of MNEE tokens from sender to recipient over time. Instead of discrete payments, funds "stream" at a constant rate.
+A payment stream is a continuous flow of tUSD tokens from sender to recipient over time. Instead of discrete payments, funds "stream" at a constant rate.
 
 ## How Streams Work
 
@@ -30,7 +30,7 @@ Time ─────────────────────────
 await contract.createStream(
   recipient,    // Who receives funds
   duration,     // How long (seconds)
-  amount,       // Total MNEE
+  amount,       // Total tUSD
   metadata      // JSON metadata
 );
 ```
@@ -77,9 +77,9 @@ flowRate = totalAmount / duration
 ```
 
 **Example:**
-- Amount: 3600 MNEE
+- Amount: 3600 tUSD
 - Duration: 3600 seconds (1 hour)
-- Flow Rate: 1 MNEE/second
+- Flow Rate: 1 tUSD/second
 
 **Claimable at any time:**
 ```
@@ -114,7 +114,7 @@ claimable = streamed - alreadyWithdrawn
 // Create stream for 24 hours of API access
 await sdk.createStream({
   recipient: apiProvider,
-  amount: '100', // 100 MNEE
+  amount: '100', // 100 tUSD
   duration: 86400 // 24 hours
 });
 
@@ -130,7 +130,7 @@ for (let i = 0; i < 1000; i++) {
 // Monthly subscription stream
 await sdk.createStream({
   recipient: serviceProvider,
-  amount: '30', // 30 MNEE
+  amount: '30', // 30 tUSD
   duration: 2592000 // 30 days
 });
 ```

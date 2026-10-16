@@ -1,10 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const flowPayMiddleware = require('./middleware/flowPayMiddleware');
+const agentPayMiddleware = require('./middleware/agentPayMiddleware');
 require('dotenv').config({ path: '../.env' }); // Load from root .env if available
 
 // Mock Config if env vars missing
-const MNEE_ADDRESS = process.env.VITE_MNEE_TOKEN_ADDRESS || "0x0000000000000000000000000000000000000000";
+const PAYMENT_TOKEN_ADDRESS = process.env.VITE_PAYMENT_TOKEN_ADDRESS || "0x0000000000000000000000000000000000000000";
 const CONTRACT_ADDRESS = process.env.VITE_CONTRACT_ADDRESS || "0x0000000000000000000000000000000000000000";
 const RPC_URL = process.env.SEPOLIA_RPC_URL || "https://rpc.sepolia.org";
 
@@ -12,14 +12,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// FlowPay Configuration
+// AgentPay Configuration
 const defaultConfig = {
     rpcUrl: RPC_URL,
-    flowPayContractAddress: CONTRACT_ADDRESS,
-    mneeAddress: MNEE_ADDRESS,
+    agentPayContractAddress: CONTRACT_ADDRESS,
+    tokenAddress: PAYMENT_TOKEN_ADDRESS,
     routes: {
         '/api/weather': {
-            price: '0.0001', // MNEE per second
+            price: '0.0001', // tUSD per second
             mode: 'streaming',
             description: 'Real-time weather data'
         },
@@ -37,7 +37,7 @@ const createApp = (config = defaultConfig) => {
     app.use(express.json());
 
     // Apply Middleware for x402 handling
-    app.use(flowPayMiddleware(config));
+    app.use(agentPayMiddleware(config));
 
     // Protected Route (Streaming)
     app.get('/api/weather', (req, res) => {
@@ -45,7 +45,7 @@ const createApp = (config = defaultConfig) => {
             temperature: 22,
             city: 'London',
             condition: 'Cloudy',
-            paidWithStream: req.flowPay.streamId
+            paidWithStream: req.agentPay.streamId
         });
     });
 
@@ -53,7 +53,7 @@ const createApp = (config = defaultConfig) => {
     app.get('/api/premium', (req, res) => {
         res.json({
             content: "This is premium content.",
-            paidWithStream: req.flowPay.streamId
+            paidWithStream: req.agentPay.streamId
         });
     });
 
@@ -71,8 +71,8 @@ const createApp = (config = defaultConfig) => {
 if (require.main === module) {
     const app = createApp();
     app.listen(PORT, () => {
-        console.log(`FlowPay Test Server running on port ${PORT}`);
-        console.log(`MNEE Address: ${MNEE_ADDRESS}`);
+        console.log(`AgentPay Test Server running on port ${PORT}`);
+        console.log(`tUSD Address: ${PAYMENT_TOKEN_ADDRESS}`);
         console.log(`Contract Address: ${CONTRACT_ADDRESS}`);
     });
 }

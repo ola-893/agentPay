@@ -1,21 +1,21 @@
-# FlowPaySDK
+# AgentPaySDK
 
 The main SDK class for AI agent payments.
 
 ## Constructor
 
 ```typescript
-new FlowPaySDK(config: FlowPayConfig)
+new AgentPaySDK(config: AgentPayConfig)
 ```
 
 ### Config Options
 
 ```typescript
-interface FlowPayConfig {
+interface AgentPayConfig {
   privateKey: string;
   rpcUrl: string;
   contractAddress: string;
-  mneeAddress: string;
+  tokenAddress: string;
   agentId?: string;
   defaultStreamDuration?: number;
   autoApproveTokens?: boolean;
@@ -71,7 +71,7 @@ interface CreateStreamParams {
 ```typescript
 const streamId = await sdk.createStream({
   recipient: '0x...',
-  amount: '10', // 10 MNEE
+  amount: '10', // 10 tUSD
   duration: 3600, // 1 hour
   metadata: JSON.stringify({ purpose: 'API access' })
 });
@@ -108,7 +108,7 @@ Gets withdrawable amount for a stream.
 async getClaimableBalance(streamId: number): Promise<string>
 ```
 
-**Returns:** Claimable amount in MNEE
+**Returns:** Claimable amount in tUSD
 
 ### withdrawFromStream
 
@@ -134,17 +134,17 @@ Finds an active stream for a recipient.
 async getActiveStreamForRecipient(recipient: string): Promise<number | null>
 ```
 
-### getMneeBalance
+### getTokenBalance
 
-Gets MNEE token balance.
+Gets tUSD token balance.
 
 ```typescript
-async getMneeBalance(address?: string): Promise<string>
+async getTokenBalance(address?: string): Promise<string>
 ```
 
 ### approveMnee
 
-Approves MNEE spending.
+Approves tUSD spending.
 
 ```typescript
 async approveMnee(amount: string): Promise<TransactionReceipt>
@@ -175,7 +175,7 @@ try {
   await sdk.createStream(params);
 } catch (error) {
   if (error.code === 'INSUFFICIENT_BALANCE') {
-    console.log('Not enough MNEE');
+    console.log('Not enough tUSD');
   } else if (error.code === 'APPROVAL_REQUIRED') {
     console.log('Need to approve tokens');
   }
@@ -185,19 +185,19 @@ try {
 ## Full Example
 
 ```typescript
-import { FlowPaySDK } from './FlowPaySDK';
+import { AgentPaySDK } from './AgentPaySDK';
 
 async function main() {
-  const sdk = new FlowPaySDK({
+  const sdk = new AgentPaySDK({
     privateKey: process.env.PRIVATE_KEY!,
     rpcUrl: 'https://rpc.sepolia.org',
     contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-    mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896'
+    tokenAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896'
   });
 
   // Check balance
-  const balance = await sdk.getMneeBalance();
-  console.log(`Balance: ${balance} MNEE`);
+  const balance = await sdk.getTokenBalance();
+  console.log(`Balance: ${balance} tUSD`);
 
   // Make requests (SDK handles everything)
   for (let i = 0; i < 10; i++) {

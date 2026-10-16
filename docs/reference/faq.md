@@ -2,13 +2,13 @@
 
 ## General
 
-### What is FlowPay?
+### What is AgentPay?
 
-FlowPay is a payment streaming protocol that enables AI agents to pay for API services using continuous MNEE token streams instead of individual transactions.
+AgentPay is a payment streaming protocol that enables AI agents to pay for API services using continuous tUSD token streams instead of individual transactions.
 
-### What problem does FlowPay solve?
+### What problem does AgentPay solve?
 
-FlowPay solves the **N+1 Signature Problem**: traditionally, N API requests require N payment signatures. FlowPay reduces this to just 2 signatures (open stream + close stream) regardless of request volume.
+AgentPay solves the **N+1 Signature Problem**: traditionally, N API requests require N payment signatures. AgentPay reduces this to just 2 signatures (open stream + close stream) regardless of request volume.
 
 ### What is the x402 protocol?
 
@@ -18,11 +18,11 @@ x402 is a protocol for HTTP-based payment negotiation using the 402 (Payment Req
 
 ### Which networks are supported?
 
-Currently, FlowPay is deployed on Ethereum Sepolia testnet. Mainnet deployment is planned.
+Currently, AgentPay is deployed on Ethereum Sepolia testnet. Mainnet deployment is planned.
 
-### What token does FlowPay use?
+### What token does AgentPay use?
 
-FlowPay uses MNEE (Mock Native Electronic Economy) tokens. On testnet, you can mint free test tokens.
+AgentPay uses tUSD (Mock Native Electronic Economy) tokens. On testnet, you can mint free test tokens.
 
 ### How is the flow rate calculated?
 
@@ -30,7 +30,7 @@ FlowPay uses MNEE (Mock Native Electronic Economy) tokens. On testnet, you can m
 flowRate = totalAmount / duration
 ```
 
-For example, 3600 MNEE over 1 hour = 1 MNEE per second.
+For example, 3600 tUSD over 1 hour = 1 tUSD per second.
 
 ### Can I cancel a stream?
 
@@ -42,11 +42,11 @@ When a stream reaches its stop time, no more funds flow. The recipient can still
 
 ## Usage
 
-### How do I get test MNEE tokens?
+### How do I get test tUSD tokens?
 
-1. Connect your wallet to the FlowPay dashboard
+1. Connect your wallet to the AgentPay dashboard
 2. Go to the "Streams" tab
-3. Click "Mint 1000 MNEE"
+3. Click "Mint 1000 tUSD"
 4. Confirm the transaction
 
 ### How do I create a stream?
@@ -77,14 +77,14 @@ await sdk.withdrawFromStream(streamId);
 
 Or use the dashboard's "Withdraw" button.
 
-### How do I integrate FlowPay as a provider?
+### How do I integrate AgentPay as a provider?
 
 Use the x402 middleware:
 
 ```javascript
-const { flowPayMiddleware } = require('./middleware/flowPayMiddleware');
+const { agentPayMiddleware } = require('./middleware/agentPayMiddleware');
 
-app.use('/api/premium', flowPayMiddleware({
+app.use('/api/premium', agentPayMiddleware({
   pricePerRequest: '0.001',
   recipientAddress: '0x...'
 }));
@@ -98,10 +98,10 @@ You need Sepolia ETH for gas fees. Get free testnet ETH from:
 - https://sepoliafaucet.com
 - https://faucet.sepolia.dev
 
-### "MNEE transfer failed"
+### "tUSD transfer failed"
 
-1. Check you have enough MNEE balance
-2. Ensure you've approved the FlowPayStream contract to spend your tokens
+1. Check you have enough tUSD balance
+2. Ensure you've approved the AgentPayStream contract to spend your tokens
 3. Verify the contract addresses are correct
 
 ### "Stream is not active"
@@ -119,9 +119,9 @@ Only the stream recipient can withdraw funds. Make sure you're using the correct
 
 ## Security
 
-### Is FlowPay audited?
+### Is AgentPay audited?
 
-FlowPay is currently in testnet phase. A security audit is planned before mainnet deployment.
+AgentPay is currently in testnet phase. A security audit is planned before mainnet deployment.
 
 ### What are the spending limits?
 
@@ -138,9 +138,9 @@ Funds in a stream are locked in the smart contract. You can always:
 
 ## Integration
 
-### Does FlowPay work with any AI framework?
+### Does AgentPay work with any AI framework?
 
-Yes, FlowPay is framework-agnostic. It works with:
+Yes, AgentPay is framework-agnostic. It works with:
 - LangChain
 - AutoGPT
 - Custom agents
@@ -148,7 +148,7 @@ Yes, FlowPay is framework-agnostic. It works with:
 
 ### Can multiple agents share a stream?
 
-Not directly. Each agent should create its own streams. However, the FlowPayProxy component enables multi-agent coordination.
+Not directly. Each agent should create its own streams. However, the AgentPayProxy component enables multi-agent coordination.
 
 ### What's the minimum stream amount?
 

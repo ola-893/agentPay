@@ -3,7 +3,7 @@ import { ethers, Contract, Wallet, JsonRpcProvider } from 'ethers';
 import { GeminiPaymentBrain } from './GeminiPaymentBrain';
 import { SpendingMonitor, SpendingLimits } from './SpendingMonitor';
 
-export interface FlowPayConfig {
+export interface AgentPayConfig {
     privateKey: string;
     rpcUrl: string;
     apiKey?: string;
@@ -19,7 +19,7 @@ export interface StreamMetadata {
     amount: bigint;
 }
 
-export class FlowPaySDK {
+export class AgentPaySDK {
     private wallet: Wallet;
     private provider: JsonRpcProvider;
     private apiKey?: string;
@@ -33,7 +33,7 @@ export class FlowPaySDK {
     private MIN_ABI = [
         "function createStream(address recipient, uint256 duration, uint256 amount, string metadata) external",
         "function isStreamActive(uint256 streamId) external view returns (bool)",
-        "function mneeToken() external view returns (address)",
+        "function paymentToken() external view returns (address)",
         "event StreamCreated(uint256 indexed streamId, address indexed sender, address indexed recipient, uint256 totalAmount, uint256 startTime, uint256 stopTime, string metadata)"
     ];
 
@@ -43,18 +43,18 @@ export class FlowPaySDK {
         "function allowance(address owner, address spender) external view returns (uint256)"
     ];
 
-    constructor(config: FlowPayConfig) {
+    constructor(config: AgentPayConfig) {
         this.provider = new JsonRpcProvider(config.rpcUrl);
         this.wallet = new Wallet(config.privateKey, this.provider);
         this.apiKey = config.apiKey;
         // Initialize Gemini Brain (requires separate key? reusing apiKey for simplify, but in reality likely different)
-        // For Hackathon, let's assume config.apiKey is the FlowPay key, but we might pass a separate 'geminiKey' in config?
+        // For Hackathon, let's assume config.apiKey is the AgentPay key, but we might pass a separate 'geminiKey' in config?
         // Let's assume config might have `geminiKey` added to interface or we use env var?
         // Let's modify interface locally or just pass undefined to safe-fail.
         this.brain = new GeminiPaymentBrain(process.env.GEMINI_API_KEY); // Assuming env var for Security
         this.agentId = config.agentId;
 
-        // Default Limits: 100 MNEE daily, 1000 Total
+        // Default Limits: 100 tUSD daily, 1000 Total
         this.monitor = new SpendingMonitor(config.spendingLimits || {
             dailyLimit: ethers.parseEther("100"),
             totalLimit: ethers.parseEther("1000")
@@ -76,12 +76,12 @@ export class FlowPaySDK {
 
     public emergencyStop() {
         this.isPaused = true;
-        console.warn("[FlowPaySDK] 🚨 EMERGENCY STOP ACTIVATED. All payments paused.");
+        console.warn("[AgentPaySDK] 🚨 EMERGENCY STOP ACTIVATED. All payments paused.");
     }
 
     public resume() {
         this.isPaused = false;
-        console.log("[FlowPaySDK] ✅ System Resumed.");
+        console.log("[AgentPaySDK] ✅ System Resumed.");
     }
 
 
@@ -93,7 +93,7 @@ export class FlowPaySDK {
      */
     public async selectPaymentMode(estimatedRequests: number): Promise<'direct' | 'stream'> {
         const decision = await this.brain.shouldStream(estimatedRequests);
-        console.log(`[FlowPaySDK] 🤖 Gemini Analysis: ${decision.reasoning}`);
+        console.log(`[AgentPaySDK] 🤖 Gemini Analysis: ${decision.reasoning}`);
         return decision.mode;
     }
 
@@ -109,7 +109,7 @@ export class FlowPaySDK {
      */
     public async makeRequest(url: string, options: AxiosRequestConfig = {}): Promise<AxiosResponse> {
         if (this.isPaused) {
-            throw new Error("FlowPaySDK is paused due to Emergency Stop.");
+            throw new Error("AgentPaySDK is paused due to Emergency Stop.");
         }
         this.metrics.requestsSent++;
 
@@ -133,7 +133,7 @@ export class FlowPaySDK {
                 // Simple threshold: if less than ~5 seconds worth of streaming left, consider it empty/risk.
                 // Or just if > 0.
                 if (remaining <= 0n) {
-                    console.log("[FlowPaySDK] Cached stream depleted. Clearing cache...");
+                    console.log("[AgentPaySDK] Cached stream depleted. Clearing cache...");
                     this.activeStreams.delete(host);
                 } else {
                     // AUTO-RENEWAL CHECK
@@ -143,12 +143,12 @@ export class FlowPaySDK {
                     // Threshold: 10%
                     const threshold = cachedStream.amount * 10n / 100n;
                     if (remaining < threshold) {
-                        console.log("[FlowPaySDK] Stream balance low (<10%). Triggering renewal...");
+                        console.log("[AgentPaySDK] Stream balance low (<10%). Triggering renewal...");
                         this.activeStreams.delete(host);
                         // We delete it so the request goes through without header, gets 402, and creates NEW stream.
                         // This is "Lazy Renewal".
                     } else {
-                        (headers as any)['X-FlowPay-Stream-ID'] = cachedStream.streamId;
+                        (headers as any)['X-AgentPay-Stream-ID'] = cachedStream.streamId;
                     }
                 }
             }
@@ -161,11 +161,11 @@ export class FlowPaySDK {
             if (axios.isAxiosError(error) && error.response && error.response.status === 402) {
                 // If we used a cached stream ID and got 402, it means it expired or ran out.
                 if (cachedStream) {
-                    console.log("[FlowPaySDK] Cached stream failed. Clearing cache and renegotiating...");
+                    console.log("[AgentPaySDK] Cached stream failed. Clearing cache and renegotiating...");
                     this.activeStreams.delete(host);
                 }
 
-                console.log("[FlowPaySDK] 402 Payment Required intercepted. Negotiating...");
+                console.log("[AgentPaySDK] 402 Payment Required intercepted. Negotiating...");
                 return this.handlePaymentRequired(url, options, error.response); // Pass original options
             }
             throw error;
@@ -176,15 +176,15 @@ export class FlowPaySDK {
         this.metrics.signersTriggered++; // Negotiation requires signing
 
         const headers = response.headers;
-        const mode = headers['x-flowpay-mode']; // 'streaming' or 'hybrid' (not robust yet, server sends fixed 'streaming' usually)
+        const mode = headers['x-agentpay-mode']; // 'streaming' or 'hybrid' (not robust yet, server sends fixed 'streaming' usually)
         // Let's assume server might send 'hybrid' or we decide based on capability.
 
-        const rate = headers['x-flowpay-rate']; // amount per second or per request
-        const mneeAddress = headers['x-mnee-address']; // Token address
-        const contractAddress = headers['x-flowpay-contract'];
+        const rate = headers['x-agentpay-rate']; // amount per second or per request
+        const tokenAddress = headers['x-payment-token']; // Token address
+        const contractAddress = headers['x-agentpay-contract'];
 
         if (!contractAddress) {
-            throw new Error("Missing X-FlowPay-Contract header in 402 response");
+            throw new Error("Missing X-AgentPay-Contract header in 402 response");
         }
 
         // AI Decision Point
@@ -193,7 +193,7 @@ export class FlowPaySDK {
 
         if (selectedMode === 'direct') {
             const price = ethers.parseEther(rate || "0.0001");
-            return this.performDirectPayment(url, options, mneeAddress, price);
+            return this.performDirectPayment(url, options, tokenAddress, price);
         }
 
 
@@ -201,7 +201,7 @@ export class FlowPaySDK {
         if (mode !== 'streaming' && mode !== 'hybrid') { // Server usually sends 'streaming'
             // If server enforces something else, error.
             // But if we chose stream, we proceed.
-            throw new Error(`FlowPaySDK currently only supports 'streaming' or 'hybrid' mode. Got: ${mode}`);
+            throw new Error(`AgentPaySDK currently only supports 'streaming' or 'hybrid' mode. Got: ${mode}`);
         }
 
         // 1. Create a Stream (Existing Logic)
@@ -217,7 +217,7 @@ export class FlowPaySDK {
         try {
             this.monitor.checkAndRecordSpend(totalAmount);
         } catch (e: any) {
-            console.error(`[FlowPaySDK] Spend Declined: ${e.message}`);
+            console.error(`[AgentPaySDK] Spend Declined: ${e.message}`);
             throw e; // Stop payment
         }
 
@@ -227,11 +227,11 @@ export class FlowPaySDK {
             throw new Error("Suspicious renewal activity detected. System Emergency Paused.");
         }
 
-        console.log(`[FlowPaySDK] Initiating Stream: ${ethers.formatEther(totalAmount)} MNEE for ${duration}s`);
+        console.log(`[AgentPaySDK] Initiating Stream: ${ethers.formatEther(totalAmount)} tUSD for ${duration}s`);
 
-        console.log(`[FlowPaySDK] Initiating Stream: ${ethers.formatEther(totalAmount)} MNEE for ${duration}s`);
+        console.log(`[AgentPaySDK] Initiating Stream: ${ethers.formatEther(totalAmount)} tUSD for ${duration}s`);
 
-        const streamData = await this.createStream(contractAddress, mneeAddress, totalAmount, duration, {
+        const streamData = await this.createStream(contractAddress, tokenAddress, totalAmount, duration, {
             type: "SDK_AUTO",
             target: url
         });
@@ -246,13 +246,13 @@ export class FlowPaySDK {
         });
 
         // 2. Retry Request with Header
-        console.log(`[FlowPaySDK] Stream #${streamData.streamId} created. Retrying request...`);
+        console.log(`[AgentPaySDK] Stream #${streamData.streamId} created. Retrying request...`);
 
         const retryOptions = {
             ...options,
             headers: {
                 ...options.headers,
-                'X-FlowPay-Stream-ID': streamData.streamId
+                'X-AgentPay-Stream-ID': streamData.streamId
             }
         };
 
@@ -264,104 +264,104 @@ export class FlowPaySDK {
     }
 
     public async createStream(contractAddress: string, tokenAddress: string, amount: bigint, duration: number, metadata: any = {}): Promise<{ streamId: string, startTime: bigint }> {
-        const flowPay = new Contract(contractAddress, this.MIN_ABI, this.wallet);
+        const agentPay = new Contract(contractAddress, this.MIN_ABI, this.wallet);
 
         // Metadata Construction
         const enrichedMetadata = {
             ...metadata,
             agentId: this.agentId || "anonymous",
             timestamp: Date.now(),
-            client: "FlowPaySDK/1.0"
+            client: "AgentPaySDK/1.0"
         };
         const metadataString = JSON.stringify(enrichedMetadata);
 
         // If token address is not provided in header, try fetching from contract
-        let mneeToken = tokenAddress;
-        if (!mneeToken) {
+        let paymentToken = tokenAddress;
+        if (!paymentToken) {
             try {
-                mneeToken = await flowPay.mneeToken();
+                paymentToken = await agentPay.paymentToken();
             } catch {
-                throw new Error("Cannot determine MNEE token address");
+                throw new Error("Cannot determine tUSD token address");
             }
         }
 
         // 1. Approve Token
-        const token = new Contract(mneeToken, this.ERC20_ABI, this.wallet);
+        const token = new Contract(paymentToken, this.ERC20_ABI, this.wallet);
         const allowance = await token.allowance(this.wallet.address, contractAddress);
 
         if (allowance < amount) {
-            console.log("[FlowPaySDK] Approving MNEE...");
+            console.log("[AgentPaySDK] Approving tUSD...");
             const txApprove = await token.approve(contractAddress, amount);
             await txApprove.wait();
-            console.log("[FlowPaySDK] Approved.");
+            console.log("[AgentPaySDK] Approved.");
         }
 
         // 2. Create Stream
         // Using "random" recipient? No, the 402 header usually implies SOME recipient. 
-        // But the middleware 402 headers we implemented (X-FlowPay-Address) was actually MNEE address...
+        // But the middleware 402 headers we implemented (X-AgentPay-Address) was actually tUSD address...
         // Wait, where is the payment RECIPIENT address?
-        // The middleware `X-MNEE-Address` was intended for the token.
-        // We usually need a `X-FlowPay-Recipient` header too! 
+        // The middleware `X-Payment-Token` was intended for the token.
+        // We usually need a `X-AgentPay-Recipient` header too! 
         // Let's check middleware implementation. 
-        // Middleware: `res.set('X-MNEE-Address', config.mneeAddress || '');`
-        // Wait, did I map mneeAddress to the recipient or the token in the middleware config?
-        // In Server `index.js`, `mneeAddress: MNEE_ADDRESS`. 
-        // In `flowPayMiddleware.js`: `requirements: { ... recipient: config.mneeAddress }`
-        // It seems I overloaded `mneeAddress` to mean "Token Address" AND "Recipient"?
+        // Middleware: `res.set('X-Payment-Token', config.tokenAddress || '');`
+        // Wait, did I map tokenAddress to the recipient or the token in the middleware config?
+        // In Server `index.js`, `tokenAddress: PAYMENT_TOKEN_ADDRESS`. 
+        // In `agentPayMiddleware.js`: `requirements: { ... recipient: config.tokenAddress }`
+        // It seems I overloaded `tokenAddress` to mean "Token Address" AND "Recipient"?
         // Detailed check: The contract needs a `recipient` address to stream TO.
-        // My middleware headers currently expose `X-MNEE-Address`.
+        // My middleware headers currently expose `X-Payment-Token`.
         // If the middleware is the recipient, it should expose its wallet address.
         // Let's assume for this Agent flow that the AGENT is the sender and the SERVER (middleware) is the recipient.
         // I need the Server's Wallet Address to stream TO.
-        // The middleware currently does NOT expose `X-FlowPay-Recipient`.
-        // I should stick to the plan: "Add automatic MNEE approval and stream creation from x402 requirements".
-        // I will assume for now that the `X-MNEE-Address` header is the token, and I might need to infer recipient or add it.
-        // Actually, looking at `flowPayMiddleware.js`:
-        // `res.set('X-MNEE-Address', config.mneeAddress || '');`
-        // AND `recipient: config.mneeAddress` in the body.
+        // The middleware currently does NOT expose `X-AgentPay-Recipient`.
+        // I should stick to the plan: "Add automatic tUSD approval and stream creation from x402 requirements".
+        // I will assume for now that the `X-Payment-Token` header is the token, and I might need to infer recipient or add it.
+        // Actually, looking at `agentPayMiddleware.js`:
+        // `res.set('X-Payment-Token', config.tokenAddress || '');`
+        // AND `recipient: config.tokenAddress` in the body.
         // It seems I confused Token Address with Recipient Address in the middleware config.
-        // `mneeAddress` variable name implies Token.
+        // `tokenAddress` variable name implies Token.
         // I need to fix this in the middleware task or work around it.
         // WORKAROUND: For this MVP, I will use a dummy/derived recipient or if I can't find it, I'll send to self or burn?
         // Better: I will use `contractAddress` as the recipient momentarily? No that fails.
-        // Let's look at `index.js`. It passes `mneeAddress: MNEE_ADDRESS`.
-        // I will assume the Server Wallet Address IS the `MNEE_ADDRESS`? No that's the token.
+        // Let's look at `index.js`. It passes `tokenAddress: PAYMENT_TOKEN_ADDRESS`.
+        // I will assume the Server Wallet Address IS the `PAYMENT_TOKEN_ADDRESS`? No that's the token.
         // Okay, I need a recipient.
         // I will update the code to use `this.wallet.address` (self-stream) for testing if header missing, 
         // OR I will extract it from the `requirements` JSON body which is more robust than headers sometimes.
 
         // Let's assume the body of 402 has `requirements.recipient`.
-        // My middleware sends: `recipient: config.mneeAddress`. This is definitely the Token Address in my env vars.
+        // My middleware sends: `recipient: config.tokenAddress`. This is definitely the Token Address in my env vars.
         // So the Server is asking to be paid... to the Token Contract Address? That's wrong but it's what I configured.
         // I will follow the configuration. If the server says "Pay to 0xToken...", I will stream to 0xToken.
         // Ideally, I should have configured a separate `recipientAddress` in the middleware.
 
         // For the sake of this task (SDK), I will parse `response.data.requirements.recipient` if available, 
-        // otherwise default to `headers['x-flowpay-recipient']` or fallback.
+        // otherwise default to `headers['x-agentpay-recipient']` or fallback.
 
-        // Actually, let's just create the stream to the address specified in `x-mnee-address` header
+        // Actually, let's just create the stream to the address specified in `x-payment-token` header
         // because that's what the middleware is serving, even if it's semantically weird (streaming tokens to the token contract).
         // It validates the flow even if the funds are stuck.
 
         // REVISION: I will try to read `response.data.requirements.recipient` first.
 
-        const recipient = mneeToken; // Using the provided address as recipient
+        const recipient = paymentToken; // Using the provided address as recipient
 
-        console.log(`[FlowPaySDK] Creating stream to ${recipient}...`);
+        console.log(`[AgentPaySDK] Creating stream to ${recipient}...`);
 
-        const tx = await flowPay.createStream(recipient, duration, amount, metadataString);
+        const tx = await agentPay.createStream(recipient, duration, amount, metadataString);
         const receipt = await tx.wait();
 
         // Parse event to get ID
         const log = receipt.logs.find((l: any) => {
             try {
-                return flowPay.interface.parseLog(l)?.name === 'StreamCreated';
+                return agentPay.interface.parseLog(l)?.name === 'StreamCreated';
             } catch { return false; }
         });
 
         if (!log) throw new Error("StreamCreated event not found");
 
-        const parsed = flowPay.interface.parseLog(log);
+        const parsed = agentPay.interface.parseLog(log);
         const streamId = parsed?.args[0].toString();
         const startTime = parsed?.args[4]; // args[4] is startTime based on ABI event def
 
@@ -384,12 +384,12 @@ export class FlowPaySDK {
     }
 
     private async performDirectPayment(url: string, options: AxiosRequestConfig, tokenAddress: string, amount: bigint): Promise<AxiosResponse> {
-        if (this.isPaused) throw new Error("FlowPaySDK is paused.");
+        if (this.isPaused) throw new Error("AgentPaySDK is paused.");
 
         // SAFETY CHECK
         this.monitor.checkAndRecordSpend(amount);
 
-        console.log(`[FlowPaySDK] Executing Direct Payment of ${ethers.formatEther(amount)} MNEE`);
+        console.log(`[AgentPaySDK] Executing Direct Payment of ${ethers.formatEther(amount)} tUSD`);
 
         const recipient = tokenAddress; // Using Token Address as recipient per discussed MVP hack
         const token = new Contract(tokenAddress, this.ERC20_ABI, this.wallet);
@@ -397,13 +397,13 @@ export class FlowPaySDK {
         const tx = await token.transfer(recipient, amount);
         await tx.wait();
 
-        console.log(`[FlowPaySDK] Direct Payment Sent: ${tx.hash}`);
+        console.log(`[AgentPaySDK] Direct Payment Sent: ${tx.hash}`);
 
         const retryOptions = {
             ...options,
             headers: {
                 ...options.headers,
-                'X-FlowPay-Tx-Hash': tx.hash
+                'X-AgentPay-Tx-Hash': tx.hash
             }
         };
 
@@ -421,7 +421,7 @@ export class FlowPaySDK {
         return {
             streamId,
             agentId: this.agentId || "unknown",
-            client: "FlowPaySDK/1.0"
+            client: "AgentPaySDK/1.0"
         };
     }
 }

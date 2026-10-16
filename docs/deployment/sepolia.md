@@ -1,13 +1,13 @@
 # Sepolia Testnet Deployment
 
-Guide for deploying FlowPay to Ethereum Sepolia testnet.
+Guide for deploying AgentPay to Ethereum Sepolia testnet.
 
 ## Current Deployment
 
 | Contract | Address |
 |----------|---------|
-| MockMNEE | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
-| FlowPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
+| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
+| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
 
 **Network:** Ethereum Sepolia (Chain ID: 11155111)
 
@@ -57,19 +57,19 @@ npx hardhat run scripts/deploy.js --network sepolia
 **Expected Output:**
 ```
 Deploying contracts with the account: 0x...
-Deploying MockMNEE...
-MockMNEE deployed to: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-Deploying FlowPayStream with MNEE address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-FlowPayStream deployed to: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
+Deploying MockUSD...
+MockUSD deployed to: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+Deploying AgentPayStream with tUSD address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+AgentPayStream deployed to: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
 ```
 
 ### 5. Verify Contracts (Optional)
 
 ```bash
-# Verify MockMNEE
+# Verify MockUSD
 npx hardhat verify --network sepolia 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
 
-# Verify FlowPayStream
+# Verify AgentPayStream
 npx hardhat verify --network sepolia 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035 "0x96B1FE54Ee89811f46ecE4a347950E0D682D3896"
 ```
 
@@ -79,7 +79,7 @@ Update `vite-project/src/contactInfo.js`:
 
 ```javascript
 export const contractAddress = "0x155A00fBE3D290a8935ca4Bf5244283685Bb0035";
-export const mneeTokenAddress = "0x96B1FE54Ee89811f46ecE4a347950E0D682D3896";
+export const paymentTokenAddress = "0x96B1FE54Ee89811f46ecE4a347950E0D682D3896";
 ```
 
 ## Network Configuration
@@ -118,9 +118,9 @@ npx hardhat test --network sepolia
 
 ### Verify via Dashboard
 
-1. Open FlowPay dashboard
+1. Open AgentPay dashboard
 2. Connect wallet (Sepolia network)
-3. Mint test MNEE tokens
+3. Mint test tUSD tokens
 4. Create a test stream
 5. Verify on Etherscan
 

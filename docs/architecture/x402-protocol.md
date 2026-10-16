@@ -1,6 +1,6 @@
 # x402 Protocol
 
-FlowPay implements the x402 protocol for HTTP-based payment negotiation.
+AgentPay implements the x402 protocol for HTTP-based payment negotiation.
 
 ## Overview
 
@@ -43,7 +43,7 @@ HTTP/1.1 402 Payment Required
 X-Payment-Required: true
 X-Payment-Types: stream,direct
 X-Payment-Amount: 0.001
-X-Payment-Currency: MNEE
+X-Payment-Currency: tUSD
 X-Payment-Recipient: 0x1234...
 X-Payment-Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
 X-Payment-Network: sepolia
@@ -56,9 +56,9 @@ When consumer has payment proof:
 
 ```http
 GET /api/resource HTTP/1.1
-X-FlowPay-Stream-ID: 42
-X-FlowPay-Signature: 0xabc...
-X-FlowPay-Timestamp: 1704067200
+X-AgentPay-Stream-ID: 42
+X-AgentPay-Signature: 0xabc...
+X-AgentPay-Timestamp: 1704067200
 ```
 
 ## Header Reference
@@ -70,9 +70,9 @@ X-FlowPay-Timestamp: 1704067200
 | `X-Payment-Required` | Yes | Indicates payment is needed |
 | `X-Payment-Types` | Yes | Accepted payment types |
 | `X-Payment-Amount` | Yes | Price per request |
-| `X-Payment-Currency` | Yes | Token symbol (MNEE) |
+| `X-Payment-Currency` | Yes | Token symbol (tUSD) |
 | `X-Payment-Recipient` | Yes | Provider's address |
-| `X-Payment-Contract` | Yes | FlowPayStream contract |
+| `X-Payment-Contract` | Yes | AgentPayStream contract |
 | `X-Payment-Network` | Yes | Network name |
 | `X-Payment-Description` | No | Human-readable description |
 | `X-Payment-Min-Duration` | No | Minimum stream duration |
@@ -82,10 +82,10 @@ X-FlowPay-Timestamp: 1704067200
 
 | Header | Required | Description |
 |--------|----------|-------------|
-| `X-FlowPay-Stream-ID` | Yes* | Active stream ID |
-| `X-FlowPay-Payment-Hash` | Yes* | Direct payment tx hash |
-| `X-FlowPay-Signature` | No | Request signature |
-| `X-FlowPay-Timestamp` | No | Request timestamp |
+| `X-AgentPay-Stream-ID` | Yes* | Active stream ID |
+| `X-AgentPay-Payment-Hash` | Yes* | Direct payment tx hash |
+| `X-AgentPay-Signature` | No | Request signature |
+| `X-AgentPay-Timestamp` | No | Request timestamp |
 
 *One of Stream-ID or Payment-Hash required
 
@@ -105,7 +105,7 @@ const streamId = await contract.createStream(
 );
 
 // Consumer includes stream ID in requests
-headers['X-FlowPay-Stream-ID'] = streamId;
+headers['X-AgentPay-Stream-ID'] = streamId;
 ```
 
 ### Direct Payment (Future)
@@ -114,10 +114,10 @@ One-time payment:
 
 ```javascript
 // Consumer sends direct payment
-const tx = await mnee.transfer(recipient, amount);
+const tx = await token.transfer(recipient, amount);
 
 // Consumer includes tx hash
-headers['X-FlowPay-Payment-Hash'] = tx.hash;
+headers['X-AgentPay-Payment-Hash'] = tx.hash;
 ```
 
 ## Verification
@@ -126,7 +126,7 @@ headers['X-FlowPay-Payment-Hash'] = tx.hash;
 
 ```javascript
 async function verifyPayment(req) {
-  const streamId = req.headers['x-flowpay-stream-id'];
+  const streamId = req.headers['x-agentpay-stream-id'];
   
   if (streamId) {
     // Verify stream on-chain
@@ -166,7 +166,7 @@ async function verifyPayment(req) {
   "payment": {
     "types": ["stream", "direct"],
     "amount": "0.001",
-    "currency": "MNEE",
+    "currency": "tUSD",
     "recipient": "0x...",
     "contract": "0x..."
   }

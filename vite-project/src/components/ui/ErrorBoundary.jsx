@@ -143,8 +143,8 @@ export function LoadingState({ message = 'Loading...', className = '' }) {
   return (
     <div className={`flex flex-col items-center justify-center py-12 md:py-16 ${className}`}>
       <div className="relative">
-        <div className="w-12 h-12 rounded-full border-2 border-flowpay-500/20" />
-        <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-transparent border-t-flowpay-500 animate-spin" />
+        <div className="w-12 h-12 rounded-full border-2 border-agentpay-500/20" />
+        <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-transparent border-t-agentpay-500 animate-spin" />
       </div>
       <p className="text-sm text-white/60 mt-4">{message}</p>
     </div>
@@ -204,7 +204,7 @@ export function NetworkMismatch({ expectedNetwork, onSwitch, className = '' }) {
         <div className="flex-1">
           <h3 className="font-semibold text-warning-400">Wrong Network</h3>
           <p className="text-sm text-white/60 mt-1">
-            Please switch to {expectedNetwork} to use FlowPay
+            Please switch to {expectedNetwork} to use AgentPay
           </p>
           <button
             onClick={onSwitch}

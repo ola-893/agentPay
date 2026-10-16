@@ -21,14 +21,14 @@ const ChainIcon = ({ chainId }) => {
     : <LinkIcon className="w-4 h-4 text-white/70" />;
 };
 
-// Animated FlowPay Logo with streaming effect
+// Animated AgentPay Logo with streaming effect
 const AnimatedLogo = () => (
-  <div className="relative h-10 w-10 rounded-xl bg-gradient-to-tr from-flowpay-500 to-accent-500 shadow-glow flex items-center justify-center overflow-hidden group">
+  <div className="relative h-10 w-10 rounded-xl bg-gradient-to-tr from-agentpay-500 to-accent-500 shadow-glow flex items-center justify-center overflow-hidden group">
     {/* Flowing stream animation */}
     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-    <span className="relative z-10 text-white font-bold text-lg">F</span>
+    <span className="relative z-10 text-white font-bold text-lg">A</span>
     {/* Glow pulse on hover */}
-    <div className="absolute inset-0 rounded-xl bg-flowpay-400/0 group-hover:bg-flowpay-400/20 transition-all duration-300" />
+    <div className="absolute inset-0 rounded-xl bg-agentpay-400/0 group-hover:bg-agentpay-400/20 transition-all duration-300" />
   </div>
 );
 
@@ -40,14 +40,14 @@ const NavTab = ({ icon: Icon, label, active, to }) => (
       px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
       flex items-center gap-2
       ${active
-        ? 'bg-flowpay-500/20 text-flowpay-300 border border-flowpay-500/30'
+        ? 'bg-agentpay-500/20 text-agentpay-300 border border-agentpay-500/30'
         : 'text-white/60 hover:text-white hover:bg-white/5'
       }
     `}
   >
     <Icon className="w-5 h-5" />
     <span className="hidden sm:inline">{label}</span>
-    {active && <div className="w-1.5 h-1.5 rounded-full bg-flowpay-400 animate-pulse" />}
+    {active && <div className="w-1.5 h-1.5 rounded-full bg-agentpay-400 animate-pulse" />}
   </Link>
 );
 
@@ -144,7 +144,7 @@ const MobileMenu = ({ isOpen, activeTab, tabs }) => {
                 w-full px-4 py-3 rounded-lg text-left text-sm font-medium transition-all
                 flex items-center gap-3
                 ${activeTab === tab.id
-                  ? 'bg-flowpay-500/20 text-flowpay-300'
+                  ? 'bg-agentpay-500/20 text-agentpay-300'
                   : 'text-white/60 hover:bg-white/5'
                 }
               `}
@@ -194,7 +194,7 @@ export default function Header({
             <AnimatedLogo />
             <div className="hidden sm:block">
               <h1 className="text-xl font-black tracking-tight">
-                <span className="text-gradient-primary">FlowPay</span>
+                <span className="text-gradient-primary">AgentPay</span>
               </h1>
               <p className="text-[10px] text-white/50 -mt-0.5">x402 Streaming Payments</p>
             </div>
@@ -227,8 +227,8 @@ export default function Header({
                 {/* Balance Display */}
                 <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-lg glass-primary">
                   <span className="text-xs text-white/60">Balance:</span>
-                  <span className="text-sm font-mono font-semibold text-flowpay-300">
-                    {formatBalance(balance)} MNEE
+                  <span className="text-sm font-mono font-semibold text-agentpay-300">
+                    {formatBalance(balance)} tUSD
                   </span>
                 </div>
 

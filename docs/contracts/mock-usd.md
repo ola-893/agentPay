@@ -1,6 +1,6 @@
-# MockMNEE Token
+# MockUSD Token
 
-MockMNEE is a test ERC-20 token for FlowPay development.
+MockUSD is a test ERC-20 token for AgentPay development.
 
 ## Contract Address
 
@@ -8,16 +8,16 @@ MockMNEE is a test ERC-20 token for FlowPay development.
 
 ## Overview
 
-MockMNEE is a standard ERC-20 token with an open mint function for testing purposes.
+MockUSD is a standard ERC-20 token with an open mint function for testing purposes.
 
 ## Token Details
 
 | Property | Value |
 |----------|-------|
-| Name | Mock MNEE |
-| Symbol | MNEE |
+| Name | Mock USD |
+| Symbol | tUSD |
 | Decimals | 18 |
-| Initial Supply | 1,000,000 MNEE |
+| Initial Supply | 1,000,000 tUSD |
 
 ## Functions
 
@@ -51,8 +51,8 @@ function mint(address to, uint256 amount) external
 
 **Example:**
 ```javascript
-// Mint 1000 MNEE
-await mnee.mint(
+// Mint 1000 tUSD
+await token.mint(
   myAddress,
   ethers.parseEther('1000')
 );
@@ -63,16 +63,16 @@ await mnee.mint(
 ### Check Balance
 
 ```javascript
-const balance = await mnee.balanceOf(myAddress);
-console.log('Balance:', ethers.formatEther(balance), 'MNEE');
+const balance = await token.balanceOf(myAddress);
+console.log('Balance:', ethers.formatEther(balance), 'tUSD');
 ```
 
 ### Approve Spending
 
 ```javascript
-// Approve FlowPayStream to spend 100 MNEE
-await mnee.approve(
-  flowPayStreamAddress,
+// Approve AgentPayStream to spend 100 tUSD
+await token.approve(
+  agentPayStreamAddress,
   ethers.parseEther('100')
 );
 ```
@@ -80,7 +80,7 @@ await mnee.approve(
 ### Transfer Tokens
 
 ```javascript
-await mnee.transfer(
+await token.transfer(
   recipientAddress,
   ethers.parseEther('10')
 );
@@ -112,24 +112,24 @@ Emitted on:
 
 ### Via Dashboard
 
-1. Connect wallet to FlowPay dashboard
+1. Connect wallet to AgentPay dashboard
 2. Go to "Streams" tab
-3. Click "Mint 1000 MNEE"
+3. Click "Mint 1000 tUSD"
 4. Confirm transaction
 
 ### Via Code
 
 ```javascript
-const mnee = new ethers.Contract(mneeAddress, mneeABI, signer);
-await mnee.mint(myAddress, ethers.parseEther('1000'));
+const token = new ethers.Contract(tokenAddress, tokenABI, signer);
+await token.mint(myAddress, ethers.parseEther('1000'));
 ```
 
 ### Via Etherscan
 
-1. Go to [MockMNEE on Etherscan](https://sepolia.etherscan.io/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896#writeContract)
+1. Go to [MockUSD on Etherscan](https://sepolia.etherscan.io/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896#writeContract)
 2. Connect wallet
 3. Call `mint` with your address and amount
 
 ## Production Note
 
-⚠️ **MockMNEE is for testing only.** In production, FlowPay will use the real MNEE token which does not have a public mint function.
+⚠️ **MockUSD is for testing only.** In production, AgentPay will use the real tUSD token which does not have a public mint function.

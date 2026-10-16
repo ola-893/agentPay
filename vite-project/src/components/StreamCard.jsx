@@ -172,12 +172,12 @@ export default function StreamCard({ stream, variant, formatEth, onWithdraw, onC
     <>
       <div className={`
         card-glass relative overflow-hidden p-5 transition-all duration-300
-        ${isExpanded ? 'ring-1 ring-flowpay-500/30' : ''}
+        ${isExpanded ? 'ring-1 ring-agentpay-500/30' : ''}
         ${status === 'active' ? 'hover-lift' : 'opacity-80'}
       `}>
         {/* Background glow */}
         {status === 'active' && (
-          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-flowpay-500/10 blur-2xl" />
+          <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-agentpay-500/10 blur-2xl" />
         )}
 
         {/* Main Content */}
@@ -202,11 +202,11 @@ export default function StreamCard({ stream, variant, formatEth, onWithdraw, onC
 
             <div className="mt-2 flex items-baseline gap-2">
               <span className="text-xl font-bold text-white">{formatEth(stream.totalAmount)}</span>
-              <span className="text-sm text-white/50">MNEE</span>
+              <span className="text-sm text-white/50">tUSD</span>
             </div>
 
             <div className="text-xs font-mono text-white/50">
-              Rate: {formatEth(stream.flowRate)} MNEE/sec
+              Rate: {formatEth(stream.flowRate)} tUSD/sec
             </div>
           </div>
 
@@ -217,7 +217,7 @@ export default function StreamCard({ stream, variant, formatEth, onWithdraw, onC
               <div className="text-lg font-bold text-success-400">
                 <AnimatedBalance value={liveClaimable} />
               </div>
-              <div className="text-xs text-white/50">MNEE</div>
+              <div className="text-xs text-white/50">tUSD</div>
             </div>
           )}
         </div>

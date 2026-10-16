@@ -1,7 +1,7 @@
 {
-    "name": "flowpay-middleware-server",
+    "name": "agentpay-middleware-server",
     "version": "1.0.0",
-    "description": "x402 Express Middleware server for FlowPay",
+    "description": "x402 Express Middleware server for AgentPay",
     "main": "index.js",
     "scripts": {
         "start": "node index.js",

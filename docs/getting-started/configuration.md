@@ -1,18 +1,18 @@
 # Configuration
 
-FlowPay offers extensive configuration options for different use cases.
+AgentPay offers extensive configuration options for different use cases.
 
 ## SDK Configuration
 
 ```typescript
-import { FlowPaySDK } from './sdk/src/FlowPaySDK';
+import { AgentPaySDK } from './sdk/src/AgentPaySDK';
 
-const sdk = new FlowPaySDK({
+const sdk = new AgentPaySDK({
   // Required
   privateKey: process.env.PRIVATE_KEY,
   rpcUrl: 'https://rpc.sepolia.org',
   contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-  mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',
+  tokenAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',
   
   // Optional
   agentId: 'my-agent-001',
@@ -29,8 +29,8 @@ const sdk = new FlowPaySDK({
 |--------|------|---------|-------------|
 | `privateKey` | string | required | Wallet private key |
 | `rpcUrl` | string | required | Ethereum RPC endpoint |
-| `contractAddress` | string | required | FlowPayStream contract address |
-| `mneeAddress` | string | required | MNEE token address |
+| `contractAddress` | string | required | AgentPayStream contract address |
+| `tokenAddress` | string | required | tUSD token address |
 | `agentId` | string | auto | Unique agent identifier |
 | `defaultStreamDuration` | number | 3600 | Default stream duration (seconds) |
 | `autoApproveTokens` | boolean | true | Auto-approve token allowance |
@@ -43,9 +43,9 @@ const sdk = new FlowPaySDK({
 import { SpendingMonitor } from './sdk/src/SpendingMonitor';
 
 const monitor = new SpendingMonitor({
-  dailyLimit: '100',      // 100 MNEE per day
-  perRequestLimit: '1',   // 1 MNEE max per request
-  emergencyStopThreshold: '500', // Stop if total exceeds 500 MNEE
+  dailyLimit: '100',      // 100 tUSD per day
+  perRequestLimit: '1',   // 1 tUSD max per request
+  emergencyStopThreshold: '500', // Stop if total exceeds 500 tUSD
   alertCallback: (alert) => {
     console.log('Spending alert:', alert);
   }
@@ -69,16 +69,16 @@ const brain = new GeminiPaymentBrain({
 ## Middleware Configuration
 
 ```javascript
-const { flowPayMiddleware } = require('./middleware/flowPayMiddleware');
+const { agentPayMiddleware } = require('./middleware/agentPayMiddleware');
 
-app.use('/api/premium', flowPayMiddleware({
+app.use('/api/premium', agentPayMiddleware({
   // Pricing
   pricePerRequest: '0.001',
   pricingModel: 'per-request', // 'per-request' | 'per-byte' | 'per-second'
   
   // Contract
   contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-  mneeAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',
+  tokenAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',
   recipientAddress: '0x...',
   
   // Verification
@@ -101,7 +101,7 @@ Create `vite-project/.env`:
 ```bash
 # Contract addresses
 VITE_CONTRACT_ADDRESS=0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-VITE_MNEE_TOKEN_ADDRESS=0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+VITE_PAYMENT_TOKEN_ADDRESS=0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
 
 # Network
 VITE_CHAIN_ID=11155111

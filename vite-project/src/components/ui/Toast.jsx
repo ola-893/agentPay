@@ -26,9 +26,9 @@ const toastConfig = {
   },
   info: {
     Icon: Info,
-    bgClass: 'bg-flowpay-500/10 border-flowpay-500/30',
-    iconClass: 'text-flowpay-500',
-    textClass: 'text-flowpay-400',
+    bgClass: 'bg-agentpay-500/10 border-agentpay-500/30',
+    iconClass: 'text-agentpay-500',
+    textClass: 'text-agentpay-400',
   },
   loading: {
     Icon: Loader2,
@@ -88,7 +88,7 @@ function Toast({ id, type = 'info', title, message, duration = 5000, onDismiss, 
               action.onClick();
               handleDismiss();
             }}
-            className="mt-2 text-sm font-medium text-flowpay-400 hover:text-flowpay-300 transition-colors"
+            className="mt-2 text-sm font-medium text-agentpay-400 hover:text-agentpay-300 transition-colors"
           >
             {action.label}
           </button>
@@ -196,7 +196,7 @@ export function ToastProvider({ children }) {
     cancelled: (streamId) => 
       addToast({ type: 'info', title: 'Stream Cancelled', message: `Stream #${streamId} has been cancelled` }),
     withdrawn: (amount) => 
-      addToast({ type: 'success', title: 'Withdrawal Complete', message: `${amount} MNEE withdrawn successfully` }),
+      addToast({ type: 'success', title: 'Withdrawal Complete', message: `${amount} tUSD withdrawn successfully` }),
     lowBalance: (streamId) => 
       addToast({ type: 'warning', title: 'Low Balance', message: `Stream #${streamId} is running low on funds` }),
     expired: (streamId) => 

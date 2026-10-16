@@ -11,7 +11,7 @@ const ParticleFlow = ({ isActive }) => {
             {[...Array(5)].map((_, i) => (
                 <div
                     key={i}
-                    className="absolute w-1.5 h-1.5 bg-flowpay-400/60 rounded-full"
+                    className="absolute w-1.5 h-1.5 bg-agentpay-400/60 rounded-full"
                     style={{
                         left: `${10 + i * 20}%`,
                         animation: `stream-flow ${1.5 + i * 0.2}s ease-in-out infinite`,
@@ -160,7 +160,7 @@ const ConnectionStatus = ({ isConnected, onRetry }) => (
             {isConnected ? 'Connected' : 'Disconnected'}
         </span>
         {!isConnected && (
-            <button onClick={onRetry} className="text-xs text-flowpay-400 hover:text-flowpay-300">
+            <button onClick={onRetry} className="text-xs text-agentpay-400 hover:text-agentpay-300">
                 Retry
             </button>
         )}
@@ -210,7 +210,7 @@ const StreamCard = ({ stream, now }) => {
       relative p-5 rounded-xl border transition-all duration-300
       ${healthStatus === 'critical' ? 'glass border-error-500/50 shadow-glow-error' :
                 healthStatus === 'low' ? 'glass border-warning-500/30' :
-                    'glass-primary border-flowpay-500/30'}
+                    'glass-primary border-agentpay-500/30'}
     `}>
             {/* Particle Flow Animation */}
             <ParticleFlow isActive={healthStatus !== 'critical'} />
@@ -219,7 +219,7 @@ const StreamCard = ({ stream, now }) => {
             <div className="relative flex items-start justify-between mb-4">
                 <div>
                     <div className="flex items-center gap-2 mb-1">
-                        <span className="font-mono text-sm text-flowpay-400">#{stream.streamId}</span>
+                        <span className="font-mono text-sm text-agentpay-400">#{stream.streamId}</span>
                         <HealthBadge status={healthStatus} />
                     </div>
                     <div className="text-lg font-bold text-white">{stream.agentId || 'Agent Stream'}</div>
@@ -234,7 +234,7 @@ const StreamCard = ({ stream, now }) => {
                     <span className="text-4xl font-bold text-gradient-primary">
                         <AnimatedCounter value={claimable} decimals={6} />
                     </span>
-                    <span className="text-lg text-white/40">MNEE</span>
+                    <span className="text-lg text-white/40">tUSD</span>
                 </div>
             </div>
 
@@ -264,7 +264,7 @@ const StreamCard = ({ stream, now }) => {
             <div className="flex items-center justify-between pt-3 border-t border-white/10">
                 <AutoRenewalStatus enabled={stream.autoRenew} />
                 <div className="text-xs text-white/40">
-                    Total: {totalAmount.toFixed(4)} MNEE
+                    Total: {totalAmount.toFixed(4)} tUSD
                 </div>
             </div>
         </div>

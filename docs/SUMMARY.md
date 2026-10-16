@@ -19,17 +19,17 @@
 ## Smart Contracts
 
 * [Overview](contracts/README.md)
-* [FlowPayStream](contracts/flowpaystream.md)
-* [MockMNEE Token](contracts/mock-mnee.md)
+* [AgentPayStream](contracts/agentpaystream.md)
+* [MockUSD Token](contracts/mock-usd.md)
 * [Events & Errors](contracts/events-errors.md)
 
 ## SDK Reference
 
 * [Overview](sdk/README.md)
-* [FlowPaySDK](sdk/flowpay-sdk.md)
+* [AgentPaySDK](sdk/agentpay-sdk.md)
 * [GeminiPaymentBrain](sdk/gemini-payment-brain.md)
 * [SpendingMonitor](sdk/spending-monitor.md)
-* [FlowPayProxy](sdk/flowpay-proxy.md)
+* [AgentPayProxy](sdk/agentpay-proxy.md)
 
 ## API Reference
 

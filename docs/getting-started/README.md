@@ -1,12 +1,12 @@
 # Getting Started
 
-Welcome to FlowPay! This section will help you get up and running quickly.
+Welcome to AgentPay! This section will help you get up and running quickly.
 
 ## What You'll Learn
 
-1. **Installation** - Set up FlowPay in your project
+1. **Installation** - Set up AgentPay in your project
 2. **Quick Start** - Create your first payment stream
-3. **Configuration** - Customize FlowPay for your needs
+3. **Configuration** - Customize AgentPay for your needs
 
 ## Prerequisites
 
@@ -28,7 +28,7 @@ Before you begin, ensure you have:
 
 ## Architecture Overview
 
-FlowPay consists of three main components:
+AgentPay consists of three main components:
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
@@ -37,8 +37,8 @@ FlowPay consists of three main components:
 └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                       │                       │
         ▼                       ▼                       ▼
-   FlowPaySDK            Middleware              FlowPayStream
-   GeminiAI              Verification            MockMNEE
+   AgentPaySDK            Middleware              AgentPayStream
+   GeminiAI              Verification            MockUSD
 ```
 
 ## Next Steps

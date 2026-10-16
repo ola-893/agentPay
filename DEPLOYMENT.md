@@ -1,8 +1,8 @@
-# FlowPay Deployment Guide
+# AgentPay Deployment Guide
 
 ## Overview
 
-FlowPay is "The Streaming Extension for x402" - a hybrid payment protocol that solves the N+1 Signature Problem for AI agent payments. This guide covers deployment to Ethereum Sepolia testnet.
+AgentPay is "The Streaming Extension for x402" - a hybrid payment protocol that solves the N+1 Signature Problem for AI agent payments. This guide covers deployment to Ethereum Sepolia testnet.
 
 **Key Innovation**: 2 on-chain transactions (Open + Close) regardless of request volume.
 
@@ -28,9 +28,9 @@ ETHERSCAN_API_KEY=...                # For contract verification
 GEMINI_API_KEY=...                   # For AI features
 
 # Frontend (vite-project/.env)
-VITE_CONTRACT_ADDRESS=0x...          # FlowPayStream contract address (after deployment)
-VITE_MNEE_TOKEN_ADDRESS=0x...        # MockMNEE address (after deployment)
-VITE_MNEE_TOKEN_ADDRESS=0x...        # MockMNEE address (after deployment)
+VITE_CONTRACT_ADDRESS=0x...          # AgentPayStream contract address (after deployment)
+VITE_PAYMENT_TOKEN_ADDRESS=0x...        # MockUSD address (after deployment)
+VITE_PAYMENT_TOKEN_ADDRESS=0x...        # MockUSD address (after deployment)
 ```
 
 ## Quick Start
@@ -60,17 +60,17 @@ npx hardhat run scripts/deploy.js --network sepolia
 **Expected Output:**
 ```
 Deploying contracts with the account: 0x...
-Deploying MockMNEE...
-MockMNEE deployed to: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-Deploying FlowPayStream with MNEE address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-FlowPayStream deployed to: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
+Deploying MockUSD...
+MockUSD deployed to: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+Deploying AgentPayStream with tUSD address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+AgentPayStream deployed to: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
 ```
 
 **Current Sepolia Deployment (January 2026):**
 | Contract | Address |
 |----------|---------|
-| MockMNEE | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
-| FlowPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
+| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
+| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
 
 **Save these addresses!** You'll need them for configuration.
 
@@ -80,20 +80,20 @@ After deployment, update these files:
 
 **`vite-project/.env`:**
 ```bash
-VITE_CONTRACT_ADDRESS=0x5678...      # FlowPayStream address
-VITE_MNEE_TOKEN_ADDRESS=0x1234...    # MockMNEE address
+VITE_CONTRACT_ADDRESS=0x5678...      # AgentPayStream address
+VITE_PAYMENT_TOKEN_ADDRESS=0x1234...    # MockUSD address
 ```
 
 **`server/index.js`** (if running standalone):
 ```javascript
-const MNEE_ADDRESS = "0x1234...";
+const PAYMENT_TOKEN_ADDRESS = "0x1234...";
 const CONTRACT_ADDRESS = "0x5678...";
 ```
 
 ### 4. Verify Contracts (Optional)
 
 ```bash
-npx hardhat verify --network sepolia <CONTRACT_ADDRESS> <MNEE_ADDRESS>
+npx hardhat verify --network sepolia <CONTRACT_ADDRESS> <PAYMENT_TOKEN_ADDRESS>
 ```
 
 ## Running the System
@@ -141,7 +141,7 @@ npx mocha -r ts-node/register test/*.test.ts
 
 ### Smart Contract Tests (6 tests)
 ```bash
-npx hardhat test test/FlowPayStream.test.js
+npx hardhat test test/AgentPayStream.test.js
 ```
 
 ### Integration Tests Only
@@ -173,7 +173,7 @@ npx ts-node demo/consumer.ts
 3. SDK parses payment requirements
 4. Gemini AI decides: streaming vs direct payment
 5. SDK creates stream (1 signature)
-6. SDK retries request with `X-FlowPay-Stream-ID`
+6. SDK retries request with `X-AgentPay-Stream-ID`
 7. Provider verifies stream, returns 200 OK
 8. Subsequent requests use same stream (0 signatures)
 
@@ -193,7 +193,7 @@ npx mocha -r ts-node/register test/load.test.ts
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    FlowPay System                           │
+│                    AgentPay System                           │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
@@ -205,7 +205,7 @@ npx mocha -r ts-node/register test/load.test.ts
 │        │                  │                  │              │
 │        ▼                  ▼                  ▼              │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
-│  │   Gemini    │    │  Dashboard  │    │  MockMNEE   │     │
+│  │   Gemini    │    │  Dashboard  │    │  MockUSD   │     │
 │  │   AI        │    │  (React)    │    │  Token      │     │
 │  └─────────────┘    └─────────────┘    └─────────────┘     │
 │                                                             │
@@ -216,13 +216,13 @@ npx mocha -r ts-node/register test/load.test.ts
 
 | Component | Description | Location |
 |-----------|-------------|----------|
-| FlowPayStream | Smart contract for payment streams | `contracts/FlowPayStream.sol` |
-| MockMNEE | Test ERC-20 token | `contracts/MockMNEE.sol` |
-| FlowPaySDK | Agent SDK for x402 negotiation | `sdk/src/FlowPaySDK.ts` |
-| flowPayMiddleware | Express.js x402 middleware | `server/middleware/flowPayMiddleware.js` |
+| AgentPayStream | Smart contract for payment streams | `contracts/AgentPayStream.sol` |
+| MockUSD | Test ERC-20 token | `contracts/MockUSD.sol` |
+| AgentPaySDK | Agent SDK for x402 negotiation | `sdk/src/AgentPaySDK.ts` |
+| agentPayMiddleware | Express.js x402 middleware | `server/middleware/agentPayMiddleware.js` |
 | GeminiPaymentBrain | AI decision engine | `sdk/src/GeminiPaymentBrain.ts` |
 | SpendingMonitor | Safety & limits | `sdk/src/SpendingMonitor.ts` |
-| FlowPayProxy | Multi-agent mesh support | `sdk/src/FlowPayProxy.ts` |
+| AgentPayProxy | Multi-agent mesh support | `sdk/src/AgentPayProxy.ts` |
 
 ## Network Configuration
 
@@ -235,9 +235,9 @@ npx mocha -r ts-node/register test/load.test.ts
 ### "Insufficient funds for gas"
 - Get Sepolia ETH from faucet: https://sepoliafaucet.com
 
-### "MNEE transfer failed"
-- Ensure MockMNEE is deployed
-- Check token approval: `mnee.approve(flowPayStreamAddress, amount)`
+### "tUSD transfer failed"
+- Ensure MockUSD is deployed
+- Check token approval: `token.approve(agentPayStreamAddress, amount)`
 
 ### "Stream is not active"
 - Verify stream ID exists on-chain
@@ -252,7 +252,7 @@ cd sdk && npm run build
 
 ## Production Checklist
 
-- [ ] Replace MockMNEE with real MNEE token on mainnet
+- [ ] Replace MockUSD with real tUSD token on mainnet
 - [ ] Configure production RPC URLs (Alchemy/Infura)
 - [ ] Set up monitoring for Emergency Stop triggers
 - [ ] Review spending limits for production agents

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
-import { contractAddress, contractABI, mneeTokenAddress, mneeTokenABI } from '../contactInfo.js';
+import { contractAddress, contractABI, paymentTokenAddress, paymentTokenABI } from '../contactInfo.js';
 import { useToast } from '../components/ui';
 
 const WalletContext = createContext(null);
@@ -16,7 +16,7 @@ export function WalletProvider({ children }) {
   const [chainId, setChainId] = useState(null);
   const [status, setStatus] = useState('Not Connected');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [mneeBalance, setMneeBalance] = useState('0.0');
+  const [tokenBalance, setTokenBalance] = useState('0.0');
 
   // Stream state
   const [incomingStreams, setIncomingStreams] = useState([]);
@@ -25,13 +25,13 @@ export function WalletProvider({ children }) {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const contractWithProvider = useMemo(() => {
-    if (!provider) return null;
+    if (!provider || !contractAddress) return null;
     try { return new ethers.Contract(contractAddress, contractABI, provider); }
     catch { return null; }
   }, [provider]);
 
   const contractWithSigner = useMemo(() => {
-    if (!signer) return null;
+    if (!signer || !contractAddress) return null;
     try { return new ethers.Contract(contractAddress, contractABI, signer); }
     catch { return null; }
   }, [signer]);
@@ -79,7 +79,7 @@ export function WalletProvider({ children }) {
       setProvider(nextProvider);
       setSigner(nextSigner);
       setWalletAddress(address);
-      setStatus('Connected');
+      setStatus(contractAddress ? 'Connected' : 'Connected. Configure the AgentPay contracts to use streams.');
       toast.success(`Connected to ${address.slice(0, 6)}...${address.slice(-4)}`, { title: 'Wallet Connected' });
     } catch (error) {
       console.error('Connection failed:', error);
@@ -88,28 +88,28 @@ export function WalletProvider({ children }) {
     }
   };
 
-  const fetchMneeBalance = useCallback(async () => {
-    if (!provider || !walletAddress) return;
+  const fetchTokenBalance = useCallback(async () => {
+    if (!provider || !walletAddress || !paymentTokenAddress) return;
     try {
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, provider);
-      const balance = await mneeContract.balanceOf(walletAddress);
-      setMneeBalance(ethers.formatEther(balance));
-    } catch (error) { console.error('Failed to fetch MNEE balance:', error); }
+      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, provider);
+      const balance = await tokenContract.balanceOf(walletAddress);
+      setTokenBalance(ethers.formatEther(balance));
+    } catch (error) { console.error('Failed to fetch tUSD balance:', error); }
   }, [provider, walletAddress]);
 
-  const mintMneeTokens = async (amount = '1000') => {
-    if (!signer || !walletAddress) { toast.warning('Please connect your wallet first'); return; }
+  const mintPaymentTokens = async (amount = '1000') => {
+    if (!signer || !walletAddress || !paymentTokenAddress) { toast.warning('Connect a wallet and configure the test token first'); return; }
     try {
       setIsProcessing(true);
-      setStatus('Minting MNEE tokens...');
-      const loadingToast = toast.transaction.pending('Minting MNEE tokens...');
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, signer);
-      const tx = await mneeContract.mint(walletAddress, ethers.parseEther(amount));
+      setStatus('Minting tUSD tokens...');
+      const loadingToast = toast.transaction.pending('Minting tUSD tokens...');
+      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
+      const tx = await tokenContract.mint(walletAddress, ethers.parseEther(amount));
       await tx.wait();
       toast.dismiss(loadingToast);
-      toast.success(`Minted ${amount} MNEE tokens!`, { title: 'Mint Successful' });
-      setStatus(`Minted ${amount} MNEE tokens.`);
-      await fetchMneeBalance();
+      toast.success(`Minted ${amount} tUSD tokens!`, { title: 'Mint Successful' });
+      setStatus(`Minted ${amount} tUSD tokens.`);
+      await fetchTokenBalance();
     } catch (error) {
       console.error('Mint failed:', error);
       toast.error(error?.shortMessage || error?.message || 'Mint failed', { title: 'Mint Failed' });
@@ -203,14 +203,14 @@ export function WalletProvider({ children }) {
       if (totalAmountWei <= 0n || !Number.isFinite(dur) || dur <= 0) {
         setStatus('Enter a positive amount and duration.'); return null;
       }
-      setStatus('Approving MNEE...');
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, signer);
-      const currentAllowance = await mneeContract.allowance(await signer.getAddress(), contractAddress);
+      setStatus('Approving tUSD...');
+      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
+      const currentAllowance = await tokenContract.allowance(await signer.getAddress(), contractAddress);
       if (currentAllowance < totalAmountWei) {
-        setStatus('Approving MNEE token...');
-        const approveTx = await mneeContract.approve(contractAddress, totalAmountWei);
+        setStatus('Approving tUSD token...');
+        const approveTx = await tokenContract.approve(contractAddress, totalAmountWei);
         await approveTx.wait();
-        setStatus('MNEE Approved.');
+        setStatus('tUSD Approved.');
       }
       setStatus('Creating stream...');
       setIsProcessing(true);
@@ -262,7 +262,7 @@ export function WalletProvider({ children }) {
   useEffect(() => {
     if (!walletAddress || !contractWithProvider) return;
     refreshStreams();
-    fetchMneeBalance();
+    fetchTokenBalance();
     const listener = () => refreshStreams();
     contractWithProvider.on('StreamCreated', listener);
     contractWithProvider.on('StreamCancelled', listener);
@@ -274,13 +274,13 @@ export function WalletProvider({ children }) {
         contractWithProvider.off('Withdrawn', listener);
       } catch {}
     };
-  }, [walletAddress, contractWithProvider, refreshStreams, fetchMneeBalance]);
+  }, [walletAddress, contractWithProvider, refreshStreams, fetchTokenBalance]);
 
   const value = {
     provider, signer, walletAddress, chainId, status, setStatus, isProcessing, setIsProcessing,
-    mneeBalance, incomingStreams, setIncomingStreams, outgoingStreams, isLoadingStreams, isInitialLoad,
-    contractWithProvider, contractWithSigner, getNetworkName, connectWallet, fetchMneeBalance,
-    mintMneeTokens, refreshStreams, withdraw, cancel, createStream, getClaimableBalance, formatEth, toast
+    tokenBalance, incomingStreams, setIncomingStreams, outgoingStreams, isLoadingStreams, isInitialLoad,
+    contractWithProvider, contractWithSigner, getNetworkName, connectWallet, fetchTokenBalance,
+    mintPaymentTokens, refreshStreams, withdraw, cancel, createStream, getClaimableBalance, formatEth, toast
   };
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;

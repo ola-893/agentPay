@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-contract MockMNEE {
-    string public name = "Mock MNEE";
-    string public symbol = "MNEE";
+contract MockUSD {
+    string public name = "Mock USD";
+    string public symbol = "tUSD";
     uint8 public decimals = 18;
     uint256 public totalSupply;
     mapping(address => uint256) public balanceOf;

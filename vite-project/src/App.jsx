@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ethers } from 'ethers';
-import { contractAddress, contractABI, mneeTokenAddress, mneeTokenABI } from './contactInfo.js';
+import { contractAddress, contractABI, paymentTokenAddress, paymentTokenABI } from './contactInfo.js';
 import Header from './components/Header.jsx';
 import Hero from './components/Hero.jsx';
 import CreateStreamForm from './components/CreateStreamForm.jsx';
@@ -53,9 +53,9 @@ function AppContent() {
   const [claimableBalance, setClaimableBalance] = useState('0.0');
   const [isProcessing, setIsProcessing] = useState(false);
   const [myStreamIds, setMyStreamIds] = useState([]);
-  const [mneeBalance, setMneeBalance] = useState('0.0');
+  const [tokenBalance, setTokenBalance] = useState('0.0');
 
-  // FlowPay Dashboard State
+  // AgentPay Dashboard State
   const [agentConfig, setAgentConfig] = useState({ agentId: 'Dashboard-Agent', spendingLimits: { dailyLimit: '100' } });
   const [isPaused, setIsPaused] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -81,38 +81,38 @@ function AppContent() {
     setMyStreamIds((prev) => (prev.includes(idNumber) ? prev : [...prev, idNumber]));
   };
 
-  // Fetch MNEE balance
-  const fetchMneeBalance = async () => {
+  // Fetch tUSD balance
+  const fetchTokenBalance = async () => {
     if (!provider || !walletAddress) return;
     try {
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, provider);
-      const balance = await mneeContract.balanceOf(walletAddress);
-      setMneeBalance(ethers.formatEther(balance));
+      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, provider);
+      const balance = await tokenContract.balanceOf(walletAddress);
+      setTokenBalance(ethers.formatEther(balance));
     } catch (error) {
-      console.error('Failed to fetch MNEE balance:', error);
+      console.error('Failed to fetch tUSD balance:', error);
     }
   };
 
-  // Mint MNEE tokens for testing
-  const mintMneeTokens = async (amount = '1000') => {
+  // Mint tUSD tokens for testing
+  const mintPaymentTokens = async (amount = '1000') => {
     if (!signer || !walletAddress) {
       toast.warning('Please connect your wallet first');
       return;
     }
     try {
       setIsProcessing(true);
-      setStatus('Minting MNEE tokens...');
-      const loadingToast = toast.transaction.pending('Minting MNEE tokens...');
+      setStatus('Minting tUSD tokens...');
+      const loadingToast = toast.transaction.pending('Minting tUSD tokens...');
       
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, signer);
+      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
       const amountWei = ethers.parseEther(amount);
-      const tx = await mneeContract.mint(walletAddress, amountWei);
+      const tx = await tokenContract.mint(walletAddress, amountWei);
       await tx.wait();
       
       toast.dismiss(loadingToast);
-      toast.success(`Minted ${amount} MNEE tokens!`, { title: 'Mint Successful' });
-      setStatus(`Minted ${amount} MNEE tokens.`);
-      await fetchMneeBalance();
+      toast.success(`Minted ${amount} tUSD tokens!`, { title: 'Mint Successful' });
+      setStatus(`Minted ${amount} tUSD tokens.`);
+      await fetchTokenBalance();
     } catch (error) {
       console.error('Mint failed:', error);
       toast.error(error?.shortMessage || error?.message || 'Mint failed', { title: 'Mint Failed' });
@@ -228,16 +228,16 @@ function AppContent() {
         setStatus('Contract not deployed on this network. Switch to Sepolia.');
         return;
       }
-      setStatus('Approving MNEE...');
-      // Use the imported MNEE token address and ABI
-      const mneeContract = new ethers.Contract(mneeTokenAddress, mneeTokenABI, signer);
+      setStatus('Approving tUSD...');
+      // Use the imported tUSD token address and ABI
+      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
 
-      const currentAllowance = await mneeContract.allowance(await signer.getAddress(), contractAddress);
+      const currentAllowance = await tokenContract.allowance(await signer.getAddress(), contractAddress);
       if (currentAllowance < totalAmountWei) {
-        setStatus('Approving MNEE token...');
-        const approveTx = await mneeContract.approve(contractAddress, totalAmountWei);
+        setStatus('Approving tUSD token...');
+        const approveTx = await tokenContract.approve(contractAddress, totalAmountWei);
         await approveTx.wait();
-        setStatus('MNEE Approved.');
+        setStatus('tUSD Approved.');
       }
 
       setStatus('Creating stream...');
@@ -426,7 +426,7 @@ function AppContent() {
   useEffect(() => {
     if (!walletAddress || !contractWithProvider) return;
     refreshStreams();
-    fetchMneeBalance();
+    fetchTokenBalance();
     // Listen for new streams and updates
     const createdListener = () => refreshStreams();
     const cancelledListener = () => refreshStreams();
@@ -554,23 +554,23 @@ function AppContent() {
     }
     return (
       <div className="space-y-8 md:space-y-12">
-        {/* MNEE Token Balance Card */}
+        {/* tUSD Token Balance Card */}
         <section className="card-glass p-4 md:p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-white mb-1">💰 MNEE Token Balance</h3>
+              <h3 className="text-lg font-semibold text-white mb-1">💰 tUSD Token Balance</h3>
               <p className="text-2xl font-mono text-cyan-300">
-                {Number(mneeBalance).toLocaleString(undefined, { maximumFractionDigits: 4 })} MNEE
+                {Number(tokenBalance).toLocaleString(undefined, { maximumFractionDigits: 4 })} tUSD
               </p>
               <p className="text-xs text-white/50 mt-1 font-mono truncate">
-                Token: {mneeTokenAddress}
+                Token: {paymentTokenAddress}
               </p>
             </div>
             <div className="flex gap-2">
               <button
                 type="button"
                 className="btn-default min-h-[44px] px-4"
-                onClick={fetchMneeBalance}
+                onClick={fetchTokenBalance}
                 disabled={isProcessing}
               >
                 Refresh
@@ -578,10 +578,10 @@ function AppContent() {
               <button
                 type="button"
                 className="btn-primary min-h-[44px] px-4"
-                onClick={() => mintMneeTokens('1000')}
+                onClick={() => mintPaymentTokens('1000')}
                 disabled={isProcessing}
               >
-                Mint 1000 MNEE
+                Mint 1000 tUSD
               </button>
             </div>
           </div>
@@ -589,7 +589,7 @@ function AppContent() {
 
         <section className="grid gap-4 md:gap-6 lg:grid-cols-2">
           <CollapsibleSection title="Create Stream" icon="➕" defaultOpen={true}>
-            <p className="text-sm text-white/50 mb-4">Funds stream per second using MNEE tokens. Flow rate = total / duration.</p>
+            <p className="text-sm text-white/50 mb-4">Funds stream per second using tUSD tokens. Flow rate = total / duration.</p>
             <CreateStreamForm
               recipient={recipient}
               setRecipient={setRecipient}
@@ -602,7 +602,7 @@ function AppContent() {
           </CollapsibleSection>
 
           <CollapsibleSection title="Withdraw Funds" icon="💰" defaultOpen={true}>
-            <p className="text-sm text-white/60 mb-4">Enter a stream ID to check and withdraw claimable MNEE funds.</p>
+            <p className="text-sm text-white/60 mb-4">Enter a stream ID to check and withdraw claimable tUSD funds.</p>
             <div className="grid grid-cols-1 gap-4">
               <label>
                 <span className="block text-sm text-white/70 mb-1.5">Stream ID</span>
@@ -631,7 +631,7 @@ function AppContent() {
               </div>
 
               <p className="text-sm text-white/70">
-                Can Withdraw: <span className="font-mono text-cyan-300">{Number(claimableBalance || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })}</span> MNEE
+                Can Withdraw: <span className="font-mono text-cyan-300">{Number(claimableBalance || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })}</span> tUSD
               </p>
             </div>
           </CollapsibleSection>

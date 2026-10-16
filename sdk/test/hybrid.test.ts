@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { FlowPaySDK } from '../src/FlowPaySDK';
+import { AgentPaySDK } from '../src/AgentPaySDK';
 import { Wallet } from 'ethers';
 import express from 'express';
 import { Server } from 'http';
@@ -14,18 +14,18 @@ let lastReceivedHeaders: any = {};
 app.get('/api/hybrid', (req, res) => {
     lastReceivedHeaders = req.headers;
 
-    if (req.headers['x-flowpay-tx-hash'] || req.headers['x-flowpay-stream-id']) {
+    if (req.headers['x-agentpay-tx-hash'] || req.headers['x-agentpay-stream-id']) {
         // Payment provided
-        return res.json({ success: true, method: req.headers['x-flowpay-tx-hash'] ? 'direct' : 'stream' });
+        return res.json({ success: true, method: req.headers['x-agentpay-tx-hash'] ? 'direct' : 'stream' });
     }
 
     // Return 402
     res.status(402).set({
         'X-Payment-Required': 'true',
-        'X-FlowPay-Mode': 'hybrid', // Server suggesting hybrid capability
-        'X-FlowPay-Rate': '0.0001',
-        'X-MNEE-Address': '0xToken',
-        'X-FlowPay-Contract': '0xContract'
+        'X-AgentPay-Mode': 'hybrid', // Server suggesting hybrid capability
+        'X-AgentPay-Rate': '0.0001',
+        'X-Payment-Token': '0xToken',
+        'X-AgentPay-Contract': '0xContract'
     }).json({ error: "Payment Required" });
 });
 
@@ -33,8 +33,8 @@ let server: Server;
 const PORT = 3007; // Different port
 const BASE_URL = `http://localhost:${PORT}`;
 
-describe('FlowPaySDK Hybrid Payment Intelligence', () => {
-    let sdk: FlowPaySDK;
+describe('AgentPaySDK Hybrid Payment Intelligence', () => {
+    let sdk: AgentPaySDK;
 
     before((done) => {
         server = app.listen(PORT, done);
@@ -46,7 +46,7 @@ describe('FlowPaySDK Hybrid Payment Intelligence', () => {
 
     beforeEach(() => {
         lastReceivedHeaders = {};
-        sdk = new FlowPaySDK({
+        sdk = new AgentPaySDK({
             privateKey: Wallet.createRandom().privateKey,
             rpcUrl: 'http://localhost:8545'
         });
@@ -62,7 +62,7 @@ describe('FlowPaySDK Hybrid Payment Intelligence', () => {
             // Simulate success and retry
             return axios(url, {
                 ...options,
-                headers: { ...options.headers, 'X-FlowPay-Tx-Hash': '0xMOCK_HASH' }
+                headers: { ...options.headers, 'X-AgentPay-Tx-Hash': '0xMOCK_HASH' }
             });
         };
 
@@ -78,8 +78,8 @@ describe('FlowPaySDK Hybrid Payment Intelligence', () => {
 
         expect(res.status).to.equal(200);
         expect(res.data.method).to.equal('direct');
-        expect(lastReceivedHeaders['x-flowpay-tx-hash']).to.equal('0xMOCK_HASH');
-        expect(lastReceivedHeaders['x-flowpay-stream-id']).to.be.undefined;
+        expect(lastReceivedHeaders['x-agentpay-tx-hash']).to.equal('0xMOCK_HASH');
+        expect(lastReceivedHeaders['x-agentpay-stream-id']).to.be.undefined;
     });
 
     it('Scenario 2: Large request volume (N=10) -> Should choose Streaming', async () => {
@@ -89,8 +89,8 @@ describe('FlowPaySDK Hybrid Payment Intelligence', () => {
 
         expect(res.status).to.equal(200);
         expect(res.data.method).to.equal('stream');
-        expect(lastReceivedHeaders['x-flowpay-stream-id']).to.equal('STREAM_101');
-        expect(lastReceivedHeaders['x-flowpay-tx-hash']).to.be.undefined;
+        expect(lastReceivedHeaders['x-agentpay-stream-id']).to.equal('STREAM_101');
+        expect(lastReceivedHeaders['x-agentpay-tx-hash']).to.be.undefined;
     });
 
     it('AI Verification: Should default to Streaming if N is high (default 10)', async () => {

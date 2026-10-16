@@ -1,4 +1,4 @@
-import { FlowPaySDK } from '../sdk/src/FlowPaySDK';
+import { AgentPaySDK } from '../sdk/src/AgentPaySDK';
 import { ethers } from 'ethers';
 import * as dotenv from 'dotenv';
 
@@ -7,7 +7,7 @@ dotenv.config();
 
 // Contract addresses on Sepolia
 const FLOWPAYSTREAM_ADDRESS = '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
-const MOCK_MNEE_ADDRESS = '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896';
+const MOCK_PAYMENT_TOKEN_ADDRESS = '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896';
 // Use a more reliable RPC endpoint
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com';
 
@@ -17,11 +17,11 @@ const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia
  * This demonstrates an AI agent that:
  * 1. Connects to Sepolia testnet with a real wallet
  * 2. Automatically negotiates x402 payments
- * 3. Creates real MNEE payment streams on-chain
+ * 3. Creates real tUSD payment streams on-chain
  * 4. Accesses premium API content
  */
 async function runDemo() {
-    console.log("🚀 Starting FlowPay Demo Consumer (Real Blockchain Mode)...\n");
+    console.log("🚀 Starting AgentPay Demo Consumer (Real Blockchain Mode)...\n");
 
     // Get private key from environment
     const privateKey = process.env.PRIVATE_KEY_1;
@@ -37,13 +37,13 @@ async function runDemo() {
 
     // 1. Initialize SDK with real Sepolia configuration
     console.log("📡 Connecting to Sepolia testnet...");
-    const sdk = new FlowPaySDK({
+    const sdk = new AgentPaySDK({
         privateKey: privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`,
         rpcUrl: SEPOLIA_RPC_URL,
         agentId: 'Demo-Consumer-Agent-v1',
         spendingLimits: {
-            dailyLimit: ethers.parseEther("100"),  // 100 MNEE daily limit
-            totalLimit: ethers.parseEther("1000") // 1000 MNEE total limit
+            dailyLimit: ethers.parseEther("100"),  // 100 tUSD daily limit
+            totalLimit: ethers.parseEther("1000") // 1000 tUSD total limit
         }
     });
 
@@ -52,29 +52,29 @@ async function runDemo() {
     const wallet = new ethers.Wallet(privateKey.startsWith('0x') ? privateKey : `0x${privateKey}`, provider);
     console.log(`✅ Agent Wallet: ${wallet.address}`);
 
-    // 2. Check MNEE balance before starting
-    console.log("\n--- Checking MNEE Balance ---");
-    const mneeContract = new ethers.Contract(
-        MOCK_MNEE_ADDRESS,
+    // 2. Check tUSD balance before starting
+    console.log("\n--- Checking tUSD Balance ---");
+    const tokenContract = new ethers.Contract(
+        MOCK_PAYMENT_TOKEN_ADDRESS,
         ['function balanceOf(address) view returns (uint256)', 'function mint(address, uint256)'],
         wallet
     );
 
-    let balance = await mneeContract.balanceOf(wallet.address);
-    console.log(`💰 Current MNEE Balance: ${ethers.formatEther(balance)} MNEE`);
+    let balance = await tokenContract.balanceOf(wallet.address);
+    console.log(`💰 Current tUSD Balance: ${ethers.formatEther(balance)} tUSD`);
 
     // If balance is low, mint some test tokens
     if (balance < ethers.parseEther("10")) {
-        console.log("\n⚠️  Low balance detected. Minting test MNEE tokens...");
+        console.log("\n⚠️  Low balance detected. Minting test tUSD tokens...");
         try {
-            const mintTx = await mneeContract.mint(wallet.address, ethers.parseEther("100"));
+            const mintTx = await tokenContract.mint(wallet.address, ethers.parseEther("100"));
             console.log(`📝 Mint transaction: ${mintTx.hash}`);
             await mintTx.wait();
-            balance = await mneeContract.balanceOf(wallet.address);
-            console.log(`✅ New MNEE Balance: ${ethers.formatEther(balance)} MNEE`);
+            balance = await tokenContract.balanceOf(wallet.address);
+            console.log(`✅ New tUSD Balance: ${ethers.formatEther(balance)} tUSD`);
         } catch (e: any) {
             console.error("❌ Minting failed:", e.message);
-            console.log("   You may need to get MNEE tokens from another source.");
+            console.log("   You may need to get tUSD tokens from another source.");
         }
     }
 
@@ -89,7 +89,7 @@ async function runDemo() {
         // 1. Initial request → 402 Payment Required
         // 2. SDK reads payment requirements from headers
         // 3. AI brain decides: stream vs direct payment
-        // 4. SDK approves MNEE tokens
+        // 4. SDK approves tUSD tokens
         // 5. SDK creates payment stream on-chain
         // 6. SDK retries request with stream ID
         // 7. Provider validates stream and returns content
@@ -127,9 +127,9 @@ async function runDemo() {
     console.log(`   ⚡ Transactions Saved: ${metrics.requestsSent - metrics.signersTriggered}`);
 
     // 6. Final balance check
-    const finalBalance = await mneeContract.balanceOf(wallet.address);
-    console.log(`\n💰 Final MNEE Balance: ${ethers.formatEther(finalBalance)} MNEE`);
-    console.log(`   Spent: ${ethers.formatEther(balance - finalBalance)} MNEE`);
+    const finalBalance = await tokenContract.balanceOf(wallet.address);
+    console.log(`\n💰 Final tUSD Balance: ${ethers.formatEther(finalBalance)} tUSD`);
+    console.log(`   Spent: ${ethers.formatEther(balance - finalBalance)} tUSD`);
 
     console.log("\n🎉 Demo Complete!");
 }

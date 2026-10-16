@@ -8,12 +8,12 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const FLOWPAYSTREAM_ADDRESS = '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
-const MOCK_MNEE_ADDRESS = '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896';
+const MOCK_PAYMENT_TOKEN_ADDRESS = '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896';
 // Use a more reliable RPC endpoint
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com';
 
 async function checkSetup() {
-    console.log("🔍 FlowPay Demo Setup Check\n");
+    console.log("🔍 AgentPay Demo Setup Check\n");
 
     // 1. Check environment variables
     console.log("1️⃣  Environment Variables:");
@@ -64,34 +64,34 @@ async function checkSetup() {
         console.log("   ⚠️  Low ETH balance - Get Sepolia ETH from a faucet");
     }
 
-    // 5. Check MNEE balance
-    console.log("\n4️⃣  MNEE Token:");
-    const mneeContract = new ethers.Contract(
-        MOCK_MNEE_ADDRESS,
+    // 5. Check tUSD balance
+    console.log("\n4️⃣  tUSD Token:");
+    const tokenContract = new ethers.Contract(
+        MOCK_PAYMENT_TOKEN_ADDRESS,
         ['function balanceOf(address) view returns (uint256)'],
         provider
     );
-    const mneeBalance = await mneeContract.balanceOf(wallet.address);
-    console.log(`   💰 MNEE Balance: ${ethers.formatEther(mneeBalance)} MNEE`);
-    if (mneeBalance < ethers.parseEther("1")) {
-        console.log("   ⚠️  Low MNEE balance - Demo will auto-mint or use frontend to mint");
+    const tokenBalance = await tokenContract.balanceOf(wallet.address);
+    console.log(`   💰 tUSD Balance: ${ethers.formatEther(tokenBalance)} tUSD`);
+    if (tokenBalance < ethers.parseEther("1")) {
+        console.log("   ⚠️  Low tUSD balance - Demo will auto-mint or use frontend to mint");
     }
 
     // 6. Check contracts exist
     console.log("\n5️⃣  Contracts:");
-    const flowPayStreamCode = await provider.getCode(FLOWPAYSTREAM_ADDRESS);
-    const mneeCode = await provider.getCode(MOCK_MNEE_ADDRESS);
+    const agentPayStreamCode = await provider.getCode(FLOWPAYSTREAM_ADDRESS);
+    const tokenCode = await provider.getCode(MOCK_PAYMENT_TOKEN_ADDRESS);
 
-    if (flowPayStreamCode !== '0x') {
-        console.log(`   ✅ FlowPayStream: ${FLOWPAYSTREAM_ADDRESS}`);
+    if (agentPayStreamCode !== '0x') {
+        console.log(`   ✅ AgentPayStream: ${FLOWPAYSTREAM_ADDRESS}`);
     } else {
-        console.log(`   ❌ FlowPayStream not deployed at ${FLOWPAYSTREAM_ADDRESS}`);
+        console.log(`   ❌ AgentPayStream not deployed at ${FLOWPAYSTREAM_ADDRESS}`);
     }
 
-    if (mneeCode !== '0x') {
-        console.log(`   ✅ MockMNEE: ${MOCK_MNEE_ADDRESS}`);
+    if (tokenCode !== '0x') {
+        console.log(`   ✅ MockUSD: ${MOCK_PAYMENT_TOKEN_ADDRESS}`);
     } else {
-        console.log(`   ❌ MockMNEE not deployed at ${MOCK_MNEE_ADDRESS}`);
+        console.log(`   ❌ MockUSD not deployed at ${MOCK_PAYMENT_TOKEN_ADDRESS}`);
     }
 
     console.log("\n✅ Setup check complete!");

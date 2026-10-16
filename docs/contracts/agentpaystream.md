@@ -1,6 +1,6 @@
-# FlowPayStream Contract
+# AgentPayStream Contract
 
-The FlowPayStream contract is the core payment streaming infrastructure.
+The AgentPayStream contract is the core payment streaming infrastructure.
 
 ## Contract Address
 
@@ -8,7 +8,7 @@ The FlowPayStream contract is the core payment streaming infrastructure.
 
 ## Overview
 
-FlowPayStream enables continuous payment streams using MNEE tokens. Funds flow from sender to recipient over time, calculated per-second.
+AgentPayStream enables continuous payment streams using tUSD tokens. Funds flow from sender to recipient over time, calculated per-second.
 
 ## Functions
 
@@ -30,25 +30,25 @@ function createStream(
 |------|------|-------------|
 | recipient | address | Address receiving the stream |
 | duration | uint256 | Stream duration in seconds |
-| amount | uint256 | Total MNEE amount (in wei) |
+| amount | uint256 | Total tUSD amount (in wei) |
 | metadata | string | JSON metadata string |
 
 **Requirements:**
 - `amount > 0`
 - `duration > 0`
 - `recipient != address(0)`
-- Sender must have approved MNEE tokens
+- Sender must have approved tUSD tokens
 
 **Example:**
 ```javascript
 // Approve tokens first
-await mnee.approve(flowPayStreamAddress, amount);
+await token.approve(agentPayStreamAddress, amount);
 
 // Create stream
-await flowPayStream.createStream(
+await agentPayStream.createStream(
   recipientAddress,
   3600, // 1 hour
-  ethers.parseEther('10'), // 10 MNEE
+  ethers.parseEther('10'), // 10 tUSD
   '{"purpose": "API access"}'
 );
 ```
@@ -73,7 +73,7 @@ function withdrawFromStream(uint256 streamId) external
 
 **Example:**
 ```javascript
-await flowPayStream.withdrawFromStream(42);
+await agentPayStream.withdrawFromStream(42);
 ```
 
 ### cancelStream
@@ -152,8 +152,8 @@ function streams(uint256 streamId) external view returns (
 struct Stream {
     address sender;        // Stream creator
     address recipient;     // Payment receiver
-    uint256 totalAmount;   // Total MNEE locked
-    uint256 flowRate;      // MNEE per second
+    uint256 totalAmount;   // Total tUSD locked
+    uint256 flowRate;      // tUSD per second
     uint256 startTime;     // Unix timestamp
     uint256 stopTime;      // Unix timestamp
     uint256 amountWithdrawn; // Already claimed
@@ -169,9 +169,9 @@ flowRate = totalAmount / duration
 ```
 
 Example:
-- Amount: 3600 MNEE
+- Amount: 3600 tUSD
 - Duration: 3600 seconds (1 hour)
-- Flow Rate: 1 MNEE/second
+- Flow Rate: 1 tUSD/second
 
 ## Events
 
@@ -179,7 +179,7 @@ See [Events & Errors](events-errors.md) for full event documentation.
 
 ## Security Considerations
 
-1. **Approval Required**: Users must approve MNEE before creating streams
+1. **Approval Required**: Users must approve tUSD before creating streams
 2. **Recipient Only Withdraw**: Only recipients can withdraw
 3. **Both Can Cancel**: Either party can cancel
 4. **No Reentrancy**: Uses checks-effects-interactions pattern

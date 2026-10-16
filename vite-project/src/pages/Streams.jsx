@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useWallet } from '../context/WalletContext';
-import { mneeTokenAddress } from '../contactInfo';
+import { paymentTokenAddress } from '../contactInfo';
 import CreateStreamForm from '../components/CreateStreamForm';
 import StreamList from '../components/StreamList';
 import { CollapsibleSection, SkeletonStreamCard } from '../components/ui';
@@ -8,9 +8,9 @@ import { ArrowRightLeft, Coins, Plus, Wallet } from 'lucide-react';
 
 export default function Streams() {
   const {
-    walletAddress, mneeBalance, isProcessing, isInitialLoad, isLoadingStreams,
+    walletAddress, tokenBalance, isProcessing, isInitialLoad, isLoadingStreams,
     incomingStreams, setIncomingStreams, outgoingStreams,
-    fetchMneeBalance, mintMneeTokens, createStream, withdraw, cancel,
+    fetchTokenBalance, mintPaymentTokens, createStream, withdraw, cancel,
     formatEth, getClaimableBalance, setStatus, toast
   } = useWallet();
 
@@ -96,25 +96,25 @@ export default function Streams() {
 
   return (
     <div className="space-y-8 md:space-y-12 animate-fade-in">
-      {/* MNEE Token Balance Card */}
+      {/* tUSD Token Balance Card */}
       <section className="card-glass p-4 md:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-              <Coins className="w-5 h-5" /> MNEE Token Balance
+              <Coins className="w-5 h-5" /> tUSD Token Balance
             </h3>
             <p className="text-2xl font-mono text-cyan-300">
-              {Number(mneeBalance).toLocaleString(undefined, { maximumFractionDigits: 4 })} MNEE
+              {Number(tokenBalance).toLocaleString(undefined, { maximumFractionDigits: 4 })} tUSD
             </p>
             <p className="text-xs text-white/50 mt-1 font-mono truncate">
-              Token: {mneeTokenAddress}
+              Token: {paymentTokenAddress}
             </p>
           </div>
           <div className="flex gap-2">
             <button
               type="button"
               className="btn-default min-h-[44px] px-4"
-              onClick={fetchMneeBalance}
+              onClick={fetchTokenBalance}
               disabled={isProcessing}
             >
               Refresh
@@ -122,10 +122,10 @@ export default function Streams() {
             <button
               type="button"
               className="btn-primary min-h-[44px] px-4"
-              onClick={() => mintMneeTokens('1000')}
+              onClick={() => mintPaymentTokens('1000')}
               disabled={isProcessing}
             >
-              Mint 1000 MNEE
+              Mint 1000 tUSD
             </button>
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function Streams() {
       <section className="grid gap-4 md:gap-6 lg:grid-cols-2">
         <CollapsibleSection title="Create Stream" icon={<Plus className="w-5 h-5" />} defaultOpen={true}>
           <p className="text-sm text-white/50 mb-4">
-            Funds stream per second using MNEE tokens. Flow rate = total / duration.
+            Funds stream per second using tUSD tokens. Flow rate = total / duration.
           </p>
           <CreateStreamForm
             recipient={recipient}
@@ -149,7 +149,7 @@ export default function Streams() {
 
         <CollapsibleSection title="Withdraw Funds" icon={<Wallet className="w-5 h-5" />} defaultOpen={true}>
           <p className="text-sm text-white/60 mb-4">
-            Enter a stream ID to check and withdraw claimable MNEE funds.
+            Enter a stream ID to check and withdraw claimable tUSD funds.
           </p>
           <div className="grid grid-cols-1 gap-4">
             <label>
@@ -187,7 +187,7 @@ export default function Streams() {
               <span className="font-mono text-cyan-300">
                 {Number(claimableBalance || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })}
               </span>{' '}
-              MNEE
+              tUSD
             </p>
           </div>
         </CollapsibleSection>

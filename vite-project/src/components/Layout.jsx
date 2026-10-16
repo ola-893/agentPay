@@ -14,7 +14,7 @@ const tabs = [
 
 export default function Layout({ children }) {
   const location = useLocation();
-  const { walletAddress, chainId, getNetworkName, connectWallet, mneeBalance, status, isProcessing } = useWallet();
+  const { walletAddress, chainId, getNetworkName, connectWallet, tokenBalance, status, isProcessing } = useWallet();
 
   const isDashboard = location.pathname === '/';
 
@@ -27,7 +27,7 @@ export default function Layout({ children }) {
         chainId={chainId}
         networkName={getNetworkName(chainId)}
         onConnect={connectWallet}
-        balance={mneeBalance}
+        balance={tokenBalance}
         tabs={tabs}
       />
 

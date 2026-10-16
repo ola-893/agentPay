@@ -1,9 +1,9 @@
 {
-    "name": "flowpay-sdk",
+    "name": "agentpay-sdk",
     "version": "1.0.0",
-    "description": "TypeScript SDK for FlowPay negotiation - The Streaming Extension for x402",
-    "main": "dist/FlowPaySDK.js",
-    "types": "dist/FlowPaySDK.d.ts",
+    "description": "TypeScript SDK for AgentPay negotiation - The Streaming Extension for x402",
+    "main": "dist/AgentPaySDK.js",
+    "types": "dist/AgentPaySDK.d.ts",
     "scripts": {
         "build": "tsc",
         "test": "mocha -r ts-node/register test/sdk.test.ts",

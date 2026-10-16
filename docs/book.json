@@ -1,12 +1,12 @@
 {
-  "title": "FlowPay Documentation",
+  "title": "AgentPay Documentation",
   "description": "The Streaming Extension for x402 - AI Agent Payment Protocol",
-  "author": "FlowPay Team",
+  "author": "AgentPay Team",
   "language": "en",
   "gitbook": ">=3.0.0",
   "links": {
     "sidebar": {
-      "GitHub": "https://github.com/your-org/flowpay"
+      "GitHub": "https://github.com/your-org/agentpay"
     }
   },
   "plugins": [

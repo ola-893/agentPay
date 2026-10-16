@@ -1,17 +1,17 @@
 # Smart Contracts
 
-FlowPay uses two main smart contracts deployed on Ethereum Sepolia.
+AgentPay uses two main smart contracts deployed on Ethereum Sepolia.
 
 ## Deployed Contracts
 
 | Contract | Address | Description |
 |----------|---------|-------------|
-| FlowPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` | Payment streaming |
-| MockMNEE | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` | Test ERC-20 token |
+| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` | Payment streaming |
+| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` | Test ERC-20 token |
 
 ## Contract Overview
 
-### FlowPayStream
+### AgentPayStream
 
 The core payment streaming contract that enables:
 - Creating payment streams
@@ -19,7 +19,7 @@ The core payment streaming contract that enables:
 - Cancelling streams
 - Querying stream state
 
-### MockMNEE
+### MockUSD
 
 A test ERC-20 token for development:
 - Standard ERC-20 interface
@@ -29,11 +29,11 @@ A test ERC-20 token for development:
 ## Verification
 
 Contracts are verified on Sepolia Etherscan:
-- [FlowPayStream on Etherscan](https://sepolia.etherscan.io/address/0x155A00fBE3D290a8935ca4Bf5244283685Bb0035)
-- [MockMNEE on Etherscan](https://sepolia.etherscan.io/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896)
+- [AgentPayStream on Etherscan](https://sepolia.etherscan.io/address/0x155A00fBE3D290a8935ca4Bf5244283685Bb0035)
+- [MockUSD on Etherscan](https://sepolia.etherscan.io/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896)
 
 ## Next Steps
 
-- [FlowPayStream Details](flowpaystream.md)
-- [MockMNEE Details](mock-mnee.md)
+- [AgentPayStream Details](agentpaystream.md)
+- [MockUSD Details](mock-usd.md)
 - [Events & Errors](events-errors.md)

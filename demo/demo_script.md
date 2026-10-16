@@ -1,6 +1,6 @@
-# FlowPay Demo Script
+# AgentPay Demo Script
 
-**Title**: FlowPay - Real-Time MNEE Payment Streaming for AI Agents
+**Title**: AgentPay - Real-Time tUSD Payment Streaming for AI Agents
 **Network**: Sepolia Testnet (Real Blockchain Transactions)
 
 ---
@@ -19,7 +19,7 @@
    cd sdk && npm install && cd ..
    ```
 
-3. **Get Test MNEE Tokens**: The demo will auto-mint if balance is low, or use the frontend at `http://localhost:5173` to mint tokens.
+3. **Get Test tUSD Tokens**: The demo will auto-mint if balance is low, or use the frontend at `http://localhost:5173` to mint tokens.
 
 ---
 
@@ -34,20 +34,20 @@ npx ts-node demo/provider.ts
 **Expected Output**:
 ```
 🔧 Provider Configuration:
-   FlowPayStream Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-   MNEE Token: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+   AgentPayStream Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
+   tUSD Token: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
    RPC URL: https://rpc.sepolia.org
 
-🚀 FlowPay Demo Provider running on http://localhost:3005
+🚀 AgentPay Demo Provider running on http://localhost:3005
 
 📋 Available Endpoints:
    GET /health          - Health check (free)
    GET /api/info        - API info (free)
-   GET /api/premium     - Premium content (0.0001 MNEE/sec)
-   GET /api/ai-insight  - AI insights (0.001 MNEE/sec)
+   GET /api/premium     - Premium content (0.0001 tUSD/sec)
+   GET /api/ai-insight  - AI insights (0.001 tUSD/sec)
 ```
 
-The provider is now a "gatekeeper" that requires MNEE payment streams for premium content.
+The provider is now a "gatekeeper" that requires tUSD payment streams for premium content.
 
 ---
 
@@ -60,13 +60,13 @@ npx ts-node demo/consumer.ts
 **What Happens (Real Blockchain)**:
 
 1. **Wallet Connection**: Agent connects to Sepolia with `PRIVATE_KEY_1`
-2. **Balance Check**: Verifies MNEE balance, mints if needed
+2. **Balance Check**: Verifies tUSD balance, mints if needed
 3. **x402 Flow**:
    - Agent requests `/api/premium`
    - Provider returns `402 Payment Required` with requirements
    - SDK reads payment headers (rate, contract address, token)
    - Gemini AI decides: stream vs direct payment
-   - SDK approves MNEE tokens on-chain
+   - SDK approves tUSD tokens on-chain
    - SDK creates payment stream on-chain
    - SDK retries request with stream ID
    - Provider validates stream and returns content
@@ -74,22 +74,22 @@ npx ts-node demo/consumer.ts
 
 **Expected Output**:
 ```
-🚀 Starting FlowPay Demo Consumer (Real Blockchain Mode)...
+🚀 Starting AgentPay Demo Consumer (Real Blockchain Mode)...
 
 📡 Connecting to Sepolia testnet...
 ✅ Agent Wallet: 0x...
 
---- Checking MNEE Balance ---
-💰 Current MNEE Balance: 100.0 MNEE
+--- Checking tUSD Balance ---
+💰 Current tUSD Balance: 100.0 tUSD
 
 --- [Step 1] Making Request to http://localhost:3005/api/premium ---
-[FlowPaySDK] 402 Payment Required intercepted. Negotiating...
-[FlowPaySDK] 🤖 Gemini Analysis: High request volume expected, streaming is more efficient
-[FlowPaySDK] Initiating Stream: 0.36 MNEE for 3600s
-[FlowPaySDK] Approving MNEE...
-[FlowPaySDK] Approved.
-[FlowPaySDK] Creating stream to 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896...
-[FlowPaySDK] Stream #X created. Retrying request...
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: High request volume expected, streaming is more efficient
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Approving tUSD...
+[AgentPaySDK] Approved.
+[AgentPaySDK] Creating stream to 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896...
+[AgentPaySDK] Stream #X created. Retrying request...
 ✅ REQUEST SUCCESS!
 📦 Response: { "success": true, "data": "🌟 This is PREMIUM content..." }
 
@@ -103,8 +103,8 @@ npx ts-node demo/consumer.ts
    Blockchain Transactions: 1
    ⚡ Transactions Saved: 3
 
-💰 Final MNEE Balance: 99.64 MNEE
-   Spent: 0.36 MNEE
+💰 Final tUSD Balance: 99.64 tUSD
+   Spent: 0.36 tUSD
 
 🎉 Demo Complete!
 ```
@@ -115,10 +115,10 @@ npx ts-node demo/consumer.ts
 
 ### 1. x402 Protocol
 The provider returns HTTP 402 with payment requirements in headers:
-- `X-FlowPay-Mode: streaming`
-- `X-FlowPay-Rate: 0.0001` (MNEE per second)
-- `X-FlowPay-Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
-- `X-MNEE-Address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896`
+- `X-AgentPay-Mode: streaming`
+- `X-AgentPay-Rate: 0.0001` (tUSD per second)
+- `X-AgentPay-Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
+- `X-Payment-Token: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896`
 
 ### 2. AI-Powered Payment Decisions
 The Gemini AI brain analyzes:
@@ -142,8 +142,8 @@ All transactions are real and verifiable on Sepolia:
 
 | Contract | Address |
 |----------|---------|
-| FlowPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
-| MockMNEE | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
+| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
+| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
 
 ---
 
@@ -153,7 +153,7 @@ All transactions are real and verifiable on Sepolia:
 
 **"Connection refused"**: Make sure provider is running first
 
-**"Insufficient MNEE balance"**: The demo auto-mints, or use the frontend to mint
+**"Insufficient tUSD balance"**: The demo auto-mints, or use the frontend to mint
 
 **"Transaction failed"**: Check you have Sepolia ETH for gas (get from faucet)
 
