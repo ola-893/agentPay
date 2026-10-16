@@ -47,3 +47,12 @@ ignition/deployments/chain-31337
 
 # Local Netlify folder
 .netlify
+
+# Build products
+sdk/dist/
+cre/**/binary.wasm
+cre/**/main.wasm
+cre/**/main.js
+cre/**/.cre/
+cre/**/.cre_build*
+.local/
