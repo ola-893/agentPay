@@ -61,39 +61,7 @@ const agentPayMiddleware = (config) => {
 
         // 1. Check for Direct Payment (Tx Hash) (Requirement: Hybrid Mode)
         if (txHashHeader) {
-            try {
-                // In a real implementation, we would:
-                // 1. Fetch tx receipt from provider
-                // 2. Verify receiver == config.tokenAddress (or recipient)
-                // 3. Verify amount >= routeConfig.price
-                // 4. Verify status == 1 (success)
-                // 5. Verify tx hash hasn't been used before (replay protection)
-
-                // For Hackathon/Mock: We assume if the hash matches a pattern/mock or just exists, it's valid if using mockContract
-                // Or if we have a provider, we could attempt to look it up. 
-                // Let's implement a basic mock verification if config.mockContract exists.
-
-                let isValidPayment = false;
-                if (config.mockContract) {
-                    // Mock validation
-                    isValidPayment = true;
-                    console.log(`[AgentPay] Validated Direct Payment Tx: ${txHashHeader}`);
-                } else {
-                    // Real provider validation (TODO: Implement full verification)
-                    // For now, optimistic acceptance for valid-looking hashes
-                    if (txHashHeader.startsWith('0x') && txHashHeader.length === 66) {
-                        isValidPayment = true;
-                    }
-                }
-
-                if (isValidPayment) {
-                    console.log(`[AgentPay] Request accepted for ${path} using Direct Payment Tx: ${txHashHeader}`);
-                    req.agentPay = { txHash: txHashHeader, mode: 'direct' };
-                    return next();
-                }
-            } catch (e) {
-                console.error("Direct payment verification failed:", e);
-            }
+            return res.status(402).json({ error: 'Direct transaction-hash payments are disabled. Use a verified stream or CRE guarded settlement.' });
         }
 
         // Calculate required amount from route config
@@ -117,8 +85,14 @@ const agentPayMiddleware = (config) => {
                 });
             }
 
-            // Optional: Verify recipient is this server (if we tracked our address)
-            // Optional: Verify balance is sufficient (via getClaimableBalance or local tracking)
+            const stream = await agentPayContract.streams(streamId);
+            const now = Math.floor(Date.now() / 1000);
+            if (!ethers.isAddress(config.recipientAddress || '')
+                || stream.recipient.toLowerCase() !== config.recipientAddress.toLowerCase()
+                || Number(stream.stopTime) <= now || Number(stream.startTime) > now
+                || BigInt(stream.flowRate) < requiredAmount) {
+                return res.status(402).json({ error: 'Stream does not satisfy this provider payment policy' });
+            }
 
             // Track metrics (simple console log for MVP)
             console.log(`[AgentPay] Request accepted for ${path} using Stream #${streamId}`);
@@ -143,6 +117,7 @@ function send402Response(res, routeConfig, config, requiredAmount) {
     res.set('X-AgentPay-Mode', routeConfig.mode || 'streaming');
     res.set('X-AgentPay-Rate', ethers.formatEther(requiredAmount)); // Send resolved rate
     res.set('X-Payment-Token', config.tokenAddress || '');
+    res.set('X-AgentPay-Recipient', config.recipientAddress || '');
     res.set('X-AgentPay-Contract', config.agentPayContractAddress || '');
     // Standard 402 body
     res.status(402).json({
@@ -152,7 +127,7 @@ function send402Response(res, routeConfig, config, requiredAmount) {
             price: ethers.formatEther(requiredAmount), // Use the resolved rate
             currency: "tUSD",
             contract: config.agentPayContractAddress,
-            recipient: config.tokenAddress // Assuming server wallet is tUSD recipient
+            recipient: config.recipientAddress
         }
     });
 }

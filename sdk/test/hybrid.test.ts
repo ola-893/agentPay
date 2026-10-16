@@ -22,7 +22,8 @@ app.get('/api/hybrid', (req, res) => {
     // Return 402
     res.status(402).set({
         'X-Payment-Required': 'true',
-        'X-AgentPay-Mode': 'hybrid', // Server suggesting hybrid capability
+        'X-AgentPay-Mode': 'hybrid',
+                    'X-AgentPay-Direct-Enabled': 'true', // Server suggesting hybrid capability
         'X-AgentPay-Rate': '0.0001',
         'X-Payment-Token': '0xToken',
         'X-AgentPay-Contract': '0xContract'

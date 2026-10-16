@@ -15,6 +15,7 @@ app.use(express.json());
 // AgentPay Configuration
 const defaultConfig = {
     rpcUrl: RPC_URL,
+    recipientAddress: process.env.PAYMENT_RECIPIENT_ADDRESS || '',
     agentPayContractAddress: CONTRACT_ADDRESS,
     tokenAddress: PAYMENT_TOKEN_ADDRESS,
     routes: {
@@ -66,6 +67,8 @@ const createApp = (config = defaultConfig) => {
 
     return app;
 };
+
+const PORT = Number(process.env.PORT || 3001);
 
 // Start server if run directly
 if (require.main === module) {

@@ -88,6 +88,7 @@ const createMockServer = () => {
                 .set({
                     'X-Payment-Required': 'true',
                     'X-AgentPay-Mode': 'hybrid',
+                    'X-AgentPay-Direct-Enabled': 'true',
                     'X-AgentPay-Rate': '0.001',
                     'X-Payment-Token': '0xMockUSD',
                     'X-AgentPay-Contract': '0xMockContract'

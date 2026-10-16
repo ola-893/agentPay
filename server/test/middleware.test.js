@@ -8,6 +8,7 @@ describe('x402 Middleware Integration', function () {
 
     beforeEach(() => {
         mockContract = {
+            streams: async () => ({ recipient: '0x0000000000000000000000000000000000000014', startTime: 0, stopTime: Math.floor(Date.now() / 1000) + 3600, flowRate: 1000000000000000n }),
             isStreamActive: async (id) => {
                 if (id === 100n) return true; // Valid stream
                 if (id === 99n) return false; // Inactive stream
@@ -19,6 +20,7 @@ describe('x402 Middleware Integration', function () {
             rpcUrl: "http://localhost:8545", // Dummy
             agentPayContractAddress: "0xMock",
             tokenAddress: "0xMneeMock",
+            recipientAddress: '0x0000000000000000000000000000000000000014',
             mockContract: mockContract, // Inject mock
             routes: {
                 '/api/weather': {
@@ -62,6 +64,16 @@ describe('x402 Middleware Integration', function () {
     });
 
     describe('Protected Routes (With Payment)', function () {
+        it('rejects an active stream paying another recipient', async function () {
+            mockContract.streams = async () => ({ recipient: '0x0000000000000000000000000000000000000015', stopTime: 9999999999, startTime: 0, flowRate: 1000000000000000n });
+            const res = await request(app).get('/api/weather').set('X-AgentPay-Stream-ID', '100');
+            expect(res.status).to.equal(402);
+        });
+        it('rejects fabricated transaction hashes instead of accepting their shape', async function () {
+            const res = await request(app).get('/api/weather').set('X-AgentPay-Tx-Hash', '0x' + '1'.repeat(64));
+            expect(res.status).to.equal(402);
+            expect(res.body.error).to.contain('disabled');
+        });
         it('should return 200 for valid active stream', async function () {
             const res = await request(app)
                 .get('/api/weather')

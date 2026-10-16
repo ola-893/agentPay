@@ -181,6 +181,7 @@ export class AgentPaySDK {
 
         const rate = headers['x-agentpay-rate']; // amount per second or per request
         const tokenAddress = headers['x-payment-token']; // Token address
+        const recipientAddress = headers['x-agentpay-recipient'] || response.data?.requirements?.recipient;
         const contractAddress = headers['x-agentpay-contract'];
 
         if (!contractAddress) {
@@ -191,9 +192,9 @@ export class AgentPaySDK {
         const simN = (options.headers as any)?.['x-simulation-n'] ? parseInt((options.headers as any)['x-simulation-n'] as string) : 10;
         const selectedMode = await this.selectPaymentMode(simN); // Await async brain
 
-        if (selectedMode === 'direct') {
+        if (selectedMode === 'direct' && headers['x-agentpay-direct-enabled'] === 'true') {
             const price = ethers.parseEther(rate || "0.0001");
-            return this.performDirectPayment(url, options, tokenAddress, price);
+            return this.performDirectPayment(url, options, tokenAddress, price, recipientAddress);
         }
 
 
@@ -234,7 +235,7 @@ export class AgentPaySDK {
         const streamData = await this.createStream(contractAddress, tokenAddress, totalAmount, duration, {
             type: "SDK_AUTO",
             target: url
-        });
+        }, recipientAddress);
 
         // Cache the new stream for this host
         const host = new URL(url).host;
@@ -263,7 +264,10 @@ export class AgentPaySDK {
         return await axios(url, retryOptions);
     }
 
-    public async createStream(contractAddress: string, tokenAddress: string, amount: bigint, duration: number, metadata: any = {}): Promise<{ streamId: string, startTime: bigint }> {
+    public async createStream(contractAddress: string, tokenAddress: string, amount: bigint, duration: number, metadata: any = {}, recipientAddress?: string): Promise<{ streamId: string, startTime: bigint }> {
+        if (!recipientAddress || !ethers.isAddress(recipientAddress) || recipientAddress === ethers.ZeroAddress || recipientAddress.toLowerCase() === tokenAddress?.toLowerCase()) {
+            throw new Error('A distinct payment recipient is required before signing');
+        }
         const agentPay = new Contract(contractAddress, this.MIN_ABI, this.wallet);
 
         // Metadata Construction
@@ -296,56 +300,7 @@ export class AgentPaySDK {
             console.log("[AgentPaySDK] Approved.");
         }
 
-        // 2. Create Stream
-        // Using "random" recipient? No, the 402 header usually implies SOME recipient. 
-        // But the middleware 402 headers we implemented (X-AgentPay-Address) was actually tUSD address...
-        // Wait, where is the payment RECIPIENT address?
-        // The middleware `X-Payment-Token` was intended for the token.
-        // We usually need a `X-AgentPay-Recipient` header too! 
-        // Let's check middleware implementation. 
-        // Middleware: `res.set('X-Payment-Token', config.tokenAddress || '');`
-        // Wait, did I map tokenAddress to the recipient or the token in the middleware config?
-        // In Server `index.js`, `tokenAddress: PAYMENT_TOKEN_ADDRESS`. 
-        // In `agentPayMiddleware.js`: `requirements: { ... recipient: config.tokenAddress }`
-        // It seems I overloaded `tokenAddress` to mean "Token Address" AND "Recipient"?
-        // Detailed check: The contract needs a `recipient` address to stream TO.
-        // My middleware headers currently expose `X-Payment-Token`.
-        // If the middleware is the recipient, it should expose its wallet address.
-        // Let's assume for this Agent flow that the AGENT is the sender and the SERVER (middleware) is the recipient.
-        // I need the Server's Wallet Address to stream TO.
-        // The middleware currently does NOT expose `X-AgentPay-Recipient`.
-        // I should stick to the plan: "Add automatic tUSD approval and stream creation from x402 requirements".
-        // I will assume for now that the `X-Payment-Token` header is the token, and I might need to infer recipient or add it.
-        // Actually, looking at `agentPayMiddleware.js`:
-        // `res.set('X-Payment-Token', config.tokenAddress || '');`
-        // AND `recipient: config.tokenAddress` in the body.
-        // It seems I confused Token Address with Recipient Address in the middleware config.
-        // `tokenAddress` variable name implies Token.
-        // I need to fix this in the middleware task or work around it.
-        // WORKAROUND: For this MVP, I will use a dummy/derived recipient or if I can't find it, I'll send to self or burn?
-        // Better: I will use `contractAddress` as the recipient momentarily? No that fails.
-        // Let's look at `index.js`. It passes `tokenAddress: PAYMENT_TOKEN_ADDRESS`.
-        // I will assume the Server Wallet Address IS the `PAYMENT_TOKEN_ADDRESS`? No that's the token.
-        // Okay, I need a recipient.
-        // I will update the code to use `this.wallet.address` (self-stream) for testing if header missing, 
-        // OR I will extract it from the `requirements` JSON body which is more robust than headers sometimes.
-
-        // Let's assume the body of 402 has `requirements.recipient`.
-        // My middleware sends: `recipient: config.tokenAddress`. This is definitely the Token Address in my env vars.
-        // So the Server is asking to be paid... to the Token Contract Address? That's wrong but it's what I configured.
-        // I will follow the configuration. If the server says "Pay to 0xToken...", I will stream to 0xToken.
-        // Ideally, I should have configured a separate `recipientAddress` in the middleware.
-
-        // For the sake of this task (SDK), I will parse `response.data.requirements.recipient` if available, 
-        // otherwise default to `headers['x-agentpay-recipient']` or fallback.
-
-        // Actually, let's just create the stream to the address specified in `x-payment-token` header
-        // because that's what the middleware is serving, even if it's semantically weird (streaming tokens to the token contract).
-        // It validates the flow even if the funds are stuck.
-
-        // REVISION: I will try to read `response.data.requirements.recipient` first.
-
-        const recipient = paymentToken; // Using the provided address as recipient
+        const recipient = recipientAddress;
 
         console.log(`[AgentPaySDK] Creating stream to ${recipient}...`);
 
@@ -383,15 +338,16 @@ export class AgentPaySDK {
         return remaining > 0n ? remaining : 0n;
     }
 
-    private async performDirectPayment(url: string, options: AxiosRequestConfig, tokenAddress: string, amount: bigint): Promise<AxiosResponse> {
+    private async performDirectPayment(url: string, options: AxiosRequestConfig, tokenAddress: string, amount: bigint, recipientAddress?: string): Promise<AxiosResponse> {
         if (this.isPaused) throw new Error("AgentPaySDK is paused.");
 
+        if (!recipientAddress || !ethers.isAddress(recipientAddress) || recipientAddress === ethers.ZeroAddress || recipientAddress.toLowerCase() === tokenAddress?.toLowerCase()) throw new Error('A distinct payment recipient is required before signing');
         // SAFETY CHECK
         this.monitor.checkAndRecordSpend(amount);
 
         console.log(`[AgentPaySDK] Executing Direct Payment of ${ethers.formatEther(amount)} tUSD`);
 
-        const recipient = tokenAddress; // Using Token Address as recipient per discussed MVP hack
+        const recipient = recipientAddress;
         const token = new Contract(tokenAddress, this.ERC20_ABI, this.wallet);
 
         const tx = await token.transfer(recipient, amount);
