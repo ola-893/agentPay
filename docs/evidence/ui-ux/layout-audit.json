@@ -1,0 +1,137 @@
+[
+  {
+    "activeNavigation": [
+      "Workflow"
+    ],
+    "h1": "Guarded USDC payments.",
+    "h1Count": 1,
+    "pageWidth": 312,
+    "route": "/",
+    "unnamedButtons": 0,
+    "width": 320
+  },
+  {
+    "activeNavigation": [
+      "Streams"
+    ],
+    "h1": "Payment streams.",
+    "h1Count": 1,
+    "pageWidth": 312,
+    "route": "/streams",
+    "unnamedButtons": 0,
+    "width": 320
+  },
+  {
+    "activeNavigation": [
+      "Agent setup"
+    ],
+    "h1": "Prepare your agent.",
+    "h1Count": 1,
+    "pageWidth": 312,
+    "route": "/agent",
+    "unnamedButtons": 0,
+    "width": 320
+  },
+  {
+    "activeNavigation": [
+      "Agent integration",
+      "Docs"
+    ],
+    "h1": "Authorize first. Approve tokens second.",
+    "h1Count": 1,
+    "pageWidth": 312,
+    "route": "/docs/integration",
+    "unnamedButtons": 0,
+    "width": 320
+  },
+  {
+    "activeNavigation": [
+      "Workflow"
+    ],
+    "h1": "Guarded USDC payments.",
+    "h1Count": 1,
+    "pageWidth": 760,
+    "route": "/",
+    "unnamedButtons": 0,
+    "width": 768
+  },
+  {
+    "activeNavigation": [
+      "Streams"
+    ],
+    "h1": "Payment streams.",
+    "h1Count": 1,
+    "pageWidth": 768,
+    "route": "/streams",
+    "unnamedButtons": 0,
+    "width": 768
+  },
+  {
+    "activeNavigation": [
+      "Agent setup"
+    ],
+    "h1": "Prepare your agent.",
+    "h1Count": 1,
+    "pageWidth": 760,
+    "route": "/agent",
+    "unnamedButtons": 0,
+    "width": 768
+  },
+  {
+    "activeNavigation": [
+      "Agent integration",
+      "Docs"
+    ],
+    "h1": "Authorize first. Approve tokens second.",
+    "h1Count": 1,
+    "pageWidth": 760,
+    "route": "/docs/integration",
+    "unnamedButtons": 0,
+    "width": 768
+  },
+  {
+    "activeNavigation": [
+      "CRE Workflow"
+    ],
+    "h1": "Guarded USDC payments.",
+    "h1Count": 1,
+    "pageWidth": 1272,
+    "route": "/",
+    "unnamedButtons": 0,
+    "width": 1280
+  },
+  {
+    "activeNavigation": [
+      "Streams"
+    ],
+    "h1": "Payment streams.",
+    "h1Count": 1,
+    "pageWidth": 1280,
+    "route": "/streams",
+    "unnamedButtons": 0,
+    "width": 1280
+  },
+  {
+    "activeNavigation": [
+      "Agent setup"
+    ],
+    "h1": "Prepare your agent.",
+    "h1Count": 1,
+    "pageWidth": 1272,
+    "route": "/agent",
+    "unnamedButtons": 0,
+    "width": 1280
+  },
+  {
+    "activeNavigation": [
+      "Docs",
+      "Agent integration"
+    ],
+    "h1": "Authorize first. Approve tokens second.",
+    "h1Count": 1,
+    "pageWidth": 1272,
+    "route": "/docs/integration",
+    "unnamedButtons": 0,
+    "width": 1280
+  }
+]

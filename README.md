@@ -69,7 +69,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **106 passing tests** — 27 contracts, 49 SDK, eight middleware, eleven CRE policy, eleven evidence/tooling checks. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
+Current suites: **109 passing tests** — 27 contracts, 49 SDK, eight middleware, eleven CRE policy, fourteen evidence/tooling checks. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
 
 ## Current scope
 
@@ -78,7 +78,7 @@ Current suites: **106 passing tests** — 27 contracts, 49 SDK, eight middleware
 - Consumer and settlement behavior is separately tested on Hardhat's local network. The simulator's mock forwarder lacks production workflow identity metadata; guard identity checks remain enabled.
 - The sample cron configuration represents one payment intent. Real payments need fresh request IDs and real deployment configuration. Duplicate IDs fail closed.
 - The spending cap is per request, not a rolling budget, KYC, or compliance service. The deployed workflow configuration and its owner are trusted.
-- The original stream tools are separate from guarded settlement. Their illustrative analytics and controls are demo UI. The gateway uses AgentPay-specific HTTP 402 headers, not the full current x402 standard. Unverified transaction hashes are disabled.
+- The original stream tools are separate from guarded settlement. The frontend provides contract setup guidance and a local guarded-payment integration draft; it does not claim live agent telemetry or emergency controls. The gateway uses AgentPay-specific HTTP 402 headers, not the full current x402 standard. Unverified transaction hashes are disabled.
 - Guarded payments use [Circle Sepolia USDC](https://developers.circle.com/stablecoins/usdc-contract-addresses), with six decimals and no monetary value. Get test USDC from the [Circle faucet](https://faucet.circle.com/). Legacy streams still use MockUSD (`tUSD`), an 18-decimal test fixture; do not configure USDC in the stream UI or legacy streaming SDK.
 
 Independent project integrating Chainlink technology. [Migration history](MIGRATION.md) and archived `.kiro` specs preserve the original source names and import provenance.
