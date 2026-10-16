@@ -48,7 +48,8 @@ function onPaymentCheck(runtime: Runtime<Config>): string {
       config.request.recipient as Address, config.request.token as Address, BigInt(config.request.amount), BigInt(validUntil), decision.approved],
   );
   const report = runtime.report(prepareReportRequest(encoded)).result();
-  let published = false;
+  let reportWriteSucceeded = false;
+  let reportTransactionHash: string | null = null;
   if (config.publishReport) {
     const result = evm.writeReport(runtime, {
       receiver: config.receiverAddress,
@@ -57,16 +58,21 @@ function onPaymentCheck(runtime: Runtime<Config>): string {
     }).result();
     // A failed write must fail the workflow rather than claim publication.
     if (result.txStatus !== TxStatus.SUCCESS) throw new Error(`Report write failed with status ${result.txStatus}`);
-    published = true;
+    if (result.receiverContractExecutionStatus !== undefined && result.receiverContractExecutionStatus !== 0) throw new Error('Receiver rejected the report');
+    reportWriteSucceeded = true;
+    reportTransactionHash = result.txHash?.length ? bytesToHex(result.txHash) : null;
   }
   const output = {
-    schemaVersion: 1, workflow: 'agentpay-payment-guard', mode: config.publishReport ? 'onchain' : 'simulation-preview',
+    schemaVersion: 1, workflow: 'agentpay-payment-guard', mode: config.publishReport ? 'report-write' : 'simulation-preview',
+    policyPurpose: 'oracle-disagreement-circuit-breaker', paymentTokenValuation: false,
     chainId: config.chainId, chainName: config.chainName, feedAddress: config.priceFeedAddress,
     marketApiUrl: config.marketApiUrl, request: config.request, receiverAddress: config.receiverAddress,
     ...decision, observedAt: now, validUntil, feedUpdatedAt: Number(updatedAt), feedRoundId: roundId.toString(),
     chainlinkPriceUsd8: price.toString(), externalPriceUsd8: externalPrice.toString(),
     maxDeviationBps: config.maxDeviationBps, maxFeedAgeSeconds: config.maxFeedAgeSeconds,
-    reportGenerated: true, published, encodedReport: encoded,
+    // writeReport can succeed without broadcasting. Only an RPC receipt + receiver
+    // event verified by the host-side runner can establish public-chain publication.
+    reportGenerated: true, published: false, reportWriteSucceeded, reportTransactionHash, encodedReport: encoded,
   };
   runtime.log(`AGENTPAY_RESULT ${JSON.stringify(output)}`);
   return JSON.stringify(output);
