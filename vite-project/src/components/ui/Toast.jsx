@@ -1,5 +1,17 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
-import { CheckCircle, XCircle, AlertTriangle, Info, Loader2 } from 'lucide-react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react';
+import {
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
+  Info,
+  Loader2,
+} from 'lucide-react';
 
 // Toast Context
 const ToastContext = createContext(null);
@@ -39,7 +51,15 @@ const toastConfig = {
 };
 
 // Individual Toast Component
-function Toast({ id, type = 'info', title, message, duration = 5000, onDismiss, action }) {
+function Toast({
+  id,
+  type = 'info',
+  title,
+  message,
+  duration = 5000,
+  onDismiss,
+  action,
+}) {
   const [isExiting, setIsExiting] = useState(false);
   const config = toastConfig[type] || toastConfig.info;
   const IconComponent = config.Icon;
@@ -61,10 +81,12 @@ function Toast({ id, type = 'info', title, message, duration = 5000, onDismiss, 
     <div
       className={`
         relative flex items-start gap-3 p-4 rounded-xl border backdrop-blur-md
-        shadow-lg max-w-sm w-full
+        shadow-lg max-w-sm w-full bg-slate-900
         transition-all duration-200 ease-out
         ${config.bgClass}
-        ${isExiting ? 'opacity-0 translate-x-full' : 'opacity-100 translate-x-0'}
+        ${
+          isExiting ? 'opacity-0 translate-x-full' : 'opacity-100 translate-x-0'
+        }
         animate-slide-up
       `}
       role="alert"
@@ -80,7 +102,7 @@ function Toast({ id, type = 'info', title, message, duration = 5000, onDismiss, 
           <p className={`font-semibold text-sm ${config.textClass}`}>{title}</p>
         )}
         {message && (
-          <p className="text-sm text-white/70 mt-0.5">{message}</p>
+          <p className="text-sm text-slate-300 mt-0.5 break-words">{message}</p>
         )}
         {action && (
           <button
@@ -98,11 +120,21 @@ function Toast({ id, type = 'info', title, message, duration = 5000, onDismiss, 
       {/* Dismiss Button */}
       <button
         onClick={handleDismiss}
-        className="flex-shrink-0 p-1 rounded-lg text-white/40 hover:text-white hover:bg-white/10 transition-colors"
+        className="flex-shrink-0 min-h-11 min-w-11 -mr-2 -mt-2 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
         aria-label="Dismiss"
       >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
 
@@ -125,11 +157,11 @@ function Toast({ id, type = 'info', title, message, duration = 5000, onDismiss, 
 function ToastContainer({ toasts, onDismiss }) {
   return (
     <div
-      className="fixed bottom-20 md:bottom-6 right-4 z-[100] flex flex-col gap-2 pointer-events-none"
+      className="fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] lg:bottom-6 left-4 right-4 sm:left-auto sm:w-96 z-[100] flex flex-col items-end gap-2 pointer-events-none"
       aria-live="polite"
     >
       {toasts.map((toast) => (
-        <div key={toast.id} className="pointer-events-auto">
+        <div key={toast.id} className="pointer-events-auto w-full">
           <Toast {...toast} onDismiss={onDismiss} />
         </div>
       ))}
@@ -159,48 +191,82 @@ export function ToastProvider({ children }) {
   }, []);
 
   // Convenience methods
-  const toast = useCallback((message, options = {}) => {
-    return addToast({ message, ...options });
-  }, [addToast]);
+  const toast = useCallback(
+    (message, options = {}) => {
+      return addToast({ message, ...options });
+    },
+    [addToast]
+  );
 
-  toast.success = (message, options = {}) => addToast({ type: 'success', message, ...options });
-  toast.error = (message, options = {}) => addToast({ type: 'error', message, ...options });
-  toast.warning = (message, options = {}) => addToast({ type: 'warning', message, ...options });
-  toast.info = (message, options = {}) => addToast({ type: 'info', message, ...options });
-  toast.loading = (message, options = {}) => addToast({ type: 'loading', message, duration: 0, ...options });
+  toast.success = (message, options = {}) =>
+    addToast({ type: 'success', message, ...options });
+  toast.error = (message, options = {}) =>
+    addToast({ type: 'error', message, ...options });
+  toast.warning = (message, options = {}) =>
+    addToast({ type: 'warning', message, ...options });
+  toast.info = (message, options = {}) =>
+    addToast({ type: 'info', message, ...options });
+  toast.loading = (message, options = {}) =>
+    addToast({ type: 'loading', message, duration: 0, ...options });
   toast.dismiss = removeToast;
   toast.update = updateToast;
 
   // Transaction-specific toasts
   toast.transaction = {
-    pending: (message = 'Transaction pending...') => 
+    pending: (message = 'Transaction pending...') =>
       addToast({ type: 'loading', title: 'Transaction', message, duration: 0 }),
-    success: (message = 'Transaction confirmed!', txHash) => 
-      addToast({ 
-        type: 'success', 
-        title: 'Transaction Confirmed', 
+    success: (message = 'Transaction confirmed!', txHash) =>
+      addToast({
+        type: 'success',
+        title: 'Transaction Confirmed',
         message,
-        action: txHash ? {
-          label: 'View on Explorer →',
-          onClick: () => window.open(`https://sepolia.etherscan.io/tx/${txHash}`, '_blank')
-        } : undefined
+        action: txHash
+          ? {
+              label: 'View on Explorer →',
+              onClick: () =>
+                window.open(
+                  `https://sepolia.etherscan.io/tx/${txHash}`,
+                  '_blank'
+                ),
+            }
+          : undefined,
       }),
-    error: (message = 'Transaction failed') => 
+    error: (message = 'Transaction failed') =>
       addToast({ type: 'error', title: 'Transaction Failed', message }),
   };
 
   // Stream-specific toasts
   toast.stream = {
-    created: (streamId) => 
-      addToast({ type: 'success', title: 'Stream Created', message: `Stream #${streamId} is now active` }),
-    cancelled: (streamId) => 
-      addToast({ type: 'info', title: 'Stream Cancelled', message: `Stream #${streamId} has been cancelled` }),
-    withdrawn: (amount) => 
-      addToast({ type: 'success', title: 'Withdrawal Complete', message: `${amount} tUSD withdrawn successfully` }),
-    lowBalance: (streamId) => 
-      addToast({ type: 'warning', title: 'Low Balance', message: `Stream #${streamId} is running low on funds` }),
-    expired: (streamId) => 
-      addToast({ type: 'info', title: 'Stream Completed', message: `Stream #${streamId} has finished` }),
+    created: (streamId) =>
+      addToast({
+        type: 'success',
+        title: 'Stream Created',
+        message: `Stream #${streamId} is now active`,
+      }),
+    cancelled: (streamId) =>
+      addToast({
+        type: 'info',
+        title: 'Stream Cancelled',
+        message: `Stream #${streamId} has been cancelled`,
+      }),
+    withdrawn: (amount) =>
+      addToast({
+        type: 'success',
+        title: 'Withdrawal Complete',
+        message: `${amount} tUSD withdrawn successfully`,
+      }),
+    lowBalance: (streamId) =>
+      addToast({
+        type: 'warning',
+        title: 'Low Balance',
+        message: `Stream #${streamId} is running low on funds`,
+      }),
+    expired: (streamId) =>
+      addToast({
+        type: 'info',
+        title: 'Stream Completed',
+        message: `Stream #${streamId} has finished`,
+      }),
   };
 
   return (

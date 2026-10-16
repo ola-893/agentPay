@@ -1,220 +1,277 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  RefreshCw,
+  ArrowRightLeft,
+  Plus,
+  Wallet,
+  ArrowUpRight,
+} from 'lucide-react';
 import { useWallet } from '../context/WalletContext';
 import { paymentTokenAddress } from '../contactInfo';
+import StreamSetup from '../components/StreamSetup';
 import CreateStreamForm from '../components/CreateStreamForm';
 import StreamList from '../components/StreamList';
-import { CollapsibleSection, SkeletonStreamCard } from '../components/ui';
-import { ArrowRightLeft, Coins, Plus, Wallet } from 'lucide-react';
+import { CollapsibleSection } from '../components/ui/MobileNav';
 
 export default function Streams() {
   const {
-    walletAddress, tokenBalance, isProcessing, isInitialLoad, isLoadingStreams,
-    incomingStreams, setIncomingStreams, outgoingStreams,
-    fetchTokenBalance, mintPaymentTokens, createStream, withdraw, cancel,
-    formatEth, getClaimableBalance, setStatus, toast
+    walletAddress,
+    streamConfigured,
+    tokenBalance,
+    balanceError,
+    streamError,
+    isProcessing,
+    isLoadingStreams,
+    incomingStreams,
+    outgoingStreams,
+    fetchTokenBalance,
+    mintPaymentTokens,
+    refreshStreams,
+    createStream,
+    withdraw,
+    cancel,
+    getClaimableBalance,
+    status,
   } = useWallet();
-
   const [recipient, setRecipient] = useState('');
-  const [amountEth, setAmountEth] = useState('');
-  const [durationSeconds, setDurationSeconds] = useState('');
-  const [manualStreamId, setManualStreamId] = useState('');
-  const [claimableBalance, setClaimableBalance] = useState('0.0');
-
-  const handleCreateStream = async (e) => {
-    e.preventDefault();
-    const streamId = await createStream(recipient, durationSeconds, amountEth);
-    if (streamId !== null) {
-      setRecipient('');
-      setAmountEth('');
-      setDurationSeconds('');
-      setManualStreamId(String(streamId));
+  const [amount, setAmount] = useState('');
+  const [duration, setDuration] = useState('86400');
+  const [streamId, setStreamId] = useState('');
+  const [checked, setChecked] = useState(null);
+  const [checking, setChecking] = useState(false);
+  const checkVersion = useRef(0);
+  const ready = streamConfigured && walletAddress;
+  const submit = async () => {
+    const result = await createStream(recipient, duration, amount);
+    if (!result?.confirmed) return false;
+    setRecipient('');
+    setAmount('');
+    return true;
+  };
+  const check = async () => {
+    const version = ++checkVersion.current;
+    setChecking(true);
+    setChecked(null);
+    try {
+      const value = await getClaimableBalance(streamId);
+      if (version === checkVersion.current) setChecked({ id: streamId, value });
+    } catch (error) {
+      if (version === checkVersion.current)
+        setChecked({
+          id: streamId,
+          error: error.shortMessage || error.message,
+        });
+    } finally {
+      if (version === checkVersion.current) setChecking(false);
     }
   };
-
-  const checkClaimableBalance = async () => {
-    const id = parseInt(manualStreamId || '0', 10);
-    if (!Number.isFinite(id) || id <= 0) {
-      toast.warning('Enter a valid stream ID');
-      return;
-    }
-    setStatus('Checking claimable balance...');
-    const balance = await getClaimableBalance(id);
-    setClaimableBalance(balance);
-    setStatus('Fetched claimable balance.');
+  const withdrawChecked = async () => {
+    if (await withdraw(streamId)) await check();
   };
-
-  const handleWithdrawManual = async () => {
-    const id = parseInt(manualStreamId || '0', 10);
-    if (!Number.isFinite(id) || id <= 0) {
-      toast.warning('Enter a valid stream ID');
-      return;
-    }
-    await withdraw(id);
-    await checkClaimableBalance();
-  };
-
-  // Live claimable ticker
-  const tickerRef = useRef(null);
-  useEffect(() => {
-    if (!incomingStreams.length) return;
-    const tick = () => {
-      setIncomingStreams((prev) =>
-        prev.map((s) => {
-          if (!s.isActive) return s;
-          const now = Math.floor(Date.now() / 1000);
-          const cappedNow = Math.min(now, s.stopTime);
-          const elapsed = Math.max(0, cappedNow - s.startTime);
-          const streamed = BigInt(elapsed) * BigInt(s.flowRate);
-          const claimable = streamed > BigInt(s.amountWithdrawn) ? streamed - BigInt(s.amountWithdrawn) : 0n;
-          return { ...s, claimableInitial: claimable };
-        })
-      );
-    };
-    tickerRef.current = setInterval(tick, 1000);
-    return () => clearInterval(tickerRef.current);
-  }, [incomingStreams.length, setIncomingStreams]);
-
-  if (!walletAddress) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <ArrowRightLeft className="w-16 h-16 text-white/60 mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Connect Your Wallet</h2>
-        <p className="text-white/60 text-center max-w-md">
-          Legacy streams use an 18-decimal tUSD deployment. Circle Sepolia USDC is supported through the CRE guarded path only. Connect your wallet to manage legacy streams.
-        </p>
-      </div>
-    );
-  }
-
-  if (isInitialLoad && isLoadingStreams) {
-    return (
-      <div className="space-y-4 animate-fade-in">
-        {[...Array(3)].map((_, i) => <SkeletonStreamCard key={i} />)}
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-8 md:space-y-12 animate-fade-in">
-      <p className="rounded-xl border border-white/10 p-4 text-sm text-white/60">Legacy tUSD streams · 18 decimals. USDC payments use the separate CRE guarded path; do not configure USDC as the stream token.</p>
-      {/* tUSD Token Balance Card */}
-      <section className="card-glass p-4 md:p-6">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-              <Coins className="w-5 h-5" /> tUSD Token Balance
-            </h3>
-            <p className="text-2xl font-mono text-cyan-300">
-              {Number(tokenBalance).toLocaleString(undefined, { maximumFractionDigits: 4 })} tUSD
-            </p>
-            <p className="text-xs text-white/50 mt-1 font-mono truncate">
-              Token: {paymentTokenAddress}
-            </p>
-          </div>
-          <div className="flex gap-2">
+    <div className="space-y-6">
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow flex items-center gap-2">
+            <ArrowRightLeft size={15} />
+            Legacy streaming
+          </p>
+          <h1 className="page-title mt-3">Payment streams.</h1>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">
+            Create and manage per-second tUSD streams on Sepolia. Guarded USDC
+            payments are available in the{' '}
+            <Link to="/" className="text-blue-300 underline underline-offset-4">
+              CRE workflow
+            </Link>
+            .
+          </p>
+        </div>
+        {ready && (
+          <button
+            type="button"
+            className="btn-outline"
+            onClick={() => Promise.all([refreshStreams(), fetchTokenBalance()])}
+            disabled={isLoadingStreams || isProcessing}
+          >
+            <RefreshCw
+              size={16}
+              className={isLoadingStreams ? 'animate-spin' : ''}
+            />
+            {isLoadingStreams ? 'Refreshing…' : 'Refresh streams'}
+          </button>
+        )}
+      </header>
+      {!ready ? (
+        <StreamSetup />
+      ) : (
+        <>
+          <section className="panel flex flex-wrap items-center justify-between gap-5 p-5 sm:p-6">
+            <div className="min-w-0">
+              <p className="text-sm text-slate-400">
+                Your legacy test token balance
+              </p>
+              <p className="mt-2 break-all text-2xl font-semibold">
+                {tokenBalance == null ? 'Unavailable' : `${tokenBalance} tUSD`}
+              </p>
+              <a
+                className="mt-2 inline-flex min-h-9 items-center gap-1 text-xs text-blue-300"
+                href={`https://sepolia.etherscan.io/token/${paymentTokenAddress}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Token contract <ArrowUpRight size={14} />
+              </a>
+              {balanceError && (
+                <p
+                  role="alert"
+                  className="mt-2 max-w-lg text-sm text-amber-200"
+                >
+                  {balanceError}
+                </p>
+              )}
+            </div>
             <button
               type="button"
-              className="btn-default min-h-[44px] px-4"
-              onClick={fetchTokenBalance}
-              disabled={isProcessing}
-            >
-              Refresh
-            </button>
-            <button
-              type="button"
-              className="btn-primary min-h-[44px] px-4"
+              className="btn-outline"
               onClick={() => mintPaymentTokens('1000')}
               disabled={isProcessing}
             >
-              Mint 1000 tUSD
+              Mint 1000 test tUSD
             </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-4 md:gap-6 lg:grid-cols-2">
-        <CollapsibleSection title="Create Stream" icon={<Plus className="w-5 h-5" />} defaultOpen={true}>
-          <p className="text-sm text-white/50 mb-4">
-            Funds stream per second using tUSD tokens. Flow rate = total / duration.
+          </section>
+          <p role="status" className="text-sm text-slate-300">
+            {isProcessing
+              ? status
+              : 'Transactions require wallet confirmation. tUSD has no monetary value.'}
           </p>
-          <CreateStreamForm
-            recipient={recipient}
-            setRecipient={setRecipient}
-            amountEth={amountEth}
-            setAmountEth={setAmountEth}
-            durationSeconds={durationSeconds}
-            setDurationSeconds={setDurationSeconds}
-            onSubmit={handleCreateStream}
-          />
-        </CollapsibleSection>
-
-        <CollapsibleSection title="Withdraw Funds" icon={<Wallet className="w-5 h-5" />} defaultOpen={true}>
-          <p className="text-sm text-white/60 mb-4">
-            Enter a stream ID to check and withdraw claimable tUSD funds.
-          </p>
-          <div className="grid grid-cols-1 gap-4">
-            <label>
-              <span className="block text-sm text-white/70 mb-1.5">Stream ID</span>
-              <input
-                type="number"
-                min={1}
-                placeholder="e.g. 1"
-                value={manualStreamId}
-                onChange={(e) => setManualStreamId(e.target.value)}
-                className="input-default w-full"
+          <div className="grid items-start gap-5 lg:grid-cols-2">
+            <CollapsibleSection title="Create stream" icon={<Plus size={18} />}>
+              <CreateStreamForm
+                recipient={recipient}
+                setRecipient={setRecipient}
+                amountEth={amount}
+                setAmountEth={setAmount}
+                durationSeconds={duration}
+                setDurationSeconds={setDuration}
+                balance={tokenBalance}
+                isProcessing={isProcessing}
+                onSubmit={submit}
               />
-            </label>
-
-            <div className="flex flex-col sm:flex-row gap-2">
+            </CollapsibleSection>
+            <CollapsibleSection
+              title="Withdraw by stream ID"
+              icon={<Wallet size={18} />}
+            >
+              <p className="mb-5 text-sm leading-relaxed text-slate-400">
+                Check the onchain amount before withdrawing. Only the recipient
+                can withdraw a stream.
+              </p>
+              <label htmlFor="withdraw-stream-id" className="field-label">
+                Stream ID
+              </label>
+              <input
+                id="withdraw-stream-id"
+                className="input-default"
+                inputMode="numeric"
+                placeholder="e.g. 1"
+                value={streamId}
+                disabled={isProcessing || checking}
+                onChange={(e) => {
+                  setStreamId(e.target.value);
+                  checkVersion.current++;
+                  setChecked(null);
+                }}
+              />
               <button
                 type="button"
-                className="btn-default flex-1 min-h-[44px]"
-                onClick={checkClaimableBalance}
+                onClick={check}
+                className="btn-outline mt-4 w-full"
+                disabled={
+                  !/^[1-9][0-9]*$/.test(streamId) || checking || isProcessing
+                }
               >
-                Check Balance
+                {checking
+                  ? 'Checking onchain balance…'
+                  : 'Check claimable balance'}
               </button>
+              {checked?.error && (
+                <p
+                  role="alert"
+                  className="mt-4 break-words text-sm text-amber-200"
+                >
+                  {checked.error}
+                </p>
+              )}
+              {checked?.value != null && (
+                <div className="mt-5 rounded-xl border border-white/10 p-4">
+                  <p className="text-xs text-slate-400">
+                    Claimable from stream #{checked.id}
+                  </p>
+                  <p className="mt-2 break-all text-xl font-semibold">
+                    {checked.value} tUSD
+                  </p>
+                  <button
+                    type="button"
+                    className="btn-primary mt-4 w-full"
+                    onClick={withdrawChecked}
+                    disabled={
+                      isProcessing ||
+                      checked.id !== streamId ||
+                      Number(checked.value) <= 0
+                    }
+                  >
+                    {isProcessing
+                      ? 'Check your wallet…'
+                      : 'Withdraw claimable tUSD'}
+                  </button>
+                </div>
+              )}
+            </CollapsibleSection>
+          </div>
+          {streamError && (
+            <div role="alert" className="panel p-5">
+              <h2 className="font-semibold text-amber-200">
+                Streams could not be refreshed
+              </h2>
+              <p className="mt-2 break-words text-sm text-slate-400">
+                {streamError}
+              </p>
               <button
                 type="button"
-                className="btn-primary flex-1 min-h-[44px]"
-                onClick={handleWithdrawManual}
-                disabled={!manualStreamId || parseFloat(claimableBalance || '0') <= 0}
+                onClick={refreshStreams}
+                disabled={isLoadingStreams}
+                className="btn-outline mt-4"
               >
-                Withdraw
+                Retry loading streams
               </button>
             </div>
-
-            <p className="text-sm text-white/70">
-              Can Withdraw:{' '}
-              <span className="font-mono text-cyan-300">
-                {Number(claimableBalance || '0').toLocaleString(undefined, { maximumFractionDigits: 6 })}
-              </span>{' '}
-              tUSD
-            </p>
+          )}
+          <div className="grid items-start gap-6 xl:grid-cols-2">
+            <StreamList
+              title="Incoming streams"
+              streams={incomingStreams}
+              variant="incoming"
+              isLoading={isLoadingStreams}
+              onWithdraw={withdraw}
+              onCancel={cancel}
+              isProcessing={isProcessing}
+            />
+            <StreamList
+              title="Outgoing streams"
+              streams={outgoingStreams}
+              variant="outgoing"
+              isLoading={isLoadingStreams}
+              onCancel={cancel}
+              isProcessing={isProcessing}
+            />
           </div>
-        </CollapsibleSection>
-      </section>
-
-      <div className="grid gap-6 lg:gap-8 lg:grid-cols-2">
-        <StreamList
-          title="Incoming Streams"
-          emptyText="No incoming streams found."
-          isLoading={isLoadingStreams}
-          streams={incomingStreams}
-          variant="incoming"
-          formatEth={formatEth}
-          onWithdraw={withdraw}
-          onCancel={cancel}
-        />
-        <StreamList
-          title="Outgoing Streams"
-          emptyText="No outgoing streams."
-          isLoading={isLoadingStreams}
-          streams={outgoingStreams}
-          variant="outgoing"
-          formatEth={formatEth}
-          onCancel={cancel}
-        />
-      </div>
+          <p className="text-xs text-slate-400">
+            Stream discovery covers the most recent 49,000 blocks. Use a known
+            stream ID above to withdraw from an older stream.
+          </p>
+        </>
+      )}
     </div>
   );
 }

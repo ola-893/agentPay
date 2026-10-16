@@ -1,257 +1,196 @@
-import { useState, useMemo } from 'react';
-import StreamCard from './StreamCard.jsx';
-import { Calendar, Coins, Zap, Search, Inbox, Pause, CheckCircle, Ban, Plus, Loader2 } from 'lucide-react';
-
-// Filter Tab Component
-const FilterTab = ({ label, count, active, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`
-      px-4 py-2 rounded-lg text-sm font-medium transition-all
-      ${active
-        ? 'bg-agentpay-500/20 text-agentpay-300 border border-agentpay-500/30'
-        : 'text-white/60 hover:text-white hover:bg-white/5'}
-    `}
-  >
-    {label}
-    {count > 0 && (
-      <span className={`ml-2 px-1.5 py-0.5 rounded text-xs ${active ? 'bg-agentpay-500/30' : 'bg-white/10'}`}>
-        {count}
-      </span>
-    )}
-  </button>
-);
-
-// Sort Dropdown
-const SortDropdown = ({ value, onChange }) => {
-  const options = [
-    { value: 'date-desc', label: 'Newest First', Icon: Calendar },
-    { value: 'date-asc', label: 'Oldest First', Icon: Calendar },
-    { value: 'amount-desc', label: 'Highest Amount', Icon: Coins },
-    { value: 'amount-asc', label: 'Lowest Amount', Icon: Coins },
-    { value: 'rate-desc', label: 'Highest Rate', Icon: Zap },
-  ];
-
-  return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white/80 focus:outline-none focus:border-agentpay-500"
-    >
-      {options.map(opt => (
-        <option key={opt.value} value={opt.value} className="bg-surface-800">
-          {opt.label}
-        </option>
-      ))}
-    </select>
-  );
-};
-
-// Search Input
-const SearchInput = ({ value, onChange }) => (
-  <div className="relative">
-    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-    <input
-      type="text"
-      placeholder="Search by ID or address..."
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="input-default pl-10 py-2"
-    />
-  </div>
-);
-
-// Empty State Component
-const EmptyState = ({ filter }) => {
-  const messages = {
-    all: { Icon: Inbox, title: 'No Streams Yet', subtitle: 'Create your first stream to get started' },
-    active: { Icon: Pause, title: 'No Active Streams', subtitle: 'All streams are paused or completed' },
-    completed: { Icon: CheckCircle, title: 'No Completed Streams', subtitle: 'Completed streams will appear here' },
-    cancelled: { Icon: Ban, title: 'No Cancelled Streams', subtitle: 'Cancelled streams will appear here' },
-  };
-
-  const msg = messages[filter] || messages.all;
-  const IconComponent = msg.Icon;
-
-  return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <IconComponent className="w-16 h-16 text-white/40 mb-4" />
-      <h3 className="text-lg font-semibold text-white/80">{msg.title}</h3>
-      <p className="text-sm text-white/50 mt-1">{msg.subtitle}</p>
-      {filter === 'all' && (
-        <button className="btn-primary mt-6 flex items-center gap-2">
-          <Plus className="w-4 h-4" /> Create Stream
-        </button>
-      )}
-    </div>
-  );
-};
-
-// Pagination Component
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  if (totalPages <= 1) return null;
-
-  return (
-    <div className="flex items-center justify-center gap-2 mt-6">
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="btn-ghost px-3 py-1.5 disabled:opacity-30"
-      >
-        ← Prev
-      </button>
-
-      {[...Array(totalPages)].map((_, i) => (
-        <button
-          key={i}
-          onClick={() => onPageChange(i + 1)}
-          className={`
-            w-8 h-8 rounded-lg text-sm font-medium transition-all
-            ${currentPage === i + 1
-              ? 'bg-agentpay-500 text-white'
-              : 'text-white/60 hover:bg-white/10'}
-          `}
-        >
-          {i + 1}
-        </button>
-      ))}
-
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="btn-ghost px-3 py-1.5 disabled:opacity-30"
-      >
-        Next →
-      </button>
-    </div>
-  );
-};
+import { useEffect, useId, useState } from 'react';
+import { Inbox, Search } from 'lucide-react';
+import StreamCard from './StreamCard';
+import { streamView } from '../lib/stream-state.mjs';
 
 export default function StreamList({
   title,
-  isLoading,
   streams,
   variant,
-  formatEth,
+  isLoading,
   onWithdraw,
-  onCancel
+  onCancel,
+  isProcessing,
 }) {
+  const id = useId();
   const [filter, setFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('date-desc');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-
-  // Filter streams
-  const filteredStreams = useMemo(() => {
-    return streams.filter(s => {
-      // Status filter
-      const isActive = s.isActive;
-      const isCompleted = !s.isActive && (Math.floor(Date.now() / 1000) >= s.stopTime);
-      const isCancelled = !s.isActive && (Math.floor(Date.now() / 1000) < s.stopTime);
-
-      if (filter === 'active' && !isActive) return false;
-      if (filter === 'completed' && !isCompleted) return false;
-      if (filter === 'cancelled' && !isCancelled) return false;
-
-      // Search filter
-      if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        const matchesId = s.id?.toString().includes(query);
-        const matchesRecipient = s.recipient?.toLowerCase().includes(query);
-        const matchesSender = s.sender?.toLowerCase().includes(query);
-        if (!matchesId && !matchesRecipient && !matchesSender) return false;
-      }
-
-      return true;
-    });
-  }, [streams, filter, searchQuery]);
-
-  // Sort streams
-  const sortedStreams = useMemo(() => {
-    return [...filteredStreams].sort((a, b) => {
-      switch (sortBy) {
-        case 'date-desc': return b.startTime - a.startTime;
-        case 'date-asc': return a.startTime - b.startTime;
-        case 'amount-desc': return Number(b.totalAmount - a.totalAmount);
-        case 'amount-asc': return Number(a.totalAmount - b.totalAmount);
-        case 'rate-desc': return Number(b.flowRate - a.flowRate);
-        default: return 0;
-      }
-    });
-  }, [filteredStreams, sortBy]);
-
-  // Pagination
-  const totalPages = Math.ceil(sortedStreams.length / itemsPerPage);
-  const paginatedStreams = sortedStreams.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Count by status for filter tabs
-  const counts = useMemo(() => {
-    const now = Math.floor(Date.now() / 1000);
-    return {
-      all: streams.length,
-      active: streams.filter(s => s.isActive).length,
-      completed: streams.filter(s => !s.isActive && now >= s.stopTime).length,
-      cancelled: streams.filter(s => !s.isActive && now < s.stopTime).length,
-    };
+  const [sort, setSort] = useState('newest');
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
+  useEffect(() => {
+    if (!streams.some((s) => s.isActive)) return;
+    const timer = setInterval(
+      () => setNow(Math.floor(Date.now() / 1000)),
+      1000
+    );
+    return () => clearInterval(timer);
   }, [streams]);
-
+  const visible = streams
+    .filter(
+      (s) =>
+        (filter === 'all' || streamView(s, now).status === filter) &&
+        [s.id, s.sender, s.recipient].some((v) =>
+          String(v).toLowerCase().includes(query.trim().toLowerCase())
+        )
+    )
+    .sort((a, b) =>
+      sort === 'oldest'
+        ? a.startTime - b.startTime
+        : sort === 'amount'
+        ? BigInt(a.totalAmount) === BigInt(b.totalAmount)
+          ? 0
+          : BigInt(a.totalAmount) > BigInt(b.totalAmount)
+          ? -1
+          : 1
+        : b.startTime - a.startTime
+    );
+  const pages = Math.max(1, Math.ceil(visible.length / 5));
+  const current = Math.min(page, pages);
+  const changeFilter = (value) => {
+    setFilter(value);
+    setPage(1);
+  };
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-white/90">{title}</h3>
-          {isLoading && (
-            <div className="flex items-center gap-1 text-xs text-white/50">
-              <Loader2 className="w-3 h-3 animate-spin" /> Loading...
-            </div>
+    <section className="min-w-0 space-y-4" aria-labelledby={`${id}-title`}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 id={`${id}-title`} className="text-lg font-semibold">
+          {title}{' '}
+          <span className="ml-1 text-sm font-normal text-slate-400">
+            {streams.length}
+          </span>
+        </h2>
+        <label className="text-xs text-slate-400">
+          <span className="sr-only">Sort {title.toLowerCase()}</span>
+          <select
+            value={sort}
+            onChange={(e) => {
+              setSort(e.target.value);
+              setPage(1);
+            }}
+            className="min-h-11 rounded-lg border border-white/10 bg-[#111827] px-3 text-sm text-slate-300"
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="amount">Highest amount</option>
+          </select>
+        </label>
+      </div>
+      <div
+        role="group"
+        aria-label={`Filter ${title.toLowerCase()}`}
+        className="flex flex-wrap gap-1"
+      >
+        {[
+          ['all', 'All'],
+          ['active', 'Streaming'],
+          ['completed', 'Ended'],
+          ['cancelled', 'Closed'],
+        ].map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={filter === value}
+            onClick={() => changeFilter(value)}
+            className={`min-h-11 rounded-lg px-3 text-sm ${
+              filter === value
+                ? 'bg-blue-500/15 text-blue-200'
+                : 'text-slate-400 hover:bg-white/5'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <label className="relative block">
+        <span className="sr-only">
+          Search {title.toLowerCase()} by ID or address
+        </span>
+        <Search size={16} className="absolute left-3 top-3.5 text-slate-400" />
+        <input
+          className="input-default pl-10"
+          type="search"
+          placeholder="Search ID or address"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(1);
+          }}
+        />
+      </label>
+      {isLoading ? (
+        <div className="panel p-6 text-sm text-slate-400" role="status">
+          Refreshing streams…
+        </div>
+      ) : !visible.length ? (
+        <div className="panel px-5 py-10 text-center">
+          <Inbox size={28} className="mx-auto text-slate-500" />
+          <h3 className="mt-4 font-medium">
+            {streams.length
+              ? 'No matching streams'
+              : `No ${variant} streams yet`}
+          </h3>
+          <p className="mt-2 text-sm text-slate-400">
+            {streams.length
+              ? 'Try a different search or filter.'
+              : variant === 'incoming'
+              ? 'Streams sent to this wallet will appear here.'
+              : 'Create a stream using the form above.'}
+          </p>
+          {streams.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                changeFilter('all');
+              }}
+              className="btn-outline mt-4"
+            >
+              Clear filters
+            </button>
           )}
         </div>
-
-        <div className="flex items-center gap-2">
-          <SortDropdown value={sortBy} onChange={setSortBy} />
-        </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2">
-        <FilterTab label="All" count={counts.all} active={filter === 'all'} onClick={() => setFilter('all')} />
-        <FilterTab label="Active" count={counts.active} active={filter === 'active'} onClick={() => setFilter('active')} />
-        <FilterTab label="Completed" count={counts.completed} active={filter === 'completed'} onClick={() => setFilter('completed')} />
-        <FilterTab label="Cancelled" count={counts.cancelled} active={filter === 'cancelled'} onClick={() => setFilter('cancelled')} />
-      </div>
-
-      {/* Search */}
-      <SearchInput value={searchQuery} onChange={setSearchQuery} />
-
-      {/* Stream Grid */}
-      {!isLoading && paginatedStreams.length === 0 ? (
-        <EmptyState filter={filter} />
       ) : (
-        <div className="grid gap-4">
-          {paginatedStreams.map((s) => (
+        visible
+          .slice((current - 1) * 5, current * 5)
+          .map((stream) => (
             <StreamCard
-              key={`${variant}-${s.id}`}
-              stream={s}
+              key={`${variant}-${stream.id}`}
+              stream={stream}
               variant={variant}
-              formatEth={formatEth}
               onWithdraw={onWithdraw}
               onCancel={onCancel}
+              isProcessing={isProcessing}
+              now={now}
             />
-          ))}
-        </div>
+          ))
       )}
-
-      {/* Pagination */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-      />
-    </div>
+      {pages > 1 && (
+        <nav
+          aria-label={`${title} pagination`}
+          className="flex items-center justify-between gap-2"
+        >
+          <button
+            type="button"
+            className="btn-outline"
+            disabled={current === 1}
+            onClick={() => setPage(current - 1)}
+          >
+            Previous
+          </button>
+          <span className="text-xs text-slate-400" role="status">
+            Page {current} of {pages}
+          </span>
+          <button
+            type="button"
+            className="btn-outline"
+            disabled={current === pages}
+            onClick={() => setPage(current + 1)}
+          >
+            Next
+          </button>
+        </nav>
+      )}
+    </section>
   );
 }

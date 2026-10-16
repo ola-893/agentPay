@@ -1,152 +1,238 @@
 import { useState } from 'react';
-import { useWallet } from '../context/WalletContext';
-import { AgentConsole } from '../components/AgentConsole';
-import { DecisionLog } from '../components/DecisionLog';
-import { ErrorBoundary, SkeletonAgentConsole } from '../components/ui';
-import { Bot, Play, Pause, RefreshCw, BarChart3, StopCircle, Settings } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { isAddress, ZeroAddress, parseUnits } from 'ethers';
+import {
+  Bot,
+  FileCode2,
+  Save,
+  ArrowRight,
+  CheckCircle2,
+  RotateCcw,
+} from 'lucide-react';
+import CopyButton from '../components/ui/CopyButton';
+import { formatTokenUnits } from '../lib/token-units.mjs';
 
+const empty = {
+  agentName: 'AgentPay agent',
+  guard: '',
+  settlement: '',
+  recipient: '',
+  amount: '0.01',
+};
+const storageKey = 'agentpay:guarded-agent-draft:v1';
+const addressOK = (value) => isAddress(value) && value !== ZeroAddress;
 export default function AgentConsolePage() {
-  const { walletAddress, isInitialLoad } = useWallet();
-  
-  const [agentConfig, setAgentConfig] = useState({
-    agentId: 'AgentPay-Agent-001',
-    spendingLimits: { dailyLimit: '100', perRequestLimit: '1' }
+  const [config, setConfig] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(storageKey));
+      return saved?.version === 1 &&
+        Object.keys(empty).every((k) => typeof saved.config?.[k] === 'string')
+        ? saved.config
+        : empty;
+    } catch {
+      return empty;
+    }
   });
-  const [isPaused, setIsPaused] = useState(false);
-  const [decisionLogs] = useState([
-    { 
-      timestamp: Date.now() - 300000, 
-      mode: 'stream', 
-      reasoning: 'High volume detected (50+ requests). Streaming is 40% cheaper than direct payments.',
-      volume: 50,
-      provider: 'api.provider.com'
-    },
-    { 
-      timestamp: Date.now() - 180000, 
-      mode: 'stream', 
-      reasoning: 'Existing stream found for provider. Reusing stream #42.',
-      volume: 25,
-      provider: 'api.provider.com'
-    },
-    { 
-      timestamp: Date.now() - 60000, 
-      mode: 'direct', 
-      reasoning: 'Low traffic (2 requests). Direct payment is optimal for small volumes.',
-      volume: 2,
-      provider: 'api.other.com'
-    },
-  ]);
-
-  if (!walletAddress) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <Bot className="w-16 h-16 text-white/60 mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Connect Your Wallet</h2>
-        <p className="text-white/60 text-center max-w-md">
-          Connect your wallet to configure and monitor your AI payment agent.
-        </p>
-      </div>
-    );
+  const [notice, setNotice] = useState('');
+  const [saved, setSaved] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const errors = {};
+  if (!config.agentName.trim()) errors.agentName = 'Give this draft a name.';
+  for (const field of ['guard', 'settlement', 'recipient'])
+    if (!addressOK(config[field]))
+      errors[field] = 'Enter a nonzero Ethereum address.';
+  let rawAmount = null;
+  try {
+    rawAmount = parseUnits(config.amount, 6);
+    if (rawAmount <= 0n || rawAmount >= 2n ** 256n) throw new Error();
+  } catch {
+    errors.amount = 'Use a positive USDC amount with up to 6 decimal places.';
   }
-
-  if (isInitialLoad) {
-    return <SkeletonAgentConsole />;
-  }
-
+  const valid = !Object.keys(errors).length;
+  const update = (field, value) => {
+    setConfig((c) => ({ ...c, [field]: value }));
+    setNotice('');
+    setSaved(false);
+  };
+  const save = (event) => {
+    event.preventDefault();
+    setSubmitted(true);
+    if (!valid) {
+      setNotice('Check the highlighted fields before saving.');
+      document.getElementById(`agent-${Object.keys(errors)[0]}`)?.focus();
+      return;
+    }
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ version: 1, config }));
+      setSaved(true);
+      setNotice(
+        'Draft saved in this browser. No onchain policy or running agent was changed.'
+      );
+    } catch {
+      setNotice(
+        'Browser storage is unavailable. You can still copy the integration example.'
+      );
+    }
+  };
+  const reset = () => {
+    try {
+      localStorage.removeItem(storageKey);
+    } catch {
+      /* Storage may be unavailable. */
+    }
+    setConfig(empty);
+    setSubmitted(false);
+    setSaved(false);
+    setNotice('Draft cleared.');
+  };
+  const code = valid
+    ? `import { GuardedPaymentClient } from './sdk/src';\n\n// signer must be connected to Ethereum Sepolia.\nconst client = new GuardedPaymentClient(signer, {\n  guardAddress: '${
+        config.guard
+      }',\n  settlementAddress: '${
+        config.settlement
+      }',\n  chainId: 11155111,\n});\n\n// Use a fresh requestId AFTER the authenticated report\n// has been accepted by the production guard.\nawait client.pay(\n  requestId,\n  '${
+        config.recipient
+      }',\n  '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',\n  ${rawAmount}n, // ${formatTokenUnits(
+        rawAmount,
+        6
+      )} USDC\n);`
+    : null;
   return (
-    <div className="space-y-6 md:space-y-8 animate-fade-in">
-      {/* Agent Status Banner */}
-      <div className={`card-glass p-4 flex items-center justify-between ${isPaused ? 'border-amber-500/50' : 'border-emerald-500/50'}`}>
-        <div className="flex items-center gap-3">
-          <div className={`w-3 h-3 rounded-full ${isPaused ? 'bg-amber-500' : 'bg-emerald-500 animate-pulse'}`} />
-          <div>
-            <span className="font-medium text-white">Agent Status:</span>
-            <span className={`ml-2 ${isPaused ? 'text-amber-400' : 'text-emerald-400'}`}>
-              {isPaused ? 'Paused' : 'Active'}
-            </span>
-          </div>
-        </div>
-        <div className="text-sm text-white/60">
-          Agent ID: <span className="font-mono text-cyan-300">{agentConfig.agentId}</span>
-        </div>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <button 
-          onClick={() => setIsPaused(!isPaused)}
-          className={`card-glass p-4 text-center hover:bg-white/5 transition-colors ${isPaused ? 'border-amber-500/30' : ''}`}
-        >
-          <div className="flex justify-center mb-2">
-            {isPaused ? <Play className="w-6 h-6 text-white/80" /> : <Pause className="w-6 h-6 text-white/80" />}
-          </div>
-          <div className="text-sm text-white/80">{isPaused ? 'Resume' : 'Pause'} Agent</div>
-        </button>
-        <button className="card-glass p-4 text-center hover:bg-white/5 transition-colors">
-          <div className="flex justify-center mb-2">
-            <RefreshCw className="w-6 h-6 text-white/80" />
-          </div>
-          <div className="text-sm text-white/80">Refresh Status</div>
-        </button>
-        <button className="card-glass p-4 text-center hover:bg-white/5 transition-colors">
-          <div className="flex justify-center mb-2">
-            <BarChart3 className="w-6 h-6 text-white/80" />
-          </div>
-          <div className="text-sm text-white/80">View Metrics</div>
-        </button>
-        <button className="card-glass p-4 text-center hover:bg-white/5 transition-colors border-red-500/30">
-          <div className="flex justify-center mb-2">
-            <StopCircle className="w-6 h-6 text-red-400" />
-          </div>
-          <div className="text-sm text-white/80">Emergency Stop</div>
-        </button>
-      </div>
-
-      <ErrorBoundary variant="inline">
-        <AgentConsole
-          config={agentConfig}
-          setConfig={setAgentConfig}
-          isPaused={isPaused}
-          setIsPaused={setIsPaused}
-        />
-      </ErrorBoundary>
-
-      <ErrorBoundary variant="inline">
-        <DecisionLog logs={decisionLogs} />
-      </ErrorBoundary>
-
-      {/* Agent Configuration Summary */}
-      <div className="card-glass p-6">
-        <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-          <Settings className="w-5 h-5" /> Configuration Summary
-        </h3>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="text-sm font-medium text-white/60 mb-2">Spending Limits</h4>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-white/70">Daily Limit</span>
-                <span className="font-mono text-cyan-300">{agentConfig.spendingLimits.dailyLimit} tUSD</span>
+    <div className="space-y-6">
+      <header>
+        <p className="eyebrow flex items-center gap-2">
+          <Bot size={15} />
+          Agent integration
+        </p>
+        <h1 className="page-title mt-3">Prepare your agent.</h1>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">
+          Create a local integration draft for guarded USDC payments on Sepolia.
+          No wallet or private key is needed here.
+        </p>
+      </header>
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        <section className="panel p-5 sm:p-6">
+          <h2 className="text-lg font-semibold">Payment configuration</h2>
+          <p className="mt-2 text-sm leading-relaxed text-slate-400">
+            Use your deployed production guard and settlement contracts. Saved
+            simulation results cannot authorize a payment.
+          </p>
+          <form onSubmit={save} noValidate className="mt-6 space-y-5">
+            {[
+              ['agentName', 'Draft name', 'My payment agent'],
+              ['guard', 'Guard address', '0x…'],
+              ['settlement', 'Settlement address', '0x…'],
+              ['recipient', 'Payment recipient', '0x…'],
+              ['amount', 'Payment amount (USDC)', '0.01'],
+            ].map(([field, label, placeholder]) => (
+              <div key={field}>
+                <label htmlFor={`agent-${field}`} className="field-label">
+                  {label}
+                </label>
+                <input
+                  id={`agent-${field}`}
+                  className={`input-default ${
+                    field !== 'agentName' ? 'font-mono text-sm' : ''
+                  }`}
+                  value={config[field]}
+                  placeholder={placeholder}
+                  onChange={(e) => update(field, e.target.value)}
+                  autoComplete="off"
+                  spellCheck={false}
+                  inputMode={field === 'amount' ? 'decimal' : 'text'}
+                  maxLength={
+                    field === 'agentName' ? 80 : field === 'amount' ? 90 : 42
+                  }
+                  aria-invalid={submitted && Boolean(errors[field])}
+                  aria-describedby={
+                    submitted && errors[field] ? `error-${field}` : undefined
+                  }
+                />
+                {submitted && errors[field] && (
+                  <p
+                    id={`error-${field}`}
+                    className="mt-2 text-sm text-amber-200"
+                  >
+                    {errors[field]}
+                  </p>
+                )}
               </div>
-              <div className="flex justify-between">
-                <span className="text-white/70">Per Request</span>
-                <span className="font-mono text-cyan-300">{agentConfig.spendingLimits.perRequestLimit} tUSD</span>
-              </div>
+            ))}
+            <p className="text-xs text-slate-400">
+              Circle USDC · 6 decimals · Ethereum Sepolia only
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <button type="submit" className="btn-primary">
+                {saved ? <CheckCircle2 size={16} /> : <Save size={16} />}
+                {saved ? 'Draft saved' : 'Save local draft'}
+              </button>
+              <button type="button" onClick={reset} className="btn-outline">
+                <RotateCcw size={16} />
+                Reset
+              </button>
             </div>
-          </div>
-          <div>
-            <h4 className="text-sm font-medium text-white/60 mb-2">AI Decision Engine</h4>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-white/70">Model</span>
-                <span className="font-mono text-cyan-300">Gemini Pro</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-white/70">Mode</span>
-                <span className="font-mono text-cyan-300">Auto (Stream Preferred)</span>
-              </div>
+            <p role="status" className="text-sm leading-relaxed text-slate-300">
+              {notice}
+            </p>
+          </form>
+        </section>
+        <div className="min-w-0 space-y-4">
+          <section className="panel min-w-0 overflow-hidden">
+            <div className="flex items-center justify-between gap-2 border-b border-white/10 px-5 py-3">
+              <h2 className="flex items-center gap-2 font-semibold">
+                <FileCode2 size={17} className="text-blue-300" />
+                SDK integration
+              </h2>
+              {code && (
+                <CopyButton value={code} label="Copy agent integration code" />
+              )}
             </div>
+            {code ? (
+              <pre
+                tabIndex={0}
+                aria-label="Generated integration code"
+                className="max-w-full overflow-auto p-5 text-xs leading-6 text-blue-200"
+              >
+                <code>{code}</code>
+              </pre>
+            ) : (
+              <div className="p-6">
+                <p className="text-sm leading-relaxed text-slate-400">
+                  Enter valid contract and recipient addresses to generate an
+                  example with the exact USDC raw-unit amount.
+                </p>
+                <div className="mt-5 space-y-3" aria-hidden="true">
+                  <div className="h-3 w-4/5 rounded bg-white/5" />
+                  <div className="h-3 w-3/5 rounded bg-white/5" />
+                  <div className="h-3 w-2/3 rounded bg-white/5" />
+                </div>
+              </div>
+            )}
+          </section>
+          <div className="panel p-5">
+            <h2 className="font-semibold">Before your agent pays</h2>
+            <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-slate-400">
+              <li>Deploy the guard, settlement, and CRE workflow.</li>
+              <li>
+                Have the guard accept a fresh authenticated report for this
+                payment intent.
+              </li>
+              <li>
+                Use the SDK with a connected Sepolia signer. It checks
+                authorization before token approval and settlement.
+              </li>
+            </ol>
+            <Link
+              to="/docs/integration"
+              className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+            >
+              Read the integration guide <ArrowRight size={15} />
+            </Link>
           </div>
+          <p className="px-1 text-xs leading-relaxed text-slate-400">
+            This page saves a browser draft. It does not start an agent, change
+            a spending cap, or pause a deployed workflow.
+          </p>
         </div>
       </div>
     </div>

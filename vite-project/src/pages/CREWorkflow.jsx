@@ -1,81 +1,477 @@
 import { useEffect, useState } from 'react';
-import { ArrowUpRight, Check, CheckCircle2, Copy, Download, ExternalLink, FileCheck2, Globe, Loader2, ShieldCheck, ShieldX, Workflow } from 'lucide-react';
+import {
+  ArrowUpRight,
+  ArrowRight,
+  ShieldCheck,
+  ShieldX,
+  Workflow,
+  Globe,
+  FileCheck2,
+  Info,
+  Download,
+  RefreshCw,
+  Terminal,
+  CircleCheck,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatTokenUnits } from '../lib/token-units.mjs';
+import { validateEvidence, formatDuration } from '../lib/evidence.mjs';
+import CopyButton from '../components/ui/CopyButton';
 
-const money = value => `$${formatTokenUnits(value, 8)}`;
-const units = (value, result) => `${formatTokenUnits(value, result.tokenDecimals)} ${result.tokenSymbol}`;
-
-function Observation({ icon: Icon, label, title, children }) {
-  return <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><div className="flex items-center gap-2 text-xs uppercase tracking-widest text-white/40"><Icon size={15} />{label}</div><h3 className="mt-4 text-lg font-semibold text-white">{title}</h3><div className="mt-2 text-sm leading-relaxed text-white/55">{children}</div></div>;
+const price = (value) => `$${formatTokenUnits(value, 8)}`;
+const units = (value) => `${formatTokenUnits(value, 6)} USDC`;
+const capturedTime = (value) =>
+  new Intl.DateTimeFormat('en', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'UTC',
+  }).format(new Date(value)) + ' UTC';
+function Observation({
+  icon: Icon,
+  step,
+  label,
+  value,
+  children,
+  href,
+  linkLabel,
+}) {
+  return (
+    <section className="panel flex min-w-0 flex-col p-5">
+      <div className="flex items-center justify-between">
+        <span className="flex items-center gap-2 text-sm font-medium text-slate-300">
+          <Icon size={16} className="text-blue-300" aria-hidden="true" />
+          {label}
+        </span>
+        <span className="text-xs font-mono text-slate-500">{step}</span>
+      </div>
+      <h3 className="mt-5 break-words text-xl font-semibold text-white">
+        {value}
+      </h3>
+      <div className="mt-2 flex-1 text-sm leading-relaxed text-slate-400">
+        {children}
+      </div>
+      {href && (
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-4 inline-flex min-h-11 items-center gap-1 text-sm text-blue-300 hover:text-blue-200"
+        >
+          {linkLabel}
+          <ArrowUpRight size={15} aria-hidden="true" />
+        </a>
+      )}
+    </section>
+  );
 }
-
 export default function CREWorkflow() {
   const [scenario, setScenario] = useState('allow');
-  const [evidence, setEvidence] = useState(null);
-  const [error, setError] = useState('');
-  const [copied, setCopied] = useState(false);
+  const [capture, setCapture] = useState({
+    scenario: null,
+    evidence: null,
+    error: '',
+  });
+  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
-    setEvidence(null); setError(''); setCopied(false);
-    fetch(`${import.meta.env.BASE_URL}evidence/cre-${scenario}.json`, { signal: controller.signal })
-      .then(response => { if (!response.ok) throw new Error('Simulation evidence is unavailable. Run npm run cre:capture to generate it.'); return response.json(); })
-      .then(data => { if (data.result?.workflow !== 'agentpay-payment-guard' || data.result.schemaVersion !== 2 || data.result.tokenSymbol !== 'USDC' || data.result.tokenDecimals !== 6 || data.scenario !== scenario) throw new Error('Expected current six-decimal USDC evidence. Run npm run cre:capture for both scenarios.'); setEvidence(data); })
-      .catch(e => { if (e.name !== 'AbortError') setError(e.message); });
-    return () => controller.abort();
-  }, [scenario]);
+    let active = true;
+    let timedOut = false;
+    const timeout = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, 15000);
+    fetch(`${import.meta.env.BASE_URL}evidence/cre-${scenario}.json`, {
+      signal: controller.signal,
+      cache: 'no-cache',
+    })
+      .then((response) => {
+        if (!response.ok)
+          throw new Error(
+            'The saved execution could not be loaded. Check your connection and retry.'
+          );
+        return response.json().catch(() => {
+          throw new Error(
+            'The saved execution is missing or unreadable. Restore the evidence file and retry.'
+          );
+        });
+      })
+      .then((data) => {
+        validateEvidence(data, scenario);
+        if (active) setCapture({ scenario, evidence: data, error: '' });
+      })
+      .catch((error) => {
+        if (active && (timedOut || error.name !== 'AbortError'))
+          setCapture({
+            scenario,
+            evidence: null,
+            error: timedOut
+              ? 'Loading took too long. Check your connection and retry.'
+              : error.message,
+          });
+      })
+      .finally(() => clearTimeout(timeout));
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [scenario, attempt]);
+  const evidence = capture.scenario === scenario ? capture.evidence : null;
+  const error = capture.scenario === scenario ? capture.error : '';
   const result = evidence?.result;
-  const command = `npm run cre:simulate${scenario === 'deny-budget' ? ' -- --deny-budget' : ''}`;
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(command); setCopied(true); }
-    catch { setError('Clipboard unavailable. Select and copy the command below.'); }
-  };
-
+  const command = `npm run cre:simulate${
+    scenario === 'deny-budget' ? ' -- --deny-budget' : ''
+  }`;
   return (
-    <div className="space-y-7 pb-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div><p className="text-xs font-semibold tracking-[0.2em] uppercase text-blue-400">Orchestration / Payment Guard</p><h2 className="mt-2 text-3xl font-bold text-white">See why an agent can pay.</h2><p className="mt-3 max-w-2xl text-white/55">A real CRE CLI execution joins an external API and Ethereum Sepolia. Every decision has inspectable inputs.</p></div>
-        <a className="btn-outline inline-flex items-center gap-2 text-sm" href="https://github.com/ola-893/agentPay/tree/main/cre/payment-guard" target="_blank" rel="noreferrer">Workflow source <ArrowUpRight size={16} /></a>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-5">
+        <div className="max-w-2xl">
+          <p className="eyebrow flex items-center gap-2">
+            <Workflow size={15} aria-hidden="true" />
+            Chainlink Runtime Environment
+          </p>
+          <h1 className="page-title mt-3">Guarded USDC payments.</h1>
+          <p className="mt-3 text-base leading-relaxed text-slate-400">
+            CRE checks USDC prices, the peg, and a spending cap before an agent
+            pays. Inspect real CLI decisions below.
+          </p>
+        </div>
+        <a
+          className="btn-outline hidden shrink-0 sm:inline-flex"
+          href="https://github.com/ola-893/agentPay/tree/main/cre/payment-guard"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Workflow source <ArrowUpRight size={16} aria-hidden="true" />
+        </a>
       </div>
-
-      <div className="rounded-2xl border border-blue-400/20 bg-blue-500/5 px-5 py-4 text-sm text-blue-200/80"><strong>Recorded simulation evidence.</strong> These observations were captured by the CRE CLI, rather than fetched live by this page. No payment was sent and no workflow is deployed. A saved ALLOW result cannot authorize spending.</div>
-
-      <div className="rounded-2xl border border-white/10 px-5 py-4"><h3 className="font-semibold text-white">USDC payments. USDC/USD policy.</h3><p className="mt-2 text-sm leading-relaxed text-white/55">The guarded path uses Circle’s six-decimal Sepolia USDC. CRE compares Coinbase and Chainlink USDC/USD, checks each price against $1, and rejects stale or over-budget requests. Sepolia USDC has no monetary value; these USD observations model payment-asset risk. Legacy tUSD streams remain separate.</p><a href="https://faucet.circle.com/" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-sm text-blue-300">Get test USDC from Circle <ExternalLink size={12} /></a></div>
-
-      <div className="flex flex-wrap gap-2" role="group" aria-label="Simulation scenario">
-        {[['allow', 'Within budget'], ['deny-budget', 'Over budget']].map(([value, label]) => <button key={value} type="button" aria-pressed={scenario === value} onClick={() => setScenario(value)} className={`rounded-xl px-5 py-3 text-sm font-medium border transition-colors ${scenario === value ? 'border-blue-400/50 bg-blue-500/15 text-blue-200' : 'border-white/10 text-white/50 hover:bg-white/5'}`}>{label}</button>)}
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-y border-white/10 py-3 text-xs text-slate-300">
+        <span className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+          Ethereum Sepolia
+        </span>
+        <span>Circle USDC · 6 decimals</span>
+        <span>Coinbase + Chainlink USDC/USD</span>
       </div>
-
-      {error && <p role="alert" className="rounded-xl border border-amber-400/30 bg-amber-500/10 p-4 text-amber-200">{error}</p>}
-      {!result && !error && <div className="flex items-center gap-3 text-white/50 p-8" role="status"><Loader2 className="animate-spin" size={20} /> Loading captured CLI evidence…</div>}
-      {result && <>
-        <div className={`rounded-2xl border p-6 md:p-8 ${result.approved ? 'border-emerald-400/20 bg-emerald-500/[0.04]' : 'border-amber-400/20 bg-amber-500/[0.04]'}`}>
-          <div className="flex flex-wrap justify-between gap-5">
-            <div className="flex items-start gap-4">{result.approved ? <ShieldCheck className="text-emerald-400 mt-1" size={32} /> : <ShieldX className="text-amber-400 mt-1" size={32} />}<div><p className={`text-xs font-medium uppercase tracking-widest ${result.approved ? 'text-emerald-400' : 'text-amber-400'}`}>Simulation decision</p><h3 className="mt-1 text-3xl font-bold text-white">{result.approved ? 'ALLOW' : 'DENY'}</h3><p className="mt-2 font-mono text-xs text-white/50">{result.reason}</p></div></div>
-            <div className="text-sm text-white/50 md:text-right"><p className="text-white/75">Ethereum Sepolia · Chain {result.chainId}</p><p className="mt-1">Captured {new Date(evidence.capturedAt).toLocaleString()}</p><p className="mt-1">Authorization window: {result.validUntil - result.observedAt} seconds from observation</p></div>
+      <section aria-labelledby="executions-title" className="space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 id="executions-title" className="text-lg font-semibold">
+              Recorded executions
+            </h2>
+            <p className="mt-1 text-sm text-slate-400">
+              Real CRE CLI captures. Select a request to inspect.
+            </p>
           </div>
-          <div className="mt-6 grid gap-4 border-t border-white/10 pt-5 sm:grid-cols-3">
-            <div><p className="text-xs text-white/40">Requested payment</p><p className="mt-1 text-xl font-semibold text-white">{units(result.request.amount, result)}</p><p className="mt-1 text-xs text-white/40">{result.request.amount} raw units · {result.tokenDecimals} decimals</p></div>
-            <div><p className="text-xs text-white/40">Per-request policy cap</p><p className="mt-1 text-xl font-semibold text-white">{units(result.request.spendingCap, result)}</p><a className="mt-1 inline-flex items-center gap-1 text-xs text-blue-300" href={`https://sepolia.etherscan.io/token/${result.request.token}`} target="_blank" rel="noreferrer">Circle Sepolia USDC <ExternalLink size={12} /></a></div>
-            <div><p className="text-xs text-white/40">Publication</p><p className="mt-1 text-xl font-semibold text-white">{result.published ? 'Submitted onchain' : 'Preview only'}</p></div>
+          <div
+            className="inline-flex w-full rounded-xl border border-white/10 bg-[#111827] p-1 sm:w-auto"
+            role="group"
+            aria-label="Execution scenario"
+          >
+            {[
+              ['allow', 'Within budget'],
+              ['deny-budget', 'Over budget'],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={scenario === value}
+                onClick={() => setScenario(value)}
+                className={`min-h-11 flex-1 whitespace-nowrap rounded-lg px-4 text-sm font-medium transition-colors sm:flex-none ${
+                  scenario === value
+                    ? 'bg-blue-500/20 text-blue-100'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Observation icon={Globe} label="01 / External API" title={money(result.externalPriceUsd8)}><p>Coinbase USDC/USD spot quote, aggregated through CRE HTTP consensus.</p><a href={result.marketApiUrl} className="mt-3 inline-flex items-center gap-1 text-blue-300" target="_blank" rel="noreferrer">Inspect endpoint <ExternalLink size={12} /></a></Observation>
-          <Observation icon={Workflow} label="02 / Onchain read" title={money(result.chainlinkPriceUsd8)}><p>Chainlink USDC/USD on Sepolia. Finalized contract reads; {result.observedAt - result.feedUpdatedAt}s old at execution. Freshness headroom at capture: {result.maxFeedAgeSeconds - (result.observedAt - result.feedUpdatedAt)}s. Maximum age: {result.maxFeedAgeSeconds}s.</p><a href={`https://sepolia.etherscan.io/address/${result.feedAddress}`} className="mt-3 inline-flex items-center gap-1 text-blue-300" target="_blank" rel="noreferrer">Inspect feed <ExternalLink size={12} /></a></Observation>
-          <Observation icon={CheckCircle2} label="03 / Policy" title={`${(Math.abs(Number(result.externalPriceUsd8) - Number(result.chainlinkPriceUsd8)) / Number(result.chainlinkPriceUsd8) * 100).toFixed(3)}% disagreement`}><p>Maximum disagreement: {result.maxDeviationBps / 100}%. Each source must also stay within {result.maxPegDeviationBps / 100}% of $1. Freshness, completed round, and payment cap use integer arithmetic.</p></Observation>
-          <Observation icon={FileCheck2} label="04 / CRE report" title={result.reportGenerated ? 'Report generated' : 'No report'}><p>The report binds the payment parties, token, amount, chain, receiver, request ID, and expiry. This run did not publish it.</p></Observation>
-        </div>
-
-        <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
-          <div className="rounded-2xl border border-white/10 p-6"><h3 className="font-semibold text-white">Reproduce this execution</h3><p className="mt-2 text-sm text-white/50">Install CRE and Bun, run <code className="text-blue-200">npm run install:cre</code>, and log in with <code className="text-blue-200">cre login</code>. Before recording, run <code className="text-blue-200">npm run cre:dry-run</code> to check both scenarios and ten minutes of freshness headroom. Keep the saved transcripts as backup.</p><div className="mt-4 flex items-center gap-3 rounded-xl bg-black/25 p-4"><code className="flex-1 break-all text-sm text-blue-200">{command}</code><button type="button" onClick={copy} aria-label="Copy simulation command" className="p-2 rounded-lg hover:bg-white/10 text-white/60">{copied ? <Check size={18} /> : <Copy size={18} />}</button></div><p className="mt-3 text-xs text-white/40" role="status">{copied ? 'Command copied.' : 'Requires network access. Future market observations can change the decision.'}</p></div>
-          <div className="rounded-2xl border border-white/10 p-6"><h3 className="font-semibold text-white">From a decision to a payment</h3><p className="mt-2 text-sm leading-relaxed text-white/50">For settlement, a deployed CRE workflow submits its signed report through a trusted forwarder. AgentPayGuard verifies its origin and bounds. The SDK then checks the onchain authorization before approving tokens.</p><Link to="/docs/cre" className="mt-4 inline-flex items-center gap-2 text-sm text-blue-300">Read the trust boundaries <ArrowUpRight size={16} /></Link></div>
-        </div>
-
-        <div className="flex flex-wrap gap-4 text-sm"><a className="inline-flex items-center gap-2 text-blue-300" href={`${import.meta.env.BASE_URL}evidence/cre-${scenario}.json`} download><Download size={16} /> Download captured result</a><a className="inline-flex items-center gap-2 text-blue-300" href={`https://github.com/ola-893/agentPay/blob/main/docs/evidence/cre-${scenario}.log`} target="_blank" rel="noreferrer"><ExternalLink size={16} /> Read CLI transcript</a></div>
-        <details className="rounded-2xl border border-white/10 p-5"><summary className="cursor-pointer text-sm text-white/65">Inspect the complete result and evidence hashes</summary><pre className="mt-4 overflow-auto max-h-96 rounded-xl bg-black/25 p-4 text-xs leading-relaxed text-blue-100/70">{JSON.stringify(evidence, null, 2)}</pre></details>
-      </>}
+        {error ? (
+          <div role="alert" className="panel p-6">
+            <h3 className="font-semibold">Evidence unavailable</h3>
+            <p className="mt-2 text-sm text-slate-400">{error}</p>
+            <button
+              type="button"
+              className="btn-outline mt-4"
+              onClick={() => {
+                setCapture({ scenario: null, evidence: null, error: '' });
+                setAttempt((n) => n + 1);
+              }}
+            >
+              <RefreshCw size={16} />
+              Retry
+            </button>
+          </div>
+        ) : !result ? (
+          <div className="panel min-h-64 animate-pulse p-6" role="status">
+            <p className="text-sm text-slate-400">
+              Loading recorded execution…
+            </p>
+            <div className="mt-6 h-12 w-40 rounded-lg bg-white/5" />
+            <div className="mt-8 h-14 rounded-lg bg-white/5" />
+          </div>
+        ) : (
+          <div
+            className={`panel overflow-hidden ${
+              result.approved ? 'border-emerald-400/25' : 'border-amber-400/25'
+            }`}
+          >
+            <div
+              className={`flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-5 py-5 sm:px-6 ${
+                result.approved ? 'bg-emerald-500/[.06]' : 'bg-amber-500/[.06]'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <span
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+                    result.approved
+                      ? 'bg-emerald-500/10 text-emerald-300'
+                      : 'bg-amber-500/10 text-amber-300'
+                  }`}
+                >
+                  {result.approved ? (
+                    <ShieldCheck size={26} />
+                  ) : (
+                    <ShieldX size={26} />
+                  )}
+                </span>
+                <div>
+                  <p className="text-[11px] uppercase tracking-widest text-slate-400">
+                    Simulation decision
+                  </p>
+                  <h3 className="mt-0.5 text-2xl font-semibold">
+                    {result.approved ? 'ALLOW' : 'DENY'}
+                    <span className="mt-1 block text-sm font-normal text-slate-300 sm:ml-3 sm:mt-0 sm:inline">
+                      {result.approved
+                        ? 'Within spending cap'
+                        : 'Spending cap exceeded'}
+                    </span>
+                  </h3>
+                </div>
+              </div>
+              <p className="text-xs text-slate-400">
+                <span className="block">
+                  Captured {capturedTime(evidence.capturedAt)}
+                </span>
+                <span className="mt-1 block font-mono">{result.reason}</span>
+              </p>
+            </div>
+            <dl className="grid grid-cols-2 gap-5 p-5 sm:grid-cols-3 sm:gap-6 sm:p-6">
+              <div>
+                <dt className="text-sm text-slate-400">Requested payment</dt>
+                <dd className="mt-2 break-words text-2xl font-semibold tracking-tight">
+                  {units(result.request.amount)}
+                </dd>
+                <dd className="mt-1 text-xs text-slate-400">
+                  {result.request.amount} raw units
+                </dd>
+              </div>
+              <div>
+                <dt className="text-sm text-slate-400">Per-request cap</dt>
+                <dd className="mt-2 text-2xl font-semibold tracking-tight">
+                  {units(result.request.spendingCap)}
+                </dd>
+                <dd className="mt-1 text-xs text-slate-400">
+                  {result.request.spendingCap} raw units
+                </dd>
+              </div>
+              <div className="col-span-2 sm:col-span-1">
+                <dt className="text-sm text-slate-400">Report status</dt>
+                <dd className="mt-2 flex items-center gap-2 text-lg font-medium">
+                  <FileCheck2 size={18} className="text-blue-300" />
+                  Preview only
+                </dd>
+                <dd className="mt-2 text-xs text-slate-400">
+                  Not published · No funds moved
+                </dd>
+              </div>
+            </dl>
+            <p className="flex items-start gap-2 border-t border-white/10 px-5 py-3 text-xs leading-relaxed text-slate-400 sm:px-6">
+              <Info size={15} className="mt-0.5 shrink-0" />
+              Historical evidence, not an active authorization. A fresh
+              authenticated report is required before settlement.
+            </p>
+          </div>
+        )}
+      </section>
+      {result && (
+        <>
+          <section aria-labelledby="observations-title">
+            <h2 id="observations-title" className="mb-4 text-lg font-semibold">
+              What CRE checked
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <Observation
+                icon={Globe}
+                step="01"
+                label="External price"
+                value={price(result.externalPriceUsd8)}
+                href={result.marketApiUrl}
+                linkLabel="Coinbase API"
+              >
+                <p>USDC/USD spot quote, aggregated with CRE HTTP consensus.</p>
+              </Observation>
+              <Observation
+                icon={Workflow}
+                step="02"
+                label="Onchain price"
+                value={price(result.chainlinkPriceUsd8)}
+                href={`https://sepolia.etherscan.io/address/${result.feedAddress}`}
+                linkLabel="Chainlink feed"
+              >
+                <p>
+                  Finalized Sepolia read. Feed age at execution:{' '}
+                  {formatDuration(result.observedAt - result.feedUpdatedAt)}.
+                </p>
+              </Observation>
+              <Observation
+                icon={ShieldCheck}
+                step="03"
+                label="Risk policy"
+                value={`${(
+                  (Math.abs(
+                    Number(result.externalPriceUsd8) -
+                      Number(result.chainlinkPriceUsd8)
+                  ) /
+                    Number(result.chainlinkPriceUsd8)) *
+                  100
+                ).toFixed(3)}% disagreement`}
+              >
+                <ul className="space-y-2">
+                  <li>Source disagreement ≤ {result.maxDeviationBps / 100}%</li>
+                  <li>
+                    Each price within {result.maxPegDeviationBps / 100}% of $1
+                  </li>
+                  <li>Feed age ≤ {formatDuration(result.maxFeedAgeSeconds)}</li>
+                  <li>Payment within its cap</li>
+                </ul>
+              </Observation>
+              <Observation
+                icon={FileCheck2}
+                step="04"
+                label="Bounded report"
+                value="Report generated"
+                href="https://github.com/ola-893/agentPay/blob/main/contracts/AgentPayGuard.sol"
+                linkLabel="Inspect guard"
+              >
+                <p>
+                  Binds the parties, token, amount, chain, receiver, request ID,
+                  and expiry.
+                </p>
+                <p className="mt-2">
+                  {result.validUntil - result.observedAt}s lifetime from
+                  observation.
+                </p>
+              </Observation>
+            </div>
+          </section>
+          <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+            <section className="panel min-w-0 p-5 sm:p-6">
+              <h2 className="flex items-center gap-2 font-semibold">
+                <Terminal size={17} className="text-blue-300" />
+                Reproduce this execution
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                Run the selected scenario locally. Install CRE and Bun, then
+                authenticate with{' '}
+                <code className="text-slate-200">cre login</code>.
+              </p>
+              <div className="mt-4 flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-[#0b101c] p-3">
+                <code className="min-w-0 flex-1 break-all text-sm text-blue-200">
+                  {command}
+                </code>
+                <CopyButton value={command} />
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-slate-400">
+                Before recording, run{' '}
+                <code className="text-slate-200">npm run cre:dry-run</code> for
+                both scenarios and freshness headroom. Live inputs can change
+                the decision.
+              </p>
+              <Link
+                to="/docs/setup"
+                className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+              >
+                Setup instructions <ArrowRight size={15} />
+              </Link>
+            </section>
+            <section className="panel p-5 sm:p-6">
+              <h2 className="flex items-center gap-2 font-semibold">
+                <CircleCheck size={17} className="text-blue-300" />
+                The payment asset matches the policy
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                Circle Sepolia USDC uses 6 decimals: 0.01 USDC = 10000 raw
+                units. Both prices must stay near $1, even if they agree with
+                each other.
+              </p>
+              <p className="mt-3 text-xs leading-relaxed text-slate-400">
+                Testnet USDC has no monetary value. The 24-hour feed limit
+                models risk and does not promise immediate depeg detection.
+                Legacy tUSD streams are separate.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-x-5">
+                <a
+                  href={`https://sepolia.etherscan.io/token/${result.request.token}`}
+                  className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Circle USDC <ArrowUpRight size={15} />
+                </a>
+                <a
+                  href="https://faucet.circle.com/"
+                  className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Test USDC faucet <ArrowUpRight size={15} />
+                </a>
+              </div>
+            </section>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <a
+              className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+              href={`${import.meta.env.BASE_URL}evidence/cre-${scenario}.json`}
+              download
+            >
+              <Download size={16} />
+              Download result JSON
+            </a>
+            <a
+              className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+              href={`https://github.com/ola-893/agentPay/blob/main/docs/evidence/cre-${scenario}.log`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              CLI transcript <ArrowUpRight size={15} />
+            </a>
+            <a
+              className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300 sm:hidden"
+              href="https://github.com/ola-893/agentPay/tree/main/cre/payment-guard"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Workflow source <ArrowUpRight size={15} />
+            </a>
+          </div>
+          <details className="panel min-w-0 p-5">
+            <summary className="cursor-pointer rounded-lg text-sm font-medium text-slate-300">
+              Raw result & evidence hashes
+            </summary>
+            <pre
+              tabIndex={0}
+              aria-label="Captured execution JSON"
+              className="mt-4 max-h-80 overflow-auto rounded-xl bg-[#0b101c] p-4 text-xs leading-relaxed text-slate-300"
+            >
+              {JSON.stringify(evidence, null, 2)}
+            </pre>
+          </details>
+        </>
+      )}
     </div>
   );
 }

@@ -1,85 +1,53 @@
-import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useWallet } from '../context/WalletContext';
-import { StreamMonitor } from '../components/StreamMonitor';
-import { EfficiencyMetrics } from '../components/EfficiencyMetrics';
-import { ServiceGraph } from '../components/ServiceGraph';
-import { CollapsibleSection, SkeletonDashboard, ErrorBoundary } from '../components/ui';
-import { Link, Waves, TrendingUp } from 'lucide-react';
-
+import StreamSetup from '../components/StreamSetup';
+import { ArrowRight } from 'lucide-react';
 export default function Dashboard() {
-  const { outgoingStreams, isInitialLoad, isLoadingStreams, walletAddress } = useWallet();
-  const [agentConfig] = useState({ agentId: 'Dashboard-Agent' });
-  const [efficiencyMetrics] = useState({ requestsSent: 47, signersTriggered: 2 });
-
-  const activeStreamsForMonitor = useMemo(() => {
-    return outgoingStreams.map(s => ({
-      streamId: s.id?.toString() || '0',
-      startTime: Number(s.startTime || 0),
-      rate: s.flowRate || BigInt(0),
-      amount: s.totalAmount || BigInt(0),
-      agentId: agentConfig.agentId
-    }));
-  }, [outgoingStreams, agentConfig.agentId]);
-
-  if (isInitialLoad && isLoadingStreams) {
-    return <SkeletonDashboard />;
-  }
-
-  if (!walletAddress) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <Link className="w-16 h-16 text-white/60 mb-4" />
-        <h2 className="text-2xl font-bold text-white mb-2">Connect Your Wallet</h2>
-        <p className="text-white/60 text-center max-w-md">
-          Connect your wallet to view your dashboard, monitor streams, and track efficiency metrics.
-        </p>
-      </div>
-    );
-  }
-
+  const {
+    walletAddress,
+    streamConfigured,
+    outgoingStreams,
+    incomingStreams,
+    streamError,
+  } = useWallet();
   return (
-    <div className="space-y-8 md:space-y-12 animate-fade-in">
-      {/* Quick Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="card-glass p-4 text-center">
-          <div className="text-3xl font-bold text-gradient-primary">{outgoingStreams.length}</div>
-          <div className="text-sm text-white/60 mt-1">Active Streams</div>
-        </div>
-        <div className="card-glass p-4 text-center">
-          <div className="text-3xl font-bold text-cyan-400">{efficiencyMetrics.requestsSent}</div>
-          <div className="text-sm text-white/60 mt-1">Requests Sent</div>
-        </div>
-        <div className="card-glass p-4 text-center">
-          <div className="text-3xl font-bold text-emerald-400">{efficiencyMetrics.signersTriggered}</div>
-          <div className="text-sm text-white/60 mt-1">Signatures Used</div>
-        </div>
-        <div className="card-glass p-4 text-center">
-          <div className="text-3xl font-bold text-amber-400">
-            {efficiencyMetrics.requestsSent > 0 
-              ? Math.round((1 - efficiencyMetrics.signersTriggered / efficiencyMetrics.requestsSent) * 100) 
-              : 0}%
+    <div className="space-y-6">
+      <header>
+        <p className="eyebrow">Legacy streaming</p>
+        <h1 className="page-title mt-3">Stream overview.</h1>
+        <p className="mt-3 text-slate-400">
+          Onchain stream records for your connected wallet.
+        </p>
+      </header>
+      {!walletAddress || !streamConfigured ? (
+        <StreamSetup />
+      ) : (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              ['Incoming streams', incomingStreams.length],
+              ['Outgoing streams', outgoingStreams.length],
+            ].map(([label, count]) => (
+              <section key={label} className="panel p-6">
+                <h2 className="text-sm text-slate-400">{label}</h2>
+                <p className="mt-3 text-3xl font-semibold">{count}</p>
+              </section>
+            ))}
           </div>
-          <div className="text-sm text-white/60 mt-1">Gas Saved</div>
-        </div>
-      </div>
-
-      <ErrorBoundary variant="inline">
-        <CollapsibleSection title="Stream Monitor" icon={<Waves className="w-5 h-5" />} defaultOpen={true}>
-          <StreamMonitor activeStreams={activeStreamsForMonitor} />
-        </CollapsibleSection>
-      </ErrorBoundary>
-
-      <ErrorBoundary variant="inline">
-        <CollapsibleSection title="Efficiency Metrics" icon={<TrendingUp className="w-5 h-5" />} defaultOpen={true}>
-          <EfficiencyMetrics efficiencyMetrics={efficiencyMetrics} />
-        </CollapsibleSection>
-      </ErrorBoundary>
-
-      <ErrorBoundary variant="inline">
-        <CollapsibleSection title="Service Graph" icon={<Link className="w-5 h-5" />} defaultOpen={false}>
-          <ServiceGraph />
-        </CollapsibleSection>
-      </ErrorBoundary>
+          {streamError && (
+            <p role="alert" className="text-sm text-amber-200">
+              {streamError}
+            </p>
+          )}
+          <Link to="/streams" className="btn-primary">
+            Manage streams <ArrowRight size={16} />
+          </Link>
+          <p className="text-xs text-slate-400">
+            Based on the latest 49,000 blocks. API usage, gas savings, and agent
+            telemetry are not connected.
+          </p>
+        </>
+      )}
     </div>
   );
 }

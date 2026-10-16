@@ -1,53 +1,49 @@
-import { useLocation } from 'react-router-dom';
-import { useWallet } from '../context/WalletContext';
+import { useEffect, useRef } from 'react';
+import { Outlet, useLocation, Link } from 'react-router-dom';
 import Header from './Header';
-import Hero from './Hero';
 import { MobileBottomNav, ErrorBoundary } from './ui';
-import { LayoutDashboard, ArrowRightLeft, Bot, BookOpen } from 'lucide-react';
 
-const tabs = [
-  { id: 'dashboard', path: '/', icon: LayoutDashboard, label: 'CRE Workflow' },
-  { id: 'streams', path: '/streams', icon: ArrowRightLeft, label: 'Streams' },
-  { id: 'agent', path: '/agent', icon: Bot, label: 'Agent Console' },
-  { id: 'docs', path: '/docs', icon: BookOpen, label: 'Docs' },
-];
-
-export default function Layout({ children }) {
-  const location = useLocation();
-  const { walletAddress, chainId, getNetworkName, connectWallet, tokenBalance } = useWallet();
-
-  const isDashboard = location.pathname === '/';
-
+export default function Layout() {
+  const { pathname } = useLocation();
+  const previous = useRef(pathname);
+  useEffect(() => {
+    const heading = document.querySelector('main h1')?.textContent;
+    document.title = heading
+      ? `${heading} · AgentPay`
+      : 'AgentPay — Chainlink CRE payments';
+    if (previous.current !== pathname) {
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.getElementById('main-content')?.focus({ preventScroll: true });
+      previous.current = pathname;
+    }
+  }, [pathname]);
   return (
-    <div className="min-h-screen w-full">
-      <div className="absolute inset-0 bg-grid bg-[size:24px_24px] opacity-20 pointer-events-none" />
-
-      <Header
-        walletAddress={walletAddress}
-        chainId={chainId}
-        networkName={getNetworkName(chainId)}
-        onConnect={connectWallet}
-        balance={tokenBalance}
-        tabs={tabs}
-      />
-
-      {isDashboard && <Hero networkName={getNetworkName(chainId)} />}
-
-      <main className="mx-auto w-full max-w-7xl px-4 pb-24 md:pb-16">
-        <div className="mt-6 md:mt-8">
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
-        </div>
+    <div className="min-h-screen">
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
+      <Header />
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto w-full min-w-0 max-w-7xl px-4 pt-7 pb-8 outline-none sm:px-6 sm:pt-10 lg:px-8"
+      >
+        <ErrorBoundary key={pathname}>
+          <Outlet />
+        </ErrorBoundary>
       </main>
-
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav
-        walletAddress={walletAddress}
-        tabs={tabs}
-      />
-
-
+      <footer className="app-footer mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 pt-8 text-xs text-slate-400 sm:px-6 lg:px-8">
+        <p>
+          AgentPay · Ethereum Sepolia · Testnet tokens have no monetary value.
+        </p>
+        <Link
+          to="/docs/cre"
+          className="min-h-11 inline-flex items-center text-slate-300 hover:text-white"
+        >
+          Workflow & trust boundaries ↗
+        </Link>
+      </footer>
+      <MobileBottomNav />
     </div>
   );
 }

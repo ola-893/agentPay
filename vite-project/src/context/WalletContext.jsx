@@ -1,12 +1,37 @@
-import { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 import { ethers } from 'ethers';
-import { contractAddress, contractABI, paymentTokenAddress, paymentTokenABI } from '../contactInfo.js';
-import { useToast } from '../components/ui';
+import {
+  contractAddress,
+  contractABI,
+  paymentTokenAddress,
+  paymentTokenABI,
+} from '../contactInfo.js';
+import { useToast } from '../components/ui/Toast';
 
 const WalletContext = createContext(null);
-
-const TARGET_CHAIN_ID_DEC = 11155111;
-const TARGET_CHAIN_ID_HEX = '0x' + TARGET_CHAIN_ID_DEC.toString(16);
+const SEPOLIA = 11155111;
+const hasAddress = (value) =>
+  ethers.isAddress(value || '') && value !== ethers.ZeroAddress;
+const streamConfigured =
+  hasAddress(contractAddress) && hasAddress(paymentTokenAddress);
+const messageFor = (error) =>
+  error?.code === 4001 || error?.code === 'ACTION_REJECTED'
+    ? 'Request cancelled in your wallet.'
+    : error?.code === -32002
+    ? 'A wallet request is already open. Check your wallet to continue.'
+    : (
+        error?.shortMessage ||
+        error?.message ||
+        'The request failed. Please retry.'
+      ).slice(0, 240);
 
 export function WalletProvider({ children }) {
   const toast = useToast();
@@ -14,284 +39,427 @@ export function WalletProvider({ children }) {
   const [signer, setSigner] = useState(null);
   const [walletAddress, setWalletAddress] = useState(null);
   const [chainId, setChainId] = useState(null);
-  const [status, setStatus] = useState('Not Connected');
+  const [status, setStatus] = useState('Not connected');
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [connectionError, setConnectionError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [tokenBalance, setTokenBalance] = useState('0.0');
-
-  // Stream state
+  const [tokenBalance, setTokenBalance] = useState(null);
+  const [balanceError, setBalanceError] = useState('');
   const [incomingStreams, setIncomingStreams] = useState([]);
   const [outgoingStreams, setOutgoingStreams] = useState([]);
   const [isLoadingStreams, setIsLoadingStreams] = useState(false);
+  const [streamError, setStreamError] = useState('');
   const [isInitialLoad, setIsInitialLoad] = useState(true);
-
-  useEffect(() => { if (walletAddress && !contractAddress) setIsInitialLoad(false); }, [walletAddress]);
-
-  const contractWithProvider = useMemo(() => {
-    if (!provider || !contractAddress) return null;
-    try { return new ethers.Contract(contractAddress, contractABI, provider); }
-    catch { return null; }
-  }, [provider]);
-
-  const contractWithSigner = useMemo(() => {
-    if (!signer || !contractAddress) return null;
-    try { return new ethers.Contract(contractAddress, contractABI, signer); }
-    catch { return null; }
-  }, [signer]);
-
-  const getNetworkName = (id) => {
-    if (!id) return '...';
-    const mapping = { 11155111: 'Ethereum Sepolia' };
-    return mapping[id] || `Chain ${id}`;
-  };
-
-  const ensureCorrectNetwork = async (eth) => {
-    const currentChainIdHex = await eth.request({ method: 'eth_chainId' });
-    setChainId(parseInt(currentChainIdHex, 16));
-    if (currentChainIdHex !== TARGET_CHAIN_ID_HEX) {
-      try {
-        await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: TARGET_CHAIN_ID_HEX }] });
-      } catch (switchError) {
-        if (switchError.code === 4902) {
-          await eth.request({
-            method: 'wallet_addEthereumChain',
-            params: [{
-              chainId: TARGET_CHAIN_ID_HEX, chainName: 'Ethereum Sepolia',
-              nativeCurrency: { name: 'SepoliaETH', symbol: 'ETH', decimals: 18 },
-              rpcUrls: ['https://rpc.sepolia.org'], blockExplorerUrls: ['https://sepolia.etherscan.io']
-            }],
-          });
-        } else throw switchError;
-      }
-    }
-  };
-
+  const session = useRef(0);
+  const connecting = useRef(false);
+  const processing = useRef(false);
+  const contractWithProvider = useMemo(
+    () =>
+      provider && streamConfigured
+        ? new ethers.Contract(contractAddress, contractABI, provider)
+        : null,
+    [provider]
+  );
+  const contractWithSigner = useMemo(
+    () =>
+      signer && streamConfigured
+        ? new ethers.Contract(contractAddress, contractABI, signer)
+        : null,
+    [signer]
+  );
+  const getNetworkName = (id) =>
+    id === SEPOLIA ? 'Ethereum Sepolia' : id ? `Chain ${id}` : 'Not connected';
+  const disconnectWallet = useCallback(() => {
+    session.current++;
+    setProvider(null);
+    setSigner(null);
+    setWalletAddress(null);
+    setChainId(null);
+    setTokenBalance(null);
+    setIncomingStreams([]);
+    setOutgoingStreams([]);
+    setStreamError('');
+    setBalanceError('');
+    setConnectionError('');
+    setIsInitialLoad(true);
+    setIsLoadingStreams(false);
+    setStatus('Disconnected from AgentPay');
+  }, []);
   const connectWallet = async () => {
-    if (typeof window.ethereum === 'undefined') {
-      setStatus('Please install MetaMask.');
-      toast.error('MetaMask not found', { title: 'Wallet Error' });
+    if (connecting.current) return;
+    if (!window.ethereum) {
+      const message =
+        'No browser wallet detected. Open AgentPay in a wallet-enabled browser to connect.';
+      setConnectionError(message);
+      toast.info(message, { title: 'Wallet needed' });
       return;
     }
+    const epoch = ++session.current;
+    connecting.current = true;
+    setIsConnecting(true);
+    setConnectionError('');
     try {
       const eth = window.ethereum;
-      await ensureCorrectNetwork(eth);
       await eth.request({ method: 'eth_requestAccounts' });
+      if (Number(await eth.request({ method: 'eth_chainId' })) !== SEPOLIA) {
+        try {
+          await eth.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0xaa36a7' }],
+          });
+        } catch (error) {
+          if (error.code !== 4902) throw error;
+          await eth.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: '0xaa36a7',
+                chainName: 'Ethereum Sepolia',
+                nativeCurrency: {
+                  name: 'Sepolia ETH',
+                  symbol: 'ETH',
+                  decimals: 18,
+                },
+                rpcUrls: ['https://ethereum-sepolia-rpc.publicnode.com'],
+                blockExplorerUrls: ['https://sepolia.etherscan.io'],
+              },
+            ],
+          });
+        }
+      }
+      if (Number(await eth.request({ method: 'eth_chainId' })) !== SEPOLIA)
+        throw new Error(
+          'Switch your wallet to Ethereum Sepolia and reconnect.'
+        );
       const nextProvider = new ethers.BrowserProvider(eth);
       const nextSigner = await nextProvider.getSigner();
       const address = await nextSigner.getAddress();
+      if (session.current !== epoch) return;
       setProvider(nextProvider);
       setSigner(nextSigner);
       setWalletAddress(address);
-      setStatus(contractAddress ? 'Connected' : 'Connected. Configure the AgentPay contracts to use streams.');
-      toast.success(`Connected to ${address.slice(0, 6)}...${address.slice(-4)}`, { title: 'Wallet Connected' });
+      setChainId(SEPOLIA);
+      setIsInitialLoad(streamConfigured);
+      setStatus('Connected to Ethereum Sepolia');
     } catch (error) {
-      console.error('Connection failed:', error);
-      setStatus('Connection failed.');
-      toast.error(error?.message || 'Failed to connect wallet', { title: 'Connection Failed' });
+      if (session.current === epoch) {
+        setConnectionError(messageFor(error));
+        toast.error(messageFor(error), { title: 'Connection not completed' });
+      }
+    } finally {
+      connecting.current = false;
+      setIsConnecting(false);
     }
   };
+  useEffect(() => {
+    if (!walletAddress || !window.ethereum?.on) return;
+    const changed = () => {
+      disconnectWallet();
+      setConnectionError(
+        'Your wallet account or network changed. Reconnect to refresh the active session.'
+      );
+    };
+    const eth = window.ethereum;
+    eth.on('accountsChanged', changed);
+    eth.on('chainChanged', changed);
+    eth.on('disconnect', changed);
+    return () => {
+      eth.removeListener?.('accountsChanged', changed);
+      eth.removeListener?.('chainChanged', changed);
+      eth.removeListener?.('disconnect', changed);
+    };
+  }, [walletAddress, disconnectWallet]);
 
   const fetchTokenBalance = useCallback(async () => {
-    if (!provider || !walletAddress || !paymentTokenAddress) return;
+    if (!provider || !walletAddress || !streamConfigured) return;
+    const epoch = session.current;
     try {
-      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, provider);
-      if (await tokenContract.decimals() !== 18n) throw new Error('Legacy streams require an 18-decimal token. Use USDC only through guarded settlement.');
-      const balance = await tokenContract.balanceOf(walletAddress);
-      setTokenBalance(ethers.formatEther(balance));
-    } catch (error) { console.error('Failed to fetch tUSD balance:', error); }
-  }, [provider, walletAddress]);
-
-  const mintPaymentTokens = async (amount = '1000') => {
-    if (!signer || !walletAddress || !paymentTokenAddress) { toast.warning('Connect a wallet and configure the test token first'); return; }
-    try {
-      setIsProcessing(true);
-      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
-      if (await tokenContract.decimals() !== 18n) throw new Error('USDC uses the Circle faucet and guarded settlement, not legacy minting.');
-      setStatus('Minting tUSD tokens...');
-      const loadingToast = toast.transaction.pending('Minting tUSD tokens...');
-      const tx = await tokenContract.mint(walletAddress, ethers.parseEther(amount));
-      await tx.wait();
-      toast.dismiss(loadingToast);
-      toast.success(`Minted ${amount} tUSD tokens!`, { title: 'Mint Successful' });
-      setStatus(`Minted ${amount} tUSD tokens.`);
-      await fetchTokenBalance();
+      const token = new ethers.Contract(
+        paymentTokenAddress,
+        paymentTokenABI,
+        provider
+      );
+      if ((await token.decimals()) !== 18n)
+        throw new Error(
+          'Legacy streams require 18-decimal tUSD. Use USDC only in the guarded path.'
+        );
+      const balance = await token.balanceOf(walletAddress);
+      if (epoch === session.current) {
+        setTokenBalance(ethers.formatEther(balance));
+        setBalanceError('');
+      }
     } catch (error) {
-      console.error('Mint failed:', error);
-      toast.error(error?.shortMessage || error?.message || 'Mint failed', { title: 'Mint Failed' });
-      setStatus(error?.shortMessage || error?.message || 'Mint failed.');
-    } finally { setIsProcessing(false); }
-  };
-
-  const fetchStreamsFromEvents = useCallback(async (me) => {
-    if (!contractWithProvider || !provider) return { incoming: [], outgoing: [] };
-    try {
-      const filter = contractWithProvider.filters.StreamCreated();
-      // Limit block range to avoid RPC "exceed maximum block range" error
-      const latestBlock = await provider.getBlockNumber();
-      const fromBlock = Math.max(0, latestBlock - 49000); // Stay under 50k block limit
-      const events = await contractWithProvider.queryFilter(filter, fromBlock, latestBlock);
-      const streamCards = await Promise.all(events.map(async (ev) => {
-        const streamId = ev.args.streamId;
-        const [sender, recipient, totalAmount, flowRate, startTime, stopTime, amountWithdrawn, isActive] = 
-          Object.values(await contractWithProvider.streams(streamId));
-        const now = Math.floor(Date.now() / 1000);
-        const elapsed = Math.max(0, Math.min(Number(stopTime), now) - Number(startTime));
-        const streamedSoFar = BigInt(elapsed) * BigInt(flowRate);
-        const claimable = isActive ? (streamedSoFar > BigInt(amountWithdrawn) ? streamedSoFar - BigInt(amountWithdrawn) : 0n) : 0n;
-        return { id: Number(streamId), sender, recipient, totalAmount: BigInt(totalAmount), flowRate: BigInt(flowRate),
-          startTime: Number(startTime), stopTime: Number(stopTime), amountWithdrawn: BigInt(amountWithdrawn),
-          isActive: Boolean(isActive), claimableInitial: claimable };
-      }));
-      const meLc = me?.toLowerCase();
-      return { incoming: streamCards.filter(s => s.recipient.toLowerCase() === meLc),
-               outgoing: streamCards.filter(s => s.sender.toLowerCase() === meLc) };
-    } catch (err) { console.error('Failed to fetch events:', err); return { incoming: [], outgoing: [] }; }
-  }, [contractWithProvider, provider]);
-
-  const refreshStreams = useCallback(async () => {
-    if (!walletAddress) return;
-    setIsLoadingStreams(true);
-    const { incoming, outgoing } = await fetchStreamsFromEvents(walletAddress);
-    setIncomingStreams(incoming);
-    setOutgoingStreams(outgoing);
-    setIsLoadingStreams(false);
-    setIsInitialLoad(false);
-  }, [walletAddress, fetchStreamsFromEvents]);
-
-  const withdraw = async (streamId) => {
-    if (!contractWithSigner) return;
-    try {
-      setStatus('Withdrawing...');
-      setIsProcessing(true);
-      const loadingToast = toast.transaction.pending('Processing withdrawal...');
-      const tx = await contractWithSigner.withdrawFromStream(streamId);
-      await tx.wait();
-      toast.dismiss(loadingToast);
-      setStatus('Withdrawn.');
-      toast.success(`Withdrawn from Stream #${streamId}`, { title: 'Withdrawal Complete' });
-      await refreshStreams();
-    } catch (e) {
-      console.error(e);
-      setStatus(e?.shortMessage || e?.message || 'Withdraw failed.');
-      toast.error(e?.shortMessage || e?.message || 'Withdraw failed', { title: 'Withdrawal Failed' });
-    } finally { setIsProcessing(false); }
-  };
-
-  const cancel = async (streamId) => {
-    if (!contractWithSigner) return;
-    try {
-      setStatus('Cancelling stream...');
-      setIsProcessing(true);
-      const loadingToast = toast.transaction.pending('Cancelling stream...');
-      const tx = await contractWithSigner.cancelStream(streamId);
-      await tx.wait();
-      toast.dismiss(loadingToast);
-      setStatus('Stream cancelled.');
-      toast.stream.cancelled(streamId);
-      await refreshStreams();
-    } catch (e) {
-      console.error(e);
-      setStatus(e?.shortMessage || e?.message || 'Cancel failed.');
-      toast.error(e?.shortMessage || e?.message || 'Cancel failed', { title: 'Cancellation Failed' });
-    } finally { setIsProcessing(false); }
-  };
-
-  const createStream = async (recipient, duration, amount) => {
-    if (!contractWithSigner || !provider || !signer) {
-      setStatus('Please connect your wallet.');
-      return null;
+      if (epoch === session.current) {
+        setTokenBalance(null);
+        setBalanceError(messageFor(error));
+      }
     }
+  }, [provider, walletAddress]);
+  const refreshStreams = useCallback(async () => {
+    if (!walletAddress || !contractWithProvider || !provider) return;
+    const epoch = session.current;
+    setIsLoadingStreams(true);
+    setStreamError('');
     try {
-      if (!ethers.isAddress(recipient)) { setStatus('Invalid recipient address.'); return null; }
-      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
-      if (await tokenContract.decimals() !== 18n) throw new Error('Legacy streams require 18 decimals. USDC is supported only by the guarded path.');
-      if ((await contractWithSigner.paymentToken()).toLowerCase() !== paymentTokenAddress.toLowerCase()) throw new Error('Stream token configuration mismatch');
-      const totalAmountWei = ethers.parseEther(amount.toString());
-      const dur = parseInt(duration, 10);
-      if (totalAmountWei <= 0n || !Number.isFinite(dur) || dur <= 0) {
-        setStatus('Enter a positive amount and duration.'); return null;
-      }
-      setStatus('Approving tUSD...');
-      const currentAllowance = await tokenContract.allowance(await signer.getAddress(), contractAddress);
-      if (currentAllowance < totalAmountWei) {
-        setStatus('Approving tUSD token...');
-        const approveTx = await tokenContract.approve(contractAddress, totalAmountWei);
-        await approveTx.wait();
-        setStatus('tUSD Approved.');
-      }
-      setStatus('Creating stream...');
-      setIsProcessing(true);
-      const tx = await contractWithSigner.createStream(recipient, dur, totalAmountWei, "{}");
-      const receipt = await tx.wait();
-      let createdId = null;
-      try {
-        const iface = contractWithSigner.interface;
-        const topic = iface.getEvent('StreamCreated').topicHash;
-        for (const log of receipt.logs || []) {
-          if (log.address?.toLowerCase() === contractAddress.toLowerCase() && log.topics?.[0] === topic) {
-            const parsed = iface.parseLog({ topics: Array.from(log.topics), data: log.data });
-            const sid = parsed?.args?.streamId ?? parsed?.args?.[0];
-            if (sid !== undefined && sid !== null) { createdId = Number(sid); break; }
-          }
-        }
-      } catch { /* Listener cleanup and optional log parsing are best-effort. */ }
-      if (createdId !== null) {
-        setStatus(`Stream created. ID #${createdId}`);
-        toast.stream.created(createdId);
-      } else {
-        setStatus('Stream created.');
-        toast.success('Stream created successfully', { title: 'Stream Created' });
-      }
-      await refreshStreams();
-      return createdId;
+      const latest = await provider.getBlockNumber();
+      const events = await contractWithProvider.queryFilter(
+        contractWithProvider.filters.StreamCreated(),
+        Math.max(0, latest - 49000),
+        latest
+      );
+      // Ignore unrelated parties before making per-stream RPC calls.
+      const mine = events.filter((ev) =>
+        [ev.args.sender, ev.args.recipient].some(
+          (a) => a.toLowerCase() === walletAddress.toLowerCase()
+        )
+      );
+      const streams = await Promise.all(
+        mine.map(async (ev) => {
+          const s = await contractWithProvider.streams(ev.args.streamId);
+          return {
+            id: ev.args.streamId.toString(),
+            sender: s.sender,
+            recipient: s.recipient,
+            totalAmount: s.totalAmount,
+            flowRate: s.flowRate,
+            startTime: Number(s.startTime),
+            stopTime: Number(s.stopTime),
+            amountWithdrawn: s.amountWithdrawn,
+            isActive: s.isActive,
+          };
+        })
+      );
+      if (epoch !== session.current) return;
+      setIncomingStreams(
+        streams.filter(
+          (s) => s.recipient.toLowerCase() === walletAddress.toLowerCase()
+        )
+      );
+      setOutgoingStreams(
+        streams.filter(
+          (s) => s.sender.toLowerCase() === walletAddress.toLowerCase()
+        )
+      );
     } catch (error) {
-      console.error('Stream creation failed:', error);
-      setStatus(error?.shortMessage || error?.message || 'Transaction failed.');
-      toast.error(error?.shortMessage || error?.message || 'Transaction failed', { title: 'Stream Creation Failed' });
-      return null;
-    } finally { setIsProcessing(false); }
-  };
-
-  const getClaimableBalance = async (streamId) => {
-    if (!provider) return '0.0';
-    try {
-      const read = new ethers.Contract(contractAddress, contractABI, provider);
-      const amount = await read.getClaimableBalance(streamId);
-      return ethers.formatEther(amount);
-    } catch { return '0.0'; }
-  };
-
-  const formatEth = (weiBigInt) => {
-    try { return Number(ethers.formatEther(weiBigInt)).toLocaleString(undefined, { maximumFractionDigits: 6 }); }
-    catch { return '0'; }
-  };
-
+      if (epoch === session.current) setStreamError(messageFor(error));
+    } finally {
+      if (epoch === session.current) {
+        setIsLoadingStreams(false);
+        setIsInitialLoad(false);
+      }
+    }
+  }, [walletAddress, contractWithProvider, provider]);
   useEffect(() => {
     if (!walletAddress || !contractWithProvider) return;
     refreshStreams();
     fetchTokenBalance();
-    const listener = () => refreshStreams();
-    contractWithProvider.on('StreamCreated', listener);
-    contractWithProvider.on('StreamCancelled', listener);
-    contractWithProvider.on('Withdrawn', listener);
+    const changed = () => {
+      refreshStreams();
+      fetchTokenBalance();
+    };
+    const names = ['StreamCreated', 'StreamCancelled', 'Withdrawn'];
+    names.forEach((name) => {
+      contractWithProvider.on(name, changed).catch(() => {});
+    });
     return () => {
-      try {
-        contractWithProvider.off('StreamCreated', listener);
-        contractWithProvider.off('StreamCancelled', listener);
-        contractWithProvider.off('Withdrawn', listener);
-      } catch { /* Listener cleanup and optional log parsing are best-effort. */ }
+      names.forEach((name) => {
+        contractWithProvider.off(name, changed).catch(() => {});
+      });
     };
   }, [walletAddress, contractWithProvider, refreshStreams, fetchTokenBalance]);
 
-  const value = {
-    provider, signer, walletAddress, chainId, status, setStatus, isProcessing, setIsProcessing,
-    tokenBalance, incomingStreams, setIncomingStreams, outgoingStreams, isLoadingStreams, isInitialLoad,
-    contractWithProvider, contractWithSigner, getNetworkName, connectWallet, fetchTokenBalance,
-    mintPaymentTokens, refreshStreams, withdraw, cancel, createStream, getClaimableBalance, formatEth, toast
+  const transact = async (label, action) => {
+    if (processing.current) return null;
+    processing.current = true;
+    setIsProcessing(true);
+    let pending;
+    const epoch = session.current;
+    const assertSession = () => {
+      if (epoch !== session.current)
+        throw new Error(
+          'Wallet session changed. Reconnect before starting another transaction.'
+        );
+    };
+    try {
+      if (!signer || !streamConfigured)
+        throw new Error(
+          'Connect a wallet and configure the legacy stream contracts first.'
+        );
+      if (
+        Number(await window.ethereum.request({ method: 'eth_chainId' })) !==
+        SEPOLIA
+      )
+        throw new Error(
+          'Switch to Ethereum Sepolia and reconnect before signing.'
+        );
+      assertSession();
+      setStatus(label);
+      pending = toast.transaction.pending(label);
+      const result = await action(assertSession);
+      if (epoch === session.current) {
+        setStatus('Transaction confirmed');
+        toast.success('Transaction confirmed on Sepolia.');
+        await Promise.all([refreshStreams(), fetchTokenBalance()]);
+      }
+      return result;
+    } catch (error) {
+      setStatus(messageFor(error));
+      toast.error(messageFor(error), { title: 'Transaction not completed' });
+      return null;
+    } finally {
+      if (pending) toast.dismiss(pending);
+      processing.current = false;
+      setIsProcessing(false);
+    }
   };
-
-  return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
+  const mintPaymentTokens = (amount = '1000') =>
+    transact(
+      'Confirm test tUSD mint in your wallet…',
+      async (assertSession) => {
+        const token = new ethers.Contract(
+          paymentTokenAddress,
+          paymentTokenABI,
+          signer
+        );
+        if ((await token.decimals()) !== 18n)
+          throw new Error(
+            'USDC uses Circle’s faucet, not legacy tUSD minting.'
+          );
+        assertSession();
+        return (
+          await token.mint(walletAddress, ethers.parseEther(amount))
+        ).wait();
+      }
+    );
+  const withdraw = (id) =>
+    transact('Confirm withdrawal in your wallet…', async () =>
+      (await contractWithSigner.withdrawFromStream(id)).wait()
+    );
+  const cancel = (id) =>
+    transact('Confirm stream cancellation in your wallet…', async () =>
+      (await contractWithSigner.cancelStream(id)).wait()
+    );
+  const createStream = async (recipient, duration, amount) => {
+    const result = await transact(
+      'Preparing stream. Check your wallet…',
+      async (assertSession) => {
+        if (!hasAddress(recipient))
+          throw new Error('Enter a nonzero Ethereum recipient address.');
+        const total = ethers.parseEther(amount.toString());
+        const dur = Number(duration);
+        if (
+          total <= 0n ||
+          !Number.isSafeInteger(dur) ||
+          dur < 1 ||
+          total / BigInt(dur) === 0n
+        )
+          throw new Error(
+            'Use a positive amount and whole-second duration with a nonzero flow rate.'
+          );
+        const token = new ethers.Contract(
+          paymentTokenAddress,
+          paymentTokenABI,
+          signer
+        );
+        if ((await token.decimals()) !== 18n)
+          throw new Error(
+            'Legacy streams require 18 decimals. USDC belongs to the guarded path.'
+          );
+        if (
+          (await contractWithSigner.paymentToken()).toLowerCase() !==
+          paymentTokenAddress.toLowerCase()
+        )
+          throw new Error('Stream token configuration mismatch.');
+        if ((await token.balanceOf(walletAddress)) < total)
+          throw new Error(
+            'Not enough tUSD for this stream. Mint test tUSD or lower the amount.'
+          );
+        if ((await token.allowance(walletAddress, contractAddress)) < total) {
+          assertSession();
+          setStatus('Step 1 of 2: approve tUSD in your wallet…');
+          await (await token.approve(contractAddress, total)).wait();
+        }
+        assertSession();
+        setStatus('Step 2 of 2: confirm stream creation…');
+        const receipt = await (
+          await contractWithSigner.createStream(recipient, dur, total, '{}')
+        ).wait();
+        let id = null;
+        for (const log of receipt.logs) {
+          if (log.address.toLowerCase() !== contractAddress.toLowerCase())
+            continue;
+          try {
+            const parsed = contractWithSigner.interface.parseLog(log);
+            if (parsed?.name === 'StreamCreated')
+              id = parsed.args.streamId.toString();
+          } catch {
+            /* Other event. */
+          }
+        }
+        return { id, confirmed: true };
+      }
+    );
+    return result;
+  };
+  const getClaimableBalance = async (id) => {
+    if (!contractWithProvider)
+      throw new Error('Connect a wallet and configure stream contracts first.');
+    if (!/^[1-9][0-9]*$/.test(String(id)))
+      throw new Error('Enter a positive whole-number stream ID.');
+    const s = await contractWithProvider.streams(id);
+    if (s.recipient.toLowerCase() !== walletAddress.toLowerCase())
+      throw new Error('Only the stream recipient can withdraw these funds.');
+    return ethers.formatEther(
+      await contractWithProvider.getClaimableBalance(id)
+    );
+  };
+  const formatEth = (value) => {
+    try {
+      return ethers.formatEther(value);
+    } catch {
+      return '0';
+    }
+  };
+  return (
+    <WalletContext.Provider
+      value={{
+        provider,
+        signer,
+        walletAddress,
+        chainId,
+        status,
+        setStatus,
+        isConnecting,
+        connectionError,
+        disconnectWallet,
+        isProcessing,
+        tokenBalance,
+        balanceError,
+        incomingStreams,
+        outgoingStreams,
+        isLoadingStreams,
+        streamError,
+        isInitialLoad,
+        streamConfigured,
+        contractWithProvider,
+        contractWithSigner,
+        getNetworkName,
+        connectWallet,
+        fetchTokenBalance,
+        mintPaymentTokens,
+        refreshStreams,
+        withdraw,
+        cancel,
+        createStream,
+        getClaimableBalance,
+        formatEth,
+        toast,
+      }}
+    >
+      {children}
+    </WalletContext.Provider>
+  );
 }
-
 export const useWallet = () => {
   const context = useContext(WalletContext);
   if (!context) throw new Error('useWallet must be used within WalletProvider');

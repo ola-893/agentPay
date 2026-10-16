@@ -1,112 +1,81 @@
-import { useState, useEffect } from 'react';
+import { useState, useId } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ArrowRightLeft, Bot, BookOpen } from 'lucide-react';
+import { navigation, isCurrentPage } from '../../lib/navigation';
 
-const defaultTabs = [
-  { id: 'dashboard', path: '/', icon: LayoutDashboard, label: 'CRE Workflow' },
-  { id: 'streams', path: '/streams', icon: ArrowRightLeft, label: 'Streams' },
-  { id: 'agent', path: '/agent', icon: Bot, label: 'Agent' },
-  { id: 'docs', path: '/docs', icon: BookOpen, label: 'Docs' },
-];
-
-// Bottom Navigation for Mobile
-export function MobileBottomNav({ tabs = defaultTabs }) {
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const location = useLocation();
-  const activeTab = tabs.find(t => t.path === location.pathname)?.id || 'dashboard';
-
-  // Hide on scroll down, show on scroll up
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      setIsVisible(currentScrollY < lastScrollY || currentScrollY < 50);
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
-
+export function MobileBottomNav() {
+  const { pathname } = useLocation();
   return (
     <nav
-      className={`
-        md:hidden fixed bottom-0 left-0 right-0 z-50
-        glass-darker border-t border-white/10
-        transition-transform duration-300 safe-area-bottom
-        ${isVisible ? 'translate-y-0' : 'translate-y-full'}
-      `}
+      aria-label="Mobile navigation"
+      className="fixed bottom-0 inset-x-0 z-40 border-t border-white/10 bg-[#0b101c]/95 backdrop-blur-xl safe-area-bottom lg:hidden"
     >
-      <div className="flex items-center justify-around px-2 py-2">
-        {tabs.map((tab) => {
-          const Icon = tab.icon;
-          return (
-            <Link
-              key={tab.id}
-              to={tab.path}
-              className={`
-                flex flex-col items-center justify-center
-                min-w-[64px] py-2 px-3 rounded-xl
-                transition-all duration-200 touch-manipulation
-                ${activeTab === tab.id
-                  ? 'bg-agentpay-500/20 text-agentpay-300'
-                  : 'text-white/50 active:bg-white/10'
-                }
-              `}
-            >
-              <Icon className="w-5 h-5 mb-0.5" />
-              <span className="text-[10px] font-medium">{tab.label}</span>
-              {activeTab === tab.id && (
-                <div className="absolute bottom-1 w-1 h-1 rounded-full bg-agentpay-400" />
-              )}
-            </Link>
-          );
-        })}
+      <div className="mx-auto grid max-w-lg grid-cols-4 gap-1 px-2 py-2">
+        {navigation.map(({ path, icon: Icon, shortLabel }) => (
+          <Link
+            key={path}
+            to={path}
+            aria-current={isCurrentPage(path, pathname) ? 'page' : undefined}
+            className={`relative flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[11px] font-medium ${
+              isCurrentPage(path, pathname)
+                ? 'bg-blue-500/15 text-blue-200'
+                : 'text-slate-400 hover:bg-white/5 hover:text-white'
+            }`}
+          >
+            <Icon size={19} aria-hidden="true" />
+            <span>{shortLabel}</span>
+          </Link>
+        ))}
       </div>
     </nav>
   );
 }
 
 // Collapsible Section Component
-export function CollapsibleSection({ title, icon, children, defaultOpen = true, className = '' }) {
+export function CollapsibleSection({
+  title,
+  icon,
+  children,
+  defaultOpen = true,
+  className = '',
+}) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
-
+  const id = useId();
   return (
-    <div className={`card-glass overflow-hidden ${className}`}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-4 md:p-6 touch-manipulation"
-      >
-        <div className="flex items-center gap-2">
-          {icon && (typeof icon === 'string' ? <span className="text-lg">{icon}</span> : icon)}
-          <h3 className="text-base md:text-lg font-semibold text-white">{title}</h3>
-        </div>
-        <svg
-          className={`w-5 h-5 text-white/50 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+    <section className={`panel min-w-0 ${className}`}>
+      <h2>
+        <button
+          type="button"
+          aria-expanded={isOpen}
+          aria-controls={id}
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl p-5 text-left font-semibold text-white"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-      
-      <div
-        className={`
-          transition-all duration-300 ease-in-out overflow-hidden
-          ${isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}
-        `}
-      >
-        <div className="px-4 pb-4 md:px-6 md:pb-6">
-          {children}
-        </div>
+          <span className="flex items-center gap-2">
+            {icon}
+            {title}
+          </span>
+          <span aria-hidden="true" className="text-slate-400">
+            {isOpen ? '−' : '+'}
+          </span>
+        </button>
+      </h2>
+      <div id={id} hidden={!isOpen} className="px-5 pb-5">
+        {children}
       </div>
-    </div>
+    </section>
   );
 }
 
 // Touch-friendly Button
-export function TouchButton({ children, onClick, variant = 'default', size = 'md', className = '', disabled = false, ...props }) {
+export function TouchButton({
+  children,
+  onClick,
+  variant = 'default',
+  size = 'md',
+  className = '',
+  disabled = false,
+  ...props
+}) {
   const variants = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
@@ -146,27 +115,32 @@ export function TouchButton({ children, onClick, variant = 'default', size = 'md
 export function TouchInput({ label, error, className = '', ...props }) {
   return (
     <div className={`space-y-1.5 ${className}`}>
-      {label && (
-        <label className="block text-sm text-white/70">{label}</label>
-      )}
+      {label && <label className="block text-sm text-white/70">{label}</label>}
       <input
         className={`
           input-default
           min-h-[44px] text-base
           touch-manipulation
-          ${error ? 'border-error-500 focus:border-error-500 focus:ring-error-500/20' : ''}
+          ${
+            error
+              ? 'border-error-500 focus:border-error-500 focus:ring-error-500/20'
+              : ''
+          }
         `}
         {...props}
       />
-      {error && (
-        <p className="text-xs text-error-400">{error}</p>
-      )}
+      {error && <p className="text-xs text-error-400">{error}</p>}
     </div>
   );
 }
 
 // Responsive Grid
-export function ResponsiveGrid({ children, cols = { default: 1, sm: 2, lg: 3 }, gap = 4, className = '' }) {
+export function ResponsiveGrid({
+  children,
+  cols = { default: 1, sm: 2, lg: 3 },
+  gap = 4,
+  className = '',
+}) {
   const colClasses = {
     1: 'grid-cols-1',
     2: 'grid-cols-2',
@@ -198,9 +172,24 @@ export function PullToRefreshIndicator({ isRefreshing }) {
   return (
     <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-down">
       <div className="flex items-center gap-2 px-4 py-2 rounded-full glass">
-        <svg className="w-4 h-4 animate-spin text-agentpay-400" viewBox="0 0 24 24" fill="none">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+        <svg
+          className="w-4 h-4 animate-spin text-agentpay-400"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+          />
         </svg>
         <span className="text-sm text-white/70">Refreshing...</span>
       </div>
