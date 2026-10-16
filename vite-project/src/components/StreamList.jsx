@@ -129,7 +129,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
 export default function StreamList({
   title,
-  emptyText,
   isLoading,
   streams,
   variant,

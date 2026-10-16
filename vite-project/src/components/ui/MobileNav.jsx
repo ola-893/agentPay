@@ -3,14 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, ArrowRightLeft, Bot, BookOpen } from 'lucide-react';
 
 const defaultTabs = [
-  { id: 'dashboard', path: '/', icon: LayoutDashboard, label: 'Dashboard' },
+  { id: 'dashboard', path: '/', icon: LayoutDashboard, label: 'CRE Workflow' },
   { id: 'streams', path: '/streams', icon: ArrowRightLeft, label: 'Streams' },
   { id: 'agent', path: '/agent', icon: Bot, label: 'Agent' },
   { id: 'docs', path: '/docs', icon: BookOpen, label: 'Docs' },
 ];
 
 // Bottom Navigation for Mobile
-export function MobileBottomNav({ walletAddress, tabs = defaultTabs }) {
+export function MobileBottomNav({ tabs = defaultTabs }) {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();

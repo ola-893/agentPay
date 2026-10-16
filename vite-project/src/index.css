@@ -7,8 +7,8 @@
   /* Primary Colors */
   --color-primary: #3b82f6;
   --color-primary-hover: #2563eb;
-  --color-accent: #a855f7;
-  --color-accent-hover: #9333ea;
+  --color-accent: #375bd2;
+  --color-accent-hover: #2a49b0;
 
   /* Semantic Colors */
   --color-success: #10b981;
@@ -57,7 +57,7 @@
     @apply bg-surface-900 text-white antialiased font-sans;
     background-image:
       radial-gradient(1200px 600px at 50% -10%, rgba(59, 130, 246, 0.12), transparent 60%),
-      radial-gradient(1000px 600px at 90% 10%, rgba(168, 85, 247, 0.10), transparent 60%),
+      radial-gradient(1000px 600px at 90% 10%, rgba(55, 91, 210, 0.10), transparent 60%),
       radial-gradient(1000px 600px at 10% 10%, rgba(59, 130, 246, 0.08), transparent 60%);
   }
 
@@ -243,7 +243,7 @@
     inset: 0;
     padding: 1px;
     border-radius: inherit;
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(168, 85, 247, 0.5));
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.5), rgba(55, 91, 210, 0.5));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
@@ -273,7 +273,7 @@
   }
 
   .glow-accent {
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.1);
+    box-shadow: 0 0 20px rgba(55, 91, 210, 0.3), 0 0 40px rgba(55, 91, 210, 0.1);
   }
 
   .glow-success {
@@ -361,7 +361,7 @@
   background: linear-gradient(90deg,
       #3b82f6,
       #8b5cf6,
-      #a855f7,
+      #375bd2,
       #ec4899,
       #3b82f6);
   background-size: 300% 100%;

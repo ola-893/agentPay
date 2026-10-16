@@ -288,7 +288,7 @@ const SystemHealth = ({ status }) => {
     );
 };
 
-export function AgentConsole({ config, setConfig, isPaused, setIsPaused, sdk }) {
+export function AgentConsole({ config, setConfig, isPaused, setIsPaused }) {
     const [agentIdInput, setAgentIdInput] = useState(config.agentId || "Dashboard-Agent");
     const [limits, setLimits] = useState({ daily: '100', weekly: '500', monthly: '2000' });
     const [thresholds, setThresholds] = useState([75, 90]);

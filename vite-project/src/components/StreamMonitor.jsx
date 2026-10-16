@@ -142,7 +142,7 @@ const HealthBadge = ({ status }) => {
 };
 
 // Auto-Renewal Status
-const AutoRenewalStatus = ({ enabled, nextRenewal }) => (
+const AutoRenewalStatus = ({ enabled }) => (
     <div className="flex items-center gap-2 text-xs">
         <span className={`w-2 h-2 rounded-full ${enabled ? 'bg-success-500' : 'bg-white/30'}`} />
         <span className="text-white/60">Auto-renew:</span>

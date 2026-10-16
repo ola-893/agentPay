@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Clock, Calendar, CalendarDays, Settings, Hexagon, Coins, Search, Rocket } from 'lucide-react';
 
 // Duration presets in seconds
@@ -37,7 +37,7 @@ const ProgressStep = ({ step, currentStep, label }) => {
 };
 
 // Recipient Input with validation
-const RecipientInput = ({ value, onChange, isValid }) => {
+const RecipientInput = ({ value, onChange }) => {
   const isEthAddress = /^0x[a-fA-F0-9]{40}$/.test(value);
   const showValidation = value.length > 0;
 
@@ -199,7 +199,6 @@ export default function CreateStreamForm({
   setRecipient,
   amountEth,
   setAmountEth,
-  durationSeconds,
   setDurationSeconds,
   onSubmit,
 }) {

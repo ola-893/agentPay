@@ -24,6 +24,8 @@ export function WalletProvider({ children }) {
   const [isLoadingStreams, setIsLoadingStreams] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  useEffect(() => { if (walletAddress && !contractAddress) setIsInitialLoad(false); }, [walletAddress]);
+
   const contractWithProvider = useMemo(() => {
     if (!provider || !contractAddress) return null;
     try { return new ethers.Contract(contractAddress, contractABI, provider); }
@@ -219,7 +221,7 @@ export function WalletProvider({ children }) {
       let createdId = null;
       try {
         const iface = contractWithSigner.interface;
-        const topic = iface.getEventTopic('StreamCreated');
+        const topic = iface.getEvent('StreamCreated').topicHash;
         for (const log of receipt.logs || []) {
           if (log.address?.toLowerCase() === contractAddress.toLowerCase() && log.topics?.[0] === topic) {
             const parsed = iface.parseLog({ topics: Array.from(log.topics), data: log.data });
@@ -227,7 +229,7 @@ export function WalletProvider({ children }) {
             if (sid !== undefined && sid !== null) { createdId = Number(sid); break; }
           }
         }
-      } catch {}
+      } catch { /* Listener cleanup and optional log parsing are best-effort. */ }
       if (createdId !== null) {
         setStatus(`Stream created. ID #${createdId}`);
         toast.stream.created(createdId);
@@ -272,7 +274,7 @@ export function WalletProvider({ children }) {
         contractWithProvider.off('StreamCreated', listener);
         contractWithProvider.off('StreamCancelled', listener);
         contractWithProvider.off('Withdrawn', listener);
-      } catch {}
+      } catch { /* Listener cleanup and optional log parsing are best-effort. */ }
     };
   }, [walletAddress, contractWithProvider, refreshStreams, fetchTokenBalance]);
 

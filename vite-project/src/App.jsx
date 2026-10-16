@@ -52,18 +52,18 @@ function AppContent() {
   const [manualStreamId, setManualStreamId] = useState('');
   const [claimableBalance, setClaimableBalance] = useState('0.0');
   const [isProcessing, setIsProcessing] = useState(false);
-  const [myStreamIds, setMyStreamIds] = useState([]);
+  const [, setMyStreamIds] = useState([]);
   const [tokenBalance, setTokenBalance] = useState('0.0');
 
   // AgentPay Dashboard State
   const [agentConfig, setAgentConfig] = useState({ agentId: 'Dashboard-Agent', spendingLimits: { dailyLimit: '100' } });
   const [isPaused, setIsPaused] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [decisionLogs, setDecisionLogs] = useState([
+  const [decisionLogs] = useState([
     { timestamp: Date.now() - 120000, mode: 'stream', reasoning: 'High volume detected (50+ requests). Streaming is 40% cheaper.', volume: 50 },
     { timestamp: Date.now() - 60000, mode: 'direct', reasoning: 'Low traffic. Direct payment is optimal.', volume: 2 },
   ]);
-  const [efficiencyMetrics, setEfficiencyMetrics] = useState({ requestsSent: 47, signersTriggered: 2 });
+  const [efficiencyMetrics] = useState({ requestsSent: 47, signersTriggered: 2 });
 
   // Convert outgoing streams to StreamMonitor format
   const activeStreamsForMonitor = useMemo(() => {
@@ -262,7 +262,7 @@ function AppContent() {
             }
           }
         }
-      } catch { }
+      } catch { /* Legacy event parsing and cleanup are best-effort. */ }
       // Fallback: query events at the tx block filtered by sender
       if (createdId === null && contractWithProvider) {
         try {
@@ -273,7 +273,7 @@ function AppContent() {
           if (sid !== undefined && sid !== null) {
             createdId = Number(sid);
           }
-        } catch { }
+        } catch { /* Legacy event parsing and cleanup are best-effort. */ }
       }
 
       if (createdId !== null) {
@@ -439,7 +439,7 @@ function AppContent() {
         contractWithProvider.off('StreamCreated', createdListener);
         contractWithProvider.off('StreamCancelled', cancelledListener);
         contractWithProvider.off('Withdrawn', withdrawnListener);
-      } catch { }
+      } catch { /* Legacy event parsing and cleanup are best-effort. */ }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [walletAddress, contractWithProvider]);
@@ -519,7 +519,6 @@ function AppContent() {
     }
   };
 
-  const nowSec = Math.floor(Date.now() / 1000);
   const isWorking = isProcessing;
 
   // Render loading skeleton for initial load

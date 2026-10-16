@@ -13,7 +13,7 @@ export default function AgentConsolePage() {
     spendingLimits: { dailyLimit: '100', perRequestLimit: '1' }
   });
   const [isPaused, setIsPaused] = useState(false);
-  const [decisionLogs, setDecisionLogs] = useState([
+  const [decisionLogs] = useState([
     { 
       timestamp: Date.now() - 300000, 
       mode: 'stream', 

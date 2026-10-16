@@ -95,7 +95,7 @@ export function ErrorFallback({ error, onRetry, variant = 'default' }) {
         </div>
 
         {/* Error details (collapsible in development) */}
-        {process.env.NODE_ENV === 'development' && error && (
+        {import.meta.env.DEV && error && (
           <details className="mt-4 text-left">
             <summary className="text-xs text-white/40 cursor-pointer hover:text-white/60">
               Technical Details

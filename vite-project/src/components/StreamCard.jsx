@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { CheckCircle, AlertTriangle, XCircle, Coins } from 'lucide-react';
 
 // Animated Counter for real-time balance

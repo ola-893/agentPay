@@ -140,7 +140,7 @@ const NPlusOneVisualizer = () => {
 };
 
 // Main Component
-export function EfficiencyMetrics({ metrics }) {
+export function EfficiencyMetrics() {
     const [timeframe, setTimeframe] = useState('7d');
 
     // Example dummy data for charts

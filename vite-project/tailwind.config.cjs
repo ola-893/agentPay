@@ -77,14 +77,14 @@ module.exports = {
         accent: {
           50: '#faf5ff',
           100: '#f3e8ff',
-          200: '#e9d5ff',
-          300: '#d8b4fe',
-          400: '#c084fc',
-          500: '#a855f7', // Accent
-          600: '#9333ea',
-          700: '#7c3aed',
-          800: '#6b21a8',
-          900: '#581c87',
+          200: '#dbeafe',
+          300: '#bfdbfe',
+          400: '#93c5fd',
+          500: '#375bd2', // Accent
+          600: '#2a49b0',
+          700: '#254199',
+          800: '#1e3a8a',
+          900: '#172554',
         },
         // Semantic Colors
         success: {
@@ -145,9 +145,9 @@ module.exports = {
       backgroundImage: {
         grid: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.06) 1px, transparent 0)',
         // AgentPay Brand Gradients
-        'agentpay-gradient': 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #a855f7 100%)',
+        'agentpay-gradient': 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #375bd2 100%)',
         'agentpay-subtle': 'linear-gradient(135deg, rgba(59,130,246,0.1) 0%, rgba(168,85,247,0.1) 100%)',
-        'hero': 'conic-gradient(from 180deg at 50% 50%, #3b82f6, #8b5cf6, #a855f7, #3b82f6)',
+        'hero': 'conic-gradient(from 180deg at 50% 50%, #3b82f6, #8b5cf6, #375bd2, #3b82f6)',
         'mesh': 'radial-gradient(at 40% 20%, rgba(59,130,246,0.15) 0px, transparent 50%), radial-gradient(at 80% 0%, rgba(168,85,247,0.12) 0px, transparent 50%), radial-gradient(at 0% 50%, rgba(59,130,246,0.08) 0px, transparent 50%)',
         // Status Gradients
         'success-gradient': 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
