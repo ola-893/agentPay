@@ -3,7 +3,7 @@ export const contractAddress = (typeof import.meta !== 'undefined' && import.met
   ? import.meta.env.VITE_CONTRACT_ADDRESS
   : ""; // Configure your AgentPayStream deployment
 
-// tUSD Token address on Sepolia
+// Legacy 18-decimal tUSD streams only. Circle USDC belongs to the separate CRE guarded path.
 export const paymentTokenAddress = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_PAYMENT_TOKEN_ADDRESS)
   ? import.meta.env.VITE_PAYMENT_TOKEN_ADDRESS
   : ""; // Configure your 18-decimal test token

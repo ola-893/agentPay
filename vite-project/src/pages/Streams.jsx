@@ -80,7 +80,7 @@ export default function Streams() {
         <ArrowRightLeft className="w-16 h-16 text-white/60 mb-4" />
         <h2 className="text-2xl font-bold text-white mb-2">Connect Your Wallet</h2>
         <p className="text-white/60 text-center max-w-md">
-          Connect your wallet to create and manage payment streams.
+          Legacy streams use an 18-decimal tUSD deployment. Circle Sepolia USDC is supported through the CRE guarded path only. Connect your wallet to manage legacy streams.
         </p>
       </div>
     );
@@ -96,6 +96,7 @@ export default function Streams() {
 
   return (
     <div className="space-y-8 md:space-y-12 animate-fade-in">
+      <p className="rounded-xl border border-white/10 p-4 text-sm text-white/60">Legacy tUSD streams · 18 decimals. USDC payments use the separate CRE guarded path; do not configure USDC as the stream token.</p>
       {/* tUSD Token Balance Card */}
       <section className="card-glass p-4 md:p-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

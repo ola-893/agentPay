@@ -94,6 +94,7 @@ export function WalletProvider({ children }) {
     if (!provider || !walletAddress || !paymentTokenAddress) return;
     try {
       const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, provider);
+      if (await tokenContract.decimals() !== 18n) throw new Error('Legacy streams require an 18-decimal token. Use USDC only through guarded settlement.');
       const balance = await tokenContract.balanceOf(walletAddress);
       setTokenBalance(ethers.formatEther(balance));
     } catch (error) { console.error('Failed to fetch tUSD balance:', error); }
@@ -103,9 +104,10 @@ export function WalletProvider({ children }) {
     if (!signer || !walletAddress || !paymentTokenAddress) { toast.warning('Connect a wallet and configure the test token first'); return; }
     try {
       setIsProcessing(true);
+      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
+      if (await tokenContract.decimals() !== 18n) throw new Error('USDC uses the Circle faucet and guarded settlement, not legacy minting.');
       setStatus('Minting tUSD tokens...');
       const loadingToast = toast.transaction.pending('Minting tUSD tokens...');
-      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
       const tx = await tokenContract.mint(walletAddress, ethers.parseEther(amount));
       await tx.wait();
       toast.dismiss(loadingToast);
@@ -200,13 +202,15 @@ export function WalletProvider({ children }) {
     }
     try {
       if (!ethers.isAddress(recipient)) { setStatus('Invalid recipient address.'); return null; }
+      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
+      if (await tokenContract.decimals() !== 18n) throw new Error('Legacy streams require 18 decimals. USDC is supported only by the guarded path.');
+      if ((await contractWithSigner.paymentToken()).toLowerCase() !== paymentTokenAddress.toLowerCase()) throw new Error('Stream token configuration mismatch');
       const totalAmountWei = ethers.parseEther(amount.toString());
       const dur = parseInt(duration, 10);
       if (totalAmountWei <= 0n || !Number.isFinite(dur) || dur <= 0) {
         setStatus('Enter a positive amount and duration.'); return null;
       }
       setStatus('Approving tUSD...');
-      const tokenContract = new ethers.Contract(paymentTokenAddress, paymentTokenABI, signer);
       const currentAllowance = await tokenContract.allowance(await signer.getAddress(), contractAddress);
       if (currentAllowance < totalAmountWei) {
         setStatus('Approving tUSD token...');

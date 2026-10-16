@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { ArrowUpRight, Check, CheckCircle2, Copy, Download, ExternalLink, FileCheck2, Globe, Loader2, ShieldCheck, ShieldX, Workflow } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { formatTokenUnits } from '../lib/token-units.mjs';
 
-const money = value => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(value) / 1e8);
-const units = value => `${(Number(BigInt(value)) / 1e18).toLocaleString('en-US', { maximumFractionDigits: 8 })} tUSD`;
+const money = value => `$${formatTokenUnits(value, 8)}`;
+const units = (value, result) => `${formatTokenUnits(value, result.tokenDecimals)} ${result.tokenSymbol}`;
 
 function Observation({ icon: Icon, label, title, children }) {
   return <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><div className="flex items-center gap-2 text-xs uppercase tracking-widest text-white/40"><Icon size={15} />{label}</div><h3 className="mt-4 text-lg font-semibold text-white">{title}</h3><div className="mt-2 text-sm leading-relaxed text-white/55">{children}</div></div>;
@@ -19,7 +20,7 @@ export default function CREWorkflow() {
     setEvidence(null); setError(''); setCopied(false);
     fetch(`${import.meta.env.BASE_URL}evidence/cre-${scenario}.json`, { signal: controller.signal })
       .then(response => { if (!response.ok) throw new Error('Simulation evidence is unavailable. Run npm run cre:capture to generate it.'); return response.json(); })
-      .then(data => { if (data.result?.workflow !== 'agentpay-payment-guard' || data.result.schemaVersion !== 1 || data.scenario !== scenario) throw new Error('Unexpected evidence format'); setEvidence(data); })
+      .then(data => { if (data.result?.workflow !== 'agentpay-payment-guard' || data.result.schemaVersion !== 2 || data.result.tokenSymbol !== 'USDC' || data.result.tokenDecimals !== 6 || data.scenario !== scenario) throw new Error('Expected current six-decimal USDC evidence. Run npm run cre:capture for both scenarios.'); setEvidence(data); })
       .catch(e => { if (e.name !== 'AbortError') setError(e.message); });
     return () => controller.abort();
   }, [scenario]);
@@ -39,7 +40,7 @@ export default function CREWorkflow() {
 
       <div className="rounded-2xl border border-blue-400/20 bg-blue-500/5 px-5 py-4 text-sm text-blue-200/80"><strong>Recorded simulation evidence.</strong> These observations were captured by the CRE CLI, rather than fetched live by this page. No payment was sent and no workflow is deployed. A saved ALLOW result cannot authorize spending.</div>
 
-      <div className="rounded-2xl border border-white/10 px-5 py-4"><h3 className="font-semibold text-white">Why ETH/USD?</h3><p className="mt-2 text-sm leading-relaxed text-white/55">This is an oracle-disagreement circuit breaker: an agent pauses payment when an independent API and an onchain reference disagree, or the reference is stale. It demonstrates data-quality policy, not the value or peg of tUSD. A real USDC payment policy would need a USDC/USD depeg check and the correct token address and decimals.</p></div>
+      <div className="rounded-2xl border border-white/10 px-5 py-4"><h3 className="font-semibold text-white">USDC payments. USDC/USD policy.</h3><p className="mt-2 text-sm leading-relaxed text-white/55">The guarded path uses Circle’s six-decimal Sepolia USDC. CRE compares Coinbase and Chainlink USDC/USD, checks each price against $1, and rejects stale or over-budget requests. Sepolia USDC has no monetary value; these USD observations model payment-asset risk. Legacy tUSD streams remain separate.</p><a href="https://faucet.circle.com/" target="_blank" rel="noreferrer" className="mt-3 inline-flex items-center gap-1 text-sm text-blue-300">Get test USDC from Circle <ExternalLink size={12} /></a></div>
 
       <div className="flex flex-wrap gap-2" role="group" aria-label="Simulation scenario">
         {[['allow', 'Within budget'], ['deny-budget', 'Over budget']].map(([value, label]) => <button key={value} type="button" aria-pressed={scenario === value} onClick={() => setScenario(value)} className={`rounded-xl px-5 py-3 text-sm font-medium border transition-colors ${scenario === value ? 'border-blue-400/50 bg-blue-500/15 text-blue-200' : 'border-white/10 text-white/50 hover:bg-white/5'}`}>{label}</button>)}
@@ -54,16 +55,16 @@ export default function CREWorkflow() {
             <div className="text-sm text-white/50 md:text-right"><p className="text-white/75">Ethereum Sepolia · Chain {result.chainId}</p><p className="mt-1">Captured {new Date(evidence.capturedAt).toLocaleString()}</p><p className="mt-1">Authorization window: {result.validUntil - result.observedAt} seconds from observation</p></div>
           </div>
           <div className="mt-6 grid gap-4 border-t border-white/10 pt-5 sm:grid-cols-3">
-            <div><p className="text-xs text-white/40">Requested payment</p><p className="mt-1 text-xl font-semibold text-white">{units(result.request.amount)}</p></div>
-            <div><p className="text-xs text-white/40">Per-request policy cap</p><p className="mt-1 text-xl font-semibold text-white">{units(result.request.spendingCap)}</p></div>
+            <div><p className="text-xs text-white/40">Requested payment</p><p className="mt-1 text-xl font-semibold text-white">{units(result.request.amount, result)}</p><p className="mt-1 text-xs text-white/40">{result.request.amount} raw units · {result.tokenDecimals} decimals</p></div>
+            <div><p className="text-xs text-white/40">Per-request policy cap</p><p className="mt-1 text-xl font-semibold text-white">{units(result.request.spendingCap, result)}</p><a className="mt-1 inline-flex items-center gap-1 text-xs text-blue-300" href={`https://sepolia.etherscan.io/token/${result.request.token}`} target="_blank" rel="noreferrer">Circle Sepolia USDC <ExternalLink size={12} /></a></div>
             <div><p className="text-xs text-white/40">Publication</p><p className="mt-1 text-xl font-semibold text-white">{result.published ? 'Submitted onchain' : 'Preview only'}</p></div>
           </div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <Observation icon={Globe} label="01 / External API" title={money(result.externalPriceUsd8)}><p>Coinbase ETH/USD spot quote, aggregated through CRE HTTP consensus.</p><a href={result.marketApiUrl} className="mt-3 inline-flex items-center gap-1 text-blue-300" target="_blank" rel="noreferrer">Inspect endpoint <ExternalLink size={12} /></a></Observation>
-          <Observation icon={Workflow} label="02 / Onchain read" title={money(result.chainlinkPriceUsd8)}><p>Chainlink ETH/USD on Sepolia. Finalized contract reads; {result.observedAt - result.feedUpdatedAt}s old at execution. Freshness headroom at capture: {result.maxFeedAgeSeconds - (result.observedAt - result.feedUpdatedAt)}s.</p><a href={`https://sepolia.etherscan.io/address/${result.feedAddress}`} className="mt-3 inline-flex items-center gap-1 text-blue-300" target="_blank" rel="noreferrer">Inspect feed <ExternalLink size={12} /></a></Observation>
-          <Observation icon={CheckCircle2} label="03 / Policy" title={`${(Math.abs(Number(result.externalPriceUsd8) - Number(result.chainlinkPriceUsd8)) / Number(result.chainlinkPriceUsd8) * 100).toFixed(3)}% deviation`}><p>Maximum {result.maxDeviationBps / 100}%. Feed freshness, completed round, and payment cap are checked with integer arithmetic.</p></Observation>
+          <Observation icon={Globe} label="01 / External API" title={money(result.externalPriceUsd8)}><p>Coinbase USDC/USD spot quote, aggregated through CRE HTTP consensus.</p><a href={result.marketApiUrl} className="mt-3 inline-flex items-center gap-1 text-blue-300" target="_blank" rel="noreferrer">Inspect endpoint <ExternalLink size={12} /></a></Observation>
+          <Observation icon={Workflow} label="02 / Onchain read" title={money(result.chainlinkPriceUsd8)}><p>Chainlink USDC/USD on Sepolia. Finalized contract reads; {result.observedAt - result.feedUpdatedAt}s old at execution. Freshness headroom at capture: {result.maxFeedAgeSeconds - (result.observedAt - result.feedUpdatedAt)}s. Maximum age: {result.maxFeedAgeSeconds}s.</p><a href={`https://sepolia.etherscan.io/address/${result.feedAddress}`} className="mt-3 inline-flex items-center gap-1 text-blue-300" target="_blank" rel="noreferrer">Inspect feed <ExternalLink size={12} /></a></Observation>
+          <Observation icon={CheckCircle2} label="03 / Policy" title={`${(Math.abs(Number(result.externalPriceUsd8) - Number(result.chainlinkPriceUsd8)) / Number(result.chainlinkPriceUsd8) * 100).toFixed(3)}% disagreement`}><p>Maximum disagreement: {result.maxDeviationBps / 100}%. Each source must also stay within {result.maxPegDeviationBps / 100}% of $1. Freshness, completed round, and payment cap use integer arithmetic.</p></Observation>
           <Observation icon={FileCheck2} label="04 / CRE report" title={result.reportGenerated ? 'Report generated' : 'No report'}><p>The report binds the payment parties, token, amount, chain, receiver, request ID, and expiry. This run did not publish it.</p></Observation>
         </div>
 
