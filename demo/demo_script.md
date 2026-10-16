@@ -34,8 +34,8 @@ npx ts-node demo/provider.ts
 **Expected Output**:
 ```
 🔧 Provider Configuration:
-   AgentPayStream Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-   tUSD Token: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+   AgentPayStream Contract: YOUR_AGENTPAY_STREAM_ADDRESS
+   tUSD Token: YOUR_TEST_TOKEN_ADDRESS
    RPC URL: https://rpc.sepolia.org
 
 🚀 AgentPay Demo Provider running on http://localhost:3005
@@ -88,7 +88,7 @@ npx ts-node demo/consumer.ts
 [AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
 [AgentPaySDK] Approving tUSD...
 [AgentPaySDK] Approved.
-[AgentPaySDK] Creating stream to 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896...
+[AgentPaySDK] Creating stream to YOUR_TEST_TOKEN_ADDRESS...
 [AgentPaySDK] Stream #X created. Retrying request...
 ✅ REQUEST SUCCESS!
 📦 Response: { "success": true, "data": "🌟 This is PREMIUM content..." }
@@ -117,8 +117,8 @@ npx ts-node demo/consumer.ts
 The provider returns HTTP 402 with payment requirements in headers:
 - `X-AgentPay-Mode: streaming`
 - `X-AgentPay-Rate: 0.0001` (tUSD per second)
-- `X-AgentPay-Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
-- `X-Payment-Token: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896`
+- `X-AgentPay-Contract: YOUR_AGENTPAY_STREAM_ADDRESS`
+- `X-Payment-Token: YOUR_TEST_TOKEN_ADDRESS`
 
 ### 2. AI-Powered Payment Decisions
 The Gemini AI brain analyzes:
@@ -134,7 +134,7 @@ The Gemini AI brain analyzes:
 ### 4. Real Blockchain Transactions
 All transactions are real and verifiable on Sepolia:
 - View on Etherscan: `https://sepolia.etherscan.io/address/YOUR_WALLET`
-- Contract: `https://sepolia.etherscan.io/address/0x155A00fBE3D290a8935ca4Bf5244283685Bb0035`
+- Contract: `https://sepolia.etherscan.io/address/YOUR_AGENTPAY_STREAM_ADDRESS`
 
 ---
 
@@ -142,8 +142,8 @@ All transactions are real and verifiable on Sepolia:
 
 | Contract | Address |
 |----------|---------|
-| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
-| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
+| AgentPayStream | `YOUR_AGENTPAY_STREAM_ADDRESS` |
+| MockUSD | `YOUR_TEST_TOKEN_ADDRESS` |
 
 ---
 

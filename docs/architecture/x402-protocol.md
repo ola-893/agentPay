@@ -45,7 +45,7 @@ X-Payment-Types: stream,direct
 X-Payment-Amount: 0.001
 X-Payment-Currency: tUSD
 X-Payment-Recipient: 0x1234...
-X-Payment-Contract: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
+X-Payment-Contract: YOUR_AGENTPAY_STREAM_ADDRESS
 X-Payment-Network: sepolia
 X-Payment-Description: Premium API access
 ```

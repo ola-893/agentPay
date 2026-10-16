@@ -1,5 +1,7 @@
 # Table of contents
 
+* [CRE bounty submission](CRE_SUBMISSION.md)
+
 * [Introduction](README.md)
 
 ## Getting Started

@@ -6,8 +6,8 @@ Guide for deploying AgentPay to Ethereum Sepolia testnet.
 
 | Contract | Address |
 |----------|---------|
-| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
-| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
+| MockUSD | `YOUR_TEST_TOKEN_ADDRESS` |
+| AgentPayStream | `YOUR_AGENTPAY_STREAM_ADDRESS` |
 
 **Network:** Ethereum Sepolia (Chain ID: 11155111)
 
@@ -58,19 +58,19 @@ npx hardhat run scripts/deploy.js --network sepolia
 ```
 Deploying contracts with the account: 0x...
 Deploying MockUSD...
-MockUSD deployed to: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-Deploying AgentPayStream with tUSD address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-AgentPayStream deployed to: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
+MockUSD deployed to: YOUR_TEST_TOKEN_ADDRESS
+Deploying AgentPayStream with tUSD address: YOUR_TEST_TOKEN_ADDRESS
+AgentPayStream deployed to: YOUR_AGENTPAY_STREAM_ADDRESS
 ```
 
 ### 5. Verify Contracts (Optional)
 
 ```bash
 # Verify MockUSD
-npx hardhat verify --network sepolia 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+npx hardhat verify --network sepolia YOUR_TEST_TOKEN_ADDRESS
 
 # Verify AgentPayStream
-npx hardhat verify --network sepolia 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035 "0x96B1FE54Ee89811f46ecE4a347950E0D682D3896"
+npx hardhat verify --network sepolia YOUR_AGENTPAY_STREAM_ADDRESS "YOUR_TEST_TOKEN_ADDRESS"
 ```
 
 ### 6. Update Frontend
@@ -78,8 +78,8 @@ npx hardhat verify --network sepolia 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035 
 Update `vite-project/src/contactInfo.js`:
 
 ```javascript
-export const contractAddress = "0x155A00fBE3D290a8935ca4Bf5244283685Bb0035";
-export const paymentTokenAddress = "0x96B1FE54Ee89811f46ecE4a347950E0D682D3896";
+export const contractAddress = "YOUR_AGENTPAY_STREAM_ADDRESS";
+export const paymentTokenAddress = "YOUR_TEST_TOKEN_ADDRESS";
 ```
 
 ## Network Configuration

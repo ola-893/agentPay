@@ -4,7 +4,7 @@ MockUSD is a test ERC-20 token for AgentPay development.
 
 ## Contract Address
 
-**Sepolia**: `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896`
+**Sepolia**: `YOUR_TEST_TOKEN_ADDRESS`
 
 ## Overview
 
@@ -126,7 +126,7 @@ await token.mint(myAddress, ethers.parseEther('1000'));
 
 ### Via Etherscan
 
-1. Go to [MockUSD on Etherscan](https://sepolia.etherscan.io/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896#writeContract)
+1. Go to [MockUSD on Etherscan](https://sepolia.etherscan.io/address/YOUR_TEST_TOKEN_ADDRESS#writeContract)
 2. Connect wallet
 3. Call `mint` with your address and amount
 

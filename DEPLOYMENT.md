@@ -1,281 +1,38 @@
-# AgentPay Deployment Guide
+# AgentPay setup and deployment
 
-## Overview
+## Simulation and frontend
 
-AgentPay is "The Streaming Extension for x402" - a hybrid payment protocol that solves the N+1 Signature Problem for AI agent payments. This guide covers deployment to Ethereum Sepolia testnet.
+Recorded evidence and read-only CRE simulation require no deployed AgentPay contracts. Follow [README](README.md). The RPC is in `cre/project.yaml`; use a reliable Sepolia HTTPS endpoint if the public RPC is busy.
 
-**Key Innovation**: 2 on-chain transactions (Open + Close) regardless of request volume.
+`npm run build:web` produces `vite-project/dist`, a static React app with evidence JSON from `public/evidence`. Preserve the SPA fallback (`_redirects` / `netlify.toml`) when hosting. No hosting deployment is included in the recorded evidence.
 
-## Prerequisites
+## Optional public-network deployment (not performed here)
 
-- Node.js v18+
-- npm or yarn
-- MetaMask or compatible wallet
-- Sepolia testnet ETH (for gas fees)
-- Environment variables configured
+1. Copy `.env.example` to `.env` and set a testnet `PRIVATE_KEY` and RPC.
+2. Set `CRE_FORWARDER_ADDRESS` from the official Chainlink CRE forwarder directory for Sepolia. Use the production forwarder, not a wallet or a mock.
+3. Run `npm run deploy:guard`. It deploys and connects AgentPayGuard and AgentPaySettlement. With a blank `CRE_WORKFLOW_ID`, reporting remains disabled.
+4. In `cre/payment-guard/config.staging.json`, configure real agent, recipient, token, integer amounts and cap, a fresh random 32-byte request ID, the guard receiver address, and `publishReport: true`.
+5. Obtain CRE deployment access and follow the [official deployment guide](https://docs.chain.link/cre/guides/operations/deploying-workflows). Deploy the configured workflow, then call `guard.setWorkflowId(actualWorkflowId)` from its deploying owner. Updates that change workflow identity need a corresponding binding update. Reports fail until identity matches.
+6. Once a report has been accepted onchain, use the guarded client with a funded signer and the deployed addresses.
 
-## Environment Setup
-
-Create a `.env` file in the project root:
-
-```bash
-# Required
-PRIVATE_KEY=0x...                    # Deployer wallet private key
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
-
-# Optional
-ETHERSCAN_API_KEY=...                # For contract verification
-GEMINI_API_KEY=...                   # For AI features
-
-# Frontend (vite-project/.env)
-VITE_CONTRACT_ADDRESS=0x...          # AgentPayStream contract address (after deployment)
-VITE_PAYMENT_TOKEN_ADDRESS=0x...        # MockUSD address (after deployment)
-VITE_PAYMENT_TOKEN_ADDRESS=0x...        # MockUSD address (after deployment)
+```ts
+import { GuardedPaymentClient } from './sdk/src';
+const payments = new GuardedPaymentClient(signer, {
+  guardAddress, settlementAddress, chainId: 11155111,
+});
+const receipt = await payments.pay(requestId, recipient, token, amountInTokenUnits);
 ```
 
-## Quick Start
+The consumer accepts 62-byte packed identity metadata and the 64-byte production forwarder form. It verifies forwarder, workflow ID, destination chain and receiver, request uniqueness, payment parties, and expiry. Settlement consumes authorization before transfer; transfer failure reverts the complete operation. An ABI report body or frontend JSON cannot call the consumer directly.
 
-### 1. Install Dependencies
+The forwarder is immutable. The owner can configure workflow identity and connect a deployed settlement contract once. Protect that owner key and review workflow configuration. This is an unaudited prototype, not a production payments service.
 
-```bash
-# Root project
-npm install
+## Legacy stream deployment
 
-# SDK
-cd sdk && npm install && cd ..
+`npm run deploy:sepolia` deploys new AgentPayStream and MockUSD contracts. Do not reuse old addresses: the new ABI uses `paymentToken()`.
 
-# Server
-cd server && npm install && cd ..
+Server/demo: set `AGENTPAY_STREAM_ADDRESS`, `PAYMENT_TOKEN_ADDRESS`, and `PAYMENT_RECIPIENT_ADDRESS` in `.env`. Frontend: set `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local`.
 
-# Frontend
-cd vite-project && npm install && cd ..
-```
+The original stream UI and SDK assume 18-decimal test tokens; do not point them at 6-decimal USDC. The new guarded client accepts integer token units, with the matching units required in workflow policy.
 
-### 2. Deploy Contracts to Sepolia
-
-```bash
-npx hardhat run scripts/deploy.js --network sepolia
-```
-
-**Expected Output:**
-```
-Deploying contracts with the account: 0x...
-Deploying MockUSD...
-MockUSD deployed to: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-Deploying AgentPayStream with tUSD address: 0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
-AgentPayStream deployed to: 0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-```
-
-**Current Sepolia Deployment (January 2026):**
-| Contract | Address |
-|----------|---------|
-| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` |
-| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` |
-
-**Save these addresses!** You'll need them for configuration.
-
-### 3. Update Configuration
-
-After deployment, update these files:
-
-**`vite-project/.env`:**
-```bash
-VITE_CONTRACT_ADDRESS=0x5678...      # AgentPayStream address
-VITE_PAYMENT_TOKEN_ADDRESS=0x1234...    # MockUSD address
-```
-
-**`server/index.js`** (if running standalone):
-```javascript
-const PAYMENT_TOKEN_ADDRESS = "0x1234...";
-const CONTRACT_ADDRESS = "0x5678...";
-```
-
-### 4. Verify Contracts (Optional)
-
-```bash
-npx hardhat verify --network sepolia <CONTRACT_ADDRESS> <PAYMENT_TOKEN_ADDRESS>
-```
-
-## Running the System
-
-### Development Mode
-
-**Terminal 1 - Provider Server (The Gatekeeper):**
-```bash
-cd server
-npm start
-```
-
-**Terminal 2 - Frontend Dashboard:**
-```bash
-cd vite-project
-npm run dev
-```
-
-**Terminal 3 - Demo Consumer Agent:**
-```bash
-npx ts-node demo/consumer.ts
-```
-
-### Production Mode
-
-**Build Frontend:**
-```bash
-cd vite-project
-npm run build
-```
-
-**Start Server:**
-```bash
-cd server
-NODE_ENV=production npm start
-```
-
-## Running Tests
-
-### All SDK Tests (41 tests)
-```bash
-cd sdk
-npx mocha -r ts-node/register test/*.test.ts
-```
-
-### Smart Contract Tests (6 tests)
-```bash
-npx hardhat test test/AgentPayStream.test.js
-```
-
-### Integration Tests Only
-```bash
-cd sdk
-npx mocha -r ts-node/register test/integration.test.ts
-```
-
-**Expected Results:**
-- SDK Tests: 41 passing
-- Contract Tests: 6 passing
-- Integration Tests: 12 passing
-
-## Demo Scenarios
-
-### Scenario 1: Complete x402 Handshake
-
-```bash
-# Terminal 1: Start Provider
-npx ts-node demo/provider.ts
-
-# Terminal 2: Run Consumer
-npx ts-node demo/consumer.ts
-```
-
-**Expected Flow:**
-1. Consumer makes blind request to `/api/premium`
-2. Provider returns HTTP 402 with x402 headers
-3. SDK parses payment requirements
-4. Gemini AI decides: streaming vs direct payment
-5. SDK creates stream (1 signature)
-6. SDK retries request with `X-AgentPay-Stream-ID`
-7. Provider verifies stream, returns 200 OK
-8. Subsequent requests use same stream (0 signatures)
-
-### Scenario 2: Efficiency Demonstration
-
-```bash
-cd sdk
-npx mocha -r ts-node/register test/load.test.ts
-```
-
-**Validates:**
-- 10+ requests with only 1 signature
-- Stream reuse for concurrent requests
-- N+1 problem is solved
-
-## Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    AgentPay System                           │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
-│  │   Consumer  │───▶│  Provider   │───▶│  Ethereum   │     │
-│  │   Agent     │    │  (x402 MW)  │    │  Sepolia    │     │
-│  │   + SDK     │◀───│             │◀───│             │     │
-│  └─────────────┘    └─────────────┘    └─────────────┘     │
-│        │                  │                  │              │
-│        │                  │                  │              │
-│        ▼                  ▼                  ▼              │
-│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐     │
-│  │   Gemini    │    │  Dashboard  │    │  MockUSD   │     │
-│  │   AI        │    │  (React)    │    │  Token      │     │
-│  └─────────────┘    └─────────────┘    └─────────────┘     │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Key Components
-
-| Component | Description | Location |
-|-----------|-------------|----------|
-| AgentPayStream | Smart contract for payment streams | `contracts/AgentPayStream.sol` |
-| MockUSD | Test ERC-20 token | `contracts/MockUSD.sol` |
-| AgentPaySDK | Agent SDK for x402 negotiation | `sdk/src/AgentPaySDK.ts` |
-| agentPayMiddleware | Express.js x402 middleware | `server/middleware/agentPayMiddleware.js` |
-| GeminiPaymentBrain | AI decision engine | `sdk/src/GeminiPaymentBrain.ts` |
-| SpendingMonitor | Safety & limits | `sdk/src/SpendingMonitor.ts` |
-| AgentPayProxy | Multi-agent mesh support | `sdk/src/AgentPayProxy.ts` |
-
-## Network Configuration
-
-| Network | Chain ID | RPC URL |
-|---------|----------|---------|
-| Sepolia | 11155111 | https://rpc.sepolia.org |
-
-## Troubleshooting
-
-### "Insufficient funds for gas"
-- Get Sepolia ETH from faucet: https://sepoliafaucet.com
-
-### "tUSD transfer failed"
-- Ensure MockUSD is deployed
-- Check token approval: `token.approve(agentPayStreamAddress, amount)`
-
-### "Stream is not active"
-- Verify stream ID exists on-chain
-- Check stream hasn't expired or been cancelled
-
-### Tests failing
-```bash
-# Clean and rebuild
-rm -rf sdk/dist
-cd sdk && npm run build
-```
-
-## Production Checklist
-
-- [ ] Replace MockUSD with real tUSD token on mainnet
-- [ ] Configure production RPC URLs (Alchemy/Infura)
-- [ ] Set up monitoring for Emergency Stop triggers
-- [ ] Review spending limits for production agents
-- [ ] Enable contract verification on Etherscan
-- [ ] Configure HTTPS for server endpoints
-- [ ] Set up logging and alerting
-- [ ] Review gas price strategies
-
-## Security Considerations
-
-1. **Private Keys**: Never commit private keys to version control
-2. **API Keys**: Use environment variables for all secrets
-3. **Spending Limits**: Configure appropriate limits for agents
-4. **Emergency Stop**: Test emergency stop functionality
-5. **Stream Verification**: Always verify streams on-chain before granting access
-
-## Support
-
-For issues or questions:
-- Check existing tests for usage examples
-- Review demo scripts in `demo/` directory
-- Examine SDK source code for implementation details
-
-## License
-
-MIT License - See LICENSE file for details
+The stream gateway checks active status, recipient, start/stop time, and minimum rate. Direct receipt-hash acceptance is disabled. Production service access additionally needs an authenticated payer/session design and durable usage accounting. Guarded settlement is a separate explicit payment path.

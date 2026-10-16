@@ -11,8 +11,8 @@ const sdk = new AgentPaySDK({
   // Required
   privateKey: process.env.PRIVATE_KEY,
   rpcUrl: 'https://rpc.sepolia.org',
-  contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-  tokenAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',
+  contractAddress: 'YOUR_AGENTPAY_STREAM_ADDRESS',
+  tokenAddress: 'YOUR_TEST_TOKEN_ADDRESS',
   
   // Optional
   agentId: 'my-agent-001',
@@ -77,8 +77,8 @@ app.use('/api/premium', agentPayMiddleware({
   pricingModel: 'per-request', // 'per-request' | 'per-byte' | 'per-second'
   
   // Contract
-  contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-  tokenAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896',
+  contractAddress: 'YOUR_AGENTPAY_STREAM_ADDRESS',
+  tokenAddress: 'YOUR_TEST_TOKEN_ADDRESS',
   recipientAddress: '0x...',
   
   // Verification
@@ -100,8 +100,8 @@ Create `vite-project/.env`:
 
 ```bash
 # Contract addresses
-VITE_CONTRACT_ADDRESS=0x155A00fBE3D290a8935ca4Bf5244283685Bb0035
-VITE_PAYMENT_TOKEN_ADDRESS=0x96B1FE54Ee89811f46ecE4a347950E0D682D3896
+VITE_CONTRACT_ADDRESS=YOUR_AGENTPAY_STREAM_ADDRESS
+VITE_PAYMENT_TOKEN_ADDRESS=YOUR_TEST_TOKEN_ADDRESS
 
 # Network
 VITE_CHAIN_ID=11155111

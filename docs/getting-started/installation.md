@@ -38,7 +38,7 @@ const app = express();
 app.use('/api/premium', agentPayMiddleware({
   pricePerRequest: '0.001', // tUSD per request
   recipientAddress: '0x...',
-  contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035'
+  contractAddress: 'YOUR_AGENTPAY_STREAM_ADDRESS'
 }));
 ```
 

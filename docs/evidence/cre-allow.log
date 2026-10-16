@@ -1,0 +1,33 @@
+Initializing...
+Loading settings...
+! Using default private key for chain write simulation. To use your own key, set CRE_ETH_PRIVATE_KEY in your .env file or system environment.
+Checking RPC connectivity...
+Compiling workflow...
+✓ Workflow compiled
+✓ Simulation limits enabled
+  HTTP: req=120kb resp=250kb timeout=10s | ConfHTTP: req=125kb resp=500kb timeout=1m30s | Consensus obs=25kb | ChainWrite evm_report=50kb evm_gas=10000000 solana_report=265b solana_cu=300000 | WASM binary=100mb compressed=20mb
+  Binary hash: 0dadf4a12324cf1599e2b04d20cb5dbb2b4d8c1b026d56dda51e36239b6e2c08
+  Config hash: b0033445782cd04b11ed11a3fbb2359667959eb019b03380af2142cad81f66b6
+2026-10-16T23:29:25Z [SIMULATION] Simulator Initialized
+
+2026-10-16T23:29:25Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-10-16T23:29:25Z [USER LOG] External ETH/USD quote (8 decimals): 241965500000
+2026-10-16T23:29:26Z [USER LOG] Chainlink Sepolia ETH/USD: 241427505512; updatedAt=1792185324; round=18446744073709588466
+2026-10-16T23:29:26Z [USER LOG] Payment guard: ALLOW (WITHIN_POLICY)
+2026-10-16T23:29:26Z [USER LOG] AGENTPAY_RESULT {"schemaVersion":1,"workflow":"agentpay-payment-guard","mode":"simulation-preview","chainId":11155111,"chainName":"ethereum-testnet-sepolia","feedAddress":"0x694AA1769357215DE4FAC081bf1f309aDC325306","marketApiUrl":"https://api.coinbase.com/v2/prices/ETH-USD/spot","request":{"requestId":"0x4b3a6e8dfd5bc183a77166c8b42b06e60c754fd74cb6e038212b5b94c6d9a101","agent":"0x0000000000000000000000000000000000000001","recipient":"0x0000000000000000000000000000000000000002","token":"0x0000000000000000000000000000000000000003","amount":"10000000000000000","spendingCap":"100000000000000000"},"receiverAddress":"0x0000000000000000000000000000000000000000","approved":true,"reason":"WITHIN_POLICY","observedAt":1792189766,"validUntil":1792190066,"feedUpdatedAt":1792185324,"feedRoundId":"18446744073709588466","chainlinkPriceUsd8":"241427505512","externalPriceUsd8":"241965500000","maxDeviationBps":300,"maxFeedAgeSeconds":7200,"reportGenerated":true,"published":false,"encodedReport":"0x00000 ...(truncated)
+
+✓ Workflow Simulation Result:
+"{\"schemaVersion\":1,\"workflow\":\"agentpay-payment-guard\",\"mode\":\"simulation-preview\",\"chainId\":11155111,\"chainName\":\"ethereum-testnet-sepolia\",\"feedAddress\":\"0x694AA1769357215DE4FAC081bf1f309aDC325306\",\"marketApiUrl\":\"https://api.coinbase.com/v2/prices/ETH-USD/spot\",\"request\":{\"requestId\":\"0x4b3a6e8dfd5bc183a77166c8b42b06e60c754fd74cb6e038212b5b94c6d9a101\",\"agent\":\"0x0000000000000000000000000000000000000001\",\"recipient\":\"0x0000000000000000000000000000000000000002\",\"token\":\"0x0000000000000000000000000000000000000003\",\"amount\":\"10000000000000000\",\"spendingCap\":\"100000000000000000\"},\"receiverAddress\":\"0x0000000000000000000000000000000000000000\",\"approved\":true,\"reason\":\"WITHIN_POLICY\",\"observedAt\":1792189766,\"validUntil\":1792190066,\"feedUpdatedAt\":1792185324,\"feedRoundId\":\"18446744073709588466\",\"chainlinkPriceUsd8\":\"241427505512\",\"externalPriceUsd8\":\"241965500000\",\"maxDeviationBps\":300,\"maxFeedAgeSeconds\":7200,\"reportGenerated\":true,\"published\":false,\"encodedReport\":\"0x0000000000000000000000000000000000000000000000000000000000aa36a700000000000000000000000000000000000000000000000000000000000000004b3a6e8dfd5bc183a77166c8b42b06e60c754fd74cb6e038212b5b94c6d9a101000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000002386f26fc10000000000000000000000000000000000000000000000000000000000006ad2a6720000000000000000000000000000000000000000000000000000000000000001\"}"
+
+2026-10-16T23:29:26Z [SIMULATION] Execution finished signal received
+2026-10-16T23:29:26Z [SIMULATION] Skipping WorkflowEngineV2
+
+╭──────────────────────────────────────────────────────╮
+│ Simulation complete! Ready to deploy your workflow?  │
+│                                                      │
+│ Run cre account access to request deployment access. │
+╰──────────────────────────────────────────────────────╯
+
+⚠️  Update available! You’re running 1.37.0, but 1.38.0 is the latest.
+Run `cre update` or visit https://github.com/smartcontractkit/cre-cli/releases to upgrade.
+

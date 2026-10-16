@@ -6,8 +6,8 @@ AgentPay uses two main smart contracts deployed on Ethereum Sepolia.
 
 | Contract | Address | Description |
 |----------|---------|-------------|
-| AgentPayStream | `0x155A00fBE3D290a8935ca4Bf5244283685Bb0035` | Payment streaming |
-| MockUSD | `0x96B1FE54Ee89811f46ecE4a347950E0D682D3896` | Test ERC-20 token |
+| AgentPayStream | `YOUR_AGENTPAY_STREAM_ADDRESS` | Payment streaming |
+| MockUSD | `YOUR_TEST_TOKEN_ADDRESS` | Test ERC-20 token |
 
 ## Contract Overview
 
@@ -29,8 +29,8 @@ A test ERC-20 token for development:
 ## Verification
 
 Contracts are verified on Sepolia Etherscan:
-- [AgentPayStream on Etherscan](https://sepolia.etherscan.io/address/0x155A00fBE3D290a8935ca4Bf5244283685Bb0035)
-- [MockUSD on Etherscan](https://sepolia.etherscan.io/address/0x96B1FE54Ee89811f46ecE4a347950E0D682D3896)
+- [AgentPayStream on Etherscan](https://sepolia.etherscan.io/address/YOUR_AGENTPAY_STREAM_ADDRESS)
+- [MockUSD on Etherscan](https://sepolia.etherscan.io/address/YOUR_TEST_TOKEN_ADDRESS)
 
 ## Next Steps
 

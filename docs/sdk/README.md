@@ -17,8 +17,8 @@ import { AgentPaySDK } from './AgentPaySDK';
 const sdk = new AgentPaySDK({
   privateKey: process.env.PRIVATE_KEY,
   rpcUrl: 'https://rpc.sepolia.org',
-  contractAddress: '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035',
-  tokenAddress: '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896'
+  contractAddress: 'YOUR_AGENTPAY_STREAM_ADDRESS',
+  tokenAddress: 'YOUR_TEST_TOKEN_ADDRESS'
 });
 
 // Make a request - SDK handles x402 automatically
