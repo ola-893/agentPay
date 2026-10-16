@@ -87,4 +87,15 @@ describe('CRE authorization and token settlement', function () {
     expect(await guard.supportsInterface('0x01ffc9a7')).to.equal(true);
     expect(await guard.supportsInterface('0xffffffff')).to.equal(false);
   });
+  it('only lets the owner bind or update a deployed workflow ID', async () => {
+    await expect(guard.connect(other).setWorkflowId(ethers.id('updated'))).to.be.revertedWith('Only owner');
+    await expect(guard.setWorkflowId(ethers.ZeroHash)).to.be.revertedWith('Zero workflow ID');
+    await guard.setWorkflowId(ethers.id('updated'));
+    await expect(guard.connect(forwarder).onReport(metadata, encode(decision))).to.be.revertedWith('Wrong workflow');
+  });
+  it('remains closed when deployed before the workflow ID is available', async () => {
+    const unbound = await (await ethers.getContractFactory('AgentPayGuard')).deploy(forwarder.address, ethers.ZeroHash);
+    const zeroMetadata = ethers.solidityPacked(['bytes32', 'bytes10', 'address'], [ethers.ZeroHash, '0x00000000000000000000', owner.address]);
+    await expect(unbound.connect(forwarder).onReport(zeroMetadata, encode(decision))).to.be.revertedWith('Wrong workflow');
+  });
 });

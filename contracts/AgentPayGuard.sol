@@ -18,7 +18,7 @@ contract AgentPayGuard {
 
     address public immutable owner;
     address public immutable forwarder;
-    bytes32 public immutable workflowId;
+    bytes32 public workflowId;
     address public settlement;
     mapping(bytes32 => bool) public reported;
     mapping(bytes32 => bool) public consumed;
@@ -27,13 +27,22 @@ contract AgentPayGuard {
     event DecisionReceived(bytes32 indexed requestId, address indexed agent, bool approved, uint64 validUntil);
     event AuthorizationConsumed(bytes32 indexed requestId, uint256 amount);
     event SettlementConfigured(address indexed settlement);
+    event WorkflowConfigured(bytes32 indexed workflowId);
 
     constructor(address trustedForwarder, bytes32 expectedWorkflowId) {
         require(trustedForwarder != address(0), "Zero forwarder");
-        require(expectedWorkflowId != bytes32(0), "Zero workflow ID");
         owner = msg.sender;
         forwarder = trustedForwarder;
         workflowId = expectedWorkflowId;
+    }
+
+    /// @notice A zero initial ID leaves reporting disabled until the deployed
+    /// workflow ID is known. Only the deploying owner may change this binding.
+    function setWorkflowId(bytes32 expectedWorkflowId) external {
+        require(msg.sender == owner, "Only owner");
+        require(expectedWorkflowId != bytes32(0), "Zero workflow ID");
+        workflowId = expectedWorkflowId;
+        emit WorkflowConfigured(expectedWorkflowId);
     }
 
     function setSettlement(address target) external {
@@ -51,7 +60,7 @@ contract AgentPayGuard {
         require(msg.sender == forwarder, "Only forwarder");
         // Production KeystoneForwarder supplies 64 bytes; 62 is the packed identity.
         require(metadata.length == 62 || metadata.length == 64, "Invalid metadata");
-        require(bytes32(metadata[:32]) == workflowId, "Wrong workflow");
+        require(workflowId != bytes32(0) && bytes32(metadata[:32]) == workflowId, "Wrong workflow");
         Decision memory d = abi.decode(report, (Decision));
         require(d.chainId == block.chainid && d.receiver == address(this), "Wrong destination");
         require(d.requestId != bytes32(0) && !reported[d.requestId], "Report replay");
