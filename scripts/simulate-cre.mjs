@@ -3,12 +3,14 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseSimulationResult, backupEvidence, stripAnsi } from './lib/cre-evidence.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const capture = process.argv.includes('--capture');
 const scenario = process.argv.includes('--deny-budget') ? 'deny-budget' : 'allow';
 const staging = path.join(root, 'cre/payment-guard/config.staging.json');
 const config = JSON.parse(await readFile(staging, 'utf8'));
+if (config.publishReport) throw new Error('The read-only runner requires publishReport=false. Use the explicit cre:simulate:write path for report writes.');
 if (scenario === 'deny-budget') config.request.amount = (BigInt(config.request.spendingCap) * 2n).toString();
 await mkdir(path.join(root, '.local/cre'), { recursive: true });
 const configFile = path.join(root, `.local/cre/${scenario}.config.json`);
@@ -25,11 +27,10 @@ try {
   code = await new Promise((resolve, reject) => { child.on('error', reject); child.on('close', resolve); });
 } finally { clearTimeout(timeout); }
 if (code !== 0) throw new Error(`CRE simulation failed (exit ${code}); evidence was not updated.`);
-const clean = output.replace(/\u001b\[[0-9;]*m/g, '');
-const resultLine = clean.split('\n').find((line, i, lines) => line.startsWith('"{') && lines.slice(Math.max(0, i - 2), i).some(s => s.includes('Workflow Simulation Result:')));
-if (!resultLine) throw new Error('No complete CRE simulation result found; evidence was not updated.');
-const result = JSON.parse(JSON.parse(resultLine));
-if (result.workflow !== 'agentpay-payment-guard' || result.chainId !== 11155111 || !result.reportGenerated || result.published) throw new Error('Unexpected simulation result');
+const clean = stripAnsi(output);
+const result = parseSimulationResult(output);
+if (result.workflow !== 'agentpay-payment-guard' || result.chainId !== 11155111 || !result.reportGenerated || result.published
+    || result.mode !== 'simulation-preview' || result.reportWriteSucceeded === true) throw new Error('Unexpected read-only simulation result');
 if (scenario === 'deny-budget' && (result.approved || result.reason !== 'AMOUNT_EXCEEDS_POLICY')) throw new Error(`Expected a budget rejection; observed ${result.reason}`);
 if (scenario === 'allow' && !result.approved) throw new Error(`Live policy rejected the request: ${result.reason}. Review market/feed conditions; do not weaken checks to manufacture approval.`);
 const log = clean.split(root).join('<repo>');
@@ -44,6 +45,8 @@ const evidence = {
 };
 await writeFile(path.join(root, `.local/cre/${scenario}.json`), JSON.stringify(evidence, null, 2) + '\n');
 if (capture) {
+  const backup = await backupEvidence(root, scenario);
+  if (backup) console.log(`Previous evidence retained: ${path.relative(root, backup)}`);
   const directory = path.join(root, 'docs/evidence');
   await mkdir(directory, { recursive: true });
   await writeFile(path.join(directory, `cre-${scenario}.log`), log);

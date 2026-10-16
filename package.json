@@ -4,7 +4,7 @@
   "description": "AgentPay \u2014 agent payment policies orchestrated with Chainlink CRE",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test:contracts && npm run test:sdk && npm run test:server && npm run test:cre",
+    "test": "npm run test:contracts && npm run test:sdk && npm run test:server && npm run test:cre && npm run test:tooling",
     "test:contracts": "npx hardhat test",
     "test:sdk": "npm --prefix sdk run test:all",
     "test:integration": "npm --prefix sdk run test:integration",
@@ -23,7 +23,9 @@
     "cre:capture": "node scripts/simulate-cre.mjs --capture",
     "build:sdk": "npm --prefix sdk run build",
     "typecheck:cre": "cd cre/payment-guard && bun run typecheck",
-    "deploy:guard": "npx hardhat run scripts/deploy-guard.js --network sepolia"
+    "deploy:guard": "npx hardhat run scripts/deploy-guard.js --network sepolia",
+    "cre:dry-run": "node scripts/preflight-cre.mjs",
+    "test:tooling": "node --test scripts/test/*.test.mjs"
   },
   "keywords": [],
   "author": "",
