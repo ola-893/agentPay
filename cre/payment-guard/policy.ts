@@ -3,18 +3,24 @@ import { z } from 'zod';
 
 const party = z.string().refine(s => isAddress(s) && s.toLowerCase() !== zeroAddress, 'Expected a nonzero EVM address');
 const units = z.string().regex(/^[1-9][0-9]*$/).refine(s => BigInt(s) < 2n ** 256n, 'Amount exceeds uint256');
+export const SEPOLIA_USDC = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
+export const USDC_USD_FEED = '0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E';
+const boundAddress = (address: string) => party.refine(s => s.toLowerCase() === address.toLowerCase(), 'Wrong Sepolia USDC asset or feed');
 export const configSchema = z.object({
   schedule: z.string().min(1),
   chainName: z.literal('ethereum-testnet-sepolia'),
   chainId: z.literal(11155111),
-  priceFeedAddress: party,
-  marketApiUrl: z.literal('https://api.coinbase.com/v2/prices/ETH-USD/spot'),
+  priceFeedAddress: boundAddress(USDC_USD_FEED),
+  marketApiUrl: z.literal('https://api.coinbase.com/v2/prices/USDC-USD/spot'),
+  tokenSymbol: z.literal('USDC'),
+  tokenDecimals: z.literal(6),
   maxFeedAgeSeconds: z.number().int().min(60).max(86400),
   maxDeviationBps: z.number().int().min(1).max(1000),
+  maxPegDeviationBps: z.number().int().min(1).max(1000),
   authorizationTtlSeconds: z.number().int().min(30).max(900),
   request: z.object({
     requestId: z.string().regex(/^0x[0-9a-fA-F]{64}$/).refine(s => BigInt(s) !== 0n),
-    agent: party, recipient: party, token: party, amount: units, spendingCap: units,
+    agent: party, recipient: party, token: boundAddress(SEPOLIA_USDC), amount: units, spendingCap: units,
   }),
   receiverAddress: z.string().refine((s): boolean => isAddress(s)),
   publishReport: z.boolean(),
@@ -31,6 +37,11 @@ export function parseUsd8(value: string): bigint {
   return scaled;
 }
 
+export function parseMarketQuote(body: unknown): bigint {
+  const quote = z.object({ data: z.object({ base: z.literal('USDC'), currency: z.literal('USD'), amount: z.string() }) }).parse(body);
+  return parseUsd8(quote.data.amount);
+}
+
 export function evaluate(config: Config, feed: Observation, marketPrice: bigint, now: number) {
   const fail = (reason: string) => ({ approved: false, reason });
   if (feed.price <= 0n || feed.decimals !== 8 || feed.roundId <= 0n || feed.answeredInRound < feed.roundId || feed.updatedAt <= 0) return fail('INVALID_FEED');
@@ -39,6 +50,10 @@ export function evaluate(config: Config, feed: Observation, marketPrice: bigint,
   if (marketPrice <= 0n) return fail('INVALID_MARKET_QUOTE');
   const difference = marketPrice > feed.price ? marketPrice - feed.price : feed.price - marketPrice;
   if (difference * 10000n > feed.price * BigInt(config.maxDeviationBps)) return fail('PRICE_DEVIATION');
+  const peg = 100000000n;
+  const offPeg = (price: bigint) => (price > peg ? price - peg : peg - price) * 10000n > peg * BigInt(config.maxPegDeviationBps);
+  // Agreement is insufficient: both sources could agree on a depegged price.
+  if (offPeg(feed.price) || offPeg(marketPrice)) return fail('USDC_DEPEG');
   if (BigInt(config.request.amount) > BigInt(config.request.spendingCap)) return fail('AMOUNT_EXCEEDS_POLICY');
   return { approved: true, reason: 'WITHIN_POLICY' };
 }

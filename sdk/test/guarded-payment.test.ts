@@ -10,17 +10,18 @@ describe('CRE guarded payment client', () => {
     const requestId = ethers.id('guarded-payment');
     let approved: boolean, approvals: number, payments: number, chainId: bigint, checks: number, expire: boolean;
     let client: GuardedPaymentClient;
+    let authorizedAmount: bigint, approvedAmount: bigint, settledAmount: bigint;
     beforeEach(() => {
         approved = true; approvals = 0; payments = 0; chainId = 11155111n; checks = 0; expire = false;
         const signer = { provider: { getNetwork: async () => ({ chainId }) }, getAddress: async () => recipient } as unknown as Signer;
         class TestClient extends GuardedPaymentClient {
             protected contract(address: string): Contract {
-                if (address === guardAddress) return { canPay: async () => { checks++; return approved && !(expire && checks > 1); } } as unknown as Contract;
+                if (address === guardAddress) return { canPay: async (...args: any[]) => { authorizedAmount = args[4]; checks++; return approved && !(expire && checks > 1); } } as unknown as Contract;
                 if (address === settlementAddress) return {
                     guard: async () => guardAddress,
-                    settle: async () => { payments++; return { wait: async () => ({ status: 1, hash: ethers.id('tx') }) }; }
+                    settle: async (...args: any[]) => { settledAmount = args[3]; payments++; return { wait: async () => ({ status: 1, hash: ethers.id('tx') }) }; }
                 } as unknown as Contract;
-                return { allowance: async () => 0n, approve: async () => { approvals++; return { wait: async () => ({ status: 1 }) }; } } as unknown as Contract;
+                return { allowance: async () => 0n, approve: async (_spender: string, amount: bigint) => { approvedAmount = amount; approvals++; return { wait: async () => ({ status: 1 }) }; } } as unknown as Contract;
             }
         }
         client = new TestClient(signer, { guardAddress, settlementAddress, chainId: 11155111 });
@@ -32,6 +33,12 @@ describe('CRE guarded payment client', () => {
     it('checks onchain authority before approval and settles a confirmed payment', async () => {
         const result = await pay();
         expect(result.status).to.equal(1); expect(approvals).to.equal(1); expect(payments).to.equal(1); expect(checks).to.equal(2);
+    });
+    it('passes 0.01 USDC as exactly 10000 units through authorization, approval and settlement', async () => {
+        await client.pay(requestId, recipient, '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', 10000n);
+        expect(authorizedAmount).to.equal(10000n);
+        expect(approvedAmount).to.equal(10000n);
+        expect(settledAmount).to.equal(10000n);
     });
     it('never approves tokens when CRE authority is absent', async () => {
         approved = false; await failure(pay(), 'authorization missing');

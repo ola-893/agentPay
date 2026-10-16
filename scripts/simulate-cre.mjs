@@ -31,6 +31,10 @@ const clean = stripAnsi(output);
 const result = parseSimulationResult(output);
 if (result.workflow !== 'agentpay-payment-guard' || result.chainId !== 11155111 || !result.reportGenerated || result.published
     || result.mode !== 'simulation-preview' || result.reportWriteSucceeded === true) throw new Error('Unexpected read-only simulation result');
+if (result.schemaVersion !== 2 || result.tokenDecimals !== 6 || result.tokenSymbol !== 'USDC'
+    || result.request.token.toLowerCase() !== config.request.token.toLowerCase()
+    || result.feedAddress.toLowerCase() !== config.priceFeedAddress.toLowerCase()
+    || result.request.amount !== config.request.amount || result.request.spendingCap !== config.request.spendingCap) throw new Error('Unexpected USDC policy or token units in simulation result');
 if (scenario === 'deny-budget' && (result.approved || result.reason !== 'AMOUNT_EXCEEDS_POLICY')) throw new Error(`Expected a budget rejection; observed ${result.reason}`);
 if (scenario === 'allow' && !result.approved) throw new Error(`Live policy rejected the request: ${result.reason}. Review market/feed conditions; do not weaken checks to manufacture approval.`);
 const log = clean.split(root).join('<repo>');

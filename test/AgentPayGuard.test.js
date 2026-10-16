@@ -6,7 +6,7 @@ describe('CRE authorization and token settlement', function () {
   let owner, forwarder, agent, recipient, other, guard, settlement, token, decision, metadata;
   const workflowId = ethers.id('agentpay-payment-guard');
   const requestId = ethers.id('request-001');
-  const amount = ethers.parseEther('1');
+  const amount = 10000n; // 0.01 USDC in six-decimal token units
   const encode = d => ethers.AbiCoder.defaultAbiCoder().encode(
     ['uint256', 'address', 'bytes32', 'address', 'address', 'address', 'uint256', 'uint64', 'bool'], d);
 
@@ -14,7 +14,7 @@ describe('CRE authorization and token settlement', function () {
     [owner, forwarder, agent, recipient, other] = await ethers.getSigners();
     guard = await (await ethers.getContractFactory('AgentPayGuard')).deploy(forwarder.address, workflowId);
     settlement = await (await ethers.getContractFactory('AgentPaySettlement')).deploy(await guard.getAddress());
-    token = await (await ethers.getContractFactory('MockUSD')).deploy();
+    token = await (await ethers.getContractFactory('SixDecimalToken')).deploy();
     await guard.setSettlement(await settlement.getAddress());
     await token.mint(agent.address, amount * 10n);
     await token.connect(agent).approve(await settlement.getAddress(), amount * 10n);
@@ -23,6 +23,7 @@ describe('CRE authorization and token settlement', function () {
   });
 
   it('accepts a workflow report and settles exactly one authorized payment', async () => {
+    expect(await token.decimals()).to.equal(6);
     await guard.connect(forwarder).onReport(metadata, encode(decision));
     await expect(settlement.connect(agent).settle(requestId, recipient.address, await token.getAddress(), amount))
       .to.emit(settlement, 'PaymentSettled').withArgs(requestId, agent.address, recipient.address, await token.getAddress(), amount);

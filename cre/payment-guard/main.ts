@@ -4,19 +4,18 @@ import {
   prepareReportRequest, ok, json, TxStatus,
 } from '@chainlink/cre-sdk';
 import { decodeFunctionResult, encodeFunctionData, encodeAbiParameters, parseAbi, parseAbiParameters, zeroAddress, type Address } from 'viem';
-import { configSchema, evaluate, parseUsd8, type Config } from './policy';
+import { configSchema, evaluate, parseMarketQuote, type Config } from './policy';
 
 const FEED = parseAbi([
   'function decimals() view returns (uint8)',
+  'function description() view returns (string)',
   'function latestRoundData() view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound)',
 ]);
 
 const fetchMarketPrice = (requester: HTTPSendRequester, config: Config): bigint => {
   const response = requester.sendRequest({ url: config.marketApiUrl, method: 'GET' }).result();
   if (!ok(response)) throw new Error(`Market API returned ${response.statusCode}`);
-  const body = json(response) as { data?: { base?: string; currency?: string; amount?: string } };
-  if (body.data?.base !== 'ETH' || body.data.currency !== 'USD' || typeof body.data.amount !== 'string') throw new Error('Unexpected market API payload');
-  return parseUsd8(body.data.amount);
+  return parseMarketQuote(json(response));
 };
 
 function onPaymentCheck(runtime: Runtime<Config>): string {
@@ -24,20 +23,24 @@ function onPaymentCheck(runtime: Runtime<Config>): string {
   const evm = new cre.capabilities.EVMClient(16015286601757825753n);
   const http = new cre.capabilities.HTTPClient();
   const externalPrice = http.sendRequest(runtime, fetchMarketPrice, consensusMedianAggregation())(config).result();
-  runtime.log(`External ETH/USD quote (8 decimals): ${externalPrice}`);
+  runtime.log(`External USDC/USD quote (8 decimals): ${externalPrice}`);
 
-  const read = (functionName: 'decimals' | 'latestRoundData') => {
+  const read = (functionName: 'decimals' | 'latestRoundData' | 'description', address = config.priceFeedAddress) => {
     const response = evm.callContract(runtime, {
-      call: encodeCallMsg({ from: zeroAddress, to: config.priceFeedAddress as Address, data: encodeFunctionData({ abi: FEED, functionName }) }),
+      call: encodeCallMsg({ from: zeroAddress, to: address as Address, data: encodeFunctionData({ abi: FEED, functionName }) }),
       blockNumber: LAST_FINALIZED_BLOCK_NUMBER,
     }).result();
     return bytesToHex(response.data);
   };
   const decimals = decodeFunctionResult({ abi: FEED, functionName: 'decimals', data: read('decimals') });
+  const description = decodeFunctionResult({ abi: FEED, functionName: 'description', data: read('description') });
+  if (description !== 'USDC / USD') throw new Error('Unexpected Chainlink feed pair');
+  const tokenDecimals = decodeFunctionResult({ abi: FEED, functionName: 'decimals', data: read('decimals', config.request.token) });
+  if (tokenDecimals !== config.tokenDecimals) throw new Error('Unexpected USDC token decimals');
   const [roundId, price, , updatedAt, answeredInRound] = decodeFunctionResult({ abi: FEED, functionName: 'latestRoundData', data: read('latestRoundData') });
   const now = Math.floor(runtime.now().getTime() / 1000);
   const decision = evaluate(config, { price, decimals, updatedAt: Number(updatedAt), roundId, answeredInRound }, externalPrice, now);
-  runtime.log(`Chainlink Sepolia ETH/USD: ${price}; updatedAt=${updatedAt}; round=${roundId}`);
+  runtime.log(`Chainlink Sepolia USDC/USD: ${price}; updatedAt=${updatedAt}; round=${roundId}; payment token decimals=${tokenDecimals}`);
   runtime.log(`Payment guard: ${decision.approved ? 'ALLOW' : 'DENY'} (${decision.reason})`);
 
   // Destination fields prevent cross-chain / cross-receiver replay. Request IDs are single-use.
@@ -63,8 +66,9 @@ function onPaymentCheck(runtime: Runtime<Config>): string {
     reportTransactionHash = result.txHash?.length ? bytesToHex(result.txHash) : null;
   }
   const output = {
-    schemaVersion: 1, workflow: 'agentpay-payment-guard', mode: config.publishReport ? 'report-write' : 'simulation-preview',
-    policyPurpose: 'oracle-disagreement-circuit-breaker', paymentTokenValuation: false,
+    schemaVersion: 2, workflow: 'agentpay-payment-guard', mode: config.publishReport ? 'report-write' : 'simulation-preview',
+    policyPurpose: 'usdc-depeg-and-disagreement-guard', pricePair: 'USDC/USD', tokenSymbol: config.tokenSymbol, tokenDecimals,
+    testnetTokenHasValue: false, pegTargetUsd8: '100000000', maxPegDeviationBps: config.maxPegDeviationBps,
     chainId: config.chainId, chainName: config.chainName, feedAddress: config.priceFeedAddress,
     marketApiUrl: config.marketApiUrl, request: config.request, receiverAddress: config.receiverAddress,
     ...decision, observedAt: now, validUntil, feedUpdatedAt: Number(updatedAt), feedRoundId: roundId.toString(),

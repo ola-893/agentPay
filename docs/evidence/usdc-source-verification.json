@@ -1,0 +1,52 @@
+{
+  "verifiedOn": "2026-10-17",
+  "network": "Ethereum Sepolia",
+  "chainId": 11155111,
+  "circle": {
+    "source": "https://developers.circle.com/stablecoins/usdc-contract-addresses",
+    "tokenAddress": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "tokenDecimals": 6,
+    "faucet": "https://faucet.circle.com/",
+    "testnetTokenHasValue": false
+  },
+  "chainlink": {
+    "source": "https://docs.chain.link/data-feeds/price-feeds/addresses",
+    "networkQuery": "ethereum-sepolia",
+    "directory": "https://reference-data-directory.vercel.app/feeds-ethereum-testnet-sepolia.json",
+    "directorySha256": "0c61b93d68190e6327d7f8418aad99a11037dc27bed6aa6ec97e92f905977652",
+    "feed": {
+      "compareOffchain": "",
+      "contractAddress": "0x0524b20f305e2e2F7990B9AfE28B4D5e4a76eA0C",
+      "contractType": "",
+      "contractVersion": 4,
+      "decimalPlaces": null,
+      "ens": "usdc-usd",
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": false,
+      "multiply": "100000000",
+      "name": "USDC / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "usdc-usd",
+      "proxyAddress": "0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E",
+      "threshold": 1,
+      "valuePrefix": "",
+      "assetName": "",
+      "feedCategory": "",
+      "feedType": "",
+      "docs": {
+        "attributeType": "cex_price",
+        "baseAssetEntityId": "crypto-USDC",
+        "marketHours": "Crypto",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    }
+  },
+  "note": "Feed metadata was obtained from the Sepolia directory linked by the official address list. Live CRE transcripts separately verify the onchain description, feed decimals and Circle token decimals at finalized blocks."
+}
