@@ -6,7 +6,7 @@ const sections = [
 ];
 const content = {
   overview: { title: 'Agent payments with deliberate control.', intro: 'AgentPay connects a Chainlink CRE workflow to an onchain payment guard and a TypeScript agent client.', paragraphs: [
-    'The workflow fetches Coinbase ETH/USD, reads a finalized Chainlink ETH/USD feed on Ethereum Sepolia, and checks data freshness, price deviation, and a per-request token spending cap. This is a market-sanity circuit breaker, rather than a valuation of the payment token.',
+    'The workflow fetches Coinbase ETH/USD, reads a finalized Chainlink ETH/USD feed on Ethereum Sepolia, and checks data freshness, price deviation, and a per-request token spending cap. This is an oracle-disagreement circuit breaker, rather than a valuation of the payment token. It is not a USDC depeg check.',
     'The dashboard shows captured CLI evidence for an allowed request and an over-budget rejection. It does not submit transactions or turn simulation output into payment authority.',
     'The original streaming tools remain available as a separate feature. The new guarded settlement path requires a fresh onchain CRE authorization. The demo token is MockUSD (tUSD), with 18 decimals and no monetary value.'
   ] },
@@ -23,7 +23,7 @@ const content = {
   ], code: "import { GuardedPaymentClient } from './sdk/src';\n\nconst client = new GuardedPaymentClient(signer, {\n  guardAddress, settlementAddress, chainId: 11155111\n});\nawait client.pay(requestId, recipient, token, amountInTokenUnits);" },
   setup: { title: 'Reproduce the evidence.', intro: 'Use Node.js 22+, Bun 1.2.21+, and the authenticated Chainlink CRE CLI.', paragraphs: [
     'Install the root, SDK, server and frontend dependencies with npm run install:all, and the workflow dependencies with npm run install:cre. The read-only workflow simulation needs internet access to CRE, Coinbase and a Sepolia RPC. It does not need your wallet key or testnet funds.',
-    'Run npm run cre:simulate for the normal request, or add -- --deny-budget for the rejection scenario. The capture command saves the successful CLI transcript and result for the frontend and submission evidence. If external inputs violate policy, the command fails instead of manufacturing an ALLOW result.',
+    'Before recording, run npm run cre:dry-run to check both scenarios and at least ten minutes of remaining feed freshness. Keep the saved transcripts as backup. Run npm run cre:simulate for the normal request, or add -- --deny-budget for the rejection scenario. The capture command saves the successful CLI transcript and result for the frontend and submission evidence. If external inputs violate policy, the command fails instead of manufacturing an ALLOW result.',
     'Wallet streams require your own newly deployed token and stream contracts in vite-project/.env.local. The included .env.example lists server and deployment settings. Run npm test, npm run build:web, npm --prefix sdk run build, and npm --prefix vite-project run lint before submitting.'
   ], code: 'npm run install:all\nnpm run install:cre\ncre login\nnpm run cre:capture\nnpm run cre:capture -- --deny-budget\nnpm run dev' },
 };

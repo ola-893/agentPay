@@ -36,10 +36,10 @@ JSON captures include a config SHA-256 and sanitized CLI transcript SHA-256. Tra
 
 ## Verification
 
-- 21 contract tests pass: origin, destination, expiry, replay, party/token/amount binding, denied reports, transfer rollback, and owner workflow binding.
+- 27 contract tests pass: origin, destination, expiry, replay, party/token/amount binding, denied reports, transfer rollback, and owner workflow binding.
 - 48 SDK tests pass, including authorization before token approval and recipient validation before signing.
 - Eight gateway tests pass, including fabricated hashes and wrong recipients.
-- Seven deterministic CRE policy tests pass.
+- Seven deterministic CRE policy tests and nine host-side evidence/tooling checks pass.
 - SDK build, CRE typecheck, frontend build and frontend lint pass.
 - Browser verified: scenario switch renders DENY with 0.2 requested versus a 0.1 cap; CRE documentation opens; no browser console errors or warnings appeared on this flow.
 
@@ -50,6 +50,12 @@ This submission uses the **successful simulation** path in the supplied brief. I
 The live-read workflow uses placeholder payment parties, zero receiver and no publication. The consumer keeps identity validation enabled: CRE's simulation mock forwarder lacks production identity metadata. See [deployment instructions](../DEPLOYMENT.md) for a real deployment.
 
 The sample is one cron-driven payment intent. Real payments need fresh request IDs and real configuration. Rolling budgets, KYC, confidential execution, multi-chain settlement and a complete x402 transport are not shipped features.
+
+## Recording readiness and optional write
+
+Follow [the readiness guide](RECORDING_READINESS.md) before recording. It runs both npm scenarios live and verifies freshness headroom without replacing the existing backup captures. ETH/USD is explicitly an oracle-disagreement circuit breaker, not a payment-token valuation or USDC depeg guard.
+
+The latest versioned preflight transcripts are linked in that guide; the original captures remain backups. A separate simulation-only receiver and opt-in write runner are available. They do not weaken AgentPayGuard and cannot settle tokens. No public write has been performed; only a separately verified RPC receipt and matching receiver event may be presented as an Etherscan demo.
 
 ## Short demo sequence
 

@@ -1,0 +1,40 @@
+
+> agentpay@1.0.0 cre:simulate
+> node scripts/simulate-cre.mjs --deny-budget
+
+Running CRE CLI: /Users/deonorla/.cre/bin/cre workflow simulate payment-guard --target staging-settings --trigger-index 0 --non-interactive --config <repo>/.local/cre/deny-budget.config.json
+Initializing...
+Loading settings...
+! Using default private key for chain write simulation. To use your own key, set CRE_ETH_PRIVATE_KEY in your .env file or system environment.
+Checking RPC connectivity...
+Compiling workflow...
+✓ Workflow compiled
+✓ Simulation limits enabled
+  HTTP: req=120kb resp=250kb timeout=10s | ConfHTTP: req=125kb resp=500kb timeout=1m30s | Consensus obs=25kb | ChainWrite evm_report=50kb evm_gas=10000000 solana_report=265b solana_cu=300000 | WASM binary=100mb compressed=20mb
+  Binary hash: 590eaad001c6b4e0ba7de5acb99961425b60dad8f683eb07752365d3180ff5ce
+  Config hash: 0a118379a31e60f7519fbaa723e559e6594d9e425d891cb1efa374e4f80d9dba
+2026-10-17T00:10:50Z [SIMULATION] Simulator Initialized
+
+2026-10-17T00:10:50Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-10-17T00:10:50Z [USER LOG] External ETH/USD quote (8 decimals): 242051500000
+2026-10-17T00:10:51Z [USER LOG] Chainlink Sepolia ETH/USD: 242013987973; updatedAt=1792188960; round=18446744073709588467
+2026-10-17T00:10:51Z [USER LOG] Payment guard: DENY (AMOUNT_EXCEEDS_POLICY)
+2026-10-17T00:10:51Z [USER LOG] AGENTPAY_RESULT {"schemaVersion":1,"workflow":"agentpay-payment-guard","mode":"simulation-preview","policyPurpose":"oracle-disagreement-circuit-breaker","paymentTokenValuation":false,"chainId":11155111,"chainName":"ethereum-testnet-sepolia","feedAddress":"0x694AA1769357215DE4FAC081bf1f309aDC325306","marketApiUrl":"https://api.coinbase.com/v2/prices/ETH-USD/spot","request":{"requestId":"0x4b3a6e8dfd5bc183a77166c8b42b06e60c754fd74cb6e038212b5b94c6d9a101","agent":"0x0000000000000000000000000000000000000001","recipient":"0x0000000000000000000000000000000000000002","token":"0x0000000000000000000000000000000000000003","amount":"200000000000000000","spendingCap":"100000000000000000"},"receiverAddress":"0x0000000000000000000000000000000000000000","approved":false,"reason":"AMOUNT_EXCEEDS_POLICY","observedAt":1792192251,"validUntil":1792192551,"feedUpdatedAt":1792188960,"feedRoundId":"18446744073709588467","chainlinkPriceUsd8":"242013987973","externalPriceUsd8":"242051500000","maxDeviationBps": ...(truncated)
+
+✓ Workflow Simulation Result:
+"{\"schemaVersion\":1,\"workflow\":\"agentpay-payment-guard\",\"mode\":\"simulation-preview\",\"policyPurpose\":\"oracle-disagreement-circuit-breaker\",\"paymentTokenValuation\":false,\"chainId\":11155111,\"chainName\":\"ethereum-testnet-sepolia\",\"feedAddress\":\"0x694AA1769357215DE4FAC081bf1f309aDC325306\",\"marketApiUrl\":\"https://api.coinbase.com/v2/prices/ETH-USD/spot\",\"request\":{\"requestId\":\"0x4b3a6e8dfd5bc183a77166c8b42b06e60c754fd74cb6e038212b5b94c6d9a101\",\"agent\":\"0x0000000000000000000000000000000000000001\",\"recipient\":\"0x0000000000000000000000000000000000000002\",\"token\":\"0x0000000000000000000000000000000000000003\",\"amount\":\"200000000000000000\",\"spendingCap\":\"100000000000000000\"},\"receiverAddress\":\"0x0000000000000000000000000000000000000000\",\"approved\":false,\"reason\":\"AMOUNT_EXCEEDS_POLICY\",\"observedAt\":1792192251,\"validUntil\":1792192551,\"feedUpdatedAt\":1792188960,\"feedRoundId\":\"18446744073709588467\",\"chainlinkPriceUsd8\":\"242013987973\",\"externalPriceUsd8\":\"242051500000\",\"maxDeviationBps\":300,\"maxFeedAgeSeconds\":7200,\"reportGenerated\":true,\"published\":false,\"reportWriteSucceeded\":false,\"reportTransactionHash\":null,\"encodedReport\":\"0x0000000000000000000000000000000000000000000000000000000000aa36a700000000000000000000000000000000000000000000000000000000000000004b3a6e8dfd5bc183a77166c8b42b06e60c754fd74cb6e038212b5b94c6d9a10100000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000002c68af0bb140000000000000000000000000000000000000000000000000000000000006ad2b0270000000000000000000000000000000000000000000000000000000000000000\"}"
+
+2026-10-17T00:10:51Z [SIMULATION] Execution finished signal received
+2026-10-17T00:10:51Z [SIMULATION] Skipping WorkflowEngineV2
+
+╭──────────────────────────────────────────────────────╮
+│ Simulation complete! Ready to deploy your workflow?  │
+│                                                      │
+│ Run cre account access to request deployment access. │
+╰──────────────────────────────────────────────────────╯
+
+⚠️  Update available! You’re running 1.37.0, but 1.38.0 is the latest.
+Run `cre update` or visit https://github.com/smartcontractkit/cre-cli/releases to upgrade.
+
+
+Verified deny-budget simulation. Saved local evidence under .local/cre.

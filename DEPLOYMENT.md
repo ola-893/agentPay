@@ -6,7 +6,11 @@ Recorded evidence and read-only CRE simulation require no deployed AgentPay cont
 
 `npm run build:web` produces `vite-project/dist`, a static React app with evidence JSON from `public/evidence`. Preserve the SPA fallback (`_redirects` / `netlify.toml`) when hosting. No hosting deployment is included in the recorded evidence.
 
-## Optional public-network deployment (not performed here)
+## Separate simulation-only write demo
+
+See [recording readiness](docs/RECORDING_READINESS.md) for the optional `AgentPaySimulationReceiver`, its dedicated Sepolia test wallet, explicit identity-skip opt-in, and receipt-verified broadcast runner. It records a mock-forwarder demo but cannot authorize or settle payments. No demo deployment or broadcast was performed during this repository update.
+
+## Optional production consumer deployment (not performed here)
 
 1. Copy `.env.example` to `.env` and set a testnet `PRIVATE_KEY` and RPC.
 2. Set `CRE_FORWARDER_ADDRESS` from the official Chainlink CRE forwarder directory for Sepolia. Use the production forwarder, not a wallet or a mock.

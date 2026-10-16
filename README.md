@@ -35,6 +35,10 @@ npm run dev
 
 The dashboard works without a wallet using checked-in evidence. Switch **Within budget** / **Over budget**, inspect observations, download the result, and read its transcript. These are explicitly labeled recorded simulations.
 
+## Why ETH/USD?
+
+This demo is an **oracle-disagreement circuit breaker**: it pauses a payment when an independent API and finalized onchain reference disagree or become stale. It does not value tUSD. An actual USDC policy needs a correctly bound USDC address, token decimals, and a USDC/USD depeg check.
+
 ## Reproduce the CRE workflow
 
 Install the [official CRE CLI](https://docs.chain.link/cre/getting-started/cli-installation), then:
@@ -51,7 +55,9 @@ Equivalent direct command from `cre/`:
 cre workflow simulate payment-guard --target staging-settings --trigger-index 0 --non-interactive
 ```
 
-No wallet key or testnet funds are needed. CRE services, Coinbase, and the Sepolia RPC must be reachable. Live inputs can cause denial; the runner fails instead of manufacturing approval. Refresh evidence with `npm run cre:capture` and `npm run cre:capture -- --deny-budget`.
+Before recording, run `npm run cre:dry-run` to execute both npm scenarios and check ten minutes of freshness headroom. [Recording readiness and optional write demo](docs/RECORDING_READINESS.md) explains backups and the separate simulation-only receiver.
+
+No wallet key or testnet funds are needed for the read-only scenarios. CRE services, Coinbase, and the Sepolia RPC must be reachable. Live inputs can cause denial; the runner fails instead of manufacturing approval. Refresh evidence with `npm run cre:capture` and `npm run cre:capture -- --deny-budget`.
 
 ## Verify
 
@@ -63,7 +69,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **84 passing tests** — 21 contracts, 48 SDK, eight middleware, seven CRE policy. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
+Current suites: **99 passing tests** — 27 contracts, 48 SDK, eight middleware, seven CRE policy, nine evidence/tooling checks. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
 
 ## Current scope
 
