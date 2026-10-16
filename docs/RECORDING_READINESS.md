@@ -14,15 +14,15 @@ The command executes **`npm run cre:simulate`** and **`npm run cre:simulate -- -
 
 It fails if an input is stale, an unexpected guard fires, or the headroom is too small. A pass describes the dry-run time only, not a promise that the next run will pass. Repeat immediately before recording. Do not loosen the configured freshness/deviation checks just to make an ALLOW shot. If the underlying feed is near expiry, wait for an update and rerun. Show both npm commands executing live during the eventual recording.
 
-The original `docs/evidence/cre-allow.*` and `cre-deny-budget.*` files stay intact during dry runs. They are a transparent, labeled backup if live input conditions change. Successful `cre:capture` refreshes first retain previous JSON, frontend copies, and transcripts under a content-addressed `docs/evidence/backups/` directory. Failed captures do not replace them.
+The current `docs/evidence/cre-allow.*` and `cre-deny-budget.*` files stay intact during dry runs. They are a transparent, labeled backup if live input conditions change. Successful `cre:capture` refreshes first retain previous JSON, frontend copies, and transcripts under a content-addressed `docs/evidence/backups/` directory. Failed captures do not replace them.
 
-Latest saved dry run: [summary](evidence/preflight/2026-10-16T23-10-33-918Z/summary.json), [live ALLOW command](evidence/preflight/2026-10-16T23-10-33-918Z/allow.log), and [live budget DENY command](evidence/preflight/2026-10-16T23-10-33-918Z/deny-budget.log). Both had more than 3,900 seconds of freshness headroom at that execution; this is historical evidence, not a guarantee about a future run.
+Latest saved dry run: [summary](evidence/preflight/2026-10-16T23-18-39-479Z/summary.json), [live ALLOW command](evidence/preflight/2026-10-16T23-18-39-479Z/allow.log), and [live budget DENY command](evidence/preflight/2026-10-16T23-18-39-479Z/deny-budget.log). Both had more than 82,700 seconds of freshness headroom at that execution; this is historical evidence, not a guarantee about a future run.
 
-## Answer “why ETH/USD?”
+## Explain the payment-asset check
 
-> “We use ETH/USD as an oracle-disagreement circuit breaker. CRE compares an independent HTTP quote with a finalized onchain reference and pauses the request when they disagree or the reference is stale. This demonstrates an agent payment policy based on data quality; it does not value our demo token. For actual USDC settlement, we would bind the policy to the correct USDC address and decimals and check USDC/USD depeg risk.”
+> “AgentPay’s guarded path uses Circle’s six-decimal Sepolia USDC. CRE compares Coinbase and Chainlink USDC/USD and requires each source to stay within 1% of $1. Even if both sources agree on a depegged price, the request is denied. We also check oracle freshness and a per-request spending cap. Sepolia tokens have no monetary value; these observations model payment-asset risk.”
 
-Do not describe the current demo as USDC depeg protection, token collateral verification, or payment-token valuation. The payment asset remains an 18-decimal valueless test token.
+[Verified USDC addresses, faucet, raw-unit examples and freshness limit](USDC_SEPOLIA.md). The USDC/USD feed’s listed heartbeat is 86,400 seconds and the sample max age is the same. This testnet demonstration does not promise immediate depeg detection. Earlier ETH/USD transcripts are retained as historical backups of the previous policy; use the refreshed USDC captures for this submission.
 
 ## Optional public-chain write demo
 

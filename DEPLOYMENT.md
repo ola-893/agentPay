@@ -15,7 +15,7 @@ See [recording readiness](docs/RECORDING_READINESS.md) for the optional `AgentPa
 1. Copy `.env.example` to `.env` and set a testnet `PRIVATE_KEY` and RPC.
 2. Set `CRE_FORWARDER_ADDRESS` from the official Chainlink CRE forwarder directory for Sepolia. Use the production forwarder, not a wallet or a mock.
 3. Run `npm run deploy:guard`. It deploys and connects AgentPayGuard and AgentPaySettlement. With a blank `CRE_WORKFLOW_ID`, reporting remains disabled.
-4. In `cre/payment-guard/config.staging.json`, configure real agent, recipient, token, integer amounts and cap, a fresh random 32-byte request ID, the guard receiver address, and `publishReport: true`.
+4. In `cre/payment-guard/config.staging.json`, configure real agent and recipient, six-decimal USDC integer amounts and cap, a fresh random 32-byte request ID, the guard receiver address, and `publishReport: true`.
 5. Obtain CRE deployment access and follow the [official deployment guide](https://docs.chain.link/cre/guides/operations/deploying-workflows). Deploy the configured workflow, then call `guard.setWorkflowId(actualWorkflowId)` from its deploying owner. Updates that change workflow identity need a corresponding binding update. Reports fail until identity matches.
 6. Once a report has been accepted onchain, use the guarded client with a funded signer and the deployed addresses.
 
@@ -24,7 +24,9 @@ import { GuardedPaymentClient } from './sdk/src';
 const payments = new GuardedPaymentClient(signer, {
   guardAddress, settlementAddress, chainId: 11155111,
 });
-const receipt = await payments.pay(requestId, recipient, token, amountInTokenUnits);
+// Circle USDC on Ethereum Sepolia; 0.01 USDC = 10000 atomic units.
+const token = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
+const receipt = await payments.pay(requestId, recipient, token, 10000n);
 ```
 
 The consumer accepts 62-byte packed identity metadata and the 64-byte production forwarder form. It verifies forwarder, workflow ID, destination chain and receiver, request uniqueness, payment parties, and expiry. Settlement consumes authorization before transfer; transfer failure reverts the complete operation. An ABI report body or frontend JSON cannot call the consumer directly.
@@ -36,6 +38,8 @@ The forwarder is immutable. The owner can configure workflow identity and connec
 `npm run deploy:sepolia` deploys new AgentPayStream and MockUSD contracts. Do not reuse old addresses: the new ABI uses `paymentToken()`.
 
 Server/demo: set `AGENTPAY_STREAM_ADDRESS`, `PAYMENT_TOKEN_ADDRESS`, and `PAYMENT_RECIPIENT_ADDRESS` in `.env`. Frontend: set `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local`.
+
+The guarded workflow pins Circle Sepolia USDC, its six decimals and the matching USDC/USD feed/API. Do not change only the token address to support another asset. [USDC policy setup and faucet](docs/USDC_SEPOLIA.md).
 
 The original stream UI and SDK assume 18-decimal test tokens; do not point them at 6-decimal USDC. The new guarded client accepts integer token units, with the matching units required in workflow policy.
 

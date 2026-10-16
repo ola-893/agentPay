@@ -2,7 +2,7 @@
 
 **Agent payments with deliberate control, orchestrated by Chainlink CRE.**
 
-The CRE Payment Guard fetches a real Coinbase ETH/USD quote, reads a finalized Chainlink ETH/USD feed on Ethereum Sepolia, checks freshness, price deviation and a per-request spending cap, then generates a bounded payment report. A report consumer and TypeScript client connect accepted onchain authorization to one token settlement.
+The CRE Payment Guard fetches a real Coinbase USDC/USD quote, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, checks freshness, source disagreement, deviation from the $1 peg and a per-request spending cap, then generates a bounded payment report. A report consumer and TypeScript client connect accepted onchain authorization to one token settlement.
 
 **Successful real CRE CLI simulations:** [ALLOW transcript](docs/evidence/cre-allow.log) · [DENY transcript](docs/evidence/cre-deny-budget.log)
 
@@ -12,16 +12,16 @@ The CRE Payment Guard fetches a real Coinbase ETH/USD quote, reads a finalized C
 
 ```mermaid
 flowchart LR
-  A[Cron trigger] --> B[CRE HTTPClient: Coinbase ETH/USD]
+  A[Cron trigger] --> B[CRE HTTPClient: Coinbase USDC/USD]
   B --> C[CRE EVMClient: Chainlink feed on Sepolia]
-  C --> D[Freshness, deviation and budget policy]
+  C --> D[Freshness, disagreement, USDC peg and budget]
   D --> E[CRE report generation]
   E --> F[Opt-in deployed workflow publication]
   F --> G[AgentPayGuard: identity, destination, expiry, replay]
   G --> H[GuardedPaymentClient → AgentPaySettlement]
 ```
 
-The policy uses integer prices and token units. ETH/USD is a market-sanity circuit breaker, not a valuation of the payment token. Reports bind chain, receiver, unique request ID, agent, recipient, token, amount and expiry. The guard trusts a specific forwarder and owner-configured workflow ID. Settlement consumes authorization atomically with token transfer. The SDK checks onchain authority before approval and again before paying.
+The guarded path uses Circle’s six-decimal Sepolia USDC. The policy uses integer prices and raw token units: 0.01 USDC = `10000`, with a 0.1 USDC cap = `100000`. Both price sources must be within 1% of $1 and within 1% of each other. Reports bind chain, receiver, unique request ID, agent, recipient, token, amount and expiry. The guard trusts a specific forwarder and owner-configured workflow ID. Settlement consumes authorization atomically with token transfer. The SDK checks onchain authority before approval and again before paying.
 
 ## Run locally
 
@@ -35,9 +35,9 @@ npm run dev
 
 The dashboard works without a wallet using checked-in evidence. Switch **Within budget** / **Over budget**, inspect observations, download the result, and read its transcript. These are explicitly labeled recorded simulations.
 
-## Why ETH/USD?
+## USDC payments and USDC/USD policy
 
-This demo is an **oracle-disagreement circuit breaker**: it pauses a payment when an independent API and finalized onchain reference disagree or become stale. It does not value tUSD. An actual USDC policy needs a correctly bound USDC address, token decimals, and a USDC/USD depeg check.
+The workflow binds Circle’s Sepolia USDC address to Coinbase USDC/USD and the verified Sepolia Chainlink USDC/USD feed. It denies a depeg even when both sources agree, as well as price disagreement, stale data and over-budget requests. [Addresses, units, faucet and policy details](docs/USDC_SEPOLIA.md). Sepolia USDC has no monetary value: the USD reference check models payment-asset risk; it does not give testnet tokens a dollar value.
 
 ## Reproduce the CRE workflow
 
@@ -69,7 +69,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **99 passing tests** — 27 contracts, 48 SDK, eight middleware, seven CRE policy, nine evidence/tooling checks. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
+Current suites: **106 passing tests** — 27 contracts, 49 SDK, eight middleware, eleven CRE policy, eleven evidence/tooling checks. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
 
 ## Current scope
 
@@ -79,6 +79,6 @@ Current suites: **99 passing tests** — 27 contracts, 48 SDK, eight middleware,
 - The sample cron configuration represents one payment intent. Real payments need fresh request IDs and real deployment configuration. Duplicate IDs fail closed.
 - The spending cap is per request, not a rolling budget, KYC, or compliance service. The deployed workflow configuration and its owner are trusted.
 - The original stream tools are separate from guarded settlement. Their illustrative analytics and controls are demo UI. The gateway uses AgentPay-specific HTTP 402 headers, not the full current x402 standard. Unverified transaction hashes are disabled.
-- MockUSD (`tUSD`) is an 18-decimal test faucet token with no monetary value. Set your own new deployments through `.env.example` and `vite-project/.env.example`. Chainlink CRE orchestrates the workflow; it is not the payment asset.
+- Guarded payments use [Circle Sepolia USDC](https://developers.circle.com/stablecoins/usdc-contract-addresses), with six decimals and no monetary value. Get test USDC from the [Circle faucet](https://faucet.circle.com/). Legacy streams still use MockUSD (`tUSD`), an 18-decimal test fixture; do not configure USDC in the stream UI or legacy streaming SDK.
 
 Independent project integrating Chainlink technology. [Migration history](MIGRATION.md) and archived `.kiro` specs preserve the original source names and import provenance.
