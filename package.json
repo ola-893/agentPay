@@ -1,11 +1,11 @@
 {
   "name": "agentpay",
   "version": "1.0.0",
-  "description": "AgentPay - The Streaming Extension for x402",
+  "description": "AgentPay \u2014 agent payment policies orchestrated with Chainlink CRE",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test:contracts && npm run test:sdk",
-    "test:contracts": "npx hardhat test test/AgentPayStream.test.js",
+    "test": "npm run test:contracts && npm run test:sdk && npm run test:server && npm run test:cre",
+    "test:contracts": "npx hardhat test",
     "test:sdk": "npm --prefix sdk run test:all",
     "test:integration": "npm --prefix sdk run test:integration",
     "deploy:sepolia": "npx hardhat run scripts/deploy.js --network sepolia",
@@ -15,7 +15,15 @@
     "install:all": "npm install && npm --prefix sdk install && npm --prefix server install && npm --prefix vite-project install",
     "demo:provider": "npx ts-node --project demo/tsconfig.json demo/provider.ts",
     "demo:consumer": "npx ts-node --project demo/tsconfig.json demo/consumer.ts",
-    "demo:check": "npx ts-node --project demo/tsconfig.json demo/check-setup.ts"
+    "demo:check": "npx ts-node --project demo/tsconfig.json demo/check-setup.ts",
+    "test:server": "npm --prefix server test",
+    "test:cre": "bun test --cwd cre/payment-guard",
+    "install:cre": "bun install --cwd cre/payment-guard",
+    "cre:simulate": "node scripts/simulate-cre.mjs",
+    "cre:capture": "node scripts/simulate-cre.mjs --capture",
+    "build:sdk": "npm --prefix sdk run build",
+    "typecheck:cre": "cd cre/payment-guard && bun run typecheck",
+    "deploy:guard": "npx hardhat run scripts/deploy-guard.js --network sepolia"
   },
   "keywords": [],
   "author": "",

@@ -9,7 +9,7 @@ const capture = process.argv.includes('--capture');
 const scenario = process.argv.includes('--deny-budget') ? 'deny-budget' : 'allow';
 const staging = path.join(root, 'cre/payment-guard/config.staging.json');
 const config = JSON.parse(await readFile(staging, 'utf8'));
-if (scenario === 'deny-budget') config.request.amount = (BigInt(config.request.spendingCap) + 1n).toString();
+if (scenario === 'deny-budget') config.request.amount = (BigInt(config.request.spendingCap) * 2n).toString();
 await mkdir(path.join(root, '.local/cre'), { recursive: true });
 const configFile = path.join(root, `.local/cre/${scenario}.config.json`);
 await writeFile(configFile, JSON.stringify(config, null, 2) + '\n');

@@ -1,0 +1,35 @@
+name: Verify AgentPay
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            sdk/package-lock.json
+            server/package-lock.json
+            vite-project/package-lock.json
+      - uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: 1.3.12
+      - run: npm ci
+      - run: npm ci --prefix sdk
+      - run: npm ci --prefix server
+      - run: npm ci --prefix vite-project
+      - run: bun install --frozen-lockfile --cwd cre/payment-guard
+      - run: npm test
+      - run: npm run build:sdk
+      - run: npm run typecheck:cre
+      - run: npm run build:web
+      - run: npm --prefix vite-project run lint

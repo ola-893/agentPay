@@ -11,8 +11,8 @@ dotenv.config();
 const agentPayMiddleware = require('../server/middleware/agentPayMiddleware');
 
 // Contract addresses on Sepolia
-const FLOWPAYSTREAM_ADDRESS = '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
-const MOCK_PAYMENT_TOKEN_ADDRESS = '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896';
+const AGENTPAYSTREAM_ADDRESS = process.env.AGENTPAY_STREAM_ADDRESS || '';
+const MOCK_PAYMENT_TOKEN_ADDRESS = process.env.PAYMENT_TOKEN_ADDRESS || '';
 // Use a more reliable RPC endpoint
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com';
 
@@ -33,8 +33,9 @@ app.use(express.json());
 // Real blockchain configuration for Sepolia
 const config = {
     tokenAddress: MOCK_PAYMENT_TOKEN_ADDRESS,
-    agentPayContractAddress: FLOWPAYSTREAM_ADDRESS,
+    agentPayContractAddress: AGENTPAYSTREAM_ADDRESS,
     rpcUrl: SEPOLIA_RPC_URL,
+    recipientAddress: process.env.PAYMENT_RECIPIENT_ADDRESS || '',
     routes: {
         '/api/premium': {
             mode: 'streaming',
@@ -48,7 +49,7 @@ const config = {
 };
 
 console.log("🔧 Provider Configuration:");
-console.log(`   AgentPayStream Contract: ${FLOWPAYSTREAM_ADDRESS}`);
+console.log(`   AgentPayStream Contract: ${AGENTPAYSTREAM_ADDRESS}`);
 console.log(`   tUSD Token: ${MOCK_PAYMENT_TOKEN_ADDRESS}`);
 console.log(`   RPC URL: ${SEPOLIA_RPC_URL}`);
 
@@ -99,7 +100,7 @@ app.get('/api/info', (req, res) => {
         version: "1.0.0",
         network: "Sepolia Testnet",
         contracts: {
-            agentPayStream: FLOWPAYSTREAM_ADDRESS,
+            agentPayStream: AGENTPAYSTREAM_ADDRESS,
             paymentToken: MOCK_PAYMENT_TOKEN_ADDRESS
         },
         protectedRoutes: [

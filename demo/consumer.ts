@@ -6,8 +6,8 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Contract addresses on Sepolia
-const FLOWPAYSTREAM_ADDRESS = '0x155A00fBE3D290a8935ca4Bf5244283685Bb0035';
-const MOCK_PAYMENT_TOKEN_ADDRESS = '0x96B1FE54Ee89811f46ecE4a347950E0D682D3896';
+const AGENTPAYSTREAM_ADDRESS = process.env.AGENTPAY_STREAM_ADDRESS || '';
+const MOCK_PAYMENT_TOKEN_ADDRESS = process.env.PAYMENT_TOKEN_ADDRESS || '';
 // Use a more reliable RPC endpoint
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com';
 

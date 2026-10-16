@@ -19,7 +19,7 @@ describe('x402 Middleware Integration', function () {
         const testConfig = {
             rpcUrl: "http://localhost:8545", // Dummy
             agentPayContractAddress: "0xMock",
-            tokenAddress: "0xMneeMock",
+            tokenAddress: "0xTestTokenMock",
             recipientAddress: '0x0000000000000000000000000000000000000014',
             mockContract: mockContract, // Inject mock
             routes: {
