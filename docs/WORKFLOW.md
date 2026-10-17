@@ -35,7 +35,7 @@ The wrapper creates ignored configs in `.local/cre`. DENY changes the amount onl
 
 Read-only simulation uses `cre/project.yaml` for its RPC. Root `.env`'s `SEPOLIA_RPC_URL` is separate. Connectivity to CRE services, Coinbase and Sepolia is required; no wallet key or funds are needed by the read-only runner.
 
-Successful captures save `docs/evidence/cre-<scenario>.json` and `.log`, plus JSON in `vite-project/public/evidence`. Existing captures are backed up before successful replacement; failure leaves them intact. Frontend schema version **2** validates USDC identity and units. Capture time and CRE observation time are separate. Evidence contains config/log hashes and an ABI-encoded report body, not a reusable signed credential.
+Successful captures save `docs/evidence/cre-<scenario>.json` and `.log`, plus JSON in `vite-project/public/evidence`. Existing captures are backed up before replacement. CLI or expected-decision failure leaves them intact. The three output files are written sequentially: interruption during file writing can leave mixed copies. Restore the retained backup and run `npm run docs:check` before using such evidence. Frontend schema version **2** validates USDC identity and units. Capture time and CRE observation time are separate. Evidence contains config/log hashes and an ABI-encoded report body, not a reusable signed credential.
 
 ## Denial reasons
 

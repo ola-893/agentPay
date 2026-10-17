@@ -97,7 +97,7 @@ export const documentation = {
           "npm run cre:capture\nnpm run cre:capture -- --deny-budget"
         ),
         p(
-          "A successful capture writes the transcript and JSON to docs/evidence and the frontend JSON to vite-project/public/evidence. Previous captures are retained under content-addressed backups. Failed captures do not replace them. These commands do not broadcast."
+          "A successful capture writes the transcript and JSON to docs/evidence and the frontend JSON to vite-project/public/evidence. Previous captures are retained under content-addressed backups. CLI or expected-decision failures leave saved captures intact. Output writes are sequential; after an interrupted file write, restore the backup and run npm run docs:check to detect mixed copies. These commands do not broadcast."
         ),
       ]),
       section("4. Verify local changes", [
@@ -434,6 +434,7 @@ export const documentation = {
     related: [
       [repo + "docs/UI_UX_REVIEW.md", "UI review"],
       [repo + "docs/CRE_SUBMISSION.md", "Submission evidence"],
+      [repo + "docs/DOCUMENTATION_AUDIT.md", "Correctness audit and verification limits"],
     ],
   },
 };

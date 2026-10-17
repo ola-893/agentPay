@@ -1,0 +1,16 @@
+[
+  {
+    "case": "wrong-sdk-amount-type",
+    "command": "node scripts/check-doc-examples.mjs",
+    "exitCode": 1,
+    "expected": "nonzero",
+    "caught": true
+  },
+  {
+    "case": "altered-transcript",
+    "command": "node scripts/check-doc-evidence.mjs",
+    "exitCode": 1,
+    "expected": "nonzero",
+    "caught": true
+  }
+]

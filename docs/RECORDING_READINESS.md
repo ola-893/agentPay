@@ -14,9 +14,11 @@ The command executes **`npm run cre:simulate`** and **`npm run cre:simulate -- -
 
 It fails if an input is stale, an unexpected guard fires, or the headroom is too small. A pass describes the dry-run time only, not a promise that the next run will pass. Repeat immediately before recording. Do not loosen the configured freshness/deviation checks just to make an ALLOW shot. If the underlying feed is near expiry, wait for an update and rerun. Show both npm commands executing live during the eventual recording.
 
-The current `docs/evidence/cre-allow.*` and `cre-deny-budget.*` files stay intact during dry runs. They are a transparent, labeled backup if live input conditions change. Successful `cre:capture` refreshes first retain previous JSON, frontend copies, and transcripts under a content-addressed `docs/evidence/backups/` directory. Failed captures do not replace them.
+The current `docs/evidence/cre-allow.*` and `cre-deny-budget.*` files stay intact during dry runs. They are a transparent, labeled backup if live input conditions change. Successful `cre:capture` refreshes first retain previous JSON, frontend copies, and transcripts under a content-addressed `docs/evidence/backups/` directory. CLI or expected-decision failures do not replace them. Output writes are sequential; an interrupted file write may leave mixed copies. Restore a retained backup and run `npm run docs:check` after recovering from that failure.
 
-Latest saved dry run: [summary](evidence/preflight/2026-10-16T23-18-39-479Z/summary.json), [live ALLOW command](evidence/preflight/2026-10-16T23-18-39-479Z/allow.log), and [live budget DENY command](evidence/preflight/2026-10-16T23-18-39-479Z/deny-budget.log). Both had more than 82,700 seconds of freshness headroom at that execution; this is historical evidence, not a guarantee about a future run.
+Earlier saved dry run: [summary](evidence/preflight/2026-10-16T23-18-39-479Z/summary.json), [live ALLOW command](evidence/preflight/2026-10-16T23-18-39-479Z/allow.log), and [live budget DENY command](evidence/preflight/2026-10-16T23-18-39-479Z/deny-budget.log). Both had more than 82,700 seconds of freshness headroom at that execution; this is historical evidence, not a guarantee about a future run.
+
+The [documentation audit](DOCUMENTATION_AUDIT.md) retains a newer clean-checkout dry run, including an initial credential-validation failure and a successful retry of both scenarios. It did not replace the dashboard captures.
 
 ## Explain the payment-asset check
 

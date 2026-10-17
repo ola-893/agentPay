@@ -1,0 +1,19 @@
+
+> agentpay@1.0.0 cre:simulate
+> node scripts/simulate-cre.mjs
+
+Running CRE CLI: cre workflow simulate payment-guard --target staging-settings --trigger-index 0 --non-interactive --config <repo>/.local/cre/allow.config.json
+Initializing...
+
+✗ Credential validation failed
+
+✗ authentication required: credential validation failed: authentication failed: unable to retrieve organization info. Your account may not be fully set up yet — please try again in a few minutes
+file://<repo>/scripts/simulate-cre.mjs:29
+if (code !== 0) throw new Error(`CRE simulation failed (exit ${code}); evidence was not updated.`);
+                      ^
+
+Error: CRE simulation failed (exit 1); evidence was not updated.
+    at file://<repo>/scripts/simulate-cre.mjs:29:23
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+Node.js v22.23.2

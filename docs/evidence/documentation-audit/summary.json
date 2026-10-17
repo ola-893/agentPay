@@ -1,0 +1,37 @@
+{
+  "checkedAt": "2026-10-17T22:41:18.454703+00:00",
+  "commit": "d11d6d0cd66509f404ec07dceeb3980740225eb7",
+  "cleanBeforeVerification": true,
+  "results": [
+    {
+      "command": "npm run docs:check",
+      "exitCode": 0,
+      "log": "1-docs-check.log"
+    },
+    {
+      "command": "npm test",
+      "exitCode": 0,
+      "log": "2-test.log"
+    },
+    {
+      "command": "npm run build:sdk",
+      "exitCode": 0,
+      "log": "3-build-sdk.log"
+    },
+    {
+      "command": "npm run typecheck:cre",
+      "exitCode": 0,
+      "log": "4-typecheck-cre.log"
+    },
+    {
+      "command": "npm run build:web",
+      "exitCode": 0,
+      "log": "5-build-web.log"
+    },
+    {
+      "command": "npm --prefix vite-project run lint",
+      "exitCode": 0,
+      "log": "6-lint.log"
+    }
+  ]
+}

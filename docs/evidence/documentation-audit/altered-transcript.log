@@ -1,0 +1,23 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: allow: transcript hash
++ actual - expected
+
++ 'd852309d6e5c71fe06c3bf2279b7d661ba334c75f756e4ca9ad4db0d3ce6e579'
+- '7f432df18eeb19279d31be4c09a40fc4a630b634dc3d7c1c347aaebf9fc6f60a'
+
+    at file://<clean-checkout>/scripts/check-doc-evidence.mjs:18:10
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'd852309d6e5c71fe06c3bf2279b7d661ba334c75f756e4ca9ad4db0d3ce6e579',
+  expected: '7f432df18eeb19279d31be4c09a40fc4a630b634dc3d7c1c347aaebf9fc6f60a',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.23.2

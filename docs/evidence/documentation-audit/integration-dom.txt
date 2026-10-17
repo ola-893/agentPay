@@ -1,0 +1,84 @@
+- link "Skip to content":
+  - /url: "#main-content"
+- banner:
+  - link "AgentPay home":
+    - /url: /
+    - generic: A
+    - generic: AgentPay
+    - generic: Powered by Chainlink CRE
+  - navigation "Main navigation":
+    - link "CRE Workflow":
+      - /url: /
+      - text: CRE Workflow
+    - link "Streams":
+      - /url: /streams
+      - text: Streams
+    - link "Agent setup":
+      - /url: /agent
+      - text: Agent setup
+    - link "Docs":
+      - /url: /docs
+      - text: Docs
+  - generic: Sepolia testnet
+  - button "Connect wallet":
+    - text: Connect wallet
+- main [active]:
+  - complementary:
+    - paragraph:
+      - text: Documentation
+    - navigation "Documentation sections":
+      - link "Overview":
+        - /url: /docs/overview
+      - link "Run locally":
+        - /url: /docs/setup
+      - link "CRE workflow":
+        - /url: /docs/cre
+      - link "USDC & policy":
+        - /url: /docs/usdc
+      - link "Agent setup":
+        - /url: /docs/agent
+      - link "SDK integration":
+        - /url: /docs/integration
+      - link "Legacy streams":
+        - /url: /docs/streams
+      - link "Troubleshooting":
+        - /url: /docs/troubleshooting
+    - link "Chainlink CRE docs":
+      - /url: https://docs.chain.link/cre
+      - text: Chainlink CRE docs
+  - article:
+    - paragraph:
+      - text: Build with AgentPay
+    - heading "Authorize first. Approve tokens second." [level=1]
+    - paragraph: Use GuardedPaymentClient for CRE-controlled USDC settlement. It is distinct from the legacy AgentPaySDK stream client.
+    - link "Read this guide in the repository":
+      - /url: https://github.com/ola-893/agentPay/blob/main/docs/sdk/guarded-payment-client.md
+      - text: Read this guide in the repository
+    - heading "Use the local SDK" [level=2]
+    - paragraph: Save these integration fragments inside sdk/ (for example sdk/integration.ts), importing ./src and ethers from that directory. Supply the listed variables and place awaited calls inside an async agent function. The root and SDK install separate ethers copies; a root-created signer can fail TypeScript checks. For another application, align the SDK and signer’s ethers dependency before use. No published npm package is assumed.
+    - paragraph: TypeScript
+    - button "Copy TypeScript example":
+    - status
+    - generic "TypeScript example":
+      - code: "import { GuardedPaymentClient } from './src'; // signer, guardAddress, settlementAddress, recipient and // requestId must come from your real Sepolia deployment. const client = new GuardedPaymentClient(signer, { guardAddress, settlementAddress, chainId: 11155111, }); // AFTER the authenticated report is accepted onchain: const receipt = await client.pay( requestId, recipient, '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', 10000n, // 0.01 USDC ); console.log(receipt.hash);"
+    - heading "Checks performed by pay" [level=2]
+    - list:
+      - listitem: Validate request ID, nonzero payment addresses, positive uint256 amount and connected signer.
+      - listitem: Verify the signer’s chain and the settlement contract’s guard address.
+      - listitem: Call guard.canPay for the exact request ID, signer, recipient, token and amount before approving tokens.
+      - listitem: Approve the settlement contract if allowance is insufficient, wait for confirmation, then check canPay again.
+      - listitem: Call settlement.settle and require a successful receipt. The contract consumes the authorization atomically; a failed transfer reverts consumption.
+    - heading "Common authorization failures" [level=2]
+    - paragraph: Missing, denied, expired or consumed authorization fails before approval. Another signer, recipient, token, chain or destination cannot use the report. The payment amount must be positive and no greater than the report’s maximum; one smaller payment consumes the entire request, so leftover headroom is not reusable. A saved JSON capture, a raw ABI report body and a transaction hash are not spend authority.
+    - paragraph: The current streaming gateway does not automatically recognize a guarded settlement receipt for API access. Add a separate authenticated receipt-to-service policy if integrating a paid API.
+    - heading "Continue reading" [level=2]
+    - link "Configure a local draft":
+      - /url: /docs/agent
+      - text: Configure a local draft
+    - link "Deploy the strict consumer":
+      - /url: https://github.com/ola-893/agentPay/blob/main/DEPLOYMENT.md
+      - text: Deploy the strict consumer
+- contentinfo:
+  - paragraph: AgentPay · Ethereum Sepolia · Testnet tokens have no monetary value.
+  - link "Workflow & trust boundaries ↗":
+    - /url: /docs/cre
