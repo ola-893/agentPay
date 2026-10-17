@@ -1,211 +1,56 @@
-# AgentPaySDK
+# AgentPaySDK — legacy streaming client
 
-The main SDK class for AI agent payments.
+[Source](../../sdk/src/AgentPaySDK.ts). This client is separate from CRE's [GuardedPaymentClient](guarded-payment-client.md) and assumes 18-decimal tUSD. It is not a complete current x402 client.
 
 ## Constructor
 
-```typescript
-new AgentPaySDK(config: AgentPayConfig)
-```
-
-### Config Options
-
-```typescript
-interface AgentPayConfig {
-  privateKey: string;
-  rpcUrl: string;
-  contractAddress: string;
-  tokenAddress: string;
-  agentId?: string;
-  defaultStreamDuration?: number;
-  autoApproveTokens?: boolean;
-}
-```
-
-## Methods
-
-### request
-
-Makes an HTTP request with automatic x402 handling.
-
-```typescript
-async request(url: string, options?: RequestOptions): Promise<Response>
-```
-
-**Parameters:**
-| Name | Type | Description |
-|------|------|-------------|
-| url | string | Target URL |
-| options | RequestOptions | Fetch options |
-
-**Example:**
-```typescript
-const response = await sdk.request('https://api.provider.com/data', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ query: 'test' })
+```ts
+import { AgentPaySDK } from './sdk/src'; // root TypeScript entry point
+import { parseEther } from 'ethers';
+const sdk = new AgentPaySDK({
+  privateKey, // server-side dedicated test wallet; never in frontend
+  rpcUrl,
+  agentId: 'legacy-agent', // optional
+  apiKey, // optional provider API key
+  spendingLimits: { // optional, bigint units
+    dailyLimit: parseEther('100'),
+    totalLimit: parseEther('1000'),
+  },
 });
 ```
 
-### createStream
+`privateKey` and `rpcUrl` are required. No constructor `contractAddress`, `tokenAddress`, `maxRetries`, `defaultStreamDuration` or auto-approval option exists. The optional legacy Gemini helper reads `GEMINI_API_KEY` from the process; it is not needed for CRE simulation or the frontend.
 
-Creates a new payment stream.
+## Public methods
 
-```typescript
-async createStream(params: CreateStreamParams): Promise<number>
+| Method | Actual behavior |
+| --- | --- |
+| `makeRequest(url, axiosOptions?)` | Axios request, handles supported AgentPay HTTP 402 stream requirements and retries with a stream ID |
+| `createStream(contractAddress, tokenAddress, amount, duration, metadata?, recipientAddress?)` | Approves as needed, creates a stream, returns `{ streamId, startTime }`; amount is bigint and recipient is required by validation |
+| `selectPaymentMode(estimatedRequests)` | Calls optional legacy decision helper; returns `stream` or `direct` |
+| `askAgent(query)` | Calls the legacy brain with cached metrics/context |
+| `emergencyStop()` / `resume()` | Pauses/resumes this SDK instance's `makeRequest`; does not stop deployed workflows or all other instances |
+| `getMetrics()` | Returns this instance's request/signing-negotiation counters; not measured gas savings or global telemetry |
+| `calculateClaimable(metadata)` / `calculateRemaining(metadata)` | Local cached `StreamMetadata` arithmetic, not authoritative onchain withdrawal accounting |
+| `getStreamDetails(streamId)` | Local placeholder metadata (`streamId`, agent ID and client name), not an RPC lookup |
+
+For authoritative withdrawal/cancellation/query, use the deployed **AgentPayStream contract** methods with ethers or the frontend. There are no `sdk.request`, `sdk.getActiveStream`, `sdk.getStream`, `sdk.withdrawFromStream` or `sdk.cancelStream` methods.
+
+## Explicit stream example
+
+```ts
+const { streamId } = await sdk.createStream(
+  streamAddress,
+  mockUsdAddress,
+  parseEther('10'), // 10 tUSD, NOT USDC
+  3600,
+  { purpose: 'test API access' },
+  providerRecipient,
+);
 ```
 
-**Parameters:**
-```typescript
-interface CreateStreamParams {
-  recipient: string;
-  amount: string;
-  duration: number;
-  metadata?: string;
-}
-```
+The recipient must be nonzero, valid and distinct from the token address before signing. `makeRequest` can create a 3600-second stream from the provider's rate, checks its instance-local spend monitor and caches stream metadata by host. This is a heuristic cache, not a durable entitlement/metering system.
 
-**Returns:** Stream ID
+`SpendingMonitor` takes bigint `dailyLimit`/`totalLimit`. It maintains in-memory totals, resets daily after a 24-hour interval on a check, and detects more than five renewals per minute. It is not an onchain rolling budget, per-request cap or global emergency control. Explicit `createStream` calls do not pass through all `makeRequest` negotiation checks; callers must impose their own intent validation.
 
-**Example:**
-```typescript
-const streamId = await sdk.createStream({
-  recipient: '0x...',
-  amount: '10', // 10 tUSD
-  duration: 3600, // 1 hour
-  metadata: JSON.stringify({ purpose: 'API access' })
-});
-```
-
-### getStream
-
-Gets stream details.
-
-```typescript
-async getStream(streamId: number): Promise<Stream>
-```
-
-**Returns:**
-```typescript
-interface Stream {
-  sender: string;
-  recipient: string;
-  totalAmount: bigint;
-  flowRate: bigint;
-  startTime: number;
-  stopTime: number;
-  amountWithdrawn: bigint;
-  isActive: boolean;
-  metadata: string;
-}
-```
-
-### getClaimableBalance
-
-Gets withdrawable amount for a stream.
-
-```typescript
-async getClaimableBalance(streamId: number): Promise<string>
-```
-
-**Returns:** Claimable amount in tUSD
-
-### withdrawFromStream
-
-Withdraws available funds.
-
-```typescript
-async withdrawFromStream(streamId: number): Promise<TransactionReceipt>
-```
-
-### cancelStream
-
-Cancels an active stream.
-
-```typescript
-async cancelStream(streamId: number): Promise<TransactionReceipt>
-```
-
-### getActiveStreamForRecipient
-
-Finds an active stream for a recipient.
-
-```typescript
-async getActiveStreamForRecipient(recipient: string): Promise<number | null>
-```
-
-### getTokenBalance
-
-Gets tUSD token balance.
-
-```typescript
-async getTokenBalance(address?: string): Promise<string>
-```
-
-### approvePaymentToken
-
-Approves tUSD spending.
-
-```typescript
-async approvePaymentToken(amount: string): Promise<TransactionReceipt>
-```
-
-## Events
-
-The SDK emits events for monitoring:
-
-```typescript
-sdk.on('streamCreated', (streamId: number) => {
-  console.log(`Stream #${streamId} created`);
-});
-
-sdk.on('paymentRequired', (requirements: PaymentRequirements) => {
-  console.log('Payment required:', requirements);
-});
-
-sdk.on('requestCompleted', (url: string, streamId: number) => {
-  console.log(`Request to ${url} completed using stream #${streamId}`);
-});
-```
-
-## Error Handling
-
-```typescript
-try {
-  await sdk.createStream(params);
-} catch (error) {
-  if (error.code === 'INSUFFICIENT_BALANCE') {
-    console.log('Not enough tUSD');
-  } else if (error.code === 'APPROVAL_REQUIRED') {
-    console.log('Need to approve tokens');
-  }
-}
-```
-
-## Full Example
-
-```typescript
-import { AgentPaySDK } from './AgentPaySDK';
-
-async function main() {
-  const sdk = new AgentPaySDK({
-    privateKey: process.env.PRIVATE_KEY!,
-    rpcUrl: 'https://rpc.sepolia.org',
-    contractAddress: 'YOUR_AGENTPAY_STREAM_ADDRESS',
-    tokenAddress: 'YOUR_TEST_TOKEN_ADDRESS'
-  });
-
-  // Check balance
-  const balance = await sdk.getTokenBalance();
-  console.log(`Balance: ${balance} tUSD`);
-
-  // Make requests (SDK handles everything)
-  for (let i = 0; i < 10; i++) {
-    const response = await sdk.request('https://api.provider.com/data');
-    const data = await response.json();
-    console.log(`Request ${i + 1}:`, data);
-  }
-}
-
-main();
-```
+The included gateway rejects direct transaction-hash proof. Do not advertise its SDK's optional direct-enabled branch for that gateway. [Protocol and verification limitations](../architecture/x402-protocol.md).

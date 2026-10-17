@@ -1,172 +1,45 @@
-# Events & Errors
+# Events and errors
 
-Reference for AgentPayStream contract events and error messages.
+Source and compiled ABI are authoritative for exact event signatures. Amounts are **raw token units**, not native ETH wei; use six decimals for guarded USDC and eighteen for legacy tUSD.
 
-## Events
+## Guarded payment events
 
-### StreamCreated
+| Contract | Event |
+| --- | --- |
+| AgentPayGuard | `DecisionReceived(bytes32 indexed requestId, address indexed agent, bool approved, uint64 validUntil)` |
+| AgentPayGuard | `AuthorizationConsumed(bytes32 indexed requestId, uint256 amount)` |
+| AgentPayGuard | `SettlementConfigured(address indexed settlement)` |
+| AgentPayGuard | `WorkflowConfigured(bytes32 indexed workflowId)` |
+| AgentPaySettlement | `PaymentSettled(bytes32 indexed requestId, address indexed agent, address indexed recipient, address token, uint256 amount)` |
+| AgentPaySimulationReceiver | `SimulationReportRecorded(bytes32 indexed requestId, bool approved, uint64 validUntil, bytes32 reportHash)` |
 
-Emitted when a new stream is created.
+The simulation receiver event is not authenticated production authorization. An isolated demo runner must match the receipt's receiver/event/request/decision/expiry/report hash before presenting public delivery. [Consumer boundaries](guarded-settlement.md).
 
-```solidity
-event StreamCreated(
-    uint256 indexed streamId,
-    address indexed sender,
-    address indexed recipient,
-    uint256 totalAmount,
-    uint256 startTime,
-    uint256 stopTime,
-    string metadata
-)
-```
+Common strict errors include `Only forwarder`, `Invalid metadata`, `Wrong workflow`, `Wrong destination`, `Report replay`, `Invalid expiry`, `Only settlement` and `Payment not authorized`. Fix the origin, deployed binding, exact intent or fresh request/report; do not disable strict validation. `Token transfer failed` reverts settlement and consumption atomically. [Guard source](../../contracts/AgentPayGuard.sol).
 
-**Parameters:**
-| Name | Indexed | Description |
-|------|---------|-------------|
-| streamId | Yes | Unique stream identifier |
-| sender | Yes | Stream creator address |
-| recipient | Yes | Payment receiver address |
-| totalAmount | No | Total tUSD locked |
-| startTime | No | Stream start timestamp |
-| stopTime | No | Stream end timestamp |
-| metadata | No | JSON metadata string |
-
-**Example Log:**
-```javascript
-{
-  event: 'StreamCreated',
-  args: {
-    streamId: 42n,
-    sender: '0x1234...',
-    recipient: '0x5678...',
-    totalAmount: 10000000000000000000n, // 10 tUSD
-    startTime: 1704067200n,
-    stopTime: 1704070800n,
-    metadata: '{"purpose":"API access"}'
-  }
-}
-```
-
-### Withdrawn
-
-Emitted when funds are withdrawn from a stream.
+## Stream events
 
 ```solidity
-event Withdrawn(
-    uint256 indexed streamId,
-    address indexed recipient,
-    uint256 amount
-)
+event StreamCreated(uint256 indexed streamId, address indexed sender, address indexed recipient,
+  uint256 totalAmount, uint256 startTime, uint256 stopTime, string metadata);
+event Withdrawn(uint256 indexed streamId, address indexed recipient, uint256 amount);
+event StreamCancelled(uint256 indexed streamId, address sender, address recipient,
+  uint256 senderBalance, uint256 recipientBalance);
 ```
 
-**Parameters:**
-| Name | Indexed | Description |
-|------|---------|-------------|
-| streamId | Yes | Stream identifier |
-| recipient | Yes | Withdrawal recipient |
-| amount | No | Amount withdrawn |
+| Stream error/suffix | Meaning |
+| --- | --- |
+| `Total amount must be greater than 0.` | Zero amount |
+| `Recipient cannot be the zero address.` | Zero recipient |
+| `Duration must be greater than 0.` | Zero duration |
+| `flowRate would be zero. Increase amount or duration.` | Integer rate is zero; increase amount or **shorten** duration |
+| `Transfer failed. check allowance` | Failed initial token transfer |
+| `Stream is not active.` | Closed/cancelled or nonexistent; elapsed stop time alone does not clear active flag |
+| `Caller is not the recipient.` | Withdrawal attempted by another wallet |
+| `No funds to withdraw.` | Claimable amount is zero |
+| `Stream already cancelled.` | Attempt to close inactive stream |
+| `Caller cannot cancel this stream.` | Caller is neither sender nor recipient |
 
-### StreamCancelled
+The exact errors have an `AgentPayStream: ` prefix. Token transfer can also revert with its own message. The source's zero-rate wording says “Increase amount or duration”; reducing duration is the useful direction for a fixed raw amount.
 
-Emitted when a stream is cancelled.
-
-```solidity
-event StreamCancelled(
-    uint256 indexed streamId,
-    address sender,
-    address recipient,
-    uint256 senderBalance,
-    uint256 recipientBalance
-)
-```
-
-**Parameters:**
-| Name | Indexed | Description |
-|------|---------|-------------|
-| streamId | Yes | Stream identifier |
-| sender | No | Original sender |
-| recipient | No | Original recipient |
-| senderBalance | No | Amount returned to sender |
-| recipientBalance | No | Amount sent to recipient |
-
-## Error Messages
-
-### Stream Creation Errors
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `AgentPayStream: Total amount must be greater than 0.` | Amount is zero | Provide positive amount |
-| `AgentPayStream: Recipient cannot be the zero address.` | Invalid recipient | Use valid address |
-| `AgentPayStream: Duration must be greater than 0.` | Duration is zero | Provide positive duration |
-| `AgentPayStream: flowRate would be zero.` | Amount too small for duration | Increase amount or decrease duration |
-| `AgentPayStream: Transfer failed. check allowance` | Insufficient approval | Approve tokens first |
-
-### Withdrawal Errors
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `AgentPayStream: Stream is not active.` | Stream ended or cancelled | Check stream status |
-| `AgentPayStream: Caller is not the recipient.` | Wrong caller | Use recipient wallet |
-| `AgentPayStream: No funds to withdraw.` | Nothing claimable yet | Wait for funds to stream |
-| `AgentPayStream: Transfer failed.` | Token transfer issue | Check contract balance |
-
-### Cancellation Errors
-
-| Error | Cause | Solution |
-|-------|-------|----------|
-| `AgentPayStream: Stream already cancelled.` | Already inactive | No action needed |
-| `AgentPayStream: Caller cannot cancel this stream.` | Not sender or recipient | Use authorized wallet |
-| `AgentPayStream: Recipient transfer failed on cancel.` | Transfer issue | Check token state |
-| `AgentPayStream: Sender refund failed on cancel.` | Transfer issue | Check token state |
-
-## Listening to Events
-
-### Using ethers.js
-
-```javascript
-// Listen for new streams
-contract.on('StreamCreated', (streamId, sender, recipient, amount, start, stop, metadata) => {
-  console.log(`New stream #${streamId} created`);
-  console.log(`From: ${sender} To: ${recipient}`);
-  console.log(`Amount: ${ethers.formatEther(amount)} tUSD`);
-});
-
-// Listen for withdrawals
-contract.on('Withdrawn', (streamId, recipient, amount) => {
-  console.log(`Withdrawal from stream #${streamId}`);
-  console.log(`${ethers.formatEther(amount)} tUSD to ${recipient}`);
-});
-
-// Listen for cancellations
-contract.on('StreamCancelled', (streamId, sender, recipient, senderBal, recipientBal) => {
-  console.log(`Stream #${streamId} cancelled`);
-});
-```
-
-### Querying Past Events
-
-```javascript
-// Get all streams created by an address
-const filter = contract.filters.StreamCreated(null, myAddress);
-const events = await contract.queryFilter(filter, 0, 'latest');
-
-events.forEach(event => {
-  console.log(`Stream #${event.args.streamId}`);
-});
-```
-
-## Error Handling
-
-```javascript
-try {
-  await contract.createStream(recipient, duration, amount, metadata);
-} catch (error) {
-  if (error.message.includes('flowRate would be zero')) {
-    console.log('Amount too small for duration');
-  } else if (error.message.includes('check allowance')) {
-    console.log('Need to approve tokens first');
-  } else {
-    console.log('Unknown error:', error.message);
-  }
-}
-```
+When querying events, use bounded RPC ranges and the actual deployed address. The current UI scans the last 49000 blocks, filters payment parties and reads current stream state; it is not a full-history indexer. [Stream source](../../contracts/AgentPayStream.sol).

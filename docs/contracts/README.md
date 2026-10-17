@@ -1,39 +1,15 @@
-# Smart Contracts
+# Smart contract reference
 
-AgentPay uses two main smart contracts deployed on Ethereum Sepolia.
+AgentPay contracts are source/test artifacts until you deploy them. These docs do not claim public consumer/settlement/stream deployments or verified explorer addresses.
 
-## Deployed Contracts
+| Contract | Role |
+| --- | --- |
+| [AgentPayGuard](guarded-settlement.md) | Strict forwarder/workflow identity and bounded single-use payment authority |
+| [AgentPaySettlement](guarded-settlement.md) | Atomic authorization consumption plus token transfer |
+| [AgentPaySimulationReceiver](guarded-settlement.md) | Separate record-only mock-forwarder demo, cannot settle |
+| [AgentPayStream](agentpaystream.md) | Legacy per-second stream escrow |
+| [MockUSD](mock-usd.md) | 18-decimal public-mint tUSD test fixture |
 
-| Contract | Address | Description |
-|----------|---------|-------------|
-| AgentPayStream | `YOUR_AGENTPAY_STREAM_ADDRESS` | Payment streaming |
-| MockUSD | `YOUR_TEST_TOKEN_ADDRESS` | Test ERC-20 token |
+Circle Sepolia USDC (6 decimals) is an existing Circle deployment for the guarded path, not a contract deployed by this repo. [Token/feed addresses](../USDC_SEPOLIA.md). The legacy stream UI/SDK require 18-decimal MockUSD.
 
-## Contract Overview
-
-### AgentPayStream
-
-The core payment streaming contract that enables:
-- Creating payment streams
-- Withdrawing streamed funds
-- Cancelling streams
-- Querying stream state
-
-### MockUSD
-
-A test ERC-20 token for development:
-- Standard ERC-20 interface
-- Public mint function
-- 18 decimals
-
-## Verification
-
-Contracts are verified on Sepolia Etherscan:
-- [AgentPayStream on Etherscan](https://sepolia.etherscan.io/address/YOUR_AGENTPAY_STREAM_ADDRESS)
-- [MockUSD on Etherscan](https://sepolia.etherscan.io/address/YOUR_TEST_TOKEN_ADDRESS)
-
-## Next Steps
-
-- [AgentPayStream Details](agentpaystream.md)
-- [MockUSD Details](mock-usd.md)
-- [Events & Errors](events-errors.md)
+[Events and errors](events-errors.md) · [Deployment](../../DEPLOYMENT.md) · [Contract tests](../../test/AgentPayGuard.test.js)

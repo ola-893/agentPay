@@ -1,170 +1,46 @@
-# Payment Streams
+# Legacy tUSD payment streams
 
-Payment streams are the core innovation of AgentPay.
+The streaming frontend and `AgentPaySDK` assume **18-decimal MockUSD/tUSD**, with no monetary value. Circle's six-decimal USDC is supported only by the separate guarded workflow/client. [Deploy and configure](../../DEPLOYMENT.md) before connecting a wallet.
 
-## What is a Payment Stream?
+## UI workflow
 
-A payment stream is a continuous flow of tUSD tokens from sender to recipient over time. Instead of discrete payments, funds "stream" at a constant rate.
+1. Set `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local` to your new AgentPayStream/MockUSD deployment. Restart Vite.
+2. Open Streams, connect a browser wallet on Ethereum Sepolia, and mint test tUSD if needed.
+3. Enter a nonzero Ethereum recipient address (no ENS resolution), positive amount and whole-second duration. Default: 24 hours. Presets and custom duration use the same state.
+4. Confirm approval if allowance is insufficient, then confirm stream creation. The app locks pending actions and shows wallet progress/errors.
+5. Incoming/outgoing lists support search, status filters, sorting and pagination. Discovery covers the last 49000 blocks, not all history.
 
-## How Streams Work
+No balance is fabricated. Unavailable balances and failed stream queries show explicit errors rather than zero/empty success.
 
-```
-Time ─────────────────────────────────────────▶
+## Integer accounting
 
-     Start                                  Stop
-       │                                      │
-       ▼                                      ▼
-       ┌──────────────────────────────────────┐
-       │████████████████████░░░░░░░░░░░░░░░░░░│
-       │◀── Streamed ──▶│◀── Remaining ──▶│
-       └──────────────────────────────────────┘
-                        ▲
-                      Now
+```text
+flowRate = floor(totalAmount / duration)
 ```
 
-## Stream Lifecycle
+The contract requires a nonzero rate. Before stop time, claimable equals elapsed whole seconds times flowRate minus amountWithdrawn. At or after stop time, claimable is **totalAmount - amountWithdrawn**, releasing rounding remainder. Cancellation sets inactive and pays recipient accrual plus sender refund.
 
-### 1. Creation
+Reaching stop time does not itself set `isActive` false. Ended active streams can still be withdrawn by the recipient. The gateway separately checks stop time and will not grant ongoing service based on an ended stream.
 
-```javascript
-await contract.createStream(
-  recipient,    // Who receives funds
-  duration,     // How long (seconds)
-  amount,       // Total tUSD
-  metadata      // JSON metadata
+## Withdraw or close
+
+Incoming cards show estimated claimable amounts; the contract determines final amounts. Only the recipient can withdraw. **Withdraw by stream ID** reads the onchain balance and verifies the connected recipient; changing IDs clears the previous result. Use this for older streams absent from discovery.
+
+Either party can close/cancel an active stream. Accrued funds go to the recipient, remaining funds to the sender. Confirmation uses a wallet transaction. Disconnecting or changing account/network invalidates the local app session; reconnect to refresh. Closing the confirmation dialog does not cancel a transaction already sent to the wallet/network.
+
+## Contract and SDK calls
+
+Use [AgentPayStream reference](../contracts/agentpaystream.md) for direct contract methods. The legacy SDK has a positional `createStream` method, not an object-based constructor API:
+
+```ts
+// TypeScript entry point at the repository root; supply actual config/addresses.
+import { AgentPaySDK } from './sdk/src';
+import { parseEther } from 'ethers';
+const sdk = new AgentPaySDK({ privateKey, rpcUrl, agentId: 'legacy-stream-agent' });
+const { streamId } = await sdk.createStream(
+  streamAddress, mockUsdAddress, parseEther('10'), 3600,
+  { purpose: 'test API access' }, providerRecipient,
 );
 ```
 
-At creation:
-- Tokens transferred from sender to contract
-- Stream starts immediately
-- Flow rate calculated: `amount / duration`
-
-### 2. Active Streaming
-
-While active:
-- Funds accumulate for recipient
-- Claimable balance increases per second
-- Recipient can withdraw anytime
-- Sender can cancel anytime
-
-### 3. Withdrawal
-
-```javascript
-await contract.withdrawFromStream(streamId);
-```
-
-- Recipient claims accumulated funds
-- Tokens transferred from contract to recipient
-- Stream continues (if not expired)
-
-### 4. Completion or Cancellation
-
-**Natural Completion:**
-- Stream reaches stop time
-- All funds claimable by recipient
-- Stream marked inactive
-
-**Cancellation:**
-- Either party can cancel
-- Recipient gets streamed amount
-- Sender gets remaining amount
-
-## Flow Rate Calculation
-
-```
-flowRate = totalAmount / duration
-```
-
-**Example:**
-- Amount: 3600 tUSD
-- Duration: 3600 seconds (1 hour)
-- Flow Rate: 1 tUSD/second
-
-**Claimable at any time:**
-```
-elapsed = min(now, stopTime) - startTime
-streamed = elapsed × flowRate
-claimable = streamed - alreadyWithdrawn
-```
-
-## Stream States
-
-| State | isActive | Description |
-|-------|----------|-------------|
-| Active | true | Funds streaming |
-| Completed | false | Reached stop time |
-| Cancelled | false | Manually cancelled |
-
-## Benefits Over Direct Payments
-
-| Aspect | Direct Payment | Stream Payment |
-|--------|---------------|----------------|
-| Signatures | 1 per request | 2 total |
-| Gas cost | High (N × gas) | Low (2 × gas) |
-| Latency | Wait for tx | Instant (after open) |
-| Flexibility | None | Cancel anytime |
-| Overpayment | Possible | Refundable |
-
-## Use Cases
-
-### API Access
-
-```javascript
-// Create stream for 24 hours of API access
-await sdk.createStream({
-  recipient: apiProvider,
-  amount: '100', // 100 tUSD
-  duration: 86400 // 24 hours
-});
-
-// Make unlimited requests
-for (let i = 0; i < 1000; i++) {
-  await sdk.request(apiUrl);
-}
-```
-
-### Subscription Services
-
-```javascript
-// Monthly subscription stream
-await sdk.createStream({
-  recipient: serviceProvider,
-  amount: '30', // 30 tUSD
-  duration: 2592000 // 30 days
-});
-```
-
-### Pay-per-Use
-
-```javascript
-// Short stream for specific task
-await sdk.createStream({
-  recipient: computeProvider,
-  amount: '5',
-  duration: 300 // 5 minutes
-});
-```
-
-## Best Practices
-
-### For Consumers
-
-1. **Buffer Time**: Create streams slightly longer than needed
-2. **Monitor Balance**: Watch for low balance warnings
-3. **Reuse Streams**: Check for existing streams before creating new ones
-4. **Cancel Unused**: Reclaim funds from unused streams
-
-### For Providers
-
-1. **Verify On-Chain**: Always verify stream validity
-2. **Check Balance**: Ensure sufficient claimable balance
-3. **Withdraw Regularly**: Don't let funds accumulate too long
-4. **Handle Expiry**: Gracefully handle expired streams
-
-## Security Considerations
-
-1. **Locked Funds**: Tokens are locked in contract, not held by either party
-2. **No Rug Pull**: Sender can't withdraw recipient's earned funds
-3. **Guaranteed Payment**: Recipient always gets streamed amount
-4. **Refund Guarantee**: Sender always gets unstreamed amount back
+This can approve/spend test tokens. The recipient is a required distinct address. `withdrawFromStream`, `cancelStream` and `getStream` are contract methods, not public methods on `AgentPaySDK`. [Actual SDK API](../sdk/agentpay-sdk.md).

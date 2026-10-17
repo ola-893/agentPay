@@ -1,48 +1,11 @@
-# Getting Started
+# Getting started
 
-Welcome to AgentPay! This section will help you get up and running quickly.
+Choose the flow you need:
 
-## What You'll Learn
+1. **Inspect evidence:** Node.js 22+ and npm; no wallet or deployment required. [Quick start](quick-start.md).
+2. **Execute CRE:** also install Bun and the authenticated CRE CLI, and allow network access. [Workflow guide](../WORKFLOW.md).
+3. **Prepare an agent:** use `/agent` to save a browser-local integration draft. [Agent setup](../AGENT_SETUP.md).
+4. **Settle USDC:** requires deployed consumer/settlement/workflow, an accepted fresh authenticated report, a funded Sepolia signer, and Circle test USDC. [Guarded client](../sdk/guarded-payment-client.md).
+5. **Manage streams:** requires newly deployed 18-decimal MockUSD and AgentPayStream plus frontend addresses. [Stream guide](../architecture/payment-streams.md).
 
-1. **Installation** - Set up AgentPay in your project
-2. **Quick Start** - Create your first payment stream
-3. **Configuration** - Customize AgentPay for your needs
-
-## Prerequisites
-
-Before you begin, ensure you have:
-
-- Node.js v18 or higher
-- npm or yarn package manager
-- MetaMask or compatible Web3 wallet
-- Sepolia testnet ETH (for gas fees)
-- Basic understanding of Ethereum and smart contracts
-
-## System Requirements
-
-| Requirement | Minimum | Recommended |
-|-------------|---------|-------------|
-| Node.js | v18.0.0 | v20.0.0+ |
-| RAM | 4GB | 8GB+ |
-| Storage | 500MB | 1GB+ |
-
-## Architecture Overview
-
-AgentPay consists of three main components:
-
-```
-┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│   Consumer      │────▶│    Provider     │────▶│   Blockchain    │
-│   (AI Agent)    │◀────│   (x402 API)    │◀────│   (Sepolia)     │
-└─────────────────┘     └─────────────────┘     └─────────────────┘
-        │                       │                       │
-        ▼                       ▼                       ▼
-   AgentPaySDK            Middleware              AgentPayStream
-   GeminiAI              Verification            MockUSD
-```
-
-## Next Steps
-
-- [Installation Guide](installation.md)
-- [Quick Start Tutorial](quick-start.md)
-- [Configuration Options](configuration.md)
+Use [installation](installation.md) and [configuration](configuration.md) for exact commands and settings. AgentPay targets Ethereum Sepolia only; testnet tokens have no monetary value.

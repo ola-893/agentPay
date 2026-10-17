@@ -1,77 +1,17 @@
-# Deployment Overview
+# Deployment overview
 
-AgentPay can be deployed to various Ethereum networks.
+Use [the root deployment guide](../../DEPLOYMENT.md) as the operator entry point. AgentPay supports **Ethereum Sepolia only** in the documented configuration. No AgentPay consumer, settlement, stream or live DON deployment is claimed by the saved read-only evidence.
 
-## Supported Networks
+Choose deliberately:
 
-| Network | Status | Chain ID |
-|---------|--------|----------|
-| Sepolia Testnet | ✅ Active | 11155111 |
-| Ethereum Mainnet | 🔜 Coming | 1 |
+| Action | Result |
+| --- | --- |
+| `npm run dev` | Local frontend with saved evidence; no deployment/wallet needed |
+| `npm run cre:simulate` | Read-only live-input CLI workflow execution |
+| `npm run deploy:guard` | Strict guard + settlement, needs test wallet and official forwarder |
+| `npm run deploy:cre-demo` | Separate record-only simulation consumer; explicit opt-in and dedicated demo wallet |
+| `npm run deploy:sepolia` | Legacy MockUSD + AgentPayStream; does not configure USDC settlement |
 
-## Current Deployment
+The deployment commands spend Sepolia test ETH. The write runner simulates without broadcast by default; `--broadcast` is explicit. [Recording and mock-write instructions](../RECORDING_READINESS.md).
 
-**Sepolia Testnet:**
-
-| Contract | Address |
-|----------|---------|
-| MockUSD | `YOUR_TEST_TOKEN_ADDRESS` |
-| AgentPayStream | `YOUR_AGENTPAY_STREAM_ADDRESS` |
-
-## Deployment Guides
-
-- [Sepolia Testnet](sepolia.md) - Development and testing
-- [Production Checklist](production.md) - Mainnet preparation
-
-## Quick Deploy
-
-```bash
-# Deploy to Sepolia
-npm run deploy:sepolia
-
-# Or manually
-npx hardhat run scripts/deploy.js --network sepolia
-```
-
-## Architecture
-
-```
-┌─────────────────────────────────────────┐
-│           Deployment Stack              │
-├─────────────────────────────────────────┤
-│                                         │
-│  ┌─────────────┐  ┌─────────────────┐   │
-│  │  MockUSD   │  │  AgentPayStream  │   │
-│  │  (ERC-20)   │──│  (Streaming)    │   │
-│  └─────────────┘  └─────────────────┘   │
-│         │                 │             │
-│         └────────┬────────┘             │
-│                  │                      │
-│                  ▼                      │
-│         ┌───────────────┐               │
-│         │   Ethereum    │               │
-│         │   Network     │               │
-│         └───────────────┘               │
-│                                         │
-└─────────────────────────────────────────┘
-```
-
-## Environment Variables
-
-Required for deployment:
-
-```bash
-PRIVATE_KEY=0x...          # Deployer wallet
-SEPOLIA_RPC_URL=https://...  # RPC endpoint
-ETHERSCAN_API_KEY=...      # For verification (optional)
-```
-
-## Post-Deployment
-
-After deploying:
-
-1. **Verify contracts** on Etherscan
-2. **Update frontend** with new addresses
-3. **Update SDK** configuration
-4. **Test** all functionality
-5. **Document** deployment details
+[Sepolia setup](sepolia.md) · [USDC token/feed](../USDC_SEPOLIA.md) · [Contract reference](../contracts/README.md)

@@ -1,80 +1,12 @@
-# SDK Reference
+# SDK reference
 
-The AgentPay SDK enables AI agents to make streaming payments.
+The repository provides two separate clients. Install with `npm --prefix sdk install` and build with `npm run build:sdk` from the repository root. No published npm package is assumed.
 
-## Installation
+| Client | Use | Amount scale |
+| --- | --- | --- |
+| [GuardedPaymentClient](guarded-payment-client.md) | Settlement after authenticated CRE report acceptance | Raw bigint; Circle USDC uses 6 decimals |
+| [AgentPaySDK](agentpay-sdk.md) | Legacy project-specific HTTP 402 stream negotiation | Raw bigint/human rates with 18-decimal tUSD |
 
-```bash
-cd sdk
-npm install
-```
+`src/index.ts` exports both clients, `SpendingMonitor` and their types. Optional legacy AI/proxy modules exist in source; the frontend does not run them or provision model credentials.
 
-## Quick Start
-
-```typescript
-import { AgentPaySDK } from './AgentPaySDK';
-
-const sdk = new AgentPaySDK({
-  privateKey: process.env.PRIVATE_KEY,
-  rpcUrl: 'https://rpc.sepolia.org',
-  contractAddress: 'YOUR_AGENTPAY_STREAM_ADDRESS',
-  tokenAddress: 'YOUR_TEST_TOKEN_ADDRESS'
-});
-
-// Make a request - SDK handles x402 automatically
-const response = await sdk.request('https://api.provider.com/premium');
-```
-
-## Components
-
-| Component | Description |
-|-----------|-------------|
-| [AgentPaySDK](agentpay-sdk.md) | Main SDK class |
-| [GeminiPaymentBrain](gemini-payment-brain.md) | AI decision engine |
-| [SpendingMonitor](spending-monitor.md) | Safety controls |
-| [AgentPayProxy](agentpay-proxy.md) | Multi-agent support |
-
-## Architecture
-
-```
-┌─────────────────────────────────────────┐
-│              AgentPaySDK                  │
-├─────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────────┐   │
-│  │   Request   │  │  Stream Manager │   │
-│  │   Handler   │  │                 │   │
-│  └─────────────┘  └─────────────────┘   │
-│         │                 │             │
-│         ▼                 ▼             │
-│  ┌─────────────┐  ┌─────────────────┐   │
-│  │   x402      │  │   Contract      │   │
-│  │   Parser    │  │   Interface     │   │
-│  └─────────────┘  └─────────────────┘   │
-│         │                 │             │
-│         ▼                 ▼             │
-│  ┌─────────────────────────────────┐    │
-│  │      GeminiPaymentBrain         │    │
-│  │      (Decision Engine)          │    │
-│  └─────────────────────────────────┘    │
-│                   │                     │
-│                   ▼                     │
-│  ┌─────────────────────────────────┐    │
-│  │       SpendingMonitor           │    │
-│  │       (Safety Controls)         │    │
-│  └─────────────────────────────────┘    │
-└─────────────────────────────────────────┘
-```
-
-## Features
-
-- ✅ Automatic x402 negotiation
-- ✅ Stream creation and management
-- ✅ AI-powered payment decisions
-- ✅ Spending limits and safety controls
-- ✅ Multi-agent mesh support
-- ✅ TypeScript support
-
-## Next Steps
-
-- [AgentPaySDK Reference](agentpay-sdk.md)
-- [Building AI Agents](../guides/building-ai-agents.md)
+Start with [guarded settlement](guarded-payment-client.md) for the CRE bounty flow. [Agent setup](../AGENT_SETUP.md) generates an integration template without a wallet or key. [Configuration](../getting-started/configuration.md) covers public frontend settings versus server-side keys.

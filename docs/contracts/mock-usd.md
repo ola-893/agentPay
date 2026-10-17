@@ -1,135 +1,26 @@
-# MockUSD Token
+# MockUSD / tUSD
 
-MockUSD is a test ERC-20 token for AgentPay development.
-
-## Contract Address
-
-**Sepolia**: `YOUR_TEST_TOKEN_ADDRESS`
-
-## Overview
-
-MockUSD is a standard ERC-20 token with an open mint function for testing purposes.
-
-## Token Details
+[Source](../../contracts/MockUSD.sol). This is a public-mint test fixture for **legacy streaming**, not Circle USDC or a monetary asset.
 
 | Property | Value |
-|----------|-------|
+| --- | --- |
 | Name | Mock USD |
 | Symbol | tUSD |
 | Decimals | 18 |
-| Initial Supply | 1,000,000 tUSD |
+| Constructor mint | 1000000 tUSD to deployer |
+| Supply limit | No cap on public minting |
 
-## Functions
+The contract implements `balanceOf`, `allowance`, `approve`, `transfer`, `transferFrom`, `totalSupply`, metadata getters and `mint(address,uint256)`. Anyone can mint to any address. Approval and transfer emit the corresponding ERC-20-style events.
 
-### Standard ERC-20
-
-```solidity
-function name() external view returns (string memory)
-function symbol() external view returns (string memory)
-function decimals() external view returns (uint8)
-function totalSupply() external view returns (uint256)
-function balanceOf(address account) external view returns (uint256)
-function transfer(address recipient, uint256 amount) external returns (bool)
-function allowance(address owner, address spender) external view returns (uint256)
-function approve(address spender, uint256 amount) external returns (bool)
-function transferFrom(address sender, address recipient, uint256 amount) external returns (bool)
+```ts
+// Supply the deployed legacy token and connected test signer.
+const token = new ethers.Contract(mockUsdAddress, [
+  'function mint(address,uint256)',
+  'function balanceOf(address) view returns (uint256)',
+], signer);
+await (await token.mint(await signer.getAddress(), ethers.parseEther('1000'))).wait();
 ```
 
-### mint
+The frontend **Mint 1000 test tUSD** action requires configured legacy addresses and a connected Sepolia wallet. No shared MockUSD deployment address is assumed. [Deployment](../../DEPLOYMENT.md).
 
-Mints new tokens to any address (for testing only).
-
-```solidity
-function mint(address to, uint256 amount) external
-```
-
-**Parameters:**
-| Name | Type | Description |
-|------|------|-------------|
-| to | address | Recipient address |
-| amount | uint256 | Amount in wei |
-
-**Example:**
-```javascript
-// Mint 1000 tUSD
-await token.mint(
-  myAddress,
-  ethers.parseEther('1000')
-);
-```
-
-## Usage Examples
-
-### Check Balance
-
-```javascript
-const balance = await token.balanceOf(myAddress);
-console.log('Balance:', ethers.formatEther(balance), 'tUSD');
-```
-
-### Approve Spending
-
-```javascript
-// Approve AgentPayStream to spend 100 tUSD
-await token.approve(
-  agentPayStreamAddress,
-  ethers.parseEther('100')
-);
-```
-
-### Transfer Tokens
-
-```javascript
-await token.transfer(
-  recipientAddress,
-  ethers.parseEther('10')
-);
-```
-
-## Events
-
-### Transfer
-
-```solidity
-event Transfer(address indexed from, address indexed to, uint256 value)
-```
-
-Emitted on:
-- `transfer()`
-- `transferFrom()`
-- `mint()`
-
-### Approval
-
-```solidity
-event Approval(address indexed owner, address indexed spender, uint256 value)
-```
-
-Emitted on:
-- `approve()`
-
-## Getting Test Tokens
-
-### Via Dashboard
-
-1. Connect wallet to AgentPay dashboard
-2. Go to "Streams" tab
-3. Click "Mint 1000 tUSD"
-4. Confirm transaction
-
-### Via Code
-
-```javascript
-const token = new ethers.Contract(tokenAddress, tokenABI, signer);
-await token.mint(myAddress, ethers.parseEther('1000'));
-```
-
-### Via Etherscan
-
-1. Go to [MockUSD on Etherscan](https://sepolia.etherscan.io/address/YOUR_TEST_TOKEN_ADDRESS#writeContract)
-2. Connect wallet
-3. Call `mint` with your address and amount
-
-## Production Note
-
-⚠️ **MockUSD is for testing only.** In production, AgentPay will use the real tUSD token which does not have a public mint function.
+Circle's test USDC uses 6 decimals and its faucet instead of this mint function. Do not point the legacy UI or SDK at USDC. [USDC policy and faucet](../USDC_SEPOLIA.md).

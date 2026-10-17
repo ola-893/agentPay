@@ -1,146 +1,35 @@
-# Architecture Overview
+# Architecture and trust boundaries
 
-AgentPay is designed as a modular, extensible payment protocol for AI agents.
+AgentPay has two explicit payment paths. Only the CRE guarded path is the current bounty orchestration workflow.
 
-## System Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                         AgentPay System                               │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
-│  │   Consumer   │───▶│   Provider   │───▶│  Blockchain  │          │
-│  │   Agent      │    │   (x402)     │    │  (Sepolia)   │          │
-│  │   + SDK      │◀───│              │◀───│              │          │
-│  └──────────────┘    └──────────────┘    └──────────────┘          │
-│         │                   │                   │                   │
-│         │                   │                   │                   │
-│         ▼                   ▼                   ▼                   │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
-│  │   Gemini     │    │  Dashboard   │    │ AgentPayStream│          │
-│  │   AI Brain   │    │   (React)    │    │  + MockUSD  │          │
-│  └──────────────┘    └──────────────┘    └──────────────┘          │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+  Trigger[Cron intent] --> HTTP[Coinbase USDC/USD via CRE HTTP consensus]
+  HTTP --> EVM[Finalized Sepolia feed and token reads]
+  EVM --> Policy[Freshness, disagreement, peg, cap]
+  Policy --> Report[CRE report]
+  Report --> Preview[Saved evidence viewer]
+  Report --> Forwarder[Deployed workflow and trusted forwarder]
+  Forwarder --> Guard[AgentPayGuard]
+  Guard --> Settlement[Single-use AgentPaySettlement]
+  Settlement --> USDC[Circle Sepolia USDC transfer]
 ```
 
-## Core Components
+## Guarded USDC
 
-### 1. Consumer Agent (SDK)
+- [Workflow](../WORKFLOW.md) joins external and blockchain data, evaluates raw integer values and generates a destination-bound report.
+- [AgentPayGuard](../contracts/guarded-settlement.md) trusts its immutable forwarder and owner-bound workflow identity. It checks request identity, parties, destination, amount, expiry and replay. It does not recompute oracle policy.
+- [GuardedPaymentClient](../sdk/guarded-payment-client.md) verifies the chain, settlement/guard binding and live authority before approvals and again before settlement.
+- The browser evidence viewer shows historical results only. [Agent setup](../AGENT_SETUP.md) saves a local integration draft; it does not operate an agent or publish a policy.
 
-The AgentPaySDK enables AI agents to:
-- Detect x402 payment requirements
-- Create and manage payment streams
-- Make authenticated requests
-- Handle payment negotiation automatically
+A failed settlement reverts authorization consumption and token transfer together. A denied, expired or consumed report cannot pay. Fresh intents need unique IDs; the fixed sample intent is for read-only reproduction.
 
-### 2. Provider (Middleware)
+## Separate tUSD streaming
 
-The x402 middleware enables API providers to:
-- Return 402 Payment Required responses
-- Verify stream validity on-chain
-- Grant access to paid resources
-- Track usage and revenue
+The [legacy SDK/provider](x402-protocol.md) negotiates project-specific HTTP 402 headers. It can establish a [MockUSD stream](payment-streams.md) and attach its stream ID on later requests. The provider checks active status, recipient, timestamps and minimum per-second rate. It does not implement an authenticated payer/session binding or durable metering. A public stream ID is not a production access credential.
 
-### 3. Smart Contracts
+The gateway rejects direct transaction-hash proof and does not automatically accept guarded settlement receipts. Full current x402 transport/facilitator integration is not shipped. Claimed gas savings/signature counts from old illustrative guides are not measured guarantees.
 
-On-chain components:
-- **AgentPayStream**: Payment streaming contract
-- **MockUSD**: Test ERC-20 token
+## Scope
 
-### 4. AI Decision Engine
-
-GeminiPaymentBrain provides:
-- Intelligent payment mode selection
-- Cost optimization
-- Risk assessment
-
-## Data Flow
-
-### Request Flow (First Request)
-
-```
-1. Agent → Provider: GET /api/premium
-2. Provider → Agent: 402 Payment Required + x402 headers
-3. Agent → AI Brain: Should I stream or pay directly?
-4. AI Brain → Agent: Stream (high volume predicted)
-5. Agent → Blockchain: Create stream
-6. Agent → Provider: GET /api/premium + X-AgentPay-Stream-ID
-7. Provider → Blockchain: Verify stream
-8. Provider → Agent: 200 OK + data
-```
-
-### Request Flow (Subsequent Requests)
-
-```
-1. Agent → Provider: GET /api/premium + X-AgentPay-Stream-ID
-2. Provider → Cache: Check stream validity
-3. Provider → Agent: 200 OK + data
-```
-
-## Key Design Decisions
-
-### Why Streaming?
-
-| Problem | Traditional | AgentPay |
-|---------|-------------|---------|
-| 100 API calls | 100 signatures | 2 signatures |
-| Gas cost | ~$50 | ~$1 |
-| Latency | High (wait for tx) | Low (stream exists) |
-| UX | Blocking | Non-blocking |
-
-### Why x402?
-
-The HTTP 402 status code was reserved for "Payment Required" but never standardized. AgentPay implements a practical x402 protocol:
-
-- Standard HTTP semantics
-- Machine-readable payment requirements
-- Backward compatible
-- Extensible
-
-### Why tUSD?
-
-tUSD (Mock Native Electronic Economy) is used as the payment token:
-- Stable value representation
-- ERC-20 compatible
-- Easy to integrate
-- Testnet version available
-
-## Security Model
-
-### Trust Assumptions
-
-1. **Blockchain**: Trustless verification
-2. **Provider**: Trusted to deliver service
-3. **Consumer**: Trusted with own funds
-4. **AI Brain**: Advisory only, human override available
-
-### Safety Controls
-
-- Spending limits (daily, per-request)
-- Emergency stop mechanism
-- Stream cancellation
-- On-chain verification
-
-## Scalability
-
-### Current Limits
-
-| Metric | Limit |
-|--------|-------|
-| Streams per agent | Unlimited |
-| Requests per stream | Unlimited |
-| Concurrent streams | Limited by gas |
-
-### Future Improvements
-
-- L2 deployment (lower gas)
-- Batch stream creation
-- Off-chain verification with ZK proofs
-
-## Next Steps
-
-- [x402 Protocol Details](x402-protocol.md)
-- [Payment Streams](payment-streams.md)
-- [AI Decision Engine](ai-decision-engine.md)
+Ethereum Sepolia only. Circle USDC has 6 decimals; legacy tUSD has 18. Testnet tokens have no monetary value. Saved simulation is demonstrated, not live DON deployment or public settlement. The optional mock receiver is record-only. Rolling budgets, KYC/compliance, private execution and multi-chain settlement are not included. This is an unaudited prototype, and workflow configuration/owner are trusted. [Submission](../CRE_SUBMISSION.md).

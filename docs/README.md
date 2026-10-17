@@ -1,11 +1,32 @@
 # AgentPay documentation
 
-Start with the [CRE submission guide](CRE_SUBMISSION.md), [project README](../README.md), and [current deployment instructions](../DEPLOYMENT.md).
+AgentPay orchestrates guarded **Circle USDC payments on Ethereum Sepolia** with Chainlink CRE. Its frontend shows recorded CLI decisions, provides a local agent integration draft, and keeps legacy tUSD streaming separate. This is an unaudited prototype; testnet tokens have no monetary value.
 
-- [CRE workflow](../cre/payment-guard/main.ts)
-- [Policy and tests](../cre/payment-guard/policy.ts)
-- [Authorization consumer](../contracts/AgentPayGuard.sol)
-- [Guarded SDK](../sdk/src/GuardedPaymentClient.ts)
-- [Recorded simulation evidence](evidence/cre-allow.json)
+## Start here
 
-The remaining architecture, stream contract, and SDK guides originate from the imported streaming project. They have been rebranded and their old deployment addresses removed, but should be treated as legacy reference. The README, CRE submission guide, current deployment guide, source and tests are authoritative for the new guarded workflow.
+| Goal | Guide |
+| --- | --- |
+| Run the frontend without a wallet | [Quick start](getting-started/quick-start.md) |
+| Install dependencies and verify the repo | [Installation](getting-started/installation.md) |
+| Understand configuration and units | [Configuration](getting-started/configuration.md) |
+| Reproduce ALLOW and DENY | [CRE workflow](WORKFLOW.md) |
+| Verify USDC address, feed and peg policy | [Sepolia USDC](USDC_SEPOLIA.md) |
+| Use the Agent setup page | [Local agent draft](AGENT_SETUP.md) |
+| Settle an authenticated report | [GuardedPaymentClient](sdk/guarded-payment-client.md) |
+| Deploy the consumer or legacy streams | [Deployment](../DEPLOYMENT.md) |
+| Fix setup or execution failures | [Troubleshooting](reference/troubleshooting.md) |
+| Review bounty evidence and limits | [Submission guide](CRE_SUBMISSION.md) |
+
+## Two payment paths
+
+| | CRE guarded settlement | Legacy streaming |
+| --- | --- | --- |
+| Token | Circle Sepolia USDC, 6 decimals | Deployed MockUSD/tUSD, 18 decimals |
+| Units | `0.01 USDC = 10000` | `1 tUSD = 1000000000000000000` |
+| Client | `GuardedPaymentClient.pay` | `AgentPaySDK.makeRequest` / `createStream` |
+| Contracts | `AgentPayGuard` + `AgentPaySettlement` | `AgentPayStream` + `MockUSD` |
+| Frontend | Recorded workflow evidence and local SDK draft | Connected-wallet management, after deployment |
+
+The gateway’s HTTP 402 headers are project-specific. Neither path is a complete current x402 transport/facilitator integration, and guarded settlement does not automatically grant gateway access. [Architecture and trust boundaries](architecture/README.md).
+
+The [frontend docs](../vite-project/src/lib/documentation.mjs) describe the same supported flows with copyable commands and examples. [Table of contents](SUMMARY.md) links only to existing guides. Historical migration files and saved earlier captures remain provenance, not current setup instructions.

@@ -1,12 +1,12 @@
 {
   "title": "AgentPay Documentation",
-  "description": "The Streaming Extension for x402 - AI Agent Payment Protocol",
+  "description": "Agent payments with Chainlink CRE, Circle Sepolia USDC and separate legacy streams",
   "author": "AgentPay Team",
   "language": "en",
   "gitbook": ">=3.0.0",
   "links": {
     "sidebar": {
-      "GitHub": "https://github.com/your-org/agentpay"
+      "GitHub": "https://github.com/ola-893/agentPay"
     }
   },
   "plugins": [

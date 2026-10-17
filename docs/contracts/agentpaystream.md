@@ -1,194 +1,36 @@
-# AgentPayStream Contract
+# AgentPayStream
 
-The AgentPayStream contract is the core payment streaming infrastructure.
+[Source](../../contracts/AgentPayStream.sol). Legacy stream escrow; the UI and streaming SDK use 18-decimal MockUSD/tUSD. No public deployment address is claimed. [Deployment](../../DEPLOYMENT.md).
 
-## Contract Address
+## Constructor and reads
 
-**Sepolia**: `YOUR_AGENTPAY_STREAM_ADDRESS`
+`constructor(address paymentToken)` requires a nonzero token address. `paymentToken()` returns the configured token. `streams(id)` returns sender, recipient, totalAmount, flowRate, startTime, stopTime, amountWithdrawn, isActive and metadata. IDs begin at 1.
 
-## Overview
-
-AgentPayStream enables continuous payment streams using tUSD tokens. Funds flow from sender to recipient over time, calculated per-second.
-
-## Functions
-
-### createStream
-
-Creates a new payment stream.
+## createStream
 
 ```solidity
-function createStream(
-    address recipient,
-    uint256 duration,
-    uint256 amount,
-    string memory metadata
-) external
+function createStream(address recipient, uint256 duration, uint256 amount, string calldata metadata) external
 ```
 
-**Parameters:**
-| Name | Type | Description |
-|------|------|-------------|
-| recipient | address | Address receiving the stream |
-| duration | uint256 | Stream duration in seconds |
-| amount | uint256 | Total tUSD amount (in wei) |
-| metadata | string | JSON metadata string |
+Amount is raw token units; duration is whole seconds. The contract requires a nonzero recipient, positive amount/duration and nonzero integer `floor(amount / duration)`. The sender must have sufficient tokens and allowance. It transfers amount into escrow and emits `StreamCreated`.
 
-**Requirements:**
-- `amount > 0`
-- `duration > 0`
-- `recipient != address(0)`
-- Sender must have approved tUSD tokens
-
-**Example:**
-```javascript
-// Approve tokens first
-await token.approve(agentPayStreamAddress, amount);
-
-// Create stream
-await agentPayStream.createStream(
-  recipientAddress,
-  3600, // 1 hour
-  ethers.parseEther('10'), // 10 tUSD
-  '{"purpose": "API access"}'
-);
+```ts
+// Supply deployed contracts and an authorized connected signer.
+const amount = ethers.parseEther('10'); // 10 tUSD, NOT USDC
+await (await token.approve(streamAddress, amount)).wait();
+await (await stream.createStream(recipient, 3600, amount, '{}')).wait();
 ```
 
-### withdrawFromStream
+The contract accepts a string; JSON validity of metadata is not enforced. Do not store private information in public metadata.
 
-Withdraws available funds from a stream.
+## getClaimableBalance and withdrawFromStream
 
-```solidity
-function withdrawFromStream(uint256 streamId) external
-```
+`getClaimableBalance(id)` requires an active stream. Before start it returns zero; during streaming it returns elapsed whole seconds × flowRate minus previous withdrawals. At/after stop it returns **totalAmount - amountWithdrawn**, including division remainder.
 
-**Parameters:**
-| Name | Type | Description |
-|------|------|-------------|
-| streamId | uint256 | ID of the stream |
+`withdrawFromStream(id)` requires the recipient caller, active stream and positive claimable balance. It updates withdrawn accounting, transfers funds and emits `Withdrawn`. An ended stream remains active until closed, so its remaining funds can still be withdrawn. `isStreamActive(id)` reports the stored active flag; it is not a check that time remains for API service access.
 
-**Requirements:**
-- Caller must be the recipient
-- Stream must be active
-- Claimable balance > 0
+## cancelStream
 
-**Example:**
-```javascript
-await agentPayStream.withdrawFromStream(42);
-```
+Either sender or recipient can cancel an active stream. The contract sets inactive, sends accrued claimable funds to the recipient, refunds the unspent balance to the sender, and emits `StreamCancelled`. The frontend labels this **Close stream**. A closed stream cannot be withdrawn again.
 
-### cancelStream
-
-Cancels an active stream.
-
-```solidity
-function cancelStream(uint256 streamId) external
-```
-
-**Parameters:**
-| Name | Type | Description |
-|------|------|-------------|
-| streamId | uint256 | ID of the stream |
-
-**Requirements:**
-- Caller must be sender or recipient
-- Stream must be active
-
-**Behavior:**
-- Recipient receives streamed amount
-- Sender receives remaining amount
-- Stream marked as inactive
-
-### getClaimableBalance
-
-Returns the amount available for withdrawal.
-
-```solidity
-function getClaimableBalance(uint256 streamId) external view returns (uint256)
-```
-
-**Parameters:**
-| Name | Type | Description |
-|------|------|-------------|
-| streamId | uint256 | ID of the stream |
-
-**Returns:** Amount in wei that can be withdrawn
-
-**Calculation:**
-```
-elapsed = min(now, stopTime) - startTime
-streamed = elapsed * flowRate
-claimable = streamed - amountWithdrawn
-```
-
-### isStreamActive
-
-Checks if a stream is currently active.
-
-```solidity
-function isStreamActive(uint256 streamId) external view returns (bool)
-```
-
-### streams
-
-Returns stream details.
-
-```solidity
-function streams(uint256 streamId) external view returns (
-    address sender,
-    address recipient,
-    uint256 totalAmount,
-    uint256 flowRate,
-    uint256 startTime,
-    uint256 stopTime,
-    uint256 amountWithdrawn,
-    bool isActive,
-    string memory metadata
-)
-```
-
-## Stream Structure
-
-```solidity
-struct Stream {
-    address sender;        // Stream creator
-    address recipient;     // Payment receiver
-    uint256 totalAmount;   // Total tUSD locked
-    uint256 flowRate;      // tUSD per second
-    uint256 startTime;     // Unix timestamp
-    uint256 stopTime;      // Unix timestamp
-    uint256 amountWithdrawn; // Already claimed
-    bool isActive;         // Stream status
-    string metadata;       // JSON metadata
-}
-```
-
-## Flow Rate Calculation
-
-```
-flowRate = totalAmount / duration
-```
-
-Example:
-- Amount: 3600 tUSD
-- Duration: 3600 seconds (1 hour)
-- Flow Rate: 1 tUSD/second
-
-## Events
-
-See [Events & Errors](events-errors.md) for full event documentation.
-
-## Security Considerations
-
-1. **Approval Required**: Users must approve tUSD before creating streams
-2. **Recipient Only Withdraw**: Only recipients can withdraw
-3. **Both Can Cancel**: Either party can cancel
-4. **No Reentrancy**: Uses checks-effects-interactions pattern
-
-## Gas Costs (Approximate)
-
-| Function | Gas |
-|----------|-----|
-| createStream | ~150,000 |
-| withdrawFromStream | ~80,000 |
-| cancelStream | ~100,000 |
-| getClaimableBalance | ~30,000 (view) |
+There is no top-up, pause, resume or extension method. To continue service, open a new stream. No audited security or gas-cost guarantee is made. [Accounting/UI](../architecture/payment-streams.md) and [events/errors](events-errors.md).

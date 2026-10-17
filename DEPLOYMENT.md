@@ -29,7 +29,7 @@ const token = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
 const receipt = await payments.pay(requestId, recipient, token, 10000n);
 ```
 
-The consumer accepts 62-byte packed identity metadata and the 64-byte production forwarder form. It verifies forwarder, workflow ID, destination chain and receiver, request uniqueness, payment parties, and expiry. Settlement consumes authorization before transfer; transfer failure reverts the complete operation. An ABI report body or frontend JSON cannot call the consumer directly.
+The consumer accepts 62-byte packed identity metadata and the 64-byte production forwarder form. It verifies forwarder, workflow ID, destination chain and receiver, request uniqueness, payment parties, and expiry. Settlement consumes authorization before transfer; transfer failure reverts the complete operation. An ABI report body or frontend JSON cannot call the consumer directly. The reported amount is an upper bound: one positive payment up to it can consume the request, after which unused headroom is not reusable.
 
 The forwarder is immutable. The owner can configure workflow identity and connect a deployed settlement contract once. Protect that owner key and review workflow configuration. This is an unaudited prototype, not a production payments service.
 
@@ -37,10 +37,14 @@ The forwarder is immutable. The owner can configure workflow identity and connec
 
 `npm run deploy:sepolia` deploys new AgentPayStream and MockUSD contracts. Do not reuse old addresses: the new ABI uses `paymentToken()`.
 
-Server/demo: set `AGENTPAY_STREAM_ADDRESS`, `PAYMENT_TOKEN_ADDRESS`, and `PAYMENT_RECIPIENT_ADDRESS` in `.env`. Frontend: set `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local`.
+Server/demo: set `AGENTPAY_STREAM_ADDRESS`, `PAYMENT_TOKEN_ADDRESS`, and `PAYMENT_RECIPIENT_ADDRESS` in `.env`. Frontend: set `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local`, then restart Vite. Without both nonzero addresses, Streams shows setup guidance. [Frontend usage](vite-project/README.md).
 
 The guarded workflow pins Circle Sepolia USDC, its six decimals and the matching USDC/USD feed/API. Do not change only the token address to support another asset. [USDC policy setup and faucet](docs/USDC_SEPOLIA.md).
 
 The original stream UI and SDK assume 18-decimal test tokens; do not point them at 6-decimal USDC. The new guarded client accepts integer token units, with the matching units required in workflow policy.
 
 The stream gateway checks active status, recipient, start/stop time, and minimum rate. Direct receipt-hash acceptance is disabled. Production service access additionally needs an authenticated payer/session design and durable usage accounting. Guarded settlement is a separate explicit payment path.
+
+## Browser agent drafts
+
+Agent setup (`/agent`) validates non-secret configuration, saves a browser-local draft and generates a guarded SDK example. It neither reads a signer nor publishes a workflow/policy. [Draft behavior](docs/AGENT_SETUP.md) and [guarded client API](docs/sdk/guarded-payment-client.md).

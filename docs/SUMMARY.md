@@ -1,60 +1,47 @@
 # Table of contents
 
-* [CRE bounty submission](CRE_SUBMISSION.md)
+* [Documentation home](README.md)
 
-* [Introduction](README.md)
+## Getting started
 
-## Getting Started
-
-* [Overview](getting-started/README.md)
+* [Choose a flow](getting-started/README.md)
 * [Installation](getting-started/installation.md)
-* [Quick Start](getting-started/quick-start.md)
+* [Quick start](getting-started/quick-start.md)
 * [Configuration](getting-started/configuration.md)
+* [Agent setup](AGENT_SETUP.md)
+
+## CRE and USDC
+
+* [Workflow and reasons](WORKFLOW.md)
+* [Sepolia USDC policy and sources](USDC_SEPOLIA.md)
+* [Bounty submission and evidence](CRE_SUBMISSION.md)
+* [Recording and optional mock write](RECORDING_READINESS.md)
 
 ## Architecture
 
-* [Overview](architecture/README.md)
-* [x402 Protocol](architecture/x402-protocol.md)
-* [Payment Streams](architecture/payment-streams.md)
-* [AI Decision Engine](architecture/ai-decision-engine.md)
+* [Trust boundaries](architecture/README.md)
+* [Legacy HTTP 402 protocol](architecture/x402-protocol.md)
+* [Legacy payment streams](architecture/payment-streams.md)
 
-## Smart Contracts
+## Contracts
 
-* [Overview](contracts/README.md)
+* [Contract overview](contracts/README.md)
+* [Strict consumer and settlement](contracts/guarded-settlement.md)
 * [AgentPayStream](contracts/agentpaystream.md)
-* [MockUSD Token](contracts/mock-usd.md)
-* [Events & Errors](contracts/events-errors.md)
+* [MockUSD fixture](contracts/mock-usd.md)
+* [Events and errors](contracts/events-errors.md)
 
-## SDK Reference
+## SDK
 
-* [Overview](sdk/README.md)
-* [AgentPaySDK](sdk/agentpay-sdk.md)
-* [GeminiPaymentBrain](sdk/gemini-payment-brain.md)
-* [SpendingMonitor](sdk/spending-monitor.md)
-* [AgentPayProxy](sdk/agentpay-proxy.md)
+* [SDK overview](sdk/README.md)
+* [GuardedPaymentClient](sdk/guarded-payment-client.md)
+* [Legacy AgentPaySDK](sdk/agentpay-sdk.md)
 
-## API Reference
+## Deployment and reference
 
-* [Overview](api/README.md)
-* [x402 Headers](api/x402-headers.md)
-* [Middleware](api/middleware.md)
-* [Endpoints](api/endpoints.md)
-
-## Deployment
-
-* [Overview](deployment/README.md)
-* [Sepolia Testnet](deployment/sepolia.md)
-* [Production Checklist](deployment/production.md)
-
-## Guides
-
-* [Creating Streams](guides/creating-streams.md)
-* [Withdrawing Funds](guides/withdrawing-funds.md)
-* [Building AI Agents](guides/building-ai-agents.md)
-* [Provider Integration](guides/provider-integration.md)
-
-## Reference
-
+* [Operator entry point](../DEPLOYMENT.md)
+* [Deployment overview](deployment/README.md)
+* [Sepolia](deployment/sepolia.md)
 * [FAQ](reference/faq.md)
 * [Troubleshooting](reference/troubleshooting.md)
-* [Glossary](reference/glossary.md)
+* [UI review and verification limits](UI_UX_REVIEW.md)

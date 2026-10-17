@@ -1,0 +1,43 @@
+# Troubleshooting
+
+## Frontend and setup
+
+| Symptom | Action |
+| --- | --- |
+| Evidence unavailable / missing / unreadable | Restore both `vite-project/public/evidence/cre-*.json` captures or rerun `cre:capture` for each scenario, then Retry. The viewer validates current USDC schema/scale. |
+| Loading times out | Check the local/static server and network, then Retry. Do not replace an error with a fabricated result. |
+| Streams shows setup guidance | Set valid nonzero `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local`, then restart Vite. Use 18-decimal MockUSD here. |
+| Browser wallet not detected | Open the app in a wallet-enabled browser. Workflow evidence, Docs and Agent setup require no wallet. |
+| Connection request already pending | Open your wallet and finish or reject its existing request. |
+| Request cancelled | Reconnect/retry only when ready; rejection is not a successful transaction. |
+| Account/network changed | Reconnect on Ethereum Sepolia to refresh the active app session. |
+| Balance unavailable / refresh failed | Check RPC, deployment addresses, token decimals and `stream.paymentToken()` binding. An RPC failure is not a zero balance or empty success. |
+| Streams missing older records | UI discovery covers the latest 49000 blocks. Use a known stream ID to check/withdraw from an older stream. |
+| Draft not restored | Browser storage may be blocked or cleared. Save again or copy the SDK example without persistence. |
+| Nested route fails on hosting | Preserve the included SPA fallback so `/docs/cre` and other routes load `index.html`. |
+
+## CRE
+
+| Error or reason | Action |
+| --- | --- |
+| Authentication failure | Verify `cre login`, organization/account setup and service connectivity. Do not paste credentials into docs or browser fields. |
+| Network/RPC/API error | Check CRE services, Coinbase endpoint and the RPC in `cre/project.yaml`. Root `.env`'s RPC does not override read simulation YAML. |
+| `FEED_STALE` / recording `FEED_NEAR_EXPIRY` | Wait for the feed to update and rerun the dry run. Its default recording window is 600 seconds. |
+| `PRICE_DEVIATION` / `USDC_DEPEG` | Inspect both quotes; do not relax thresholds to capture a passing result. |
+| `AMOUNT_EXCEEDS_POLICY` | Raw units exceed cap. Expected for budget DENY, not ALLOW. `0.01 USDC = 10000`. |
+| Feed pair/decimals mismatch | Verify pinned Sepolia USDC token/feed/API as one configuration. Do not substitute an ETH/USD feed or 18-decimal token. |
+| Write runner rejects manifest/key | Follow the isolated demo deployment procedure; no public receipt is claimed until verified. |
+
+## SDK TypeScript dependency identity
+
+If `Signer`/`Network` types report incompatible private fields, the app and SDK are resolving different copies of ethers. Align or deduplicate the integrating project’s ethers dependency, and construct the signer from the same dependency instance as the SDK. The examples take a caller-supplied compatible signer; they do not create or fund a wallet.
+
+## Settlement and streams
+
+A missing/denied/expired/consumed guard authorization must be replaced by a fresh authenticated report for the exact signer, recipient, token, amount and destination, using an unused request ID. The sample authorization lifetime is 300 seconds. [Guarded client](../sdk/guarded-payment-client.md).
+
+For stream withdrawal, use the recipient wallet, a positive whole-number stream ID and an onchain claimable amount above zero. Reaching the stop time does not set `isActive` false; ended active streams can still pay their unwithdrawn remainder. A closed stream cannot be withdrawn again.
+
+The legacy gateway deliberately rejects `X-AgentPay-Tx-Hash`. It does not recognize arbitrary transaction hashes or automatically map guarded settlement receipts to API access. [Provider protocol](../architecture/x402-protocol.md).
+
+The prototype is unaudited. [UI verification limits](../UI_UX_REVIEW.md) distinguish tested responsive/data behavior from unexecuted live browser-wallet transactions. [FAQ](faq.md).

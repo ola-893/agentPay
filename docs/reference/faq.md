@@ -1,160 +1,45 @@
-# Frequently Asked Questions
+# Frequently asked questions
 
-## General
+## What does AgentPay currently demonstrate?
 
-### What is AgentPay?
+A Chainlink CRE workflow combining Coinbase USDC/USD and finalized Ethereum Sepolia reads, deterministic payment policy and report generation. Saved ALLOW and budget-DENY captures are real CLI runs. The browser shows historical evidence and does not execute a live workflow. [Submission](../CRE_SUBMISSION.md).
 
-AgentPay is a payment streaming protocol that enables AI agents to pay for API services using continuous tUSD token streams instead of individual transactions.
+## Is a wallet required?
 
-### What problem does AgentPay solve?
+Not to view evidence, read Docs or prepare an Agent setup draft. Read-only authenticated CRE CLI simulation also needs no wallet key/funds. Deployment, report broadcast or token settlement require a deliberately configured dedicated Sepolia wallet.
 
-AgentPay solves the **N+1 Signature Problem**: traditionally, N API requests require N payment signatures. AgentPay reduces this to just 2 signatures (open stream + close stream) regardless of request volume.
+## Which token and decimals?
 
-### What is the x402 protocol?
+Guarded path: Circle Sepolia USDC, **6 decimals** (`0.01 = 10000`). Legacy streams: MockUSD/tUSD, **18 decimals**. Both are valueless testnet tokens. Do not use USDC in the streaming UI/SDK. [USDC policy](../USDC_SEPOLIA.md).
 
-x402 is a protocol for HTTP-based payment negotiation using the 402 (Payment Required) status code. It allows servers to request payment and clients to provide payment proof in a standardized way.
+## Why USDC/USD, and can two matching depegged prices pass?
 
-## Technical
+The price check follows the payment asset. Each source must be within 1% of $1 and within 1% disagreement relative to Chainlink. Two matching $0.98 quotes are denied. The sample max age matches the listed 24-hour heartbeat; it does not promise immediate detection.
 
-### Which networks are supported?
+## Does saved ALLOW authorize payment?
 
-Currently, AgentPay is deployed on Ethereum Sepolia testnet. Mainnet deployment is planned.
+No. It is historical evidence with placeholder parties/zero receiver. A deployed workflow must submit a fresh authenticated report to the strict guard. The SDK checks that onchain authority before approval and again before settlement. [Guarded client](../sdk/guarded-payment-client.md).
 
-### What token does AgentPay use?
+## Does Agent setup run or pause an agent?
 
-AgentPay uses tUSD (Mock Native Electronic Economy) tokens. On testnet, you can mint free test tokens.
+No. It validates a non-secret local draft, stores it in this browser and generates SDK code. Saving does not change contract state or CRE limits. [Agent setup](../AGENT_SETUP.md).
 
-### How is the flow rate calculated?
+## Is the project deployed or audited?
 
-```
-flowRate = totalAmount / duration
-```
+Saved evidence demonstrates simulation, not live DON deployment or public payment. No public AgentPay consumer/stream address is claimed by these docs. This is an unaudited prototype. [Deployment](../../DEPLOYMENT.md) covers optional Sepolia operator steps.
 
-For example, 3600 tUSD over 1 hour = 1 tUSD per second.
+## Does this implement x402?
 
-### Can I cancel a stream?
+The legacy gateway/SDK use AgentPay-specific HTTP 402 headers and streaming heuristics. They do not implement the full current transport/facilitator protocol. The gateway rejects direct hash-only proof and does not automatically grant API access for guarded settlement receipts. [Actual protocol](../architecture/x402-protocol.md).
 
-Yes, both the sender and recipient can cancel a stream at any time. The recipient receives the streamed amount, and the sender receives the remaining balance.
+## What happens when a stream ends?
 
-### What happens when a stream expires?
+At stop time the recipient can claim the entire unwithdrawn remainder, including rounding dust. `isActive` remains true until cancellation/closure; the gateway separately denies service after stop time. Either party may close an active stream to pay accrued funds/refund unspent funds. [Streams](../architecture/payment-streams.md).
 
-When a stream reaches its stop time, no more funds flow. The recipient can still withdraw any unclaimed balance.
+## Are there global daily limits or emergency controls?
 
-## Usage
+CRE has a per-request cap. The legacy SDK's spend monitor and pause are instance-local/in-memory. The frontend does not provide live emergency controls, model telemetry or onchain rolling budgets.
 
-### How do I get test tUSD tokens?
+## Where should I debug an error?
 
-1. Connect your wallet to the AgentPay dashboard
-2. Go to the "Streams" tab
-3. Click "Mint 1000 tUSD"
-4. Confirm the transaction
-
-### How do I create a stream?
-
-**Via Dashboard:**
-1. Go to "Streams" tab
-2. Enter recipient address, amount, and duration
-3. Click "Create Stream"
-4. Approve token allowance (first time)
-5. Confirm stream creation
-
-**Via SDK:**
-```typescript
-const streamId = await sdk.createStream({
-  recipient: '0x...',
-  amount: '10',
-  duration: 3600
-});
-```
-
-### How do I withdraw from a stream?
-
-Only the recipient can withdraw:
-
-```typescript
-await sdk.withdrawFromStream(streamId);
-```
-
-Or use the dashboard's "Withdraw" button.
-
-### How do I integrate AgentPay as a provider?
-
-Use the x402 middleware:
-
-```javascript
-const { agentPayMiddleware } = require('./middleware/agentPayMiddleware');
-
-app.use('/api/premium', agentPayMiddleware({
-  pricePerRequest: '0.001',
-  recipientAddress: '0x...'
-}));
-```
-
-## Troubleshooting
-
-### "Insufficient funds for gas"
-
-You need Sepolia ETH for gas fees. Get free testnet ETH from:
-- https://sepoliafaucet.com
-- https://faucet.sepolia.dev
-
-### "tUSD transfer failed"
-
-1. Check you have enough tUSD balance
-2. Ensure you've approved the AgentPayStream contract to spend your tokens
-3. Verify the contract addresses are correct
-
-### "Stream is not active"
-
-The stream may have:
-- Expired (reached stop time)
-- Been cancelled
-- Never existed
-
-Check the stream status on the dashboard or via `sdk.getStream(streamId)`.
-
-### "Caller is not the recipient"
-
-Only the stream recipient can withdraw funds. Make sure you're using the correct wallet.
-
-## Security
-
-### Is AgentPay audited?
-
-AgentPay is currently in testnet phase. A security audit is planned before mainnet deployment.
-
-### What are the spending limits?
-
-The SDK includes a SpendingMonitor with configurable limits:
-- Daily spending limit
-- Per-request limit
-- Emergency stop threshold
-
-### Can I lose funds?
-
-Funds in a stream are locked in the smart contract. You can always:
-- Withdraw streamed funds (as recipient)
-- Cancel and reclaim remaining funds (as sender)
-
-## Integration
-
-### Does AgentPay work with any AI framework?
-
-Yes, AgentPay is framework-agnostic. It works with:
-- LangChain
-- AutoGPT
-- Custom agents
-- Any HTTP client
-
-### Can multiple agents share a stream?
-
-Not directly. Each agent should create its own streams. However, the AgentPayProxy component enables multi-agent coordination.
-
-### What's the minimum stream amount?
-
-The minimum depends on duration. The flow rate must be at least 1 wei per second:
-```
-minAmount = duration (in seconds)
-```
-
-For a 1-hour stream, minimum is 3600 wei (very small).
+Use [troubleshooting](troubleshooting.md). Live market inputs can change the expected CLI outcome; do not weaken thresholds to capture ALLOW. Missing frontend contract configuration is resolved through setup, not by repeatedly connecting a wallet.

@@ -2,7 +2,7 @@
 
 ## Suggested project description
 
-AgentPay adds deliberate spending controls to autonomous agent payments using Chainlink Runtime Environment. Its CRE Payment Guard fetches a real Coinbase USDC/USD quote, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, checks freshness, source disagreement, deviation from the $1 peg and a per-request cap, then generates a bounded payment report. A consumer contract and SDK connect accepted onchain authorization to one token settlement. The frontend exposes captured ALLOW and DENY executions with inspectable inputs and transcripts.
+AgentPay adds deliberate spending controls to autonomous agent payments using Chainlink Runtime Environment. Its CRE Payment Guard fetches a real Coinbase USDC/USD quote, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, checks freshness, source disagreement, deviation from the $1 peg and a per-request cap, then generates a bounded payment report. A consumer contract and SDK connect accepted onchain authorization to one token settlement. The frontend exposes captured ALLOW and DENY executions with inspectable inputs and transcripts, plus a local agent integration draft. The draft does not operate a live agent.
 
 ## Requirement mapping
 
@@ -30,7 +30,7 @@ cre workflow simulate payment-guard --target staging-settings --trigger-index 0 
 - [Policy tests](../cre/payment-guard/policy.test.ts)
 - [Consumer/settlement tests](../test/AgentPayGuard.test.js)
 - [Guarded client tests](../sdk/test/guarded-payment.test.ts)
-- [Browser capture](evidence/usdc-dashboard-deny.jpg)
+- [Current desktop UI](evidence/ui-ux/desktop.jpg) / [mobile UI](evidence/ui-ux/mobile.jpg)
 
 JSON captures include a config SHA-256 and sanitized CLI transcript SHA-256. Transcripts also contain the binary/config hashes printed by CRE. The encodedReport field is an ABI report body, not a reusable signed credential. Local capture time and CRE runtime observation time are recorded separately. These observations are historical evidence.
 
@@ -39,7 +39,7 @@ JSON captures include a config SHA-256 and sanitized CLI transcript SHA-256. Tra
 - 27 contract tests pass: origin, destination, expiry, replay, party/token/amount binding, denied reports, transfer rollback, and owner workflow binding.
 - 49 SDK tests pass, including authorization before token approval and recipient validation before signing.
 - Eight gateway tests pass, including fabricated hashes and wrong recipients.
-- Eleven deterministic CRE policy tests and eleven host-side evidence/tooling checks pass.
+- Eleven deterministic CRE policy tests and fourteen host-side evidence/tooling checks pass.
 - SDK build, CRE typecheck, frontend build and frontend lint pass.
 - Browser verified: scenario switch renders DENY with 0.2 requested versus a 0.1 cap; CRE documentation opens; no browser console errors or warnings appeared on this flow.
 

@@ -1,205 +1,62 @@
-# x402 Protocol
+# Legacy AgentPay HTTP 402 protocol
 
-AgentPay implements the x402 protocol for HTTP-based payment negotiation.
+This guide documents the **actual project-specific headers** in [middleware](../../server/middleware/agentPayMiddleware.js) and [AgentPaySDK](../../sdk/src/AgentPaySDK.ts). It is not a claim of compatibility with the full current x402 transport, typed payment payloads, or facilitator protocol.
 
-## Overview
+This path uses **18-decimal tUSD streams**, separately from the CRE-controlled USDC payment. A guarded settlement receipt is not automatically accepted by this gateway.
 
-The x402 protocol uses HTTP 402 (Payment Required) status code to negotiate payments between consumers and providers.
+## Provider configuration
 
-## Protocol Flow
+Example from a CommonJS entry point at the repository root:
 
-```
-┌──────────┐                    ┌──────────┐
-│ Consumer │                    │ Provider │
-└────┬─────┘                    └────┬─────┘
-     │                               │
-     │  1. GET /api/resource         │
-     │──────────────────────────────▶│
-     │                               │
-     │  2. 402 Payment Required      │
-     │     + x402 Headers            │
-     │◀──────────────────────────────│
-     │                               │
-     │  3. Process Payment           │
-     │  (Create Stream)              │
-     │                               │
-     │  4. GET /api/resource         │
-     │     + Payment Proof           │
-     │──────────────────────────────▶│
-     │                               │
-     │  5. 200 OK + Data             │
-     │◀──────────────────────────────│
-     │                               │
+```js
+const express = require('express');
+const agentPayMiddleware = require('./server/middleware/agentPayMiddleware');
+const app = express();
+app.use(agentPayMiddleware({
+  rpcUrl: process.env.SEPOLIA_RPC_URL,
+  agentPayContractAddress: process.env.AGENTPAY_STREAM_ADDRESS,
+  tokenAddress: process.env.PAYMENT_TOKEN_ADDRESS,
+  recipientAddress: process.env.PAYMENT_RECIPIENT_ADDRESS,
+  routes: {
+    '/api/premium': { mode: 'streaming', price: '0.0001' },
+  },
+}));
+app.get('/api/premium', (req, res) => {
+  res.json({ streamId: req.agentPay.streamId, content: 'Example response' });
+});
+app.listen(3005);
 ```
 
-## x402 Headers
+Use real legacy deployments and the configured provider recipient. `price` is a **minimum flow rate in tUSD/second**, parsed with `parseEther`; it is not a USDC amount or metered per-request charge. Configure routes at the same mount path as `req.path`; matching is exact first, then a simple prefix match. Unconfigured routes pass through without payment checks. An optional `apiKey` requires matching `x-api-key` before payment verification.
 
-### Response Headers (402)
+## Response headers
 
-When a provider requires payment, it returns:
+When no stream ID is supplied, middleware responds HTTP 402:
 
-```http
-HTTP/1.1 402 Payment Required
-X-Payment-Required: true
-X-Payment-Types: stream,direct
-X-Payment-Amount: 0.001
-X-Payment-Currency: tUSD
-X-Payment-Recipient: 0x1234...
-X-Payment-Contract: YOUR_AGENTPAY_STREAM_ADDRESS
-X-Payment-Network: sepolia
-X-Payment-Description: Premium API access
-```
+| Header | Value/source |
+| --- | --- |
+| `X-Payment-Required` | `true` |
+| `X-AgentPay-Mode` | Route mode, normally `streaming` |
+| `X-AgentPay-Rate` | Human decimal tUSD rate, such as `0.0001` |
+| `X-Payment-Token` | Legacy token contract address |
+| `X-AgentPay-Recipient` | Provider payment recipient |
+| `X-AgentPay-Contract` | AgentPayStream contract address |
 
-### Request Headers (With Payment)
+The JSON body includes `message: "Payment Required"` and `requirements` with mode, price, currency `tUSD`, contract and recipient. Older guides showing `X-Payment-Types`, `X-Payment-Currency`, `X-AgentPay-Signature` or timestamp proof do not describe this implementation.
 
-When consumer has payment proof:
+## Request and checks
 
-```http
-GET /api/resource HTTP/1.1
-X-AgentPay-Stream-ID: 42
-X-AgentPay-Signature: 0xabc...
-X-AgentPay-Timestamp: 1704067200
-```
+The consumer retries with `X-AgentPay-Stream-ID`. Middleware checks:
 
-## Header Reference
+1. `isStreamActive(streamId)`;
+2. recipient equals configured provider recipient;
+3. stream has started and has not reached stop time;
+4. `flowRate` is at least the route rate.
 
-### Payment Requirement Headers
+It attaches `req.agentPay = { streamId }` on success. Verification failures return 402. **`X-AgentPay-Tx-Hash` is deliberately rejected.** No signature, receipt ownership, request nonce, replay consumption, durable usage accounting or payer/session authentication is implemented by the current middleware.
 
-| Header | Required | Description |
-|--------|----------|-------------|
-| `X-Payment-Required` | Yes | Indicates payment is needed |
-| `X-Payment-Types` | Yes | Accepted payment types |
-| `X-Payment-Amount` | Yes | Price per request |
-| `X-Payment-Currency` | Yes | Token symbol (tUSD) |
-| `X-Payment-Recipient` | Yes | Provider's address |
-| `X-Payment-Contract` | Yes | AgentPayStream contract |
-| `X-Payment-Network` | Yes | Network name |
-| `X-Payment-Description` | No | Human-readable description |
-| `X-Payment-Min-Duration` | No | Minimum stream duration |
-| `X-Payment-Expires` | No | Offer expiration time |
+## Legacy SDK
 
-### Payment Proof Headers
+`AgentPaySDK.makeRequest` reads the supported headers. For a streaming negotiation it creates an hour-long stream at the requested rate, attaches a stream ID and caches it in memory by host. These are prototype heuristics, not a robust multi-route entitlement system. The provided server's `per-request` demo mode is not supported by the SDK's streaming/hybrid negotiation; use a configured streaming provider for the compatible demo.
 
-| Header | Required | Description |
-|--------|----------|-------------|
-| `X-AgentPay-Stream-ID` | Yes* | Active stream ID |
-| `X-AgentPay-Payment-Hash` | Yes* | Direct payment tx hash |
-| `X-AgentPay-Signature` | No | Request signature |
-| `X-AgentPay-Timestamp` | No | Request timestamp |
-
-*One of Stream-ID or Payment-Hash required
-
-## Payment Types
-
-### Stream Payment
-
-Continuous payment flow:
-
-```javascript
-// Consumer creates stream
-const streamId = await contract.createStream(
-  recipient,
-  duration,
-  amount,
-  metadata
-);
-
-// Consumer includes stream ID in requests
-headers['X-AgentPay-Stream-ID'] = streamId;
-```
-
-### Direct Payment (Future)
-
-One-time payment:
-
-```javascript
-// Consumer sends direct payment
-const tx = await token.transfer(recipient, amount);
-
-// Consumer includes tx hash
-headers['X-AgentPay-Payment-Hash'] = tx.hash;
-```
-
-## Verification
-
-### Provider Verification Flow
-
-```javascript
-async function verifyPayment(req) {
-  const streamId = req.headers['x-agentpay-stream-id'];
-  
-  if (streamId) {
-    // Verify stream on-chain
-    const stream = await contract.streams(streamId);
-    
-    // Check stream is active
-    if (!stream.isActive) {
-      return { valid: false, reason: 'Stream inactive' };
-    }
-    
-    // Check recipient matches
-    if (stream.recipient !== myAddress) {
-      return { valid: false, reason: 'Wrong recipient' };
-    }
-    
-    // Check sufficient balance
-    const claimable = await contract.getClaimableBalance(streamId);
-    if (claimable < pricePerRequest) {
-      return { valid: false, reason: 'Insufficient balance' };
-    }
-    
-    return { valid: true, streamId };
-  }
-  
-  return { valid: false, reason: 'No payment proof' };
-}
-```
-
-## Error Responses
-
-### 402 Payment Required
-
-```json
-{
-  "error": "Payment Required",
-  "code": "PAYMENT_REQUIRED",
-  "payment": {
-    "types": ["stream", "direct"],
-    "amount": "0.001",
-    "currency": "tUSD",
-    "recipient": "0x...",
-    "contract": "0x..."
-  }
-}
-```
-
-### 403 Payment Invalid
-
-```json
-{
-  "error": "Payment Invalid",
-  "code": "INVALID_STREAM",
-  "reason": "Stream has expired"
-}
-```
-
-## Best Practices
-
-### For Consumers
-
-1. Cache stream IDs for reuse
-2. Monitor stream balance
-3. Create streams with buffer time
-4. Handle 402 gracefully
-
-### For Providers
-
-1. Cache verification results
-2. Set reasonable prices
-3. Provide clear error messages
-4. Support multiple payment types
-
-## Next Steps
-
-- [Payment Streams](payment-streams.md)
-- [Middleware Reference](../api/middleware.md)
+The SDK contains a direct-transfer branch that can spend when a server explicitly advertises its direct-enabled header. The included gateway disables hash acceptance; do not enable or advertise that branch for it. Use [GuardedPaymentClient](../sdk/guarded-payment-client.md) for explicit CRE settlement, then design separate authenticated API access if required.

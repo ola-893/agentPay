@@ -1,108 +1,49 @@
 # Installation
 
-This guide covers installing AgentPay components for different use cases.
+Run commands from the repository root unless a different directory is stated. The repository contains the SDK source; these instructions do not assume a published package.
 
-## For AI Agent Developers (SDK)
+## Frontend and project dependencies
 
-Install the AgentPay SDK to enable your AI agents to make streaming payments:
+Use Node.js **22+** and npm:
 
-```bash
-cd sdk
-npm install
-```
-
-### Dependencies
-
-The SDK requires:
-- `ethers` ^6.0.0 - Ethereum interactions
-- `@google/generative-ai` - Gemini AI integration (optional)
-
-## For API Providers (Middleware)
-
-Install the server middleware to accept x402 payments:
-
-```bash
-cd server
-npm install
-```
-
-### Express.js Integration
-
-```javascript
-const express = require('express');
-const { agentPayMiddleware } = require('./middleware/agentPayMiddleware');
-
-const app = express();
-
-// Apply middleware to protected routes
-app.use('/api/premium', agentPayMiddleware({
-  pricePerRequest: '0.001', // tUSD per request
-  recipientAddress: '0x...',
-  contractAddress: 'YOUR_AGENTPAY_STREAM_ADDRESS'
-}));
-```
-
-## For Frontend Development
-
-Install the React dashboard:
-
-```bash
-cd vite-project
-npm install
-```
-
-### Start Development Server
-
-```bash
+```sh
+git clone https://github.com/ola-893/agentPay.git
+cd agentPay
+npm run install:all
 npm run dev
 ```
 
-## Smart Contract Deployment
+Cloning requires GitHub access if the repository is private. Open the Vite URL printed in your terminal. Viewing saved workflow evidence and using Agent setup need no wallet, private key, CRE authentication or deployed contracts.
 
-If you need to deploy your own contracts:
+`install:all` installs root, SDK, server and frontend dependencies. To install only the frontend, use `npm --prefix vite-project install` and `npm run dev`.
 
-```bash
-# Install Hardhat dependencies
-npm install
+## CRE dependencies
 
-# Compile contracts
-npx hardhat compile
+Install Bun and the [official CRE CLI](https://docs.chain.link/cre/getting-started/cli-installation). CI uses Bun **1.3.12** and the workflow pins `@chainlink/cre-sdk` **1.23.0** in its package manifest/lockfile.
 
-# Deploy to Sepolia
-npx hardhat run scripts/deploy.js --network sepolia
+```sh
+npm run install:cre
+cre login
+npm run cre:dry-run
 ```
 
-## Environment Variables
+CRE login/account access and network connectivity to CRE services, Coinbase and Sepolia are required for live simulation. No wallet funds or private key are required by the read-only runner. [Workflow guide](../WORKFLOW.md).
 
-Create a `.env` file in the project root:
+## Verify installation
 
-```bash
-# Required for deployment
-PRIVATE_KEY=0x...
-SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_KEY
-
-# Optional
-ETHERSCAN_API_KEY=...
-GEMINI_API_KEY=...
+```sh
+npm run docs:check
+npm test
+npm run build:sdk
+npm run typecheck:cre
+npm --prefix vite-project run lint
+npm run build:web
 ```
 
-## Verify Installation
+The current suite has **109 tests**: 27 contract, 49 SDK, 8 gateway, 11 CRE policy and 14 tooling/UI-state checks. Tests and CI do not call the authenticated CRE simulator; successful live executions are separately recorded under `docs/evidence`. SDK/gateway tests open localhost servers, so the environment must permit local listeners.
 
-Run the test suite to verify everything is working:
+Build output: `sdk/dist` and `vite-project/dist`. Static frontend hosting needs a fallback to `index.html` for application routes. [Frontend README](../../vite-project/README.md).
 
-```bash
-# SDK tests
-cd sdk && npx mocha -r ts-node/register test/*.test.ts
+## Optional deployments
 
-# Contract tests
-npx hardhat test
-```
-
-Expected output:
-- SDK Tests: 41 passing
-- Contract Tests: 6 passing
-
-## Next Steps
-
-- [Quick Start Guide](quick-start.md)
-- [Configuration Options](configuration.md)
+Follow [deployment](../../DEPLOYMENT.md) before configuring a test wallet or broadcasting. `.env.example` documents server/deployment settings; `vite-project/.env.example` covers public legacy-stream addresses. No `VITE_` variable may contain a private key.

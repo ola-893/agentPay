@@ -1,121 +1,46 @@
-# Quick Start
+# Quick start
 
-Get AgentPay running in under 5 minutes.
+## Explore the current app
 
-## Step 1: Connect Your Wallet
-
-1. Open the AgentPay dashboard
-2. Click "Connect Wallet"
-3. Select MetaMask and approve the connection
-4. Ensure you're on Sepolia testnet
-
-## Step 2: Get Test Tokens
-
-You need tUSD tokens to create streams:
-
-1. Navigate to the "Streams" tab
-2. Click "Mint 1000 tUSD" button
-3. Approve the transaction in MetaMask
-4. Wait for confirmation
-
-## Step 3: Create Your First Stream
-
-```javascript
-// Using the SDK
-import { AgentPaySDK } from './sdk/src/AgentPaySDK';
-
-const sdk = new AgentPaySDK({
-  privateKey: process.env.PRIVATE_KEY,
-  rpcUrl: 'https://rpc.sepolia.org',
-  contractAddress: 'YOUR_AGENTPAY_STREAM_ADDRESS',
-  tokenAddress: 'YOUR_TEST_TOKEN_ADDRESS'
-});
-
-// Create a stream
-const streamId = await sdk.createStream({
-  recipient: '0x...provider_address',
-  amount: '10', // 10 tUSD
-  duration: 3600, // 1 hour
-  metadata: JSON.stringify({ purpose: 'API access' })
-});
-
-console.log(`Stream created: #${streamId}`);
+```sh
+npm run install:all
+npm run dev
 ```
 
-## Step 4: Make API Requests
+Open the Vite URL from the terminal.
 
-Once your stream is active, make requests to x402-enabled APIs:
+- **CRE Workflow (`/`):** switch Within budget / Over budget; inspect the requested USDC amount, cap, price observations and report status. Copy the selected npm command or open the raw JSON/transcript.
+- **Agent setup (`/agent`):** enter contract/recipient addresses and a USDC amount, save a local draft and copy an SDK example. This does not start an agent or change onchain policy.
+- **Streams (`/streams`):** shows setup guidance until legacy stream/token addresses and a wallet are available.
+- **Docs (`/docs`):** installation, workflow, USDC policy, agent setup, SDK, streams and troubleshooting in the app.
 
-```javascript
-// The SDK handles x402 negotiation automatically
-const response = await sdk.request('https://api.provider.com/premium', {
-  method: 'GET',
-  headers: { 'Content-Type': 'application/json' }
-});
+Saved captures are historical, explicitly labeled simulations. The browser does not fetch live market prices or use a saved ALLOW as spend authority.
 
-// First request: SDK detects 402, creates stream, retries
-// Subsequent requests: Use existing stream (no new signatures!)
+## Run live read-only CRE scenarios
+
+With Bun, installed workflow dependencies and authenticated CRE CLI:
+
+```sh
+npm run install:cre
+cre login
+npm run cre:dry-run
+npm run cre:simulate
+npm run cre:simulate -- --deny-budget
 ```
 
-## Step 5: Monitor Your Stream
+ALLOW requests `10000` raw units (0.01 USDC) against `100000` (0.1). Budget DENY requests `200000` (0.2). Live prices and feed freshness can trigger another denial; the runner refuses to claim the expected outcome if that occurs.
 
-View your active streams in the dashboard:
+To refresh saved frontend and submission evidence:
 
-1. Go to "Streams" tab
-2. See "Outgoing Streams" section
-3. Monitor flow rate and remaining balance
-4. Cancel anytime to reclaim unused funds
-
-## Using the Dashboard
-
-### Create Stream via UI
-
-1. Enter recipient address
-2. Set amount (in tUSD)
-3. Set duration (in seconds)
-4. Click "Create Stream"
-5. Approve token allowance (first time only)
-6. Confirm stream creation
-
-### Withdraw Funds
-
-If you're receiving a stream:
-
-1. Go to "Incoming Streams"
-2. Click "Withdraw" on any active stream
-3. Confirm the transaction
-4. Funds are transferred to your wallet
-
-## Example: Complete Flow
-
-```javascript
-// 1. Initialize SDK
-const sdk = new AgentPaySDK(config);
-
-// 2. Check if stream exists for provider
-const existingStream = await sdk.getActiveStream(providerAddress);
-
-if (!existingStream) {
-  // 3. Create new stream
-  await sdk.createStream({
-    recipient: providerAddress,
-    amount: '100',
-    duration: 86400 // 24 hours
-  });
-}
-
-// 4. Make requests (stream ID attached automatically)
-for (let i = 0; i < 100; i++) {
-  const data = await sdk.request(`${providerUrl}/api/data`);
-  console.log(`Request ${i + 1}:`, data);
-}
-
-// 5. Close stream when done (optional - reclaim unused funds)
-await sdk.cancelStream(streamId);
+```sh
+npm run cre:capture
+npm run cre:capture -- --deny-budget
 ```
 
-## What's Next?
+Prior captures are backed up before successful replacement. These commands do not broadcast. [Workflow](../WORKFLOW.md) and [recording guide](../RECORDING_READINESS.md).
 
-- [Configuration Options](configuration.md)
-- [Architecture Deep Dive](../architecture/README.md)
-- [Building AI Agents](../guides/building-ai-agents.md)
+## Prepare a guarded USDC payment
+
+[Agent setup](../AGENT_SETUP.md) generates an integration example with exact six-decimal raw units. A payment still requires real deployments, a connected Sepolia signer and a fresh authenticated report accepted by the production guard. Use [GuardedPaymentClient](../sdk/guarded-payment-client.md), not the legacy streaming SDK, for this path.
+
+For tUSD streams instead, follow [stream setup](../architecture/payment-streams.md). Circle USDC is not supported in the legacy stream UI or SDK. Testnet tokens have no monetary value.

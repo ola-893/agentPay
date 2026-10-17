@@ -6,7 +6,7 @@ The CRE Payment Guard fetches a real Coinbase USDC/USD quote, reads a finalized 
 
 **Successful real CRE CLI simulations:** [ALLOW transcript](docs/evidence/cre-allow.log) · [DENY transcript](docs/evidence/cre-deny-budget.log)
 
-[Submission guide](docs/CRE_SUBMISSION.md) · [Workflow source](cre/payment-guard/main.ts) · [Deployment guide](DEPLOYMENT.md)
+[Documentation](docs/README.md) · [Quick start](docs/getting-started/quick-start.md) · [Submission guide](docs/CRE_SUBMISSION.md) · [Workflow source](cre/payment-guard/main.ts) · [Deployment guide](DEPLOYMENT.md)
 
 ## Architecture
 
@@ -21,7 +21,7 @@ flowchart LR
   G --> H[GuardedPaymentClient → AgentPaySettlement]
 ```
 
-The guarded path uses Circle’s six-decimal Sepolia USDC. The policy uses integer prices and raw token units: 0.01 USDC = `10000`, with a 0.1 USDC cap = `100000`. Both price sources must be within 1% of $1 and within 1% of each other. Reports bind chain, receiver, unique request ID, agent, recipient, token, amount and expiry. The guard trusts a specific forwarder and owner-configured workflow ID. Settlement consumes authorization atomically with token transfer. The SDK checks onchain authority before approval and again before paying.
+The guarded path uses Circle’s six-decimal Sepolia USDC. The policy uses integer prices and raw token units: 0.01 USDC = `10000`, with a 0.1 USDC cap = `100000`. Both price sources must be within 1% of $1 and within 1% of each other. Reports bind chain, receiver, unique request ID, agent, recipient, token, maximum authorized amount and expiry. One settlement may use a positive amount up to that bound; it consumes the entire authorization, including unused headroom. The guard trusts a specific forwarder and owner-configured workflow ID. Settlement consumes authorization atomically with token transfer. The SDK checks onchain authority before approval and again before paying.
 
 ## Run locally
 
@@ -33,7 +33,7 @@ npm run install:cre
 npm run dev
 ```
 
-The dashboard works without a wallet using checked-in evidence. Switch **Within budget** / **Over budget**, inspect observations, download the result, and read its transcript. These are explicitly labeled recorded simulations.
+The dashboard works without a wallet using checked-in evidence. Switch **Within budget** / **Over budget**, inspect observations, copy its CLI command and read the transcript. These are explicitly labeled recorded simulations. **Agent setup** (`/agent`) validates a local draft and generates SDK code; it does not start an agent or change policy. **Streams** (`/streams`) shows deployment guidance until legacy contracts and a wallet are configured. **Docs** (`/docs`) covers the supported flows in the app. [Agent setup guide](docs/AGENT_SETUP.md).
 
 ## USDC payments and USDC/USD policy
 
@@ -62,6 +62,7 @@ No wallet key or testnet funds are needed for the read-only scenarios. CRE servi
 ## Verify
 
 ```sh
+npm run docs:check
 npm test
 npm run build:sdk
 npm run typecheck:cre
