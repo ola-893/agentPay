@@ -1,62 +1,116 @@
 import { Link, useParams } from 'react-router-dom';
-import { ArrowUpRight, BookOpen, Workflow } from 'lucide-react';
+import {
+  ArrowUpRight,
+  ArrowRight,
+  BookOpen,
+  Workflow,
+  FileText,
+} from 'lucide-react';
 import CopyButton from '../components/ui/CopyButton';
+import { documentation, documentationSections } from '../lib/documentation.mjs';
 
-const sections = [
-  ['overview', 'AgentPay overview'],
-  ['cre', 'CRE workflow'],
-  ['integration', 'Agent integration'],
-  ['setup', 'Run locally'],
-];
-const content = {
-  overview: {
-    title: 'Agent payments with deliberate control.',
-    intro:
-      'AgentPay connects a Chainlink CRE workflow to an onchain payment guard and a TypeScript agent client.',
-    paragraphs: [
-      'The workflow fetches Coinbase USDC/USD, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, and checks data freshness, source disagreement, deviation of each quote from the $1 peg, and a per-request spending cap. Both prices must be within 1% of $1 and within 1% of each other. Agreement on a depegged price still results in denial.',
-      'The dashboard shows captured CLI evidence for an allowed request and an over-budget rejection. It does not submit transactions or turn simulation output into payment authority.',
-      'The original streaming tools remain available as a separate feature. The new guarded settlement path requires a fresh onchain CRE authorization. The guarded path uses Circle Sepolia USDC at 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 with six decimals: 0.01 USDC is 10000 raw units. It has no monetary value. Legacy streams remain on 18-decimal tUSD; USDC is not supported in the stream UI or legacy streaming SDK.',
-    ],
-  },
-  cre: {
-    title: 'One workflow. Two independent observations.',
-    intro:
-      'CRE is the orchestration layer that joins an external API, onchain state, policy evaluation, and report generation.',
-    paragraphs: [
-      'A cron trigger starts the workflow. CRE HTTPClient fetches the Coinbase spot price using median aggregation. EVMClient reads decimals and latestRoundData from the Chainlink feed at a finalized block. The workflow verifies the USDC/USD feed description and Circle token decimals onchain. The policy evaluates integer values and denies stale, incomplete, divergent, depegged, or over-budget observations. The Sepolia feed lists a 24-hour heartbeat; the sample allows a maximum age of 86400 seconds, so this prototype does not promise immediate depeg detection.',
-      'An ABI-encoded report binds chain ID, receiver contract, single-use request ID, agent, recipient, token, amount, and expiry. The checked-in configuration uses placeholder payment parties and a zero receiver for simulation preview only.',
-      'For deployed use, configure real parties and a deployed AgentPayGuard, enable report publication, and deploy the workflow through CRE. The guard accepts reports only from its immutable trusted forwarder and owner-configured workflow ID. It rejects reports for another chain or receiver and prevents duplicate reports and payment reuse.',
-      'CRE simulation is not a live DON deployment. The simulator’s mock forwarder does not supply production workflow metadata. The guard intentionally keeps identity checks enabled, so the recorded simulation does not publish to it. Consumer and settlement behavior is verified by local contract tests.',
-    ],
-    code: 'npm run install:cre\ncre login\nnpm run cre:simulate\nnpm run cre:simulate -- --deny-budget',
-  },
-  integration: {
-    title: 'Authorize first. Approve tokens second.',
-    intro: 'Use GuardedPaymentClient for the CRE-controlled payment path.',
-    paragraphs: [
-      'An agent receives a unique request ID after the workflow report has been accepted onchain. Construct the client with a connected ethers signer, the deployed guard and settlement addresses, and the expected chain ID.',
-      'The client verifies the chain, settlement-to-guard binding, and live authorization before any token approval. It checks authorization again after approval and waits for confirmed settlement. The contract enforces the final bounds and consumes the request ID atomically with token transfer.',
-      'The guard cap is per request, not a rolling daily budget or KYC/compliance check. The original AgentPaySDK stream negotiation is separate from this guarded path. A browser evidence JSON or an expired simulation decision is never a credential.',
-    ],
-    code: "import { GuardedPaymentClient } from './sdk/src';\n\nconst client = new GuardedPaymentClient(signer, {\n  guardAddress, settlementAddress, chainId: 11155111\n});\nawait client.pay(requestId, recipient, '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238', 10000n);",
-  },
-  setup: {
-    title: 'Reproduce the evidence.',
-    intro:
-      'Use Node.js 22+, Bun 1.2.21+, and the authenticated Chainlink CRE CLI.',
-    paragraphs: [
-      'Install the root, SDK, server and frontend dependencies with npm run install:all, and the workflow dependencies with npm run install:cre. The read-only workflow simulation needs internet access to CRE, Coinbase and a Sepolia RPC. It does not need your wallet key or testnet funds.',
-      'Before recording, run npm run cre:dry-run to check both scenarios and at least ten minutes of remaining feed freshness. Keep the saved transcripts as backup. Run npm run cre:simulate for the normal request, or add -- --deny-budget for the rejection scenario. The capture command saves the successful CLI transcript and result for the frontend and submission evidence. If external inputs violate policy, the command fails instead of manufacturing an ALLOW result.',
-      'Get guarded-path test USDC from faucet.circle.com on Ethereum Sepolia. Wallet streams require your own newly deployed 18-decimal MockUSD token and stream contracts in vite-project/.env.local. The included .env.example lists server and deployment settings. Run npm test, npm run build:web, npm --prefix sdk run build, and npm --prefix vite-project run lint before submitting.',
-    ],
-    code: 'npm run install:all\nnpm run install:cre\ncre login\nnpm run cre:capture\nnpm run cre:capture -- --deny-budget\nnpm run dev',
-  },
-};
-
+function DocLink({ to, children, className }) {
+  return to.startsWith('https://') ? (
+    <a href={to} target="_blank" rel="noreferrer" className={className}>
+      {children}
+      <ArrowUpRight size={15} aria-hidden="true" />
+    </a>
+  ) : (
+    <Link to={to} className={className}>
+      {children}
+      <ArrowRight size={15} aria-hidden="true" />
+    </Link>
+  );
+}
+function Block({ block }) {
+  if (block.type === 'paragraph')
+    return (
+      <p className="text-sm leading-7 text-slate-300 sm:text-base">
+        {block.text}
+      </p>
+    );
+  if (block.type === 'list')
+    return (
+      <ol className="list-decimal space-y-3 pl-5 text-sm leading-7 text-slate-300 sm:text-base">
+        {block.items.map((item) => (
+          <li key={item} className="pl-1">
+            {item}
+          </li>
+        ))}
+      </ol>
+    );
+  if (block.type === 'table')
+    return (
+      <div
+        className="overflow-x-auto rounded-xl border border-white/10"
+        role="region"
+        aria-label={`${block.headers.join(' and ')} reference table`}
+        tabIndex={0}
+      >
+        <table
+          className={`w-full table-fixed text-left text-sm ${
+            block.headers.length > 2 ? 'min-w-[560px]' : ''
+          }`}
+        >
+          {block.headers.length > 2 && (
+            <caption className="caption-top px-3 py-2 text-left text-xs text-slate-400">
+              On small screens, scroll this table horizontally.
+            </caption>
+          )}
+          <thead className="bg-white/5 text-slate-200">
+            <tr>
+              {block.headers.map((header) => (
+                <th
+                  key={header}
+                  scope="col"
+                  className="px-3 py-3 font-medium sm:px-4"
+                >
+                  {header}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {block.rows.map((row, i) => (
+              <tr key={i} className="border-t border-white/10">
+                {row.map((cell, j) => (
+                  <td
+                    key={j}
+                    className="break-words px-3 py-3 align-top leading-6 text-slate-400 [overflow-wrap:anywhere] sm:px-4"
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  if (block.type === 'code')
+    return (
+      <div className="panel min-w-0 overflow-hidden">
+        <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-1">
+          <p className="text-xs text-slate-400">{block.label}</p>
+          <CopyButton
+            value={block.text}
+            label={`Copy ${block.label} example`}
+          />
+        </div>
+        <pre
+          tabIndex={0}
+          aria-label={`${block.label} example`}
+          className="max-w-full overflow-auto p-4 text-xs leading-7 text-blue-200 sm:p-5 sm:text-sm"
+        >
+          <code>{block.text}</code>
+        </pre>
+      </div>
+    );
+  return null;
+}
 export default function Docs() {
   const { section = 'overview' } = useParams();
-  const page = content[section];
+  const page = documentation[section];
   if (!page)
     return (
       <section className="panel p-8">
@@ -70,14 +124,14 @@ export default function Docs() {
     <div className="grid items-start gap-7 lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12">
       <aside className="min-w-0 lg:sticky lg:top-28">
         <p className="flex items-center gap-2 text-sm font-semibold text-slate-200">
-          <BookOpen size={17} />
+          <BookOpen size={17} aria-hidden="true" />
           Documentation
         </p>
         <nav
           aria-label="Documentation sections"
           className="mt-4 grid grid-cols-2 gap-2 lg:flex lg:flex-col"
         >
-          {sections.map(([key, label]) => (
+          {documentationSections.map(([key, label]) => (
             <Link
               key={key}
               to={`/docs/${key}`}
@@ -102,44 +156,53 @@ export default function Docs() {
         </a>
       </aside>
       <article className="min-w-0 max-w-3xl">
-        <p className="eyebrow flex items-center gap-2">
-          <Workflow size={15} />
-          Build with AgentPay
-        </p>
-        <h1 className="page-title mt-3">{page.title}</h1>
-        <p className="mt-4 text-lg leading-relaxed text-slate-300">
-          {page.intro}
-        </p>
-        <div className="mt-7 space-y-5 break-words text-base leading-7 text-slate-400 [overflow-wrap:anywhere]">
-          {page.paragraphs.map((text) => (
-            <p key={text}>{text}</p>
+        <header>
+          <p className="eyebrow flex items-center gap-2">
+            <Workflow size={15} aria-hidden="true" />
+            Build with AgentPay
+          </p>
+          <h1 className="page-title mt-3">{page.title}</h1>
+          <p className="mt-4 text-lg leading-relaxed text-slate-300">
+            {page.intro}
+          </p>
+          <a
+            href={`https://github.com/ola-893/agentPay/blob/main/${page.source}`}
+            className="mt-3 inline-flex min-h-11 items-center gap-2 text-xs text-blue-300"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <FileText size={14} />
+            Read this guide in the repository <ArrowUpRight size={14} />
+          </a>
+        </header>
+        <div className="mt-5 space-y-9">
+          {page.sections.map((item) => (
+            <section key={item.title} className="min-w-0 space-y-4">
+              <h2 className="border-t border-white/10 pt-6 text-lg font-semibold text-slate-100">
+                {item.title}
+              </h2>
+              {item.blocks.map((block, i) => (
+                <Block key={i} block={block} />
+              ))}
+            </section>
           ))}
         </div>
-        {page.code && (
-          <div className="panel mt-7 min-w-0 overflow-hidden">
-            <div className="flex items-center justify-between border-b border-white/10 px-4 py-1">
-              <p className="text-xs text-slate-400">
-                {section === 'integration' ? 'TypeScript' : 'Terminal'}
-              </p>
-              <CopyButton value={page.code} label="Copy code example" />
-            </div>
-            <pre
-              tabIndex={0}
-              aria-label="Code example"
-              className="max-w-full overflow-auto p-5 text-sm leading-7 text-blue-200"
-            >
-              <code>{page.code}</code>
-            </pre>
+        <section className="mt-9 border-t border-white/10 pt-6">
+          <h2 className="text-sm font-semibold text-slate-300">
+            Continue reading
+          </h2>
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+            {page.related.map(([to, label]) => (
+              <DocLink
+                key={to}
+                to={to}
+                className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300"
+              >
+                {label}
+              </DocLink>
+            ))}
           </div>
-        )}
-        <a
-          href="https://github.com/ola-893/agentPay/blob/main/docs/CRE_SUBMISSION.md"
-          className="mt-6 inline-flex min-h-11 items-center gap-1 text-sm text-blue-300"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Submission guide and evidence <ArrowUpRight size={16} />
-        </a>
+        </section>
       </article>
     </div>
   );

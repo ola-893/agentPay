@@ -1,0 +1,146 @@
+[
+  {
+    "copyButtons": 0,
+    "pageWidth": 312,
+    "route": "/docs/overview",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/README.md",
+    "title": "Payments with boundaries you can inspect.",
+    "width": 320
+  },
+  {
+    "copyButtons": 4,
+    "pageWidth": 312,
+    "route": "/docs/setup",
+    "sectionCount": 5,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/getting-started/quick-start.md",
+    "title": "Run the app. Reproduce the evidence.",
+    "width": 320
+  },
+  {
+    "copyButtons": 0,
+    "pageWidth": 312,
+    "route": "/docs/cre",
+    "sectionCount": 5,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/WORKFLOW.md",
+    "title": "One workflow, two price observations.",
+    "width": 320
+  },
+  {
+    "copyButtons": 1,
+    "pageWidth": 312,
+    "route": "/docs/usdc",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/USDC_SEPOLIA.md",
+    "title": "USDC payments. USDC/USD policy.",
+    "width": 320
+  },
+  {
+    "copyButtons": 0,
+    "pageWidth": 312,
+    "route": "/docs/agent",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/AGENT_SETUP.md",
+    "title": "Prepare an agent integration draft.",
+    "width": 320
+  },
+  {
+    "copyButtons": 1,
+    "pageWidth": 312,
+    "route": "/docs/integration",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/sdk/guarded-payment-client.md",
+    "title": "Authorize first. Approve tokens second.",
+    "width": 320
+  },
+  {
+    "copyButtons": 1,
+    "pageWidth": 312,
+    "route": "/docs/streams",
+    "sectionCount": 5,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/architecture/payment-streams.md",
+    "title": "Manage legacy tUSD streams.",
+    "width": 320
+  },
+  {
+    "copyButtons": 0,
+    "pageWidth": 312,
+    "route": "/docs/troubleshooting",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/reference/troubleshooting.md",
+    "title": "Find the next useful step.",
+    "width": 320
+  },
+  {
+    "copyButtons": 0,
+    "pageWidth": 1272,
+    "route": "/docs/overview",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/README.md",
+    "title": "Payments with boundaries you can inspect.",
+    "width": 1280
+  },
+  {
+    "copyButtons": 4,
+    "pageWidth": 1272,
+    "route": "/docs/setup",
+    "sectionCount": 5,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/getting-started/quick-start.md",
+    "title": "Run the app. Reproduce the evidence.",
+    "width": 1280
+  },
+  {
+    "copyButtons": 0,
+    "pageWidth": 1272,
+    "route": "/docs/cre",
+    "sectionCount": 5,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/WORKFLOW.md",
+    "title": "One workflow, two price observations.",
+    "width": 1280
+  },
+  {
+    "copyButtons": 1,
+    "pageWidth": 1272,
+    "route": "/docs/usdc",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/USDC_SEPOLIA.md",
+    "title": "USDC payments. USDC/USD policy.",
+    "width": 1280
+  },
+  {
+    "copyButtons": 0,
+    "pageWidth": 1272,
+    "route": "/docs/agent",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/AGENT_SETUP.md",
+    "title": "Prepare an agent integration draft.",
+    "width": 1280
+  },
+  {
+    "copyButtons": 1,
+    "pageWidth": 1272,
+    "route": "/docs/integration",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/sdk/guarded-payment-client.md",
+    "title": "Authorize first. Approve tokens second.",
+    "width": 1280
+  },
+  {
+    "copyButtons": 1,
+    "pageWidth": 1272,
+    "route": "/docs/streams",
+    "sectionCount": 5,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/architecture/payment-streams.md",
+    "title": "Manage legacy tUSD streams.",
+    "width": 1280
+  },
+  {
+    "copyButtons": 0,
+    "pageWidth": 1272,
+    "route": "/docs/troubleshooting",
+    "sectionCount": 4,
+    "source": "https://github.com/ola-893/agentPay/blob/main/docs/reference/troubleshooting.md",
+    "title": "Find the next useful step.",
+    "width": 1280
+  }
+]

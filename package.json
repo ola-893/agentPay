@@ -27,7 +27,8 @@
     "cre:dry-run": "node scripts/preflight-cre.mjs",
     "test:tooling": "node --test scripts/test/*.test.mjs",
     "deploy:cre-demo": "npx hardhat run scripts/deploy-cre-demo.js --network sepolia-demo",
-    "cre:simulate:write": "node scripts/simulate-cre-write.mjs"
+    "cre:simulate:write": "node scripts/simulate-cre-write.mjs",
+    "docs:check": "node scripts/check-docs.mjs"
   },
   "keywords": [],
   "author": "",
