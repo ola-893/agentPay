@@ -36,7 +36,7 @@ JSON captures include a config SHA-256 and sanitized CLI transcript SHA-256. Tra
 
 ## Verification
 
-- 27 contract tests pass: origin, destination, expiry, replay, party/token/amount binding, denied reports, transfer rollback, and owner workflow binding.
+- 29 contract tests pass: origin, destination, expiry, replay, party/token/amount binding, denied reports, transfer rollback, and owner workflow binding.
 - 49 SDK tests pass, including authorization before token approval and recipient validation before signing.
 - Eight gateway tests pass, including fabricated hashes and wrong recipients.
 - Eleven deterministic CRE policy tests and fourteen host-side evidence/tooling checks pass.

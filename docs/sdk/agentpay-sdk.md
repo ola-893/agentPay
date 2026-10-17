@@ -5,7 +5,7 @@
 ## Constructor
 
 ```ts
-import { AgentPaySDK } from './sdk/src'; // root TypeScript entry point
+import { AgentPaySDK } from './src'; // TypeScript entry point inside sdk/
 import { parseEther } from 'ethers';
 const sdk = new AgentPaySDK({
   privateKey, // server-side dedicated test wallet; never in frontend

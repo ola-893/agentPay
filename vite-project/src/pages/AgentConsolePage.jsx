@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { isAddress, ZeroAddress, parseUnits } from 'ethers';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { isAddress, ZeroAddress, parseUnits } from "ethers";
 import {
   Bot,
   FileCode2,
@@ -8,57 +8,57 @@ import {
   ArrowRight,
   CheckCircle2,
   RotateCcw,
-} from 'lucide-react';
-import CopyButton from '../components/ui/CopyButton';
-import { formatTokenUnits } from '../lib/token-units.mjs';
+} from "lucide-react";
+import CopyButton from "../components/ui/CopyButton";
+import { guardedExample } from "../lib/guarded-example.mjs";
 
 const empty = {
-  agentName: 'AgentPay agent',
-  guard: '',
-  settlement: '',
-  recipient: '',
-  amount: '0.01',
+  agentName: "AgentPay agent",
+  guard: "",
+  settlement: "",
+  recipient: "",
+  amount: "0.01",
 };
-const storageKey = 'agentpay:guarded-agent-draft:v1';
+const storageKey = "agentpay:guarded-agent-draft:v1";
 const addressOK = (value) => isAddress(value) && value !== ZeroAddress;
 export default function AgentConsolePage() {
   const [config, setConfig] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey));
       return saved?.version === 1 &&
-        Object.keys(empty).every((k) => typeof saved.config?.[k] === 'string')
+        Object.keys(empty).every((k) => typeof saved.config?.[k] === "string")
         ? saved.config
         : empty;
     } catch {
       return empty;
     }
   });
-  const [notice, setNotice] = useState('');
+  const [notice, setNotice] = useState("");
   const [saved, setSaved] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const errors = {};
-  if (!config.agentName.trim()) errors.agentName = 'Give this draft a name.';
-  for (const field of ['guard', 'settlement', 'recipient'])
+  if (!config.agentName.trim()) errors.agentName = "Give this draft a name.";
+  for (const field of ["guard", "settlement", "recipient"])
     if (!addressOK(config[field]))
-      errors[field] = 'Enter a nonzero Ethereum address.';
+      errors[field] = "Enter a nonzero Ethereum address.";
   let rawAmount = null;
   try {
     rawAmount = parseUnits(config.amount, 6);
     if (rawAmount <= 0n || rawAmount >= 2n ** 256n) throw new Error();
   } catch {
-    errors.amount = 'Use a positive USDC amount with up to 6 decimal places.';
+    errors.amount = "Use a positive USDC amount with up to 6 decimal places.";
   }
   const valid = !Object.keys(errors).length;
   const update = (field, value) => {
     setConfig((c) => ({ ...c, [field]: value }));
-    setNotice('');
+    setNotice("");
     setSaved(false);
   };
   const save = (event) => {
     event.preventDefault();
     setSubmitted(true);
     if (!valid) {
-      setNotice('Check the highlighted fields before saving.');
+      setNotice("Check the highlighted fields before saving.");
       document.getElementById(`agent-${Object.keys(errors)[0]}`)?.focus();
       return;
     }
@@ -66,11 +66,11 @@ export default function AgentConsolePage() {
       localStorage.setItem(storageKey, JSON.stringify({ version: 1, config }));
       setSaved(true);
       setNotice(
-        'Draft saved in this browser. No onchain policy or running agent was changed.'
+        "Draft saved in this browser. No onchain policy or running agent was changed."
       );
     } catch {
       setNotice(
-        'Browser storage is unavailable. You can still copy the integration example.'
+        "Browser storage is unavailable. You can still copy the integration example."
       );
     }
   };
@@ -83,20 +83,9 @@ export default function AgentConsolePage() {
     setConfig(empty);
     setSubmitted(false);
     setSaved(false);
-    setNotice('Draft cleared.');
+    setNotice("Draft cleared.");
   };
-  const code = valid
-    ? `import { GuardedPaymentClient } from './sdk/src';\n\n// signer must be connected to Ethereum Sepolia.\nconst client = new GuardedPaymentClient(signer, {\n  guardAddress: '${
-        config.guard
-      }',\n  settlementAddress: '${
-        config.settlement
-      }',\n  chainId: 11155111,\n});\n\n// Use a fresh requestId AFTER the authenticated report\n// has been accepted by the production guard.\nawait client.pay(\n  requestId,\n  '${
-        config.recipient
-      }',\n  '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238',\n  ${rawAmount}n, // ${formatTokenUnits(
-        rawAmount,
-        6
-      )} USDC\n);`
-    : null;
+  const code = valid ? guardedExample(config, rawAmount) : null;
   return (
     <div className="space-y-6">
       <header>
@@ -119,11 +108,11 @@ export default function AgentConsolePage() {
           </p>
           <form onSubmit={save} noValidate className="mt-6 space-y-5">
             {[
-              ['agentName', 'Draft name', 'My payment agent'],
-              ['guard', 'Guard address', '0x…'],
-              ['settlement', 'Settlement address', '0x…'],
-              ['recipient', 'Payment recipient', '0x…'],
-              ['amount', 'Payment amount (USDC)', '0.01'],
+              ["agentName", "Draft name", "My payment agent"],
+              ["guard", "Guard address", "0x…"],
+              ["settlement", "Settlement address", "0x…"],
+              ["recipient", "Payment recipient", "0x…"],
+              ["amount", "Payment amount (USDC)", "0.01"],
             ].map(([field, label, placeholder]) => (
               <div key={field}>
                 <label htmlFor={`agent-${field}`} className="field-label">
@@ -132,16 +121,16 @@ export default function AgentConsolePage() {
                 <input
                   id={`agent-${field}`}
                   className={`input-default ${
-                    field !== 'agentName' ? 'font-mono text-sm' : ''
+                    field !== "agentName" ? "font-mono text-sm" : ""
                   }`}
                   value={config[field]}
                   placeholder={placeholder}
                   onChange={(e) => update(field, e.target.value)}
                   autoComplete="off"
                   spellCheck={false}
-                  inputMode={field === 'amount' ? 'decimal' : 'text'}
+                  inputMode={field === "amount" ? "decimal" : "text"}
                   maxLength={
-                    field === 'agentName' ? 80 : field === 'amount' ? 90 : 42
+                    field === "agentName" ? 80 : field === "amount" ? 90 : 42
                   }
                   aria-invalid={submitted && Boolean(errors[field])}
                   aria-describedby={
@@ -164,7 +153,7 @@ export default function AgentConsolePage() {
             <div className="flex flex-wrap gap-3">
               <button type="submit" className="btn-primary">
                 {saved ? <CheckCircle2 size={16} /> : <Save size={16} />}
-                {saved ? 'Draft saved' : 'Save local draft'}
+                {saved ? "Draft saved" : "Save local draft"}
               </button>
               <button type="button" onClick={reset} className="btn-outline">
                 <RotateCcw size={16} />

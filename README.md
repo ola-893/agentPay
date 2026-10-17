@@ -70,7 +70,9 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **109 passing tests** — 27 contracts, 49 SDK, eight middleware, eleven CRE policy, fourteen evidence/tooling checks. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
+Current suites: **111 passing tests** — 29 contracts, 49 SDK, eight middleware, eleven CRE policy, fourteen evidence/tooling checks. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
+
+`docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
 
 ## Current scope
 

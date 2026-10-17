@@ -29,7 +29,7 @@ Sepolia USDC has **no financial value and is not backed by real dollars**, as Ci
 | ALLOW | 0.01 USDC | `10000` | `100000` (0.1 USDC) |
 | Budget DENY | 0.2 USDC | `200000` | `100000` |
 
-The workflow, report, guard and `GuardedPaymentClient` use raw integer units. The dashboard formats them with six decimals using integer/string arithmetic, preserving values above JavaScript’s safe integer range. Price values separately use eight decimals: `$1 = 100000000`. The report ABI is unchanged; evidence schema version 2 identifies the USDC policy and token scale.
+The policy cap is an admission limit, not the report maximum. An approved report encodes `request.amount` as `maxAmount`: the ALLOW example permits one payment of at most 0.01 USDC, not 0.1 USDC. The workflow, report, guard and `GuardedPaymentClient` use raw integer units. The dashboard formats them with six decimals using integer/string arithmetic, preserving values above JavaScript’s safe integer range. Price values separately use eight decimals: `$1 = 100000000`. The report ABI is unchanged; evidence schema version 2 identifies the USDC policy and token scale.
 
 ```ts
 // After the production guard accepts an authenticated, unexpired report:

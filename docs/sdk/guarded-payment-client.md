@@ -4,7 +4,7 @@
 
 ## Constructor
 
-```ts
+```text
 new GuardedPaymentClient(signer, {
   guardAddress,
   settlementAddress,
@@ -16,7 +16,7 @@ new GuardedPaymentClient(signer, {
 
 ## pay
 
-```ts
+```text
 pay(
   requestId: string,
   recipient: string,
@@ -34,11 +34,13 @@ pay(
 For Circle Sepolia USDC, `0.01 = 10000n`; use `parseUnits('0.01', 6)` for user input, never `parseEther`.
 
 ```ts
-// Example TypeScript entry point at the repository root.
-import { GuardedPaymentClient } from './sdk/src';
-import { parseUnits } from 'ethers';
+// Example TypeScript entry point inside sdk/.
+import { GuardedPaymentClient } from './src';
+import { Wallet, JsonRpcProvider, parseUnits } from 'ethers';
 
-// Supply signer and addresses from your deployed Sepolia environment.
+// Supply a dedicated test privateKey/rpcUrl and your deployed addresses.
+// This is server-side code; never put a private key in the frontend.
+const signer = new Wallet(privateKey, new JsonRpcProvider(rpcUrl));
 const client = new GuardedPaymentClient(signer, {
   guardAddress, settlementAddress, chainId: 11155111,
 });
@@ -52,7 +54,7 @@ const receipt = await client.pay(
 console.log(receipt.hash);
 ```
 
-Adjust the relative import for your application's directory. Use a signer from the same ethers dependency instance as the SDK. If TypeScript reports incompatible `Network`/`Signer` private fields, align or deduplicate ethers dependencies rather than casting away the error. The symbols `signer`, addresses, `recipient` and `requestId` must be supplied; the snippet is an integration template, not a deployment script. [Frontend draft generator](../AGENT_SETUP.md).
+Save the fragment as `sdk/integration.ts` and place awaited calls inside your async agent function. Import `Wallet`/`JsonRpcProvider` from `ethers` there so signer and SDK resolve the same installed dependency. Root-level signer imports currently resolve a separate ethers installation and can fail TypeScript checks. If TypeScript reports incompatible `Network`/`Signer` private fields, align or deduplicate ethers dependencies rather than casting away the error. The symbols `privateKey`, `rpcUrl`, deployed addresses, `recipient` and `requestId` must be supplied; the snippet is an integration template, not a deployment script. [Frontend draft generator](../AGENT_SETUP.md).
 
 ## Execution order
 

@@ -19,8 +19,10 @@ See [recording readiness](docs/RECORDING_READINESS.md) for the optional `AgentPa
 5. Obtain CRE deployment access and follow the [official deployment guide](https://docs.chain.link/cre/guides/operations/deploying-workflows). Deploy the configured workflow, then call `guard.setWorkflowId(actualWorkflowId)` from its deploying owner. Updates that change workflow identity need a corresponding binding update. Reports fail until identity matches.
 6. Once a report has been accepted onchain, use the guarded client with a funded signer and the deployed addresses.
 
+Save integration fragments inside `sdk/` (for example `sdk/integration.ts`), importing `./src` and `ethers` there. Supply the deployment variables and run awaited calls inside an async function. Root and SDK ethers copies currently have incompatible signer types; see the [checked integration example](docs/sdk/guarded-payment-client.md).
+
 ```ts
-import { GuardedPaymentClient } from './sdk/src';
+import { GuardedPaymentClient } from './src';
 const payments = new GuardedPaymentClient(signer, {
   guardAddress, settlementAddress, chainId: 11155111,
 });

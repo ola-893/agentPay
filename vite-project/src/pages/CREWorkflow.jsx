@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -12,20 +12,20 @@ import {
   RefreshCw,
   Terminal,
   CircleCheck,
-} from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { formatTokenUnits } from '../lib/token-units.mjs';
-import { validateEvidence, formatDuration } from '../lib/evidence.mjs';
-import CopyButton from '../components/ui/CopyButton';
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { formatTokenUnits } from "../lib/token-units.mjs";
+import { validateEvidence, formatDuration } from "../lib/evidence.mjs";
+import CopyButton from "../components/ui/CopyButton";
 
 const price = (value) => `$${formatTokenUnits(value, 8)}`;
 const units = (value) => `${formatTokenUnits(value, 6)} USDC`;
 const capturedTime = (value) =>
-  new Intl.DateTimeFormat('en', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    timeZone: 'UTC',
-  }).format(new Date(value)) + ' UTC';
+  new Intl.DateTimeFormat("en", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC",
+  }).format(new Date(value)) + " UTC";
 function Observation({
   icon: Icon,
   step,
@@ -65,11 +65,11 @@ function Observation({
   );
 }
 export default function CREWorkflow() {
-  const [scenario, setScenario] = useState('allow');
+  const [scenario, setScenario] = useState("allow");
   const [capture, setCapture] = useState({
     scenario: null,
     evidence: null,
-    error: '',
+    error: "",
   });
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
@@ -82,30 +82,30 @@ export default function CREWorkflow() {
     }, 15000);
     fetch(`${import.meta.env.BASE_URL}evidence/cre-${scenario}.json`, {
       signal: controller.signal,
-      cache: 'no-cache',
+      cache: "no-cache",
     })
       .then((response) => {
         if (!response.ok)
           throw new Error(
-            'The saved execution could not be loaded. Check your connection and retry.'
+            "The saved execution could not be loaded. Check your connection and retry."
           );
         return response.json().catch(() => {
           throw new Error(
-            'The saved execution is missing or unreadable. Restore the evidence file and retry.'
+            "The saved execution is missing or unreadable. Restore the evidence file and retry."
           );
         });
       })
       .then((data) => {
         validateEvidence(data, scenario);
-        if (active) setCapture({ scenario, evidence: data, error: '' });
+        if (active) setCapture({ scenario, evidence: data, error: "" });
       })
       .catch((error) => {
-        if (active && (timedOut || error.name !== 'AbortError'))
+        if (active && (timedOut || error.name !== "AbortError"))
           setCapture({
             scenario,
             evidence: null,
             error: timedOut
-              ? 'Loading took too long. Check your connection and retry.'
+              ? "Loading took too long. Check your connection and retry."
               : error.message,
           });
       })
@@ -117,10 +117,10 @@ export default function CREWorkflow() {
     };
   }, [scenario, attempt]);
   const evidence = capture.scenario === scenario ? capture.evidence : null;
-  const error = capture.scenario === scenario ? capture.error : '';
+  const error = capture.scenario === scenario ? capture.error : "";
   const result = evidence?.result;
   const command = `npm run cre:simulate${
-    scenario === 'deny-budget' ? ' -- --deny-budget' : ''
+    scenario === "deny-budget" ? " -- --deny-budget" : ""
   }`;
   return (
     <div className="space-y-6">
@@ -169,8 +169,8 @@ export default function CREWorkflow() {
             aria-label="Execution scenario"
           >
             {[
-              ['allow', 'Within budget'],
-              ['deny-budget', 'Over budget'],
+              ["allow", "Within budget"],
+              ["deny-budget", "Over budget"],
             ].map(([value, label]) => (
               <button
                 key={value}
@@ -179,8 +179,8 @@ export default function CREWorkflow() {
                 onClick={() => setScenario(value)}
                 className={`min-h-11 flex-1 whitespace-nowrap rounded-lg px-4 text-sm font-medium transition-colors sm:flex-none ${
                   scenario === value
-                    ? 'bg-blue-500/20 text-blue-100'
-                    : 'text-slate-400 hover:text-white'
+                    ? "bg-blue-500/20 text-blue-100"
+                    : "text-slate-400 hover:text-white"
                 }`}
               >
                 {label}
@@ -196,7 +196,7 @@ export default function CREWorkflow() {
               type="button"
               className="btn-outline mt-4"
               onClick={() => {
-                setCapture({ scenario: null, evidence: null, error: '' });
+                setCapture({ scenario: null, evidence: null, error: "" });
                 setAttempt((n) => n + 1);
               }}
             >
@@ -215,20 +215,20 @@ export default function CREWorkflow() {
         ) : (
           <div
             className={`panel overflow-hidden ${
-              result.approved ? 'border-emerald-400/25' : 'border-amber-400/25'
+              result.approved ? "border-emerald-400/25" : "border-amber-400/25"
             }`}
           >
             <div
               className={`flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-5 py-5 sm:px-6 ${
-                result.approved ? 'bg-emerald-500/[.06]' : 'bg-amber-500/[.06]'
+                result.approved ? "bg-emerald-500/[.06]" : "bg-amber-500/[.06]"
               }`}
             >
               <div className="flex items-center gap-4">
                 <span
                   className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
                     result.approved
-                      ? 'bg-emerald-500/10 text-emerald-300'
-                      : 'bg-amber-500/10 text-amber-300'
+                      ? "bg-emerald-500/10 text-emerald-300"
+                      : "bg-amber-500/10 text-amber-300"
                   }`}
                 >
                   {result.approved ? (
@@ -242,11 +242,11 @@ export default function CREWorkflow() {
                     Simulation decision
                   </p>
                   <h3 className="mt-0.5 text-2xl font-semibold">
-                    {result.approved ? 'ALLOW' : 'DENY'}
+                    {result.approved ? "ALLOW" : "DENY"}
                     <span className="mt-1 block text-sm font-normal text-slate-300 sm:ml-3 sm:mt-0 sm:inline">
                       {result.approved
-                        ? 'Within spending cap'
-                        : 'Spending cap exceeded'}
+                        ? "Within spending cap"
+                        : "Spending cap exceeded"}
                     </span>
                   </h3>
                 </div>
@@ -322,7 +322,7 @@ export default function CREWorkflow() {
                 linkLabel="Chainlink feed"
               >
                 <p>
-                  Finalized Sepolia read. Feed age at execution:{' '}
+                  Finalized Sepolia read. Feed age at execution:{" "}
                   {formatDuration(result.observedAt - result.feedUpdatedAt)}.
                 </p>
               </Observation>
@@ -345,7 +345,7 @@ export default function CREWorkflow() {
                     Each price within {result.maxPegDeviationBps / 100}% of $1
                   </li>
                   <li>Feed age ≤ {formatDuration(result.maxFeedAgeSeconds)}</li>
-                  <li>Payment within its cap</li>
+                  <li>Amount checked against per-request cap</li>
                 </ul>
               </Observation>
               <Observation
@@ -357,8 +357,8 @@ export default function CREWorkflow() {
                 linkLabel="Inspect guard"
               >
                 <p>
-                  Binds the parties, token, amount, chain, receiver, request ID,
-                  and expiry.
+                  Binds the parties, token, maximum amount, chain, receiver,
+                  request ID, and expiry.
                 </p>
                 <p className="mt-2">
                   {result.validUntil - result.observedAt}s lifetime from
@@ -375,7 +375,7 @@ export default function CREWorkflow() {
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-400">
                 Run the selected scenario locally. Install CRE and Bun, then
-                authenticate with{' '}
+                authenticate with{" "}
                 <code className="text-slate-200">cre login</code>.
               </p>
               <div className="mt-4 flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-[#0b101c] p-3">
@@ -385,7 +385,7 @@ export default function CREWorkflow() {
                 <CopyButton value={command} />
               </div>
               <p className="mt-3 text-xs leading-relaxed text-slate-400">
-                Before recording, run{' '}
+                Before recording, run{" "}
                 <code className="text-slate-200">npm run cre:dry-run</code> for
                 both scenarios and freshness headroom. Live inputs can change
                 the decision.

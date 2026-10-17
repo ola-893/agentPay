@@ -28,7 +28,7 @@
     "test:tooling": "node --test scripts/test/*.test.mjs",
     "deploy:cre-demo": "npx hardhat run scripts/deploy-cre-demo.js --network sepolia-demo",
     "cre:simulate:write": "node scripts/simulate-cre-write.mjs",
-    "docs:check": "node scripts/check-docs.mjs"
+    "docs:check": "node scripts/check-docs.mjs && node scripts/check-doc-examples.mjs && node scripts/check-doc-evidence.mjs"
   },
   "keywords": [],
   "author": "",

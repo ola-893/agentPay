@@ -33,8 +33,8 @@ Either party can close/cancel an active stream. Accrued funds go to the recipien
 Use [AgentPayStream reference](../contracts/agentpaystream.md) for direct contract methods. The legacy SDK has a positional `createStream` method, not an object-based constructor API:
 
 ```ts
-// TypeScript entry point at the repository root; supply actual config/addresses.
-import { AgentPaySDK } from './sdk/src';
+// TypeScript entry point inside sdk/; supply actual config/addresses.
+import { AgentPaySDK } from './src';
 import { parseEther } from 'ethers';
 const sdk = new AgentPaySDK({ privateKey, rpcUrl, agentId: 'legacy-stream-agent' });
 const { streamId } = await sdk.createStream(

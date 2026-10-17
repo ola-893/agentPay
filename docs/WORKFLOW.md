@@ -61,7 +61,7 @@ address agent, address recipient, address token,
 uint256 maxAmount, uint64 validUntil, bool approved
 ```
 
-The report amount becomes a maximum authorized amount. A single positive settlement up to that bound is permitted and consumes the whole request, including any unused headroom.
+The report amount comes from `request.amount`, not `spendingCap`: the sample ALLOW report authorizes at most `10000` raw units (0.01 USDC), even though the policy cap is `100000` (0.1 USDC). A single positive settlement up to that bound is permitted and consumes the whole request, including any unused headroom.
 
 The sample agent and recipient are placeholders, receiver is zero and `publishReport` is false. Authorization lifetime is 300 seconds. Publication by a real workflow must reach the strict consumer through its trusted forwarder with the owner-bound workflow identity. A fresh request needs a unique request ID; duplicate reports/consumption fail. [Strict consumer](contracts/guarded-settlement.md) and [deployment steps](../DEPLOYMENT.md).
 
