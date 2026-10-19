@@ -1,0 +1,28 @@
+{
+  "status": "denied",
+  "tier": "premium",
+  "policy": {
+    "approved": false,
+    "reason": "AMOUNT_EXCEEDS_POLICY",
+    "requestId": "0x47c31ca2defdb4c4884218d047bc977297123e96ab84eff42c152634de75e23b",
+    "tokenSymbol": "USDC",
+    "tokenDecimals": 6,
+    "amountRaw": "200000",
+    "amountUsdc": "0.2",
+    "capRaw": "100000",
+    "capUsdc": "0.1",
+    "chainlinkPriceUsd8": "99987253",
+    "externalPriceUsd8": "100000000"
+  },
+  "noTransactionSigned": true,
+  "before": {
+    "agentBalanceRaw": "39990000",
+    "recipientBalanceRaw": "10000",
+    "nonce": 6
+  },
+  "after": {
+    "agentBalanceRaw": "39990000",
+    "recipientBalanceRaw": "10000",
+    "nonce": 6
+  }
+}

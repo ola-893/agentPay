@@ -2,7 +2,7 @@
 
 ## Suggested project description
 
-AgentPay adds deliberate spending controls to autonomous agent payments using Chainlink Runtime Environment. Its CRE Payment Guard fetches a real Coinbase USDC/USD quote, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, checks freshness, source disagreement, deviation from the $1 peg and a per-request cap, then generates a bounded payment report. A consumer contract and SDK connect accepted onchain authorization to one token settlement. The frontend exposes captured ALLOW and DENY executions with inspectable inputs and transcripts, plus a local agent integration draft. The draft does not operate a live agent.
+AgentPay adds deliberate spending controls to autonomous agent payments using Chainlink Runtime Environment. Its CRE Payment Guard fetches a real Coinbase USDC/USD quote, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, checks freshness, source disagreement, deviation from the $1 peg and a per-request cap, then generates a bounded payment report. A consumer contract and SDK connect accepted onchain authorization to one token settlement. The frontend exposes captured ALLOW and DENY executions with inspectable inputs and transcripts, plus a local agent integration draft. The draft does not operate a live agent. A separate CLI now runs a real Qwen purchasing agent: it uses local CRE decisions before a wallet-signed test-USDC transfer and verifies its receipt before delivering sample content.
 
 ## Requirement mapping
 
@@ -12,7 +12,7 @@ AgentPay adds deliberate spending controls to autonomous agent payments using Ch
 | At least one blockchain | Ethereum Sepolia, chain ID 11155111, finalized reads of the [Chainlink USDC/USD feed](https://sepolia.etherscan.io/address/0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E) |
 | External API/system/source | Live Coinbase USDC/USD API, fetched by CRE HTTPClient with median aggregation |
 | Successful simulation or deployment | [ALLOW transcript](evidence/cre-allow.log) and [budget DENY transcript](evidence/cre-deny-budget.log) |
-| Workflow used in the project | Shared report ABI, AgentPayGuard, AgentPaySettlement, GuardedPaymentClient, and the frontend evidence viewer |
+| Workflow used in the project | Shared report ABI, AgentPayGuard, AgentPaySettlement, GuardedPaymentClient, the frontend evidence viewer, and the [AI agent CLI](AI_AGENT_DEMO.md) |
 
 Both transcripts are real CRE CLI executions compiling the workflow to WASM and making live external API and public-chain calls. ALLOW requests 0.01 Circle Sepolia USDC (`10000` raw units) against a 0.1 cap (`100000`); DENY requests 0.2 (`200000`) against the same cap. USDC uses six decimals. Each source must be within 1% of $1, with at most 1% disagreement. [Verified addresses and freshness rationale](USDC_SEPOLIA.md).
 
@@ -39,7 +39,7 @@ JSON captures include a config SHA-256 and sanitized CLI transcript SHA-256. Tra
 - 29 contract tests pass: origin, destination, expiry, replay, party/token/amount binding, denied reports, transfer rollback, and owner workflow binding.
 - 52 SDK tests pass, including authorization before token approval and recipient validation before signing.
 - Eight gateway tests pass, including fabricated hashes and wrong recipients.
-- Eleven deterministic CRE policy tests and fourteen host-side evidence/tooling checks pass.
+- Eleven deterministic CRE policy tests and 37 host-side evidence/CLI/tooling tests pass.
 - SDK build, CRE typecheck, frontend build and frontend lint pass.
 - Browser verified: scenario switch renders DENY with 0.2 requested versus a 0.1 cap; CRE documentation opens; no browser console errors or warnings appeared on this flow.
 
@@ -55,7 +55,15 @@ The sample is one cron-driven payment intent. Real payments need fresh request I
 
 Follow [the readiness guide](RECORDING_READINESS.md) before recording. It runs both npm scenarios live and verifies freshness headroom without replacing the existing backup captures. The policy now checks the payment asset itself: Circle Sepolia USDC with six-decimal units, independently observed USDC/USD prices and an explicit $1 peg bound. Testnet USDC has no monetary value.
 
-The latest versioned preflight transcripts are linked in that guide; previous ETH/USD captures are retained under content-addressed backups and are historical evidence of the earlier policy, not the current USDC workflow. A separate simulation-only receiver and opt-in write runner are available. They do not weaken AgentPayGuard and cannot settle tokens. Public stream and guard/settlement deployment transactions are recorded separately; no public CRE report write or USDC settlement has been performed. Only a separately verified RPC receipt and matching receiver event may be presented as an Etherscan report demo.
+The latest versioned preflight transcripts are linked in that guide; previous ETH/USD captures are retained under content-addressed backups and are historical evidence of the earlier policy, not the current USDC workflow. A separate simulation-only receiver and opt-in write runner are available. They do not weaken AgentPayGuard and cannot settle tokens. Public stream and guard/settlement deployment transactions are recorded separately; no public CRE report write or AgentPaySettlement payment has been performed. The separate AI CLI did perform the direct wallet USDC transfer documented below. Only a separately verified RPC receipt and matching receiver event may be presented as an Etherscan report demo.
+
+## Verified AI purchase
+
+On 2026-10-19, Qwen `qwen3.5-plus` requested both tiers through actual Responses API tool calls. CRE compiled and simulated separately for each real quote. Basic passed and the local wallet sent `10000` raw Circle Sepolia USDC; premium was denied for requesting `200000` against cap `100000`, with unchanged balances and nonce. The resource service verified two confirmations and the exact transfer before returning its sample note, which the model then summarized.
+
+[Run transcript](evidence/agent-demo/run.log) · [Result and model responses](evidence/agent-demo/result.json) · [Payment receipt and balances](evidence/agent-demo/payment.json) · [Etherscan transaction](https://sepolia.etherscan.io/tx/0x9e0e57611cd2bf0f4a85f45e313d03f03750129dc00f6f8db58f5ab2f81eb59b). Reproduce using the [AI agent guide](AI_AGENT_DEMO.md).
+
+The wallet process enforces the simulation result. This is not a DON-authenticated report or strict-guard settlement. The HTTP 402 receipt protocol is a demo protocol, not full x402. Testnet tokens have no monetary value; model calls may incur API charges.
 
 ## Short demo sequence
 

@@ -48,6 +48,20 @@ networksetup -setdnsservers Wi-Fi empty
 
 Then rerun `npm run cre:dry-run`. The [before/after evidence](../evidence/network-dns-fix/verification.json) records both initial execution failures and successful ALLOW/DENY runs after the DNS change. Workflow source, endpoint, TLS verification, HTTP deadline and policy limits were unchanged. No API addresses were pinned and no price data was substituted. This result does not guarantee availability on another network or at a later time.
 
+## AI CLI demo
+
+`npm run demo:agent -- --help` describes its prerequisites without loading credentials. Configure the key only in root `.env`; see the [AI agent guide](../AI_AGENT_DEMO.md).
+
+| Failure | Action |
+| --- | --- |
+| Qwen 401 or model access error | Match `QWEN_REGION` / optional official `QWEN_BASE_URL` to the key's issuing region and workspace; check model access and billing. |
+| OpenAI `credit_balance_exhausted` | Add API credits or use a funded key. ChatGPT access and a successful model metadata lookup do not establish API generation credit. |
+| CRE denied basic | Inspect the original transcript, live prices and feed age. Do not loosen policy to force an approval. |
+| Payment confirmation uncertain | Inspect the transaction hash in this run's `payment.json` before another paid run. The CLI never automatically retries; a new `--pay` invocation can spend another 0.01 test USDC. |
+| Strict SDK says unauthorized | The AI CLI uses a separate local wallet gate. Its simulation cannot authorize the closed public strict guard. |
+
+Provider failures do not trigger a rules-based agent or automatic provider fallback. Model summaries are untrusted prose; use the host-verified status, raw units and receipt as evidence.
+
 ## SDK TypeScript dependency identity
 
 If `Signer`/`Network` types report incompatible private fields, the app and SDK are resolving different copies of ethers. Align or deduplicate the integrating project’s ethers dependency, and construct the signer from the same dependency instance as the SDK. Place the documented fragments in `sdk/`, import `./src` and construct the signer with `ethers` imported there. The guarded reference shows `Wallet`/`JsonRpcProvider` construction with caller-supplied test credentials; verification only compiles it and does not create, fund or use a wallet.

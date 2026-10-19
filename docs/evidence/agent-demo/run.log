@@ -1,0 +1,39 @@
+
+> agentpay@1.0.0 demo:agent
+> node demo/agent-demo.mjs --pay
+
+AI agent: qwen/qwen3.5-plus; Sepolia payment enabled (maximum 0.01 USDC).
+Payer: 0xe26468ae02368a75DBDBea58F367B7313942ad26; recipient: 0x9950D8950BF80722860f2B6a9e120893a0fE79f7.
+Research service: http://127.0.0.1:54999; per-request CRE cap: 0.1 USDC.
+qwen response: resp_3b472d2c-063a-98b2-a54b-98435c82061a (qwen3.5-plus).
+Agent tool: buy_research(basic) — Treasury analysis for Q4 2026 planning
+Service quote: basic costs 0.01 USDC. Running CRE locally...
+CRE ALLOW: WITHIN_POLICY.
+Confirmed USDC transfer: https://sepolia.etherscan.io/tx/0x9e0e57611cd2bf0f4a85f45e313d03f03750129dc00f6f8db58f5ab2f81eb59b
+qwen response: resp_13ec82f7-d082-9a70-8bfa-49097965aadf (qwen3.5-plus).
+Agent tool: buy_research(premium) — Advanced treasury risk modeling and scenario analysis
+Service quote: premium costs 0.2 USDC. Running CRE locally...
+CRE DENY: AMOUNT_EXCEEDS_POLICY.
+qwen response: resp_380977a6-718c-965f-b3c8-eaf60f193599 (qwen3.5-plus).
+
+Agent summary (model-generated):
+### Summary of Results
+
+**1. Basic Research (Accepted & Purchased)**
+*   **Result:** The request for **basic** tier research was **approved** and successfully executed.
+*   **Policy Check:** The cost was `0.01` USDC (`amountRaw`: 10,000), which is within the enforced cap of `0.1` USDC (`capRaw`: 100,000).
+*   **Payment Status:** Confirmed. A transaction was signed and mined.
+*   **Receipt Hash:** `0x9e0e57611cd2bf0f4a85f45e313d03f03750129dc00f6f8db58f5ab2f81eb59b`
+*   **Outcome:** The agent balance decreased from 40.00 to 39.99 USDC, and the research content regarding USDC treasury operations was delivered.
+
+**2. Premium Research (Blocked/Denied)**
+*   **Result:** The request for **premium** tier research was **denied** by the policy engine.
+*   **Policy Check:** The requested cost was `0.2` USDC (`amountRaw`: 200,000). This exceeded the hard spending cap of `0.1` USDC (`capRaw`: 100,000). The system returned `AMOUNT_EXCEEDS_POLICY`.
+*   **Payment Status:** **No transaction was signed.** The `noTransactionSigned` flag is true, and the agent/recipient balances remained unchanged from the state after the first purchase.
+*   **Outcome:** The purchase was blocked before execution; no funds were transferred, and no research data was returned.
+
+**Distinction:**
+The **basic** request resulted in a `purchased` status with a valid blockchain receipt hash, confirming actual spend. The **premium** request resulted in a `denied` status with no transaction hash, demonstrating the CRE tool's enforcement of the spending cap preventing the over-budget expenditure.
+
+Verified outcome: basic purchased; premium denied; recipient increase 10000 raw USDC units.
+Evidence: .local/agent-demo/runs/2026-10-19T14-34-56-201Z-3f11c8a9

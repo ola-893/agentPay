@@ -11,6 +11,7 @@ AgentPay orchestrates guarded **Circle USDC payments on Ethereum Sepolia** with 
 | Understand configuration and units | [Configuration](getting-started/configuration.md) |
 | Reproduce ALLOW and DENY | [CRE workflow](WORKFLOW.md) |
 | Verify USDC address, feed and peg policy | [Sepolia USDC](USDC_SEPOLIA.md) |
+| Run a real Qwen/OpenAI purchasing agent | [AI agent CLI](AI_AGENT_DEMO.md) |
 | Use the Agent setup page | [Local agent draft](AGENT_SETUP.md) |
 | Settle an authenticated report | [GuardedPaymentClient](sdk/guarded-payment-client.md) |
 | Deploy the consumer or legacy streams | [Deployment](../DEPLOYMENT.md) |

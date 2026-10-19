@@ -41,6 +41,11 @@ Copy `.env.example` to ignored `.env` when deploying or running a server that ne
 | `ALLOW_SIMULATION_DEMO`, `DEMO_PRIVATE_KEY` | Explicit, isolated mock-forwarder demo deployment/broadcast |
 | `AGENTPAY_STREAM_ADDRESS`, `PAYMENT_TOKEN_ADDRESS`, `PAYMENT_RECIPIENT_ADDRESS`, `PORT` | Legacy provider/server |
 | `GEMINI_API_KEY` | Optional legacy SDK model access; not needed for CRE or frontend |
+| `AGENTPAY_AI_PROVIDER` | AI CLI provider: `qwen` or `openai`; defaults to Qwen when its key is present |
+| `QWEN_API_KEY`, `QWEN_MODEL`, `QWEN_REGION`, `QWEN_BASE_URL` | AI CLI Qwen credentials, model and regional endpoint; defaults `qwen3.5-plus` / `singapore` |
+| `OPENAI_API_KEY` (`OPEN_AI_KEY` alias), `OPENAI_MODEL` | Alternative AI CLI provider; default model `gpt-4.1-mini` |
+| `PRIVATE_KEY_1` (`PRIVATE_KEY` fallback) | AI CLI dedicated Sepolia payer; also used by the legacy consumer |
+| `AGENTPAY_AGENT_RECIPIENT` (`CRE_PAYMENT_RECIPIENT_ADDRESS` alias) | AI CLI USDC recipient, different from payer and token |
 | `CRE_BIN` | Override simulator CLI executable path |
 
 The legacy `demo/consumer.ts` additionally reads `PRIVATE_KEY_1`. It can mint and create streams; run it only deliberately with a funded dedicated test wallet and configured legacy provider. Do not use it as a read-only health check.

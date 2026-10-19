@@ -26,4 +26,6 @@ Saving does **not**:
 - pause or resume deployed workflows;
 - approve tokens or send a payment.
 
-The earlier illustrative agent controls were replaced with this actual local draft flow. A real agent needs an ethers signer on Sepolia, deployed strict guard/settlement/workflow, Circle test USDC and test ETH for gas, and a fresh authenticated report accepted for the exact intent. [Deployment](../DEPLOYMENT.md).
+The earlier illustrative agent controls were replaced with this actual local draft flow. The generated GuardedPaymentClient integration requires an ethers signer, configured strict guard/settlement, and a fresh authenticated report accepted for the exact intent. The current public strict guard remains closed; this integration is not the local simulation payment path. [Deployment](../DEPLOYMENT.md).
+
+To run a real model-driven purchasing agent now, use the separate [AI CLI demo](AI_AGENT_DEMO.md): `npm run demo:agent` previews both decisions; `npm run demo:agent -- --pay` can transfer 0.01 Circle test USDC after local CRE approval. It uses wallet-side enforcement and receipt verification, without deploying a workflow to Chainlink. It does not use this browser draft.

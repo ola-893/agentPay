@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "runId": "2026-10-19T14-34-56-201Z-3f11c8a9",
+  "mode": "local-agent-payment",
+  "completedAt": "2026-10-19T14:36:10.237Z",
+  "provider": "qwen",
+  "model": "qwen3.5-plus",
+  "chainId": 11155111,
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+  "paidRaw": "10000",
+  "initial": {
+    "agentBalanceRaw": "40000000",
+    "recipientBalanceRaw": "0",
+    "nonce": 5
+  },
+  "final": {
+    "agentBalanceRaw": "39990000",
+    "recipientBalanceRaw": "10000",
+    "nonce": 6
+  },
+  "responses": [
+    {
+      "id": "resp_3b472d2c-063a-98b2-a54b-98435c82061a",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 625,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 87,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 712,
+        "x_details": [
+          {
+            "input_tokens": 625,
+            "output_tokens": 87,
+            "total_tokens": 712,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"basic\", \"purpose\": \"Treasury analysis for Q4 2026 planning\"}",
+          "call_id": "call_7b65598800674393ad13f376",
+          "id": "msg_9a727919-ae0c-49cc-9abd-294b27420159",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_13ec82f7-d082-9a70-8bfa-49097965aadf",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1281,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 37,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1318,
+        "x_details": [
+          {
+            "input_tokens": 1281,
+            "output_tokens": 37,
+            "total_tokens": 1318,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"premium\", \"purpose\": \"Advanced treasury risk modeling and scenario analysis\"}",
+          "call_id": "call_627a82fcedd1494fa2904f01",
+          "id": "msg_8857405f-8636-469d-be20-4ea60f69baf8",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_380977a6-718c-965f-b3c8-eaf60f193599",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1249,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 453,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1702,
+        "x_details": [
+          {
+            "input_tokens": 1249,
+            "output_tokens": 453,
+            "total_tokens": 1702,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "content": [
+            {
+              "annotations": [],
+              "text": "### Summary of Results\n\n**1. Basic Research (Accepted & Purchased)**\n*   **Result:** The request for **basic** tier research was **approved** and successfully executed.\n*   **Policy Check:** The cost was `0.01` USDC (`amountRaw`: 10,000), which is within the enforced cap of `0.1` USDC (`capRaw`: 100,000).\n*   **Payment Status:** Confirmed. A transaction was signed and mined.\n*   **Receipt Hash:** `0x9e0e57611cd2bf0f4a85f45e313d03f03750129dc00f6f8db58f5ab2f81eb59b`\n*   **Outcome:** The agent balance decreased from 40.00 to 39.99 USDC, and the research content regarding USDC treasury operations was delivered.\n\n**2. Premium Research (Blocked/Denied)**\n*   **Result:** The request for **premium** tier research was **denied** by the policy engine.\n*   **Policy Check:** The requested cost was `0.2` USDC (`amountRaw`: 200,000). This exceeded the hard spending cap of `0.1` USDC (`capRaw`: 100,000). The system returned `AMOUNT_EXCEEDS_POLICY`.\n*   **Payment Status:** **No transaction was signed.** The `noTransactionSigned` flag is true, and the agent/recipient balances remained unchanged from the state after the first purchase.\n*   **Outcome:** The purchase was blocked before execution; no funds were transferred, and no research data was returned.\n\n**Distinction:**\nThe **basic** request resulted in a `purchased` status with a valid blockchain receipt hash, confirming actual spend. The **premium** request resulted in a `denied` status with no transaction hash, demonstrating the CRE tool's enforcement of the spending cap preventing the over-budget expenditure.",
+              "type": "output_text"
+            }
+          ],
+          "id": "msg_46d4c204-b5fe-42f6-b90e-cb87c4bf42c0",
+          "role": "assistant",
+          "status": "completed",
+          "type": "message"
+        }
+      ]
+    }
+  ],
+  "summary": "### Summary of Results\n\n**1. Basic Research (Accepted & Purchased)**\n*   **Result:** The request for **basic** tier research was **approved** and successfully executed.\n*   **Policy Check:** The cost was `0.01` USDC (`amountRaw`: 10,000), which is within the enforced cap of `0.1` USDC (`capRaw`: 100,000).\n*   **Payment Status:** Confirmed. A transaction was signed and mined.\n*   **Receipt Hash:** `0x9e0e57611cd2bf0f4a85f45e313d03f03750129dc00f6f8db58f5ab2f81eb59b`\n*   **Outcome:** The agent balance decreased from 40.00 to 39.99 USDC, and the research content regarding USDC treasury operations was delivered.\n\n**2. Premium Research (Blocked/Denied)**\n*   **Result:** The request for **premium** tier research was **denied** by the policy engine.\n*   **Policy Check:** The requested cost was `0.2` USDC (`amountRaw`: 200,000). This exceeded the hard spending cap of `0.1` USDC (`capRaw`: 100,000). The system returned `AMOUNT_EXCEEDS_POLICY`.\n*   **Payment Status:** **No transaction was signed.** The `noTransactionSigned` flag is true, and the agent/recipient balances remained unchanged from the state after the first purchase.\n*   **Outcome:** The purchase was blocked before execution; no funds were transferred, and no research data was returned.\n\n**Distinction:**\nThe **basic** request resulted in a `purchased` status with a valid blockchain receipt hash, confirming actual spend. The **premium** request resulted in a `denied` status with no transaction hash, demonstrating the CRE tool's enforcement of the spending cap preventing the over-budget expenditure.",
+  "purchases": {
+    "basic": {
+      "status": "purchased",
+      "tier": "basic",
+      "policy": {
+        "approved": true,
+        "reason": "WITHIN_POLICY",
+        "requestId": "0x805a9fcd748e9f79f81c1143cdbe43d03f5ed0ada2495a6c2da30e21d7231fea",
+        "tokenSymbol": "USDC",
+        "tokenDecimals": 6,
+        "amountRaw": "10000",
+        "amountUsdc": "0.01",
+        "capRaw": "100000",
+        "capUsdc": "0.1",
+        "chainlinkPriceUsd8": "99987253",
+        "externalPriceUsd8": "100000000"
+      },
+      "payment": {
+        "state": "confirmed",
+        "receipt": {
+          "transactionHash": "0x9e0e57611cd2bf0f4a85f45e313d03f03750129dc00f6f8db58f5ab2f81eb59b",
+          "blockNumber": 11948799,
+          "confirmations": 2,
+          "status": 1,
+          "from": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+          "to": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+          "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+          "amountRaw": "10000"
+        },
+        "before": {
+          "agentBalanceRaw": "40000000",
+          "recipientBalanceRaw": "0",
+          "nonce": 5
+        },
+        "after": {
+          "agentBalanceRaw": "39990000",
+          "recipientBalanceRaw": "10000",
+          "nonce": 6
+        },
+        "recipientIncreaseRaw": "10000",
+        "localCreGate": true,
+        "donAuthenticated": false
+      },
+      "research": {
+        "title": "USDC treasury operating note",
+        "source": "AgentPay demo service (sample operational guidance)",
+        "content": "Track USDC amounts in six-decimal raw units, compare independent USD price observations, and enforce spending caps before signing. A testnet token has no monetary value.",
+        "tier": "basic",
+        "quoteId": "0x805a9fcd748e9f79f81c1143cdbe43d03f5ed0ada2495a6c2da30e21d7231fea"
+      }
+    },
+    "premium": {
+      "status": "denied",
+      "tier": "premium",
+      "policy": {
+        "approved": false,
+        "reason": "AMOUNT_EXCEEDS_POLICY",
+        "requestId": "0x47c31ca2defdb4c4884218d047bc977297123e96ab84eff42c152634de75e23b",
+        "tokenSymbol": "USDC",
+        "tokenDecimals": 6,
+        "amountRaw": "200000",
+        "amountUsdc": "0.2",
+        "capRaw": "100000",
+        "capUsdc": "0.1",
+        "chainlinkPriceUsd8": "99987253",
+        "externalPriceUsd8": "100000000"
+      },
+      "noTransactionSigned": true,
+      "before": {
+        "agentBalanceRaw": "39990000",
+        "recipientBalanceRaw": "10000",
+        "nonce": 6
+      },
+      "after": {
+        "agentBalanceRaw": "39990000",
+        "recipientBalanceRaw": "10000",
+        "nonce": 6
+      }
+    }
+  },
+  "donAuthenticated": false,
+  "strictGuardUsed": false,
+  "evidenceDirectory": ".local/agent-demo/runs/2026-10-19T14-34-56-201Z-3f11c8a9"
+}

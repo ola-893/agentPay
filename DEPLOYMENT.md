@@ -8,6 +8,10 @@ Recorded evidence and read-only CRE simulation require no deployed AgentPay cont
 
 `npm run build:web` produces `vite-project/dist`, a static React app with evidence JSON from `public/evidence`. Preserve the SPA fallback (`_redirects` / `netlify.toml`) when hosting. No hosting deployment is included in the recorded evidence.
 
+## AI agent wallet payment demo
+
+The [AI CLI demo](docs/AI_AGENT_DEMO.md) uses a funded Qwen or OpenAI API key and a dedicated Sepolia wallet. It runs the existing workflow locally for each quote, then the wallet process may send a direct Circle USDC transfer. It requires no new contract, workflow deployment or workflow-ID binding. The service independently verifies the receipt before returning content. This authority path is separate from the closed strict contracts below.
+
 ## Separate simulation-only write demo
 
 See [recording readiness](docs/RECORDING_READINESS.md) for the optional `AgentPaySimulationReceiver`, its dedicated Sepolia test wallet, explicit identity-skip opt-in, and receipt-verified broadcast runner. It records a mock-forwarder demo but cannot authorize or settle payments. No demo deployment or broadcast was performed during this repository update.

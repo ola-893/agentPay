@@ -262,15 +262,28 @@ export const documentation = {
           "Browser storage may be unavailable or cleared, and other code on the same origin can read it. Store only these non-secret configuration fields. Saving is optional; code can still be copied if storage is blocked."
         ),
       ]),
-      section("Before sending a payment", [
+      section("Run the AI CLI demo", [
         p(
-          "Deploy and bind the production consumer and settlement contract, deploy the CRE workflow, and obtain an authenticated unexpired report for the intended parties, token, destination and maximum payment amount. Fund the agent with Sepolia ETH for gas and Circle test USDC. The SDK then checks onchain authorization before approval and again before settlement."
+          "The separate CLI uses real Qwen or OpenAI tool calls, a loopback paid-resource service and live local CRE simulations. Configure the model key, dedicated Sepolia payer and distinct USDC recipient in the ignored root .env. No secrets belong in the browser."
+        ),
+        code(
+          "sh",
+          "npm run demo:agent\n# To transfer up to 0.01 Circle test USDC plus test ETH gas:\nnpm run demo:agent -- --pay"
+        ),
+        p(
+          "Basic costs 0.01 USDC; premium costs 0.2 against a 0.1 cap and must be denied. The paid run verifies the transfer receipt and recipient balance increase before returning content. Each paid invocation is a new purchase. The wallet process enforces the local CRE result; no additional contract or workflow deployment is required. This demo is not DON authentication, AgentPaySettlement or full x402, and does not read this browser draft."
+        ),
+      ]),
+      section("Strict SDK integration prerequisites", [
+        p(
+          "The generated GuardedPaymentClient example uses a different authority path: configured strict consumers and an authenticated unexpired report for the exact intent. The current public guard is closed and this project does not deploy a workflow to Chainlink. The SDK checks onchain authorization before approval and settlement; local simulation output cannot unlock it."
         ),
       ]),
     ],
     related: [
       ["/agent", "Open Agent setup"],
       ["/docs/integration", "SDK integration"],
+      [repo + "docs/AI_AGENT_DEMO.md", "AI purchasing CLI guide"],
     ],
   },
   integration: {
@@ -438,7 +451,10 @@ export const documentation = {
     related: [
       [repo + "docs/UI_UX_REVIEW.md", "UI review"],
       [repo + "docs/CRE_SUBMISSION.md", "Submission evidence"],
-      [repo + "docs/DOCUMENTATION_AUDIT.md", "Correctness audit and verification limits"],
+      [
+        repo + "docs/DOCUMENTATION_AUDIT.md",
+        "Correctness audit and verification limits",
+      ],
     ],
   },
 };
