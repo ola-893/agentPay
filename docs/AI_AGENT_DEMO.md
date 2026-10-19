@@ -42,6 +42,16 @@ To execute a complete test purchase:
 npm run demo:agent -- --pay
 ```
 
+The default terminal view groups each request, its CRE decision and any confirmed payment, then shows verified balances and a full explorer link. It uses colours on supported interactive terminals and plain output when redirected; `NO_COLOR` disables colours. Long model explanations and response IDs stay in the evidence by default.
+
+For response IDs, oracle prices and the full model explanation, use:
+
+```sh
+npm run demo:agent -- --verbose
+```
+
+Model text is explicitly labeled unverified. In preview, request IDs are never displayed as payment receipts in the verified summary. `--json` keeps one result envelope on stdout and plain progress on stderr; `--verbose` changes presentation only.
+
 Each new `--pay` run can transfer **at most 0.01 test USDC**, plus Sepolia ETH for gas. It is not a read-only health check. Model usage is additionally billed by the selected model provider. For structured output, use `npm run --silent demo:agent -- --pay --json`. `--help` performs no environment loading, network or model calls.
 
 ## Expected journey
@@ -53,7 +63,7 @@ Each new `--pay` run can transfer **at most 0.01 test USDC**, plus Sepolia ETH f
 5. An ALLOW for basic can unlock the local wallet executor when `--pay` is present. The host checks chain, six-decimal token, exact quote/intent, balances, feed freshness, elapsed approval lifetime and a separate 0.01-USDC run limit before signing. It saves the signed transaction's hash before broadcasting, without saving the signed payload or private key.
 6. After two confirmations, receipt verification requires success, exact sender/recipient/token/amount, exact transfer calldata and a matching USDC Transfer event. Balance snapshots must show an exact `10000` recipient increase and payer decrease. Only then does the service return its sample operational note.
 7. Premium must return `DENY (AMOUNT_EXCEEDS_POLICY)` without signing. Balance and nonce snapshots must remain unchanged for that request. Any earlier price/freshness denial stops the expected demo; limits are never loosened to obtain success.
-8. The model receives the actual tool outputs and generates a final explanation. The CLI separately prints the verified basic/premium status and recipient increase, so model prose is not payment evidence.
+8. The model receives the actual tool outputs and generates a final explanation. The default CLI prints the host-verified basic/premium status and recipient increase; the model explanation is saved and shown only with `--verbose`. Model prose is not payment evidence.
 
 Repeated model calls for the same tier reuse the existing result. A run never retries an attempted payment automatically. If confirmation or later processing fails after submission, inspect that run's `payment.json` and its transaction hash before starting another paid run. A new invocation is a new purchase, not a resume command.
 

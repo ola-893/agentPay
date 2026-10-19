@@ -15,6 +15,7 @@ import {
 import cli from "../scripts/lib/cli.cjs";
 import { callModel, modelSettings, runAgent } from "./agent/model.mjs";
 import { runCreIntent } from "./agent/cre.mjs";
+import { createAgentOutput } from "./agent/output.mjs";
 import {
   CHAIN_ID,
   USDC,
@@ -29,25 +30,46 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const same = (a, b) => a.toLowerCase() === b.toLowerCase();
 await cli.cliMain(
   "demo:agent",
-  { pay: "boolean" },
-  `Usage: npm run --silent demo:agent -- [--pay] [--json] [--help]
-Real AI tool-calling agent -> paid resource quote -> local CRE USDC policy -> receipt-verified resource.
-Default: real model + CRE preview; never signs or transfers tokens and does not unlock paid content.
---pay   Transfer at most 0.01 Circle test USDC on Sepolia for basic research; premium must be denied.
-        Each new --pay run can spend 0.01 test USDC plus test ETH for gas. No automatic payment retry.
---json  One result envelope on stdout; progress on stderr. Evidence stays under .local/agent-demo/runs/.
-Requires QWEN_API_KEY or OPENAI_API_KEY (OPEN_AI_KEY alias accepted), PRIVATE_KEY_1 or PRIVATE_KEY,
-AGENTPAY_AGENT_RECIPIENT (CRE_PAYMENT_RECIPIENT_ADDRESS alias accepted), CRE CLI, Bun and network access.
-AGENTPAY_AI_PROVIDER selects qwen or openai. Qwen is selected when its key is configured, otherwise OpenAI.
-QWEN_MODEL defaults to qwen3.5-plus; QWEN_REGION defaults to singapore. OPENAI_MODEL defaults to gpt-4.1-mini.
-Model API calls may incur usage charges; there is no heuristic or silent provider fallback.
-The wallet enforces the local CRE result. This is not DON authentication, strict-guard settlement, or full x402.
---help  No credentials, model calls, network or transactions.
-Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification failure; 2 usage/config error.`,
+  { pay: "boolean", verbose: "boolean" },
+  `AgentPay / AI payment demo
+
+Usage
+  npm run --silent demo:agent -- [--pay] [--verbose] [--json] [--help]
+
+Default: real AI tool calls + live local CRE preview. No signing or payment.
+
+Options
+  --pay      Buy basic research for 0.01 Circle test USDC on Sepolia.
+             Premium must be denied. Each run can spend 0.01 USDC + test ETH gas.
+             No automatic payment retry.
+  --verbose  Show response IDs, oracle prices and the unverified model explanation.
+  --json     One result envelope on stdout; plain progress on stderr.
+  --help     Show this help without credentials, model calls or network access.
+
+Setup (ignored root .env)
+  QWEN_API_KEY or OPENAI_API_KEY (OPEN_AI_KEY alias accepted)
+  PRIVATE_KEY_1 or PRIVATE_KEY / dedicated Sepolia test wallet
+  AGENTPAY_AGENT_RECIPIENT or CRE_PAYMENT_RECIPIENT_ADDRESS
+  CRE CLI, Bun and network access
+
+  AGENTPAY_AI_PROVIDER selects qwen or openai. A configured Qwen key selects Qwen
+  by default; otherwise OpenAI. Defaults: QWEN_MODEL=qwen3.5-plus,
+  QWEN_REGION=singapore, OPENAI_MODEL=gpt-4.1-mini.
+  Model calls may incur usage charges. No rules-based or provider fallback.
+
+Authority: local CRE result enforced by the wallet, not DON authentication,
+strict-guard settlement or full x402. Evidence: .local/agent-demo/runs/.
+
+Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`,
   async ({ flags }) => {
     dotenv.config({ path: path.join(root, ".env"), quiet: true });
     const settings = modelSettings(process.env);
     const { model } = settings;
+    const output = createAgentOutput({
+      pay: flags.pay,
+      json: flags.json,
+      verbose: flags.verbose,
+    });
     let signer;
     try {
       signer = new Wallet(
@@ -136,19 +158,14 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
         agent: wallet.address,
         recipient,
       });
-      console.log(
-        `AI agent: ${settings.provider}/${model}; ${
-          flags.pay
-            ? "Sepolia payment enabled (maximum 0.01 USDC)"
-            : "preview only (no token transfer)"
-        }.`
-      );
-      console.log(`Payer: ${wallet.address}; recipient: ${recipient}.`);
-      console.log(
-        `Research service: ${service.url}; per-request CRE cap: 0.1 USDC.`
-      );
+      output.start({
+        settings,
+        payer: wallet.address,
+        recipient,
+        balanceRaw: initial.agentBalanceRaw,
+      });
       const purchase = async ({ tier, purpose }) => {
-        console.log(`Agent tool: buy_research(${tier}) — ${purpose}`);
+        output.requested({ tier, purpose });
         const endpoint = `${service.url}/research/${tier}`;
         const quoteResponse = await fetch(endpoint, {
           signal: AbortSignal.timeout(20000),
@@ -165,11 +182,7 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
             "Unexpected research-service protocol."
           );
         validateQuote(quote, { tier, agent: wallet.address, recipient });
-        console.log(
-          `Service quote: ${tier} costs ${
-            tier === "basic" ? "0.01" : "0.2"
-          } USDC. Running CRE locally...`
-        );
+        output.quote(quote);
         const config = {
           ...base,
           receiverAddress: ZeroAddress,
@@ -192,9 +205,7 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
         const evidence = await runCreIntent({ config, root, directory, tier });
         const completedAt = performance.now();
         const decision = evidence.result;
-        console.log(
-          `CRE ${decision.approved ? "ALLOW" : "DENY"}: ${decision.reason}.`
-        );
+        output.decision(decision);
         const policy = {
           approved: decision.approved,
           reason: decision.reason,
@@ -228,6 +239,7 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
             after,
           };
           await save(`${tier}.json`, result);
+          output.denied();
           return result;
         }
         if (tier !== "basic" || quote.amount !== TIERS.basic)
@@ -244,6 +256,7 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
             resourceUnlocked: false,
           };
           await save(`${tier}.json`, result);
+          output.preview();
           return result;
         }
         if (paymentStarted)
@@ -252,6 +265,7 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
             "A payment was already attempted in this run. Automatic retry is disabled."
           );
         paymentStarted = true;
+        output.preparing();
         const payment = await sendLocalPayment({
           provider,
           wallet,
@@ -260,12 +274,13 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
           config,
           elapsed: () => performance.now() - completedAt,
           paidRaw,
-          persist: (data) => save("payment.json", data),
+          persist: async (data) => {
+            await save("payment.json", data);
+            if (data.state === "submitting") output.submitting(data);
+          },
         });
         paidRaw += BigInt(quote.amount);
-        console.log(
-          `Confirmed USDC transfer: https://sepolia.etherscan.io/tx/${payment.receipt.transactionHash}`
-        );
+        output.confirmed(payment.receipt);
         const paidResponse = await fetch(endpoint, {
           headers: { "x-agentpay-payment-tx": payment.receipt.transactionHash },
           signal: AbortSignal.timeout(20000),
@@ -289,18 +304,19 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
           research: resource.research,
         };
         await save(`${tier}.json`, result);
+        output.unlocked();
         return result;
       };
       const agent = await runAgent({
         model,
-        modelCall: (args) => callModel({ ...args, ...settings }),
+        modelCall: (args) => {
+          output.thinking(args.complete);
+          return callModel({ ...args, ...settings });
+        },
         purchase,
         onEvent: (data) => {
           event(data);
-          if (data.type === "model_response")
-            console.log(
-              `${settings.provider} response: ${data.id} (${data.model}).`
-            );
+          if (data.type === "model_response") output.response(data);
         },
       });
       if (
@@ -343,11 +359,7 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
         evidenceDirectory: path.relative(root, directory),
       };
       await save("result.json", result);
-      console.log(`\nAgent summary (model-generated):\n${agent.summary}`);
-      console.log(
-        `\nVerified outcome: basic ${result.purchases.basic.status}; premium denied; recipient increase ${paidRaw} raw USDC units.`
-      );
-      console.log(`Evidence: ${result.evidenceDirectory}`);
+      output.finish(result);
       return result;
     } catch (error) {
       await save("failure.json", {
@@ -360,6 +372,7 @@ Exit: 0 both tool-backed journeys complete; 1 API/policy/payment/verification fa
         paidRaw: paidRaw.toString(),
         paymentStarted,
       });
+      output.failed(path.relative(root, directory));
       throw error;
     } finally {
       await appendFile(

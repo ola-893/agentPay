@@ -39,7 +39,7 @@ JSON captures include a config SHA-256 and sanitized CLI transcript SHA-256. Tra
 - 29 contract tests pass: origin, destination, expiry, replay, party/token/amount binding, denied reports, transfer rollback, and owner workflow binding.
 - 52 SDK tests pass, including authorization before token approval and recipient validation before signing.
 - Eight gateway tests pass, including fabricated hashes and wrong recipients.
-- Eleven deterministic CRE policy tests and 37 host-side evidence/CLI/tooling tests pass.
+- Eleven deterministic CRE policy tests and 39 host-side evidence/CLI/tooling tests pass.
 - SDK build, CRE typecheck, frontend build and frontend lint pass.
 - Browser verified: scenario switch renders DENY with 0.2 requested versus a 0.1 cap; CRE documentation opens; no browser console errors or warnings appeared on this flow.
 

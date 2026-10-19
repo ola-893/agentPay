@@ -266,12 +266,9 @@ export const documentation = {
         p(
           "The separate CLI uses real Qwen or OpenAI tool calls, a loopback paid-resource service and live local CRE simulations. Configure the model key, dedicated Sepolia payer and distinct USDC recipient in the ignored root .env. No secrets belong in the browser."
         ),
-        code(
-          "sh",
-          "npm run demo:agent\n# To transfer up to 0.01 Circle test USDC plus test ETH gas:\nnpm run demo:agent -- --pay"
-        ),
+        code("sh", "npm run demo:agent\nnpm run demo:agent -- --pay"),
         p(
-          "Basic costs 0.01 USDC; premium costs 0.2 against a 0.1 cap and must be denied. The paid run verifies the transfer receipt and recipient balance increase before returning content. Each paid invocation is a new purchase. The wallet process enforces the local CRE result; no additional contract or workflow deployment is required. This demo is not DON authentication, AgentPaySettlement or full x402, and does not read this browser draft."
+          "Basic costs 0.01 USDC; premium costs 0.2 against a 0.1 cap and must be denied. The paid run verifies the transfer receipt and recipient balance increase before returning content. Each paid invocation is a new purchase. Use --verbose for model details and --json for structured output. The wallet process enforces the local CRE result; no additional contract or workflow deployment is required. This demo is not DON authentication, AgentPaySettlement or full x402, and does not read this browser draft."
         ),
       ]),
       section("Strict SDK integration prerequisites", [

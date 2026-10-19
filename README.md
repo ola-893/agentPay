@@ -69,14 +69,19 @@ No wallet key or testnet funds are needed for the read-only scenarios. CRE servi
 
 ## Run the AI purchasing agent
 
-The separate CLI agent uses real Qwen or OpenAI tool calls to request a paid resource, runs CRE locally for its quote, and enforces that decision in the wallet process. Configure a funded model key and dedicated Sepolia wallet as described in the [AI agent guide](docs/AI_AGENT_DEMO.md), then:
+The separate CLI agent uses real Qwen or OpenAI tool calls to request a paid resource, runs CRE locally for its quote, and enforces that decision in the wallet process. Configure a funded model key and dedicated Sepolia wallet as described in the [AI agent guide](docs/AI_AGENT_DEMO.md), then preview:
 
 ```sh
-npm run demo:agent              # Real model + live CRE; no payment
-npm run demo:agent -- --pay     # Up to 0.01 Circle test USDC plus test ETH gas
+npm run demo:agent
 ```
 
-Basic costs 0.01 USDC; premium costs 0.2 against a 0.1 per-request cap and must be denied. With `--pay`, the resource unlocks only after a matching confirmed transfer and exact balance changes. Each paid invocation is a new purchase. This uses local wallet enforcement and a demo HTTP 402 receipt protocol, not DON authentication, AgentPaySettlement or full x402. No additional deployment is required. The browser Agent setup page remains a local integration draft.
+To enable the test-USDC purchase:
+
+```sh
+npm run demo:agent -- --pay
+```
+
+Basic costs 0.01 USDC; premium costs 0.2 against a 0.1 per-request cap and must be denied. With `--pay`, the resource unlocks only after a matching confirmed transfer and exact balance changes. Each paid invocation is a new purchase. Use `--verbose` for response IDs, oracle prices and the full model explanation. This uses local wallet enforcement and a demo HTTP 402 receipt protocol, not DON authentication, AgentPaySettlement or full x402. No additional deployment is required. The browser Agent setup page remains a local integration draft.
 
 ## Verify
 
@@ -89,7 +94,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **137 tests** — 29 contracts, 52 SDK, eight middleware, eleven CRE policy, 37 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
+Current suites: **139 tests** — 29 contracts, 52 SDK, eight middleware, eleven CRE policy, 39 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
 
 `docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
 

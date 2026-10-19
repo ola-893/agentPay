@@ -24,6 +24,7 @@ import {
   runAgent,
 } from "../../demo/agent/model.mjs";
 import { runCreIntent } from "../../demo/agent/cre.mjs";
+import { createAgentOutput } from "../../demo/agent/output.mjs";
 import {
   CHAIN_ID,
   USDC,
@@ -135,7 +136,7 @@ function fixtureProvider(change = {}) {
 test("agent CLI help has no credential, network or wallet use and JSON remains one envelope", () => {
   const run = spawnSync(
     process.execPath,
-    ["demo/agent-demo.mjs", "--help", "--json"],
+    ["demo/agent-demo.mjs", "--help", "--verbose", "--json"],
     {
       encoding: "utf8",
       env: {
@@ -152,6 +153,75 @@ test("agent CLI help has no credential, network or wallet use and JSON remains o
   assert.equal(out.command, "demo:agent");
   assert.match(out.data.help, /preview/);
   assert.match(out.data.help, /0.01/);
+});
+test("preview output cannot present model-invented receipts as verified transactions", () => {
+  const recorded = JSON.parse(
+    readFileSync(
+      new URL("../../docs/evidence/agent-demo/result.json", import.meta.url)
+    )
+  );
+  const result = {
+    ...recorded,
+    paidRaw: "0",
+    final: recorded.initial,
+    summary: `Receipt Hash: ${quote.id}`,
+    purchases: { ...recorded.purchases, basic: { status: "preview" } },
+  };
+  const lines = [];
+  const output = createAgentOutput({
+    stream: { isTTY: false },
+    write: (line) => lines.push(line),
+  });
+  output.response({ id: "hidden-response-id" });
+  output.finish(result);
+  const text = lines.join("\n");
+  assert.match(text, /APPROVED \/ preview only/);
+  assert.match(text, /None \/ no tokens transferred/);
+  assert.doesNotMatch(text, /Receipt Hash|hidden-response-id|\x1b/);
+  assert.equal(text.includes(quote.id), false);
+  const verbose = [];
+  createAgentOutput({
+    verbose: true,
+    stream: { isTTY: false },
+    write: (line) => verbose.push(line),
+  }).finish(result);
+  assert.match(verbose.join("\n"), /unverified model text/);
+  assert.ok(verbose.join("\n").includes(quote.id));
+});
+test("terminal styles never leak to JSON, redirected or NO_COLOR output, and model control sequences are stripped", () => {
+  for (const options of [
+    {
+      stream: { isTTY: true, columns: 44 },
+      env: { TERM: "xterm" },
+      colored: true,
+    },
+    { stream: { isTTY: false }, env: { TERM: "xterm" }, colored: false },
+    {
+      stream: { isTTY: true },
+      env: { TERM: "xterm", NO_COLOR: "" },
+      colored: false,
+    },
+    { stream: { isTTY: true }, env: { TERM: "dumb" }, colored: false },
+    {
+      stream: { isTTY: true },
+      env: { TERM: "xterm" },
+      json: true,
+      colored: false,
+    },
+  ]) {
+    const lines = [];
+    const output = createAgentOutput({
+      ...options,
+      write: (line) => lines.push(line),
+    });
+    output.requested({
+      tier: "basic",
+      purpose: "Read research\x1b[2J\x1b]0;untrusted-title\x07",
+    });
+    const text = lines.join("\n");
+    assert.equal(text.includes("\x1b["), options.colored);
+    assert.doesNotMatch(text, /\[2J|untrusted-title/);
+  }
 });
 test("OpenAI alias keys are redacted from diagnostic text", () => {
   const previous = process.env.OPEN_AI_KEY;
