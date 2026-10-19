@@ -1,0 +1,39 @@
+{
+  "verifiedAt": "2026-10-19T13:13:08.499Z",
+  "rootCause": "Current Wi-Fi hotspot DNS timed out resolving api.coinbase.com. Public DNS resolved the same hostname, and normal TLS-verified HTTPS requests and CRE simulations passed after changing Wi-Fi DNS.",
+  "fix": {
+    "scope": "This Mac Wi-Fi network service, all apps",
+    "dnsServers": [
+      "1.1.1.1",
+      "8.8.8.8"
+    ],
+    "previousSetting": "Automatic (DHCP-provided DNS)",
+    "restoreCommand": "networksetup -setdnsservers Wi-Fi empty"
+  },
+  "codeOrPolicyChanged": false,
+  "dnsAddressPinned": false,
+  "before": {
+    "ready": false,
+    "scenarioExitCodes": [
+      1,
+      1
+    ]
+  },
+  "after": {
+    "ready": true,
+    "scenarioExitCodes": [
+      0,
+      0
+    ],
+    "decisionReasons": [
+      "WITHIN_POLICY",
+      "AMOUNT_EXCEEDS_POLICY"
+    ]
+  },
+  "checks": [
+    "Successful transcripts parse to the exact saved results",
+    "Full policy, request units and ABI report validation",
+    "Both expected decisions and freshness headroom passed"
+  ],
+  "scope": "Local read-only CRE simulations; no workflow deployment, report broadcast or token transfer"
+}

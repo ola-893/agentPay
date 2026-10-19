@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-10-19T13:05:44.848Z",
+  "recordingWindowSeconds": 600,
+  "ready": false,
+  "results": [
+    {
+      "scenario": "allow",
+      "command": "npm run cre:simulate",
+      "exitCode": 1,
+      "ready": false,
+      "reason": "No successful CRE result marker"
+    },
+    {
+      "scenario": "deny-budget",
+      "command": "npm run cre:simulate -- --deny-budget",
+      "exitCode": 1,
+      "ready": false,
+      "reason": "No successful CRE result marker"
+    }
+  ],
+  "note": "Readiness describes this dry run only. Repeat immediately before recording; live inputs can change. Saved captures were not replaced."
+}

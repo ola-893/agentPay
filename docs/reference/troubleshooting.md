@@ -28,6 +28,26 @@
 | Feed pair/decimals mismatch | Verify pinned Sepolia USDC token/feed/API as one configuration. Do not substitute an ETH/USD feed or 18-decimal token. |
 | Write runner rejects manifest/key | Follow the isolated demo deployment procedure; no public receipt is claimed until verified. |
 
+### Coinbase request times out before connecting
+
+On October 19, 2026, both CLI scenarios compiled but failed with `Get "https://api.coinbase.com/v2/prices/USDC-USD/spot": context deadline exceeded`. The cause was the local hotspot's DNS resolver: it resolved Sepolia but timed out on Coinbase. This was not a policy rejection or proof that Coinbase was down.
+
+Compare name resolution with a normal HTTPS request:
+
+```sh
+nslookup api.coinbase.com
+nslookup api.coinbase.com 1.1.1.1
+curl --max-time 12 https://api.coinbase.com/v2/prices/USDC-USD/spot
+```
+
+If the network resolver fails while a public resolver succeeds, configure a working DNS resolver for your connection. On the affected Mac, changing **Wi-Fi DNS** to `1.1.1.1` and `8.8.8.8` restored normal Coinbase HTTPS requests and both CRE scenarios. This changes DNS for all apps using that service; it is a machine setting, not a repository setting. The previous setting was automatic DNS. Restore it on that Mac with:
+
+```sh
+networksetup -setdnsservers Wi-Fi empty
+```
+
+Then rerun `npm run cre:dry-run`. The [before/after evidence](../evidence/network-dns-fix/verification.json) records both initial execution failures and successful ALLOW/DENY runs after the DNS change. Workflow source, endpoint, TLS verification, HTTP deadline and policy limits were unchanged. No API addresses were pinned and no price data was substituted. This result does not guarantee availability on another network or at a later time.
+
 ## SDK TypeScript dependency identity
 
 If `Signer`/`Network` types report incompatible private fields, the app and SDK are resolving different copies of ethers. Align or deduplicate the integrating project’s ethers dependency, and construct the signer from the same dependency instance as the SDK. Place the documented fragments in `sdk/`, import `./src` and construct the signer with `ethers` imported there. The guarded reference shows `Wallet`/`JsonRpcProvider` construction with caller-supplied test credentials; verification only compiles it and does not create, fund or use a wallet.
