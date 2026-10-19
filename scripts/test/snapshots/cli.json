@@ -1,0 +1,92 @@
+{
+  "help": {
+    "cre:simulate": "Usage: npm run --silent cre:simulate -- [--deny-budget] [--capture] [--json]\nRun the live Sepolia USDC preview (6 decimals); no broadcast or payment.\nDefault: request 10000 (0.01 USDC), cap 100000 (0.1 USDC).\n--deny-budget  Request twice the cap; expected DENY is success (exit 0).\n--capture      Back up and replace repository/frontend evidence after verification.\n--json         One schemaVersion=1 envelope on stdout; progress on stderr.\n--help         Show help without loading config, credentials or networking.\nRequires Bun, CRE login/account access, Coinbase and Sepolia RPC connectivity.\nExit: 0 expected decision; 1 execution/validation failure; 2 usage/config error; 130/143 interrupted.\n",
+    "cre:dry-run": "Usage: npm run --silent cre:dry-run -- [--recording-window SECONDS] [--save-evidence] [--json]\nRun ALLOW and budget DENY previews sequentially; no broadcast or replacement of captures.\n--recording-window SECONDS  Required freshness headroom, integer 1..3600 (default 600).\n                           --recording-window=SECONDS is also accepted.\n--save-evidence             Save a new directory under docs/evidence/preflight (default .local/cre/preflight).\n--json                      One readiness envelope on stdout; progress on stderr.\n--help                      Show help without running CRE.\nExit: 0 both expected outcomes with headroom; 1 not ready/execution failure; 2 usage error; 130/143 interrupted.\n",
+    "cre:simulate:write": "Usage: npm run --silent cre:simulate:write -- [--broadcast] [--capture] [--json]\nIsolated Sepolia mock-forwarder demo; workflow identity is NOT authenticated.\nThis receiver records reports and cannot authorize or settle payments.\nDefault: simulate report delivery without broadcasting.\n--broadcast  Send a testnet report; requires ALLOW_SIMULATION_DEMO=true and dedicated DEMO_PRIVATE_KEY.\n--capture    With --broadcast, save verified receipt evidence under docs/evidence/onchain-demo.\n             Without --broadcast, retain local evidence only.\n--json       One result envelope on stdout; progress on stderr.\n--help       Show help without reading secrets, contacting RPC or sending a transaction.\nRequires Bun, CRE, Sepolia RPC and .local/cre/demo-deployment.json from deploy:cre-demo.\nExit: 0 verified simulation/receipt; 1 execution/receipt failure; 2 usage/config error; 130/143 interrupted.\n",
+    "demo:check": "Usage: npm run --silent demo:check -- [--json] [--help]\nRead-only check of a legacy Sepolia tUSD deployment and wallet; never mints or approves.\nRequires PRIVATE_KEY_1, AGENTPAY_STREAM_ADDRESS, PAYMENT_TOKEN_ADDRESS,\nPAYMENT_RECIPIENT_ADDRESS; SEPOLIA_RPC_URL defaults to publicnode.\nVerifies chain 11155111, deployed bytecode, 18 decimals and stream/token binding.\nZero gas balance fails; low tUSD is reported because demo:consumer may mint test tokens.\n--json  One result envelope on stdout; diagnostics on stderr. Raw token units are decimal strings.\n--help  No environment, network or wallet use.\nExit: 0 configured with gas; 1 RPC/deployment/balance failure; 2 usage/config error.\n",
+    "demo:consumer": "Usage: npm run --silent demo:consumer -- [--json] [--help]\nRun the existing legacy tUSD demo against http://localhost:3005/api/premium.\nThis command CAN mint, approve and escrow test tokens and spend Sepolia test ETH.\nRequires PRIVATE_KEY_1, AGENTPAY_STREAM_ADDRESS, PAYMENT_TOKEN_ADDRESS,\nPAYMENT_RECIPIENT_ADDRESS; optional SEPOLIA_RPC_URL and GEMINI_API_KEY.\nPreflight requires Sepolia 11155111, 18-decimal tUSD and matching stream/token.\nThe SDK negotiates a 3600-second stream; rates are 18-decimal units per second.\nThis is AgentPay-specific HTTP 402, not full current x402 transport.\n--json  One final result envelope; progress on stderr; raw units as strings.\n--help  Show help without reading keys, minting, approving or making requests.\nExit: 0 all four provider requests succeeded; 1 operation failure; 2 usage/config error.\n",
+    "demo:provider": "Usage: npm run --silent demo:provider -- [--json] [--help]\nStart the legacy tUSD HTTP provider on port 3005 (no wallet needed).\nRequires AGENTPAY_STREAM_ADDRESS, PAYMENT_TOKEN_ADDRESS, PAYMENT_RECIPIENT_ADDRESS;\nSEPOLIA_RPC_URL defaults to publicnode. Verifies Sepolia, code, 18 decimals and token binding.\nRates: /api/premium = 0.0001 tUSD/s; /api/ai-insight = 0.001 tUSD/s.\nStream IDs alone are not authenticated payer identities. No guarded receipt integration.\n--json  Emit one readiness envelope after binding; subsequent logs on stderr.\n--help  Show help without RPC or starting a listener.\nExit: 1 startup/RPC/deployment failure; 2 usage/config error; otherwise runs until stopped.\n"
+  },
+  "errors": {
+    "cre:simulate:write": {
+      "schemaVersion": 1,
+      "ok": false,
+      "command": "cre:simulate:write",
+      "error": {
+        "code": "CONFIG",
+        "message": "Explicitly set ALLOW_SIMULATION_DEMO=true for the testnet-only simulation consumer."
+      }
+    },
+    "demo:check": {
+      "schemaVersion": 1,
+      "ok": false,
+      "command": "demo:check",
+      "error": {
+        "code": "CONFIG",
+        "message": "PRIVATE_KEY_1 must contain a valid dedicated test-wallet private key."
+      }
+    },
+    "demo:consumer": {
+      "schemaVersion": 1,
+      "ok": false,
+      "command": "demo:consumer",
+      "error": {
+        "code": "CONFIG",
+        "message": "PRIVATE_KEY_1 must contain a valid dedicated test-wallet private key."
+      }
+    }
+  },
+  "creSuccess": {
+    "schemaVersion": 1,
+    "ok": true,
+    "command": "cre:simulate",
+    "data": {
+      "capturedAt": "<timestamp>",
+      "command": "cre workflow simulate payment-guard --target staging-settings --trigger-index 0 --non-interactive",
+      "scenario": "allow",
+      "simulationOnly": true,
+      "logSha256": "<sha256>",
+      "configSha256": "<sha256>",
+      "result": {
+        "schemaVersion": 2,
+        "workflow": "agentpay-payment-guard",
+        "mode": "simulation-preview",
+        "policyPurpose": "usdc-depeg-and-disagreement-guard",
+        "pricePair": "USDC/USD",
+        "tokenSymbol": "USDC",
+        "tokenDecimals": 6,
+        "testnetTokenHasValue": false,
+        "pegTargetUsd8": "100000000",
+        "maxPegDeviationBps": 100,
+        "chainId": 11155111,
+        "chainName": "ethereum-testnet-sepolia",
+        "feedAddress": "0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E",
+        "marketApiUrl": "https://api.coinbase.com/v2/prices/USDC-USD/spot",
+        "request": {
+          "requestId": "0x4b3a6e8dfd5bc183a77166c8b42b06e60c754fd74cb6e038212b5b94c6d9a101",
+          "agent": "0x0000000000000000000000000000000000000001",
+          "recipient": "0x0000000000000000000000000000000000000002",
+          "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+          "amount": "10000",
+          "spendingCap": "100000"
+        },
+        "receiverAddress": "0x0000000000000000000000000000000000000000",
+        "approved": true,
+        "reason": "WITHIN_POLICY",
+        "observedAt": 2000000000,
+        "validUntil": 2000000300,
+        "feedUpdatedAt": 1999999900,
+        "feedRoundId": "1",
+        "chainlinkPriceUsd8": "99990000",
+        "externalPriceUsd8": "100000000",
+        "maxDeviationBps": 100,
+        "maxFeedAgeSeconds": 86400,
+        "reportGenerated": true,
+        "published": false,
+        "reportWriteSucceeded": false,
+        "reportTransactionHash": null,
+        "encodedReport": "0x0000000000000000000000000000000000000000000000000000000000aa36a700000000000000000000000000000000000000000000000000000000000000004b3a6e8dfd5bc183a77166c8b42b06e60c754fd74cb6e038212b5b94c6d9a101000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000001c7d4b196cb0c7b01d743fbc6116a902379c72380000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000007735952c0000000000000000000000000000000000000000000000000000000000000001"
+      }
+    }
+  }
+}

@@ -51,6 +51,8 @@ const { streamId } = await sdk.createStream(
 
 The recipient must be nonzero, valid and distinct from the token address before signing. `makeRequest` can create a 3600-second stream from the provider's rate, checks its instance-local spend monitor and caches stream metadata by host. This is a heuristic cache, not a durable entitlement/metering system.
 
+`createStream` now rejects invalid uint256 amounts, non-whole/zero-rate durations, a network other than Sepolia, a mismatched stream token, non-18-decimal tokens or insufficient token balance **before approval**. It requires successful approval/creation receipts and coordinates the two transaction nonces. These checks intentionally reject previously unchecked configurations. The SDK instance should exclusively control its signing wallet during an operation; concurrent external transactions still require caller coordination. [CLI audit](../CLI_AUDIT.md).
+
 `SpendingMonitor` takes bigint `dailyLimit`/`totalLimit`. It maintains in-memory totals, resets daily after a 24-hour interval on a check, and detects more than five renewals per minute. It is not an onchain rolling budget, per-request cap or global emergency control. Explicit `createStream` calls do not pass through all `makeRequest` negotiation checks; callers must impose their own intent validation.
 
 The included gateway rejects direct transaction-hash proof. Do not advertise its SDK's optional direct-enabled branch for that gateway. [Protocol and verification limitations](../architecture/x402-protocol.md).

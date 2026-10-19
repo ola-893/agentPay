@@ -1,7 +1,10 @@
 const hre = require("hardhat");
 
 async function main() {
+  if (hre.network.name === 'sepolia' && !process.env.PRIVATE_KEY) throw new Error('Set PRIVATE_KEY to a dedicated funded Sepolia deployment wallet.');
   const [deployer] = await hre.ethers.getSigners();
+  if (!deployer) throw new Error('Set PRIVATE_KEY to a dedicated funded Sepolia deployment wallet.');
+  if (hre.network.name === 'sepolia' && (await hre.ethers.provider.getNetwork()).chainId !== 11155111n) throw new Error('Stream deployment requires Ethereum Sepolia.');
 
   console.log("Deploying contracts with the account:", deployer.address);
 

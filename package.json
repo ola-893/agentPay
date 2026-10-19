@@ -25,7 +25,7 @@
     "typecheck:cre": "cd cre/payment-guard && bun run typecheck",
     "deploy:guard": "npx hardhat run scripts/deploy-guard.js --network sepolia",
     "cre:dry-run": "node scripts/preflight-cre.mjs",
-    "test:tooling": "node --test scripts/test/*.test.mjs",
+    "test:tooling": "npm run build:sdk && node --test scripts/test/*.test.mjs",
     "deploy:cre-demo": "npx hardhat run scripts/deploy-cre-demo.js --network sepolia-demo",
     "cre:simulate:write": "node scripts/simulate-cre-write.mjs",
     "docs:check": "node scripts/check-docs.mjs && node scripts/check-doc-examples.mjs && node scripts/check-doc-evidence.mjs"

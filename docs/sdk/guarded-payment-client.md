@@ -61,9 +61,11 @@ Save the fragment as `sdk/integration.ts` and place awaited calls inside your as
 1. Validate intent and connected provider; verify chain ID.
 2. Read `settlement.guard()` and compare it to configured guard.
 3. Read `guard.canPay(requestId, signerAddress, recipient, token, amount)` before approval.
-4. Approve the settlement contract only if current allowance is insufficient; wait for approval confirmation.
+4. Approve the settlement contract only if current allowance is insufficient; require an approval receipt with status 1.
 5. Check authorization again, then call `settle` and require receipt status 1.
 
 The contract makes the final atomic authorization/transfer check. The report amount is a maximum: one smaller positive payment is permitted, but consumes the whole request; unused headroom cannot fund another settlement. No frontend capture or raw report body is treated as authority. Approval can still consume gas if authorization expires while waiting; a second check prevents proceeding to settlement. A failed payment does not make the old authorization fresh again.
+
+The client coordinates approval/settlement nonces internally to avoid provider nonce-cache reuse on fast chains. Keep the supplied signer exclusive to this client during a payment; it does not coordinate separate processes sharing a wallet. Public production delivery remains an unexecuted operator prerequisite. [CLI/SDK verification limits](../CLI_AUDIT.md).
 
 The client does not trigger CRE, generate request IDs, publish reports or grant API access. The current legacy gateway does not consume guarded settlement receipts. [Trust boundaries](../contracts/guarded-settlement.md) and [deployment](../../DEPLOYMENT.md).

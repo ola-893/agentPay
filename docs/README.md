@@ -17,6 +17,7 @@ AgentPay orchestrates guarded **Circle USDC payments on Ethereum Sepolia** with 
 | Fix setup or execution failures | [Troubleshooting](reference/troubleshooting.md) |
 | Review bounty evidence and limits | [Submission guide](CRE_SUBMISSION.md) |
 | Check consequential claims and reproduced results | [Documentation correctness audit](DOCUMENTATION_AUDIT.md) |
+| Inspect command flags, output, exit codes and CLI verification | [CLI contract audit](CLI_AUDIT.md) |
 
 ## Two payment paths
 

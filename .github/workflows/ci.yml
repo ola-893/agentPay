@@ -29,6 +29,7 @@ jobs:
       - run: npm ci --prefix vite-project
       - run: bun install --frozen-lockfile --cwd cre/payment-guard
       - run: npm run docs:check
+      - run: npx tsc --noEmit --project demo/tsconfig.json
       - run: npm test
       - run: npm run build:sdk
       - run: npm run typecheck:cre

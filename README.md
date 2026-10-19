@@ -49,6 +49,15 @@ npm run cre:simulate
 npm run cre:simulate -- --deny-budget
 ```
 
+The existing wrappers support `--help`, strict option validation and `--json`. For scripts, suppress npm's banner:
+
+```sh
+npm run --silent cre:simulate -- --json > result.json
+npm run --silent cre:dry-run -- --recording-window 900 --json
+```
+
+JSON stdout contains one `{ schemaVersion: 1, ok, command, data }` envelope (or `error: { code, message }` on failure); progress goes to stderr. A completed dry run that is not ready has `ok: false`, `data.ready: false` and exit 1. Expected budget DENY exits 0. Usage/config errors exit 2; execution/verification errors exit 1. Unknown options now fail instead of being ignored. [CLI contracts, compatibility changes and evidence](docs/CLI_AUDIT.md).
+
 Equivalent direct command from `cre/`:
 
 ```sh
@@ -70,7 +79,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **111 passing tests** — 29 contracts, 49 SDK, eight middleware, eleven CRE policy, fourteen evidence/tooling checks. CI runs these checks without CRE credentials. Real CLI simulations are separately captured evidence.
+Current suites: **124 tests** — 29 contracts, 52 SDK, eight middleware, eleven CRE policy, 24 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
 
 `docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
 

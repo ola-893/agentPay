@@ -1,4 +1,4 @@
-import { Contract, Signer, isAddress, ZeroAddress, type ContractTransactionReceipt } from 'ethers';
+import { Contract, NonceManager, Signer, isAddress, ZeroAddress, type ContractTransactionReceipt } from 'ethers';
 
 export interface GuardedPaymentConfig {
     guardAddress: string;
@@ -20,7 +20,9 @@ const TOKEN_ABI = [
  * Simulation JSON and frontend evidence are never treated as spend authority.
  */
 export class GuardedPaymentClient {
+    private readonly transactionSigner: NonceManager;
     constructor(private readonly signer: Signer, private readonly config: GuardedPaymentConfig) {
+        this.transactionSigner = new NonceManager(signer);
         for (const address of [config.guardAddress, config.settlementAddress]) {
             if (!isAddress(address) || address === ZeroAddress) throw new Error('Invalid guard or settlement address');
         }
@@ -28,7 +30,7 @@ export class GuardedPaymentClient {
     }
 
     protected contract(address: string, abi: string[]): Contract {
-        return new Contract(address, abi, this.signer);
+        return new Contract(address, abi, this.transactionSigner);
     }
 
     public async pay(requestId: string, recipient: string, token: string, amount: bigint): Promise<ContractTransactionReceipt> {
@@ -46,12 +48,18 @@ export class GuardedPaymentClient {
         if (!await guard.canPay(...args)) throw new Error('CRE authorization missing, denied, expired, or already consumed');
         const asset = this.contract(token, TOKEN_ABI);
         if (await asset.allowance(agent, this.config.settlementAddress) < amount) {
-            const approval = await asset.approve(this.config.settlementAddress, amount);
-            if (!await approval.wait()) throw new Error('Token approval was not confirmed');
+            try {
+                const approval = await asset.approve(this.config.settlementAddress, amount);
+                const receipt = await approval.wait();
+                if (!receipt || receipt.status !== 1) throw new Error('Token approval was not confirmed');
+            } catch (error) { this.transactionSigner.reset(); throw error; }
         }
         if (!await guard.canPay(...args)) throw new Error('CRE authorization expired before settlement');
-        const payment = await settlement.settle(requestId, recipient, token, amount);
-        const receipt = await payment.wait();
+        let receipt;
+        try {
+            const payment = await settlement.settle(requestId, recipient, token, amount);
+            receipt = await payment.wait();
+        } catch (error) { this.transactionSigner.reset(); throw error; }
         if (!receipt || receipt.status !== 1) throw new Error('Payment was not confirmed');
         return receipt;
     }

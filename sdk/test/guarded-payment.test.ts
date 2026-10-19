@@ -8,20 +8,21 @@ describe('CRE guarded payment client', () => {
     const token = '0x0000000000000000000000000000000000000013';
     const recipient = '0x0000000000000000000000000000000000000014';
     const requestId = ethers.id('guarded-payment');
-    let approved: boolean, approvals: number, payments: number, chainId: bigint, checks: number, expire: boolean;
+    let approved: boolean, approvals: number, payments: number, chainId: bigint, checks: number, expire: boolean, approvalStatus: number, binding: string;
     let client: GuardedPaymentClient;
     let authorizedAmount: bigint, approvedAmount: bigint, settledAmount: bigint;
     beforeEach(() => {
         approved = true; approvals = 0; payments = 0; chainId = 11155111n; checks = 0; expire = false;
+        approvalStatus = 1; binding = guardAddress;
         const signer = { provider: { getNetwork: async () => ({ chainId }) }, getAddress: async () => recipient } as unknown as Signer;
         class TestClient extends GuardedPaymentClient {
             protected contract(address: string): Contract {
                 if (address === guardAddress) return { canPay: async (...args: any[]) => { authorizedAmount = args[4]; checks++; return approved && !(expire && checks > 1); } } as unknown as Contract;
                 if (address === settlementAddress) return {
-                    guard: async () => guardAddress,
+                    guard: async () => binding,
                     settle: async (...args: any[]) => { settledAmount = args[3]; payments++; return { wait: async () => ({ status: 1, hash: ethers.id('tx') }) }; }
                 } as unknown as Contract;
-                return { allowance: async () => 0n, approve: async (_spender: string, amount: bigint) => { approvedAmount = amount; approvals++; return { wait: async () => ({ status: 1 }) }; } } as unknown as Contract;
+                return { allowance: async () => 0n, approve: async (_spender: string, amount: bigint) => { approvedAmount = amount; approvals++; return { wait: async () => ({ status: approvalStatus }) }; } } as unknown as Contract;
             }
         }
         client = new TestClient(signer, { guardAddress, settlementAddress, chainId: 11155111 });
@@ -50,10 +51,18 @@ describe('CRE guarded payment client', () => {
     it('rejects the wrong chain before creating any transaction', async () => {
         chainId = 1n; await failure(pay(), 'Wrong payment chain'); expect(approvals).to.equal(0);
     });
+    it('rejects a settlement bound to another guard before token approval', async () => {
+        binding = recipient; await failure(pay(), 'Settlement guard mismatch'); expect(approvals).to.equal(0);
+    });
+    it('does not settle after a reverted approval receipt', async () => {
+        approvalStatus = 0; await failure(pay(), 'approval was not confirmed'); expect(payments).to.equal(0);
+    });
     it('rejects malformed payment intent', async () => {
         await failure(client.pay('0x123', recipient, token, 1n), 'request ID');
         await failure(client.pay(requestId, ethers.ZeroAddress, token, 1n), 'payment address');
         await failure(client.pay(requestId, recipient, token, 0n), 'amount');
+        const disconnected = new GuardedPaymentClient(ethers.Wallet.createRandom(), { guardAddress, settlementAddress, chainId: 11155111 });
+        await failure(disconnected.pay(requestId, recipient, token, 10n), 'connected signer');
         expect(approvals).to.equal(0);
     });
 });

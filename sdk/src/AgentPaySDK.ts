@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
-import { ethers, Contract, Wallet, JsonRpcProvider } from 'ethers';
+import { ethers, Contract, Wallet, JsonRpcProvider, NonceManager } from 'ethers';
 import { GeminiPaymentBrain } from './GeminiPaymentBrain';
 import { SpendingMonitor, SpendingLimits } from './SpendingMonitor';
 
@@ -38,6 +38,8 @@ export class AgentPaySDK {
     ];
 
     private ERC20_ABI = [
+        "function decimals() view returns (uint8)",
+        "function balanceOf(address) view returns (uint256)",
         "function approve(address spender, uint256 amount) external returns (bool)",
         "function transfer(address recipient, uint256 amount) external returns (bool)",
         "function allowance(address owner, address spender) external view returns (uint256)"
@@ -230,8 +232,6 @@ export class AgentPaySDK {
 
         console.log(`[AgentPaySDK] Initiating Stream: ${ethers.formatEther(totalAmount)} tUSD for ${duration}s`);
 
-        console.log(`[AgentPaySDK] Initiating Stream: ${ethers.formatEther(totalAmount)} tUSD for ${duration}s`);
-
         const streamData = await this.createStream(contractAddress, tokenAddress, totalAmount, duration, {
             type: "SDK_AUTO",
             target: url
@@ -268,7 +268,13 @@ export class AgentPaySDK {
         if (!recipientAddress || !ethers.isAddress(recipientAddress) || recipientAddress === ethers.ZeroAddress || recipientAddress.toLowerCase() === tokenAddress?.toLowerCase()) {
             throw new Error('A distinct payment recipient is required before signing');
         }
-        const agentPay = new Contract(contractAddress, this.MIN_ABI, this.wallet);
+        if (typeof amount !== 'bigint' || amount <= 0n || amount >= 2n ** 256n) throw new Error('Stream amount must be positive uint256 raw tUSD units');
+        if (!Number.isSafeInteger(duration) || duration <= 0 || amount / BigInt(duration) === 0n) throw new Error('Stream duration must be positive whole seconds with a nonzero raw-unit flow rate');
+        if ((await this.provider.getNetwork()).chainId !== 11155111n) throw new Error('Legacy streaming requires Ethereum Sepolia');
+        // Approval and creation are sequential transactions from one signer.
+        // A local/fast chain can mine both within the provider's nonce cache TTL.
+        const runner = new NonceManager(this.wallet);
+        const agentPay = new Contract(contractAddress, this.MIN_ABI, runner);
 
         // Metadata Construction
         const enrichedMetadata = {
@@ -289,14 +295,20 @@ export class AgentPaySDK {
             }
         }
 
+        if ((await agentPay.paymentToken()).toLowerCase() !== paymentToken.toLowerCase()) throw new Error('Stream payment token mismatch before approval');
+        if (recipientAddress.toLowerCase() === paymentToken.toLowerCase()) throw new Error('A distinct payment recipient is required before signing');
+
         // 1. Approve Token
-        const token = new Contract(paymentToken, this.ERC20_ABI, this.wallet);
+        const token = new Contract(paymentToken, this.ERC20_ABI, runner);
+        if (await token.decimals() !== 18n) throw new Error('Legacy streams require 18-decimal tUSD; use the guarded client for USDC');
+        if (await token.balanceOf(this.wallet.address) < amount) throw new Error('Insufficient tUSD balance before approval');
         const allowance = await token.allowance(this.wallet.address, contractAddress);
 
         if (allowance < amount) {
             console.log("[AgentPaySDK] Approving tUSD...");
             const txApprove = await token.approve(contractAddress, amount);
-            await txApprove.wait();
+            const approval = await txApprove.wait();
+            if (!approval || approval.status !== 1) throw new Error('Token approval was not confirmed');
             console.log("[AgentPaySDK] Approved.");
         }
 
@@ -306,6 +318,7 @@ export class AgentPaySDK {
 
         const tx = await agentPay.createStream(recipient, duration, amount, metadataString);
         const receipt = await tx.wait();
+        if (!receipt || receipt.status !== 1) throw new Error('Stream creation was not confirmed');
 
         // Parse event to get ID
         const log = receipt.logs.find((l: any) => {
