@@ -1,0 +1,39 @@
+{
+  "chainId": 11155111,
+  "network": "sepolia",
+  "deployer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "startedAt": "2026-10-19T12:05:31.393Z",
+  "contracts": {
+    "MockUSD": {
+      "address": "0xE97847558DDEd18Fc6208cE47eeEc7ab73c09D9D",
+      "transactionHash": "0xf1998d4a3ef11e3e19e4df162ef3b3e3c4c80b10bc2c0ee5745b5c1ec3127183",
+      "blockNumber": 11948059,
+      "blockHash": "0xc5fc5e6a2d836710b05dec3e2cfde2810323ea23072fffe473e019bf7ea427ca",
+      "status": 1,
+      "gasUsed": "6809641",
+      "feeWei": "6809641000000000",
+      "runtimeCodeHash": "0xef8d86edd721127ce02769fa5f716c0eaeb4741f3c59daa64c8e5c96381273bb",
+      "matchesCompiledRuntime": true,
+      "confirmations": 10
+    },
+    "AgentPayStream": {
+      "address": "0xE047120881026327aF28E74a6EA0C046Edd01568",
+      "transactionHash": "0xfd98e8b12eb0a266b31e5736bfc7b9803362b25d454b188a17fa807301f8fcfb",
+      "blockNumber": 11948061,
+      "blockHash": "0x6ffff6f627e54aefa5c09403081be4090b5e168a9d9eb90d976ef8e2d567d717",
+      "status": 1,
+      "gasUsed": "13541907",
+      "feeWei": "13541907000000000",
+      "runtimeCodeHash": "0xd23d661e3cd9b14333160218b7f4c5f75854441c34c5e0af2e3df26085bb8e4b",
+      "matchesCompiledRuntime": true,
+      "confirmations": 8
+    }
+  },
+  "verifiedAt": "2026-10-19T12:07:27.198Z",
+  "tokenDecimals": 18,
+  "tokenSymbol": "tUSD",
+  "deployerTokenBalanceRaw": "1000000000000000000000000",
+  "remainingDeployerBalanceWei": "29648452000000000",
+  "sourceCommit": "af74f9e8c5513f7962e84327d475507e3ef87819",
+  "verificationScope": "Public Sepolia receipt success, deployer/address, exact compiled runtime bytecode, paymentToken binding, token decimals/symbol/balance. No stream creation, withdrawal, CRE deployment or report delivery tested."
+}

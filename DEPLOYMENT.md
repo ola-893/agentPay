@@ -37,6 +37,8 @@ The forwarder is immutable. The owner can configure workflow identity and connec
 
 ## Legacy stream deployment
 
+The [confirmed Sepolia stream deployment](docs/deployment/sepolia.md#confirmed-project-deployment) provides current public addresses and receipt/bytecode evidence. Only local ignored environment files are automatically configured; new checkouts must supply their own settings.
+
 `npm run deploy:sepolia` deploys new AgentPayStream and MockUSD contracts. Do not reuse old addresses: the new ABI uses `paymentToken()`.
 
 Server/demo: set `AGENTPAY_STREAM_ADDRESS`, `PAYMENT_TOKEN_ADDRESS`, and `PAYMENT_RECIPIENT_ADDRESS` in `.env`. Frontend: set `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local`, then restart Vite. Without both nonzero addresses, Streams shows setup guidance. [Frontend usage](vite-project/README.md).

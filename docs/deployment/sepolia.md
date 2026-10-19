@@ -10,6 +10,23 @@ Deployment access is separate from successful CLI simulation. The simulator's mo
 
 ## Legacy stream path
 
+### Confirmed project deployment
+
+The current contracts were deployed on Ethereum Sepolia on October 19, 2026:
+
+| Contract | Address |
+| --- | --- |
+| AgentPayStream | [0xE047120881026327aF28E74a6EA0C046Edd01568](https://sepolia.etherscan.io/address/0xE047120881026327aF28E74a6EA0C046Edd01568) |
+| MockUSD (tUSD, 18 decimals) | [0xE97847558DDEd18Fc6208cE47eeEc7ab73c09D9D](https://sepolia.etherscan.io/address/0xE97847558DDEd18Fc6208cE47eeEc7ab73c09D9D) |
+
+The [public deployment record](sepolia-stream.json) includes successful creation receipts, block numbers, runtime code hashes and the source commit. Both onchain runtimes exactly matched the compiled artifacts; `paymentToken()` matched the deployed MockUSD address. `npm run --silent demo:check -- --json` passed against this deployment. The deployer received 1,000,000 test tUSD from the token constructor and retained 0.029648452 Sepolia ETH after deployment.
+
+The local root `.env` and frontend `.env.local` are configured with these addresses. The CLI demo uses the dedicated deployment wallet as both payer and recipient for self-stream testing; set `PAYMENT_RECIPIENT_ADDRESS` to a separate wallet when testing recipient access. Local credentials remain ignored by Git. A fresh checkout must configure its own wallet and the public addresses below.
+
+This establishes deployment and read-only setup checks. Explorer source verification, stream creation/withdrawal and browser-wallet transactions were not performed. It does not deploy a CRE guard, settlement contract, workflow or report receiver; the guarded Circle USDC path remains separate.
+
+### Deploy your own contracts
+
 1. Copy root `.env.example` to `.env`, set `SEPOLIA_RPC_URL` and dedicated `PRIVATE_KEY`.
 2. Run `npm run deploy:sepolia` from the repository root. The script deploys MockUSD and AgentPayStream and prints their addresses.
 3. Save those actual addresses to `vite-project/.env.local`:
