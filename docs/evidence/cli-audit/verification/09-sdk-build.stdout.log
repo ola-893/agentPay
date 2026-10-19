@@ -1,0 +1,8 @@
+
+> agentpay@1.0.0 build:sdk
+> npm --prefix sdk run build
+
+
+> agentpay-sdk@1.0.0 build
+> tsc
+

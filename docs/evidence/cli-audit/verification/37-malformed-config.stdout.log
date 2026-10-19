@@ -1,0 +1,1 @@
+{"schemaVersion":1,"ok":false,"command":"cre:simulate","error":{"code":"CONFIG","message":"CRE staging config must exist and contain valid JSON."}}

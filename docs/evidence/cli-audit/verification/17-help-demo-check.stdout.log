@@ -1,0 +1,9 @@
+Usage: npm run --silent demo:check -- [--json] [--help]
+Read-only check of a legacy Sepolia tUSD deployment and wallet; never mints or approves.
+Requires PRIVATE_KEY_1, AGENTPAY_STREAM_ADDRESS, PAYMENT_TOKEN_ADDRESS,
+PAYMENT_RECIPIENT_ADDRESS; SEPOLIA_RPC_URL defaults to publicnode.
+Verifies chain 11155111, deployed bytecode, 18 decimals and stream/token binding.
+Zero gas balance fails; low tUSD is reported because demo:consumer may mint test tokens.
+--json  One result envelope on stdout; diagnostics on stderr. Raw token units are decimal strings.
+--help  No environment, network or wallet use.
+Exit: 0 configured with gas; 1 RPC/deployment/balance failure; 2 usage/config error.

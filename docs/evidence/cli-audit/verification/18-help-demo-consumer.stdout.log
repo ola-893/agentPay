@@ -1,0 +1,11 @@
+Usage: npm run --silent demo:consumer -- [--json] [--help]
+Run the existing legacy tUSD demo against http://localhost:3005/api/premium.
+This command CAN mint, approve and escrow test tokens and spend Sepolia test ETH.
+Requires PRIVATE_KEY_1, AGENTPAY_STREAM_ADDRESS, PAYMENT_TOKEN_ADDRESS,
+PAYMENT_RECIPIENT_ADDRESS; optional SEPOLIA_RPC_URL and GEMINI_API_KEY.
+Preflight requires Sepolia 11155111, 18-decimal tUSD and matching stream/token.
+The SDK negotiates a 3600-second stream; rates are 18-decimal units per second.
+This is AgentPay-specific HTTP 402, not full current x402 transport.
+--json  One final result envelope; progress on stderr; raw units as strings.
+--help  Show help without reading keys, minting, approving or making requests.
+Exit: 0 all four provider requests succeeded; 1 operation failure; 2 usage/config error.

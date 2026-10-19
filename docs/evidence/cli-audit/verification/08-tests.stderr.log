@@ -1,0 +1,67 @@
+(node:11347) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://<checkout>/sdk/test/calculation.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to <checkout>/sdk/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[AgentPaySDK] 🚨 EMERGENCY STOP ACTIVATED. All payments paused.
+[AgentPaySDK] 🚨 EMERGENCY STOP ACTIVATED. All payments paused.
+[AgentPay] Stream verification failed: Error: RPC Error
+    at Object.isStreamActive (<checkout>/server/test/middleware.test.js:15:23)
+    at <checkout>/server/middleware/agentPayMiddleware.js:78:53
+    at Layer.handle [as handle_request] (<checkout>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<checkout>/server/node_modules/express/lib/router/index.js:328:13)
+    at <checkout>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<checkout>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<checkout>/server/node_modules/express/lib/router/index.js:280:10)
+    at jsonParser (<checkout>/server/node_modules/body-parser/lib/types/json.js:113:7)
+    at Layer.handle [as handle_request] (<checkout>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<checkout>/server/node_modules/express/lib/router/index.js:328:13)
+    at <checkout>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<checkout>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<checkout>/server/node_modules/express/lib/router/index.js:280:10)
+    at cors (<checkout>/server/node_modules/cors/lib/index.js:188:7)
+    at <checkout>/server/node_modules/cors/lib/index.js:224:17
+    at originCallback (<checkout>/server/node_modules/cors/lib/index.js:214:15)
+    at <checkout>/server/node_modules/cors/lib/index.js:219:13
+    at optionsCallback (<checkout>/server/node_modules/cors/lib/index.js:199:9)
+    at corsMiddleware (<checkout>/server/node_modules/cors/lib/index.js:204:7)
+    at Layer.handle [as handle_request] (<checkout>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<checkout>/server/node_modules/express/lib/router/index.js:328:13)
+    at <checkout>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<checkout>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<checkout>/server/node_modules/express/lib/router/index.js:280:10)
+    at expressInit (<checkout>/server/node_modules/express/lib/middleware/init.js:40:5)
+    at Layer.handle [as handle_request] (<checkout>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<checkout>/server/node_modules/express/lib/router/index.js:328:13)
+    at <checkout>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<checkout>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<checkout>/server/node_modules/express/lib/router/index.js:280:10)
+    at query (<checkout>/server/node_modules/express/lib/middleware/query.js:45:5)
+    at Layer.handle [as handle_request] (<checkout>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<checkout>/server/node_modules/express/lib/router/index.js:328:13)
+    at <checkout>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<checkout>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<checkout>/server/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (<checkout>/server/node_modules/express/lib/router/index.js:175:3)
+    at Function.handle (<checkout>/server/node_modules/express/lib/application.js:181:10)
+    at Server.app (<checkout>/server/node_modules/express/lib/express.js:39:9)
+    at Server.emit (node:events:519:28)
+    at parserOnIncoming (node:_http_server:1186:12)
+    at HTTPParser.parserOnHeadersComplete (node:_http_common:125:17)
+
+policy.test.ts:
+(pass) deterministic CRE payment policy > allows a bounded payment with fresh matching independent prices [0.83ms]
+(pass) deterministic CRE payment policy > rejects divergence beyond the exact basis point boundary [0.07ms]
+(pass) deterministic CRE payment policy > rejects stale and future feed observations [0.04ms]
+(pass) deterministic CRE payment policy > rejects invalid answers and incomplete rounds [0.02ms]
+(pass) deterministic CRE payment policy > enforces the requested token-unit spending cap [0.03ms]
+(pass) deterministic CRE payment policy > rejects matching depegged prices above and below $1, including one atomic price unit beyond the boundary [0.03ms]
+(pass) deterministic CRE payment policy > checks the peg for each source even when their disagreement is within policy
+(pass) deterministic CRE payment policy > binds the policy to Circle Sepolia USDC, six decimals and the USDC/USD feed/API [2.02ms]
+(pass) deterministic CRE payment policy > rejects API quotes for another asset or quote currency [0.48ms]
+(pass) deterministic CRE payment policy > parses decimal prices without floating-point rounding [0.04ms]
+(pass) deterministic CRE payment policy > validates addresses, uint256 units, lifetimes, and publication destination [0.32ms]
+
+ 11 pass
+ 0 fail
+ 39 expect() calls
+Ran 11 tests across 1 file. [140.00ms]

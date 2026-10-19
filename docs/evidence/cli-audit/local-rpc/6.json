@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "scripts/simulate-cre-write.mjs --broadcast --json",
+  "code": 2,
+  "stdout": "{\"schemaVersion\":1,\"ok\":false,\"command\":\"cre:simulate:write\",\"error\":{\"code\":\"CONFIG\",\"message\":\"Broadcast requires a dedicated funded Sepolia DEMO_PRIVATE_KEY. No transaction was sent.\"}}\n",
+  "stderr": ""
+}

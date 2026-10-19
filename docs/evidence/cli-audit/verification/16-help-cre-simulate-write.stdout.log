@@ -1,0 +1,11 @@
+Usage: npm run --silent cre:simulate:write -- [--broadcast] [--capture] [--json]
+Isolated Sepolia mock-forwarder demo; workflow identity is NOT authenticated.
+This receiver records reports and cannot authorize or settle payments.
+Default: simulate report delivery without broadcasting.
+--broadcast  Send a testnet report; requires ALLOW_SIMULATION_DEMO=true and dedicated DEMO_PRIVATE_KEY.
+--capture    With --broadcast, save verified receipt evidence under docs/evidence/onchain-demo.
+             Without --broadcast, retain local evidence only.
+--json       One result envelope on stdout; progress on stderr.
+--help       Show help without reading secrets, contacting RPC or sending a transaction.
+Requires Bun, CRE, Sepolia RPC and .local/cre/demo-deployment.json from deploy:cre-demo.
+Exit: 0 verified simulation/receipt; 1 execution/receipt failure; 2 usage/config error; 130/143 interrupted.

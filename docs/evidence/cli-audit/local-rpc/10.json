@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "demo/provider.ts --json",
+  "code": 1,
+  "stdout": "{\"schemaVersion\":1,\"ok\":false,\"command\":\"demo:provider\",\"error\":{\"code\":\"OPERATION_FAILED\",\"message\":\"listen EADDRINUSE: address already in use :::3005\"}}\n",
+  "stderr": "🔧 Provider Configuration:\n   AgentPayStream Contract: 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9\n   tUSD Token: 0x5FbDB2315678afecb367f032d93F642f64180aa3\n"
+}

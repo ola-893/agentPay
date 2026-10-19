@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "demo/check-setup.ts --json",
+  "code": 2,
+  "stdout": "{\"schemaVersion\":1,\"ok\":false,\"command\":\"demo:check\",\"error\":{\"code\":\"CONFIG\",\"message\":\"PRIVATE_KEY_1 must contain a valid dedicated test-wallet private key.\"}}\n",
+  "stderr": ""
+}

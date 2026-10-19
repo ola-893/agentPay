@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "demo/consumer.ts --json",
+  "code": 1,
+  "stdout": "{\"schemaVersion\":1,\"ok\":false,\"command\":\"demo:consumer\",\"error\":{\"code\":\"OPERATION_FAILED\",\"message\":\"Provider request failed; demo did not complete.\"}}\n",
+  "stderr": "🚀 Starting AgentPay Demo Consumer (Real Blockchain Mode)...\n\n⚠️  GEMINI_API_KEY not found - AI decision features will be limited\n📡 Connecting to Sepolia testnet...\n✅ Agent Wallet: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266\n\n--- Checking tUSD Balance ---\n💰 Current tUSD Balance: 1000000.0 tUSD\n\n--- [Step 1] Making Request to http://localhost:3005/api/premium ---\nThis will trigger the x402 payment flow if the provider requires payment.\n\n❌ Request Failed: Error\n"
+}

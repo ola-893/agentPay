@@ -1,0 +1,1 @@
+{"schemaVersion":1,"ok":false,"command":"cre:simulate","error":{"code":"CONFIG","message":"CRE config validation failed: tokenDecimals: Invalid literal value, expected 6"}}

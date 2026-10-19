@@ -1,0 +1,1 @@
+Running CRE CLI: /definitely-missing-cre workflow simulate payment-guard --target staging-settings --trigger-index 0 --non-interactive --config <checkout>/.local/cre/allow.config.json

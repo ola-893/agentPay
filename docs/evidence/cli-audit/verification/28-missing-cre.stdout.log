@@ -1,0 +1,1 @@
+{"schemaVersion":1,"ok":false,"command":"cre:simulate","error":{"code":"DEPENDENCY","message":"CRE simulation could not start (ENOENT). Check the executable and installation."}}

@@ -1,0 +1,9 @@
+Usage: npm run --silent demo:provider -- [--json] [--help]
+Start the legacy tUSD HTTP provider on port 3005 (no wallet needed).
+Requires AGENTPAY_STREAM_ADDRESS, PAYMENT_TOKEN_ADDRESS, PAYMENT_RECIPIENT_ADDRESS;
+SEPOLIA_RPC_URL defaults to publicnode. Verifies Sepolia, code, 18 decimals and token binding.
+Rates: /api/premium = 0.0001 tUSD/s; /api/ai-insight = 0.001 tUSD/s.
+Stream IDs alone are not authenticated payer identities. No guarded receipt integration.
+--json  Emit one readiness envelope after binding; subsequent logs on stderr.
+--help  Show help without RPC or starting a listener.
+Exit: 1 startup/RPC/deployment failure; 2 usage/config error; otherwise runs until stopped.

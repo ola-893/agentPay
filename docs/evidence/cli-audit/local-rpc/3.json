@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "node_modules/hardhat/internal/cli/cli.js run --no-compile scripts/deploy-guard.js --network sepolia",
+  "code": 1,
+  "stdout": "[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }\n[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }\n",
+  "stderr": "CRE_WORKFLOW_ID must be a 32-byte hex value or blank.\n"
+}

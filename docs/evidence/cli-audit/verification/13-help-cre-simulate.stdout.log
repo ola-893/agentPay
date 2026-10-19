@@ -1,0 +1,9 @@
+Usage: npm run --silent cre:simulate -- [--deny-budget] [--capture] [--json]
+Run the live Sepolia USDC preview (6 decimals); no broadcast or payment.
+Default: request 10000 (0.01 USDC), cap 100000 (0.1 USDC).
+--deny-budget  Request twice the cap; expected DENY is success (exit 0).
+--capture      Back up and replace repository/frontend evidence after verification.
+--json         One schemaVersion=1 envelope on stdout; progress on stderr.
+--help         Show help without loading config, credentials or networking.
+Requires Bun, CRE login/account access, Coinbase and Sepolia RPC connectivity.
+Exit: 0 expected decision; 1 execution/validation failure; 2 usage/config error; 130/143 interrupted.

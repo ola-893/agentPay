@@ -1,0 +1,1 @@
+{"schemaVersion":1,"ok":false,"command":"cre:simulate:write","error":{"code":"CONFIG","message":"Explicitly set ALLOW_SIMULATION_DEMO=true for the testnet-only simulation consumer."}}

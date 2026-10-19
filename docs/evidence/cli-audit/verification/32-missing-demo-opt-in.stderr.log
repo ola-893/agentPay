@@ -1,0 +1,1 @@
+Set ALLOW_SIMULATION_DEMO=true to explicitly deploy the testnet-only, identity-unverified demo receiver.

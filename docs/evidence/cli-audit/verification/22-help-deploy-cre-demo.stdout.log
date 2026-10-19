@@ -1,0 +1,17 @@
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+Hardhat version 2.26.2
+
+Usage: hardhat [GLOBAL OPTIONS] run [--no-compile] script
+
+OPTIONS:
+
+  --no-compile	Don't compile before running this task 
+
+POSITIONAL ARGUMENTS:
+
+  script	A js file to be run within hardhat's environment 
+
+run: Runs a user-defined script after compiling the project
+
+For global options help run: hardhat help
+

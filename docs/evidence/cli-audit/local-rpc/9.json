@@ -1,0 +1,7 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "demo/provider.ts --json (startup)",
+  "stdout": "{\"schemaVersion\":1,\"ok\":true,\"command\":\"demo:provider\",\"data\":{\"chainId\":11155111,\"tokenDecimals\":18,\"stream\":\"0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9\",\"token\":\"0x5FbDB2315678afecb367f032d93F642f64180aa3\",\"recipient\":\"0x70997970C51812dc3A010C7d01b50e0d17dc79C8\",\"port\":3005,\"ready\":true}}\n",
+  "stderr": "🔧 Provider Configuration:\n   AgentPayStream Contract: 0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9\n   tUSD Token: 0x5FbDB2315678afecb367f032d93F642f64180aa3\nLegacy provider listening on http://localhost:3005; Sepolia tUSD deployment verified.\n"
+}

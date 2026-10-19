@@ -1,0 +1,9 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "GuardedPaymentClient.pay (SDK, no payment CLI exists)",
+  "status": 1,
+  "hash": "0xce1f7c57fe25a2344bafbbbf4075a045c4f1895258cc2ce45abec951a7f59cfc",
+  "requestId": "0xfa6c37bc4e2b6cb2e447d5aa9dce3513193d54de1d0f559c2818581a4d8ac7f0",
+  "amountRaw": "10000"
+}

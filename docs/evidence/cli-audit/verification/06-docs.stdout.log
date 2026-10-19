@@ -1,0 +1,9 @@
+
+> agentpay@1.0.0 docs:check
+> node scripts/check-docs.mjs && node scripts/check-doc-examples.mjs && node scripts/check-doc-evidence.mjs
+
+Documentation check passed: 32 Markdown guides and 8 frontend topics; local links, repository sources and related routes resolve.
+Typechecked 11 exact documentation/UI fragments against SDK and ethers types. External prerequisites are declared; examples were not executed.
+Verified allow: transcript/result/hash/config/public copy/report tuple; historical capture 2026-10-16T23:19:49.863Z.
+Verified deny-budget: transcript/result/hash/config/public copy/report tuple; historical capture 2026-10-16T23:19:58.293Z.
+Evidence integrity only; no signature verification, live CRE execution or public receipt was established by <checkout>/scripts/check-doc-evidence.mjs.

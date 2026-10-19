@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "node_modules/hardhat/internal/cli/cli.js run --no-compile scripts/deploy-guard.js --network sepolia",
+  "code": 1,
+  "stdout": "[dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar\n[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }\n",
+  "stderr": "CRE_FORWARDER_ADDRESS has no deployed bytecode. No contract was deployed.\n"
+}

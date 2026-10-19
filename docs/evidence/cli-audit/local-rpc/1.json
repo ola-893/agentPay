@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "node_modules/hardhat/internal/cli/cli.js run --no-compile scripts/deploy.js --network sepolia",
+  "code": 0,
+  "stdout": "[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }\n[dotenv@17.2.1] injecting env (0) from .env -- tip: 📡 version env with Radar: https://dotenvx.com/radar\nDeploying contracts with the account: 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266\nDeploying MockUSD...\nMockUSD deployed to: 0x5FC8d32690cc91D4c39d9d3abcBD16989F875707\nDeploying AgentPayStream with tUSD address: 0x5FC8d32690cc91D4c39d9d3abcBD16989F875707\nAgentPayStream deployed to: 0x0165878A594ca255338adfa4d48449f69242Eb8F\n",
+  "stderr": ""
+}

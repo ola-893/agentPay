@@ -1,0 +1,485 @@
+
+> agentpay@1.0.0 test
+> npm run test:contracts && npm run test:sdk && npm run test:server && npm run test:cre && npm run test:tooling
+
+
+> agentpay@1.0.0 test:contracts
+> npx hardhat test
+
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+Compiled 7 Solidity files successfully (evm target: paris).
+
+
+  CRE authorization and token settlement
+    ✔ accepts a workflow report and settles exactly one authorized payment
+    ✔ rejects callers other than the trusted forwarder
+    ✔ rejects another workflow even through the same forwarder
+    ✔ rejects missing workflow metadata
+    ✔ rejects cross-chain and cross-contract replay
+    ✔ rejects a duplicate request report
+    ✔ rejects expired and excessive authorization lifetimes
+    ✔ cannot spend a denied report
+    ✔ binds authorization to the agent, recipient, token, and amount
+    ✔ expires before settlement
+    ✔ only allows the configured settlement contract to consume reports
+    ✔ rolls authorization back if token transfer fails
+    ✔ advertises the CRE receiver and ERC165 interfaces
+    ✔ only lets the owner bind or update a deployed workflow ID
+    ✔ remains closed when deployed before the workflow ID is available
+
+  isolated CRE simulation receiver
+    ✔ records empty-metadata mock delivery while labeling it as simulation only
+    ✔ requires explicit opt-in and a deployed forwarder
+    ✔ rejects a direct caller even with empty metadata
+    ✔ preserves replay, destination, and expiry bounds
+    ✔ cannot be connected to the settlement payment path
+    ✔ leaves the strict production consumer closed to missing identity
+
+  AgentPayStream
+    Deployment
+      ✔ Should set the right tUSD token address
+    Stream Creation
+      ✔ Should create a stream successfully
+      ✔ Should fail if allowance is insufficient
+    Withdrawal
+      ✔ Should allow withdrawal of accrued tokens
+    Cancellation
+      ✔ Should allow sender to cancel and refund remaining
+    Active Check
+      ✔ Should return true for active stream
+
+  Consequential documented payment bounds
+    ✔ rejects zero, permits a smaller payment, and consumes all remaining authorization
+    ✔ releases division dust after prior withdrawal at expiry; closing then prevents further withdrawal
+
+
+  29 passing (518ms)
+
+····················································································································
+|  [32m[1mSolidity and Network Configuration[22m[39m                                                                              │
+·······························|·················|···············|·················|································
+|  [36mSolidity: 0.8.20[39m            ·  [36mOptim: false[39m   ·  [36mRuns: 200[39m    ·  [36mviaIR: false[39m   ·     [36mBlock: 30,000,000 gas[39m     │
+·······························|·················|···············|·················|································
+|  [32m[1mMethods[22m[39m                                                                                                         │
+·······························|·················|···············|·················|················|···············
+|  [32m[1mContracts / Methods[22m[39m         ·  [1mMin[22m            ·  [1mMax[22m          ·  [1mAvg[22m            ·  [1m# calls[22m       ·  [1musd (avg)[22m   │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayGuard[22m               ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      onReport                ·        [36m233,949[39m  ·      [31m233,992[39m  ·        233,981  ·             8  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      setSettlement           ·         [36m48,067[39m  ·       [31m48,079[39m  ·         48,078  ·            16  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      setWorkflowId           ·              [90m-[39m  ·            [90m-[39m  ·         28,291  ·             1  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPaySettlement[22m          ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      settle                  ·              [90m-[39m  ·            [90m-[39m  ·        110,333  ·             3  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayStream[22m              ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      cancelStream            ·         [36m38,983[39m  ·       [31m83,099[39m  ·         61,041  ·             2  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      createStream            ·        [36m251,031[39m  ·      [31m251,175[39m  ·        251,151  ·             6  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      withdrawFromStream      ·         [36m54,861[39m  ·       [31m94,409[39m  ·         81,226  ·             3  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mMockCREForwarder[22m            ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      deliver                 ·              [90m-[39m  ·            [90m-[39m  ·        236,986  ·             4  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mMockUSD[22m                     ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      approve                 ·         [36m46,670[39m  ·       [31m46,742[39m  ·         46,728  ·             5  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      mint                    ·              [90m-[39m  ·            [90m-[39m  ·         34,785  ·             6  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mSixDecimalToken[22m             ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      approve                 ·         [36m22,761[39m  ·       [31m44,697[39m  ·         43,405  ·            17  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      mint                    ·         [36m44,649[39m  ·       [31m44,661[39m  ·         44,660  ·            16  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [32m[1mDeployments[22m[39m                                   ·                                 ·  [1m% of limit[22m    ·              │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayGuard[22m               ·      [36m1,744,019[39m  ·    [31m1,764,303[39m  ·      1,763,176  ·         5.9 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPaySettlement[22m          ·        [36m552,970[39m  ·      [31m552,982[39m  ·        552,981  ·         1.8 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPaySimulationReceiver[22m  ·      [36m1,078,819[39m  ·    [31m1,078,831[39m  ·      1,078,829  ·         3.6 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayStream[22m              ·      [36m1,928,687[39m  ·    [31m1,928,711[39m  ·      1,928,707  ·         6.4 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mMockCREForwarder[22m            ·              [90m-[39m  ·            [90m-[39m  ·        280,355  ·         0.9 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mMockUSD[22m                     ·              [90m-[39m  ·            [90m-[39m  ·      1,035,189  ·         3.5 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mSixDecimalToken[22m             ·              [90m-[39m  ·            [90m-[39m  ·        521,074  ·         1.7 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [32m[1mKey[22m[39m                                                                                                             │
+····················································································································
+|  [35m[1m◯[22m[39m  Execution gas for this method does not include intrinsic gas overhead                                        │
+····················································································································
+|  [35m[1m△[22m[39m  Cost was non-zero but below the precision setting for the currency display (see options)                     │
+····················································································································
+|  [35mToolchain:[39m  hardhat                                                                                             │
+····················································································································
+
+> agentpay@1.0.0 test:sdk
+> npm --prefix sdk run test:all
+
+
+> agentpay-sdk@1.0.0 test:all
+> mocha --exit -r ts-node/register test/*.test.ts
+
+
+
+  AgentPaySDK Real-time Calculations
+    ✔ Should calculate claimable balance correctly over time
+    ✔ Should return 0 remaining when stream is depleted
+    ✔ Should handle micropayments precision ($0.0001/sec)
+
+  Demo Logic Validation (Mocked)
+    ✔ Should correctly handle 402 and create stream (Unit Logic)
+    ✔ Should report correct efficiency metrics
+    ✔ AI Decision should recommend Stream for high volume
+
+  Gemini AI Integration
+    ✔ Should analyze spending metrics
+    ✔ Should decide to Stream for high volume
+    ✔ Should decide to Direct Pay for low volume
+    ✔ Should answer natural language questions
+
+  AgentPaySDK with AI
+[AgentPaySDK] 🤖 Gemini Analysis: High volume justifies open cost.
+    ✔ SDK should use Brain for mode selection
+    ✔ SDK should expose Ask Agent
+
+  CRE guarded payment client
+    ✔ checks onchain authority before approval and settles a confirmed payment
+    ✔ passes 0.01 USDC as exactly 10000 units through authorization, approval and settlement
+    ✔ never approves tokens when CRE authority is absent
+    ✔ stops when authorization expires during token approval
+    ✔ rejects the wrong chain before creating any transaction
+    ✔ rejects a settlement bound to another guard before token approval
+    ✔ does not settle after a reverted approval receipt
+    ✔ rejects malformed payment intent
+
+  AgentPaySDK Hybrid Payment Intelligence
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 1 < 3.
+[Mock] performDirectPayment called
+    ✔ Scenario 1: Small request volume (N=1) -> Should choose Direct Payment
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[Mock] createStream called
+[AgentPaySDK] Stream #STREAM_101 created. Retrying request...
+    ✔ Scenario 2: Large request volume (N=10) -> Should choose Streaming
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[Mock] createStream called
+[AgentPaySDK] Stream #STREAM_101 created. Retrying request...
+    ✔ AI Verification: Should default to Streaming if N is high (default 10)
+
+  AgentPay End-to-End Integration Tests
+    Complete x402 Handshake Flow
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should complete blind request → 402 → stream → success flow
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should reuse stream for subsequent requests (0 additional signatures)
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should handle concurrent requests efficiently
+    Hybrid Payment Mode Selection
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 1 < 3.
+      ✔ should choose direct payment for low volume (N=1)
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 3.6 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should choose streaming for high volume (N=10)
+    N+1 Signature Problem Solution
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should require exactly 2 on-chain transactions for any request volume
+    Agent Metadata and Identification
+      ✔ should include agent ID in stream details
+    Safety Mechanisms
+      ✔ should enforce spending limits
+      ✔ should block requests after emergency stop
+    Real-time Calculations
+      ✔ should calculate claimable balance correctly
+
+  x402 Protocol Compliance
+    ✔ should return correct x402 headers on 402 response
+    ✔ should include payment requirements in 402 body
+
+  AgentPaySDK Load & Efficiency Tests
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #STREAM_1 created. Retrying request...
+    ✔ Efficiency: Should only create ONE stream for multiple sequential requests
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #STREAM_1 created. Retrying request...
+    ✔ Efficiency: Should reuse stream for concurrent requests
+
+  Multi-Agent Service Mesh
+    ✔ Should calculate price with margin correctly
+
+  Stream Metadata System
+    ✔ Should include Agent ID in default metadata
+    ✔ Should return "unknown" Agent ID if not configured
+
+  payment recipient preflight
+    ✔ rejects a missing recipient before signing a stream
+    ✔ rejects a token-contract recipient before signing a stream
+    ✔ rejects invalid raw amounts and fractional/zero-rate durations before RPC or approval
+
+  Safety & Auto-renewal Systems
+    ✔ Should enforce Daily Spending Limit
+    ✔ Emergency Stop should block requests
+    ✔ Suspicious Activity (Rapid Renewals) should trigger Emergency Stop
+[AgentPaySDK] Stream balance low (<10%). Triggering renewal...
+    ✔ Auto-Renewal Logic (Low Balance) (198ms)
+
+  AgentPaySDK Integration & Property Tests
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[Mock] createStream called for 360000000000000000 tUSD
+[AgentPaySDK] Stream #12345 created. Retrying request...
+    ✔ Property 4: Should intercept 402, parse headers, and retry with stream ID
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+    ✔ Property 4: Should fail if mode is not streaming
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[Mock] createStream called for 360000000000000000 tUSD
+[AgentPaySDK] Stream #12345 created. Retrying request...
+    ✔ Property 9: Should calculate correct stream amount based on Rate header
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.72 tUSD for 3600s
+[Mock] createStream called for 720000000000000000 tUSD
+[AgentPaySDK] Stream #12345 created. Retrying request...
+    ✔ Property 14: Should send API key and handle 401 if missing/invalid
+    ✔ Property 14: Should fail with 401 if API key is invalid
+
+
+  52 passing (571ms)
+
+
+> agentpay@1.0.0 test:server
+> npm --prefix server test
+
+
+> agentpay-middleware-server@1.0.0 test
+> mocha --exit test/*.test.js
+
+
+
+  x402 Middleware Integration
+    Public Routes
+      ✔ should allow access to public routes without payment
+    Protected Routes (No Payment)
+      ✔ should return 402 for protected route without headers
+      ✔ should return 402 for premium route with correct pricing
+    Protected Routes (With Payment)
+      ✔ rejects an active stream paying another recipient
+      ✔ rejects fabricated transaction hashes instead of accepting their shape
+[AgentPay] Request accepted for /api/weather using Stream #100
+      ✔ should return 200 for valid active stream
+      ✔ should return 402 for inactive stream
+      ✔ should fallback to 402/Requirements on system error
+
+
+  8 passing (32ms)
+
+
+> agentpay@1.0.0 test:cre
+> bun test --cwd cre/payment-guard
+
+bun test v1.3.12 (700fc117)
+
+> agentpay@1.0.0 test:tooling
+> npm run build:sdk && node --test scripts/test/*.test.mjs
+
+
+> agentpay@1.0.0 build:sdk
+> npm --prefix sdk run build
+
+
+> agentpay-sdk@1.0.0 build
+> tsc
+
+TAP version 13
+# Subtest: help and JSON help match the public contract without credentials, spawning CRE or starting a listener
+ok 1 - help and JSON help match the public contract without credentials, spawning CRE or starting a listener
+  ---
+  duration_ms: 6154.122792
+  type: 'test'
+  ...
+# Subtest: unknown, positional, duplicate and missing-value flags fail before operation
+ok 2 - unknown, positional, duplicate and missing-value flags fail before operation
+  ---
+  duration_ms: 3072.610667
+  type: 'test'
+  ...
+# Subtest: missing keys and demo opt-in produce stable one-object JSON failures with nonzero exit codes
+ok 3 - missing keys and demo opt-in produce stable one-object JSON failures with nonzero exit codes
+  ---
+  duration_ms: 2659.930791
+  type: 'test'
+  ...
+# Subtest: recording-window bounds reject malformed values without executing CRE
+ok 4 - recording-window bounds reject malformed values without executing CRE
+  ---
+  duration_ms: 529.761
+  type: 'test'
+  ...
+# Subtest: missing CRE executable fails as a dependency error rather than a successful result
+ok 5 - missing CRE executable fails as a dependency error rather than a successful result
+  ---
+  duration_ms: 243.266917
+  type: 'test'
+  ...
+# Subtest: subprocess timeout is bounded and rejected even when a child ignores SIGTERM
+ok 6 - subprocess timeout is bounded and rejected even when a child ignores SIGTERM
+  ---
+  duration_ms: 2156.257292
+  type: 'test'
+  ...
+# Subtest: result validation binds full intent, policy, scale and encoded report before evidence can be saved
+ok 7 - result validation binds full intent, policy, scale and encoded report before evidence can be saved
+  ---
+  duration_ms: 6.045834
+  type: 'test'
+  ...
+# Subtest: JSON success and child failure are one object; mismatched results cannot replace captures
+ok 8 - JSON success and child failure are one object; mismatched results cannot replace captures
+  ---
+  duration_ms: 1804.689666
+  type: 'test'
+  ...
+# Subtest: legacy CLI validates a real local deployment, rejects wrong chain/units/binding/gas, and emits stable JSON
+ok 9 - legacy CLI validates a real local deployment, rejects wrong chain/units/binding/gas, and emits stable JSON
+  ---
+  duration_ms: 20672.574666
+  type: 'test'
+  ...
+# Subtest: guarded SDK settles through real local contracts and preserves authority on insufficient allowance/balance
+ok 10 - guarded SDK settles through real local contracts and preserves authority on insufficient allowance/balance
+  ---
+  duration_ms: 1434.63625
+  type: 'test'
+  ...
+# Subtest: requires the exact receiver event and labels verified receipts as unverified workflow identity
+ok 11 - requires the exact receiver event and labels verified receipts as unverified workflow identity
+  ---
+  duration_ms: 6.808208
+  type: 'test'
+  ...
+# Subtest: does not claim publication for reverted or unrelated transactions
+ok 12 - does not claim publication for reverted or unrelated transactions
+  ---
+  duration_ms: 3.074625
+  type: 'test'
+  ...
+# Subtest: a successful write for another report is not evidence of this authorization
+ok 13 - a successful write for another report is not evidence of this authorization
+  ---
+  duration_ms: 1.606333
+  type: 'test'
+  ...
+# Subtest: parses the full escaped CLI result after truncated user logs
+ok 14 - parses the full escaped CLI result after truncated user logs
+  ---
+  duration_ms: 1.688958
+  type: 'test'
+  ...
+# Subtest: does not treat a user log or failed compilation as a successful simulation
+ok 15 - does not treat a user log or failed compilation as a successful simulation
+  ---
+  duration_ms: 0.239209
+  type: 'test'
+  ...
+# Subtest: requires freshness headroom for the full recording window
+ok 16 - requires freshness headroom for the full recording window
+  ---
+  duration_ms: 0.117084
+  type: 'test'
+  ...
+# Subtest: rejects unexpected outcomes even when the feed is fresh
+ok 17 - rejects unexpected outcomes even when the feed is fresh
+  ---
+  duration_ms: 0.068334
+  type: 'test'
+  ...
+# Subtest: rejects stale, future and malformed freshness data
+ok 18 - rejects stale, future and malformed freshness data
+  ---
+  duration_ms: 0.082625
+  type: 'test'
+  ...
+# Subtest: backs up old JSON and transcripts without mutating or overwriting them
+ok 19 - backs up old JSON and transcripts without mutating or overwriting them
+  ---
+  duration_ms: 12.919
+  type: 'test'
+  ...
+# Subtest: renders guarded USDC raw units exactly at six decimals
+ok 20 - renders guarded USDC raw units exactly at six decimals
+  ---
+  duration_ms: 0.957375
+  type: 'test'
+  ...
+# Subtest: does not round large integer balances through floating point
+ok 21 - does not round large integer balances through floating point
+  ---
+  duration_ms: 0.160709
+  type: 'test'
+  ...
+# Subtest: claimable estimates subtract prior withdrawals and release the final integer remainder at expiry
+ok 22 - claimable estimates subtract prior withdrawals and release the final integer remainder at expiry
+  ---
+  duration_ms: 0.888792
+  type: 'test'
+  ...
+# Subtest: stream form validates the actual default duration, balance and exact raw-unit flow rate
+ok 23 - stream form validates the actual default duration, balance and exact raw-unit flow rate
+  ---
+  duration_ms: 5.224542
+  type: 'test'
+  ...
+# Subtest: validates current evidence and rejects a mismatched asset, scale or missing price before rendering
+ok 24 - validates current evidence and rejects a mismatched asset, scale or missing price before rendering
+  ---
+  duration_ms: 0.344166
+  type: 'test'
+  ...
+1..24
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 22515.53925

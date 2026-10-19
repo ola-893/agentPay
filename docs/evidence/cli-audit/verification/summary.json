@@ -1,0 +1,444 @@
+{
+  "checkedAt": "2026-10-19T10:43:56.777960+00:00",
+  "commit": "2b43044bf58ed2c28a8bcfdfa955cc87ab8cca06",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "allRequiredPassed": true,
+  "toolVersions": {
+    "node": "v22.23.2",
+    "npm": "10.9.8",
+    "bun": "1.3.12"
+  },
+  "results": [
+    {
+      "name": "install-root",
+      "command": "npm ci --no-audit --no-fund",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "01-install-root.stdout.log",
+      "stderr": "01-install-root.stderr.log"
+    },
+    {
+      "name": "install-sdk",
+      "command": "npm ci --prefix sdk --no-audit --no-fund",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "02-install-sdk.stdout.log",
+      "stderr": "02-install-sdk.stderr.log"
+    },
+    {
+      "name": "install-server",
+      "command": "npm ci --prefix server --no-audit --no-fund",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "03-install-server.stdout.log",
+      "stderr": "03-install-server.stderr.log"
+    },
+    {
+      "name": "install-web",
+      "command": "npm ci --prefix vite-project --no-audit --no-fund",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "04-install-web.stdout.log",
+      "stderr": "04-install-web.stderr.log"
+    },
+    {
+      "name": "install-cre",
+      "command": "bun install --frozen-lockfile --cwd cre/payment-guard",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "05-install-cre.stdout.log",
+      "stderr": "05-install-cre.stderr.log"
+    },
+    {
+      "name": "docs",
+      "command": "npm run docs:check",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "06-docs.stdout.log",
+      "stderr": "06-docs.stderr.log"
+    },
+    {
+      "name": "demo-types",
+      "command": "npx tsc --noEmit --project demo/tsconfig.json",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "07-demo-types.stdout.log",
+      "stderr": "07-demo-types.stderr.log"
+    },
+    {
+      "name": "tests",
+      "command": "npm test",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "08-tests.stdout.log",
+      "stderr": "08-tests.stderr.log"
+    },
+    {
+      "name": "sdk-build",
+      "command": "npm run build:sdk",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "09-sdk-build.stdout.log",
+      "stderr": "09-sdk-build.stderr.log"
+    },
+    {
+      "name": "cre-types",
+      "command": "npm run typecheck:cre",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "10-cre-types.stdout.log",
+      "stderr": "10-cre-types.stderr.log"
+    },
+    {
+      "name": "web-build",
+      "command": "npm run build:web",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "11-web-build.stdout.log",
+      "stderr": "11-web-build.stderr.log"
+    },
+    {
+      "name": "lint",
+      "command": "npm --prefix vite-project run lint",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "12-lint.stdout.log",
+      "stderr": "12-lint.stderr.log"
+    },
+    {
+      "name": "help-cre-simulate",
+      "command": "npm run --silent cre:simulate -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "13-help-cre-simulate.stdout.log",
+      "stderr": "13-help-cre-simulate.stderr.log"
+    },
+    {
+      "name": "help-cre-capture",
+      "command": "npm run --silent cre:capture -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "14-help-cre-capture.stdout.log",
+      "stderr": "14-help-cre-capture.stderr.log"
+    },
+    {
+      "name": "help-cre-dry-run",
+      "command": "npm run --silent cre:dry-run -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "15-help-cre-dry-run.stdout.log",
+      "stderr": "15-help-cre-dry-run.stderr.log"
+    },
+    {
+      "name": "help-cre-simulate-write",
+      "command": "npm run --silent cre:simulate:write -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "16-help-cre-simulate-write.stdout.log",
+      "stderr": "16-help-cre-simulate-write.stderr.log"
+    },
+    {
+      "name": "help-demo-check",
+      "command": "npm run --silent demo:check -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "17-help-demo-check.stdout.log",
+      "stderr": "17-help-demo-check.stderr.log"
+    },
+    {
+      "name": "help-demo-consumer",
+      "command": "npm run --silent demo:consumer -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "18-help-demo-consumer.stdout.log",
+      "stderr": "18-help-demo-consumer.stderr.log"
+    },
+    {
+      "name": "help-demo-provider",
+      "command": "npm run --silent demo:provider -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "19-help-demo-provider.stdout.log",
+      "stderr": "19-help-demo-provider.stderr.log"
+    },
+    {
+      "name": "help-deploy-sepolia",
+      "command": "npm run --silent deploy:sepolia -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "20-help-deploy-sepolia.stdout.log",
+      "stderr": "20-help-deploy-sepolia.stderr.log"
+    },
+    {
+      "name": "help-deploy-guard",
+      "command": "npm run --silent deploy:guard -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "21-help-deploy-guard.stdout.log",
+      "stderr": "21-help-deploy-guard.stderr.log"
+    },
+    {
+      "name": "help-deploy-cre-demo",
+      "command": "npm run --silent deploy:cre-demo -- --help",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "22-help-deploy-cre-demo.stdout.log",
+      "stderr": "22-help-deploy-cre-demo.stderr.log"
+    },
+    {
+      "name": "missing-demo-check",
+      "command": "npm run --silent demo:check -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "23-missing-demo-check.stdout.log",
+      "stderr": "23-missing-demo-check.stderr.log"
+    },
+    {
+      "name": "missing-demo-consumer",
+      "command": "npm run --silent demo:consumer -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "24-missing-demo-consumer.stdout.log",
+      "stderr": "24-missing-demo-consumer.stderr.log"
+    },
+    {
+      "name": "missing-demo-provider",
+      "command": "npm run --silent demo:provider -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "25-missing-demo-provider.stdout.log",
+      "stderr": "25-missing-demo-provider.stderr.log"
+    },
+    {
+      "name": "missing-cre-simulate-write",
+      "command": "npm run --silent cre:simulate:write -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "26-missing-cre-simulate-write.stdout.log",
+      "stderr": "26-missing-cre-simulate-write.stderr.log"
+    },
+    {
+      "name": "unknown-flag",
+      "command": "npm run --silent cre:simulate -- --captur --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "27-unknown-flag.stdout.log",
+      "stderr": "27-unknown-flag.stderr.log"
+    },
+    {
+      "name": "missing-cre",
+      "command": "npm run --silent cre:simulate -- --json",
+      "kind": "failure-path",
+      "expectedExit": 1,
+      "exitCode": 1,
+      "passed": true,
+      "stdout": "28-missing-cre.stdout.log",
+      "stderr": "28-missing-cre.stderr.log"
+    },
+    {
+      "name": "bad-wallet",
+      "command": "npm run --silent demo:check -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "29-bad-wallet.stdout.log",
+      "stderr": "29-bad-wallet.stderr.log"
+    },
+    {
+      "name": "missing-guard-key",
+      "command": "npm run --silent deploy:guard",
+      "kind": "failure-path",
+      "expectedExit": 1,
+      "exitCode": 1,
+      "passed": true,
+      "stdout": "30-missing-guard-key.stdout.log",
+      "stderr": "30-missing-guard-key.stderr.log"
+    },
+    {
+      "name": "missing-stream-key",
+      "command": "npm run --silent deploy:sepolia",
+      "kind": "failure-path",
+      "expectedExit": 1,
+      "exitCode": 1,
+      "passed": true,
+      "stdout": "31-missing-stream-key.stdout.log",
+      "stderr": "31-missing-stream-key.stderr.log"
+    },
+    {
+      "name": "missing-demo-opt-in",
+      "command": "npm run --silent deploy:cre-demo",
+      "kind": "failure-path",
+      "expectedExit": 1,
+      "exitCode": 1,
+      "passed": true,
+      "stdout": "32-missing-demo-opt-in.stdout.log",
+      "stderr": "32-missing-demo-opt-in.stderr.log"
+    },
+    {
+      "name": "six-vs-eighteen",
+      "command": "npm run --silent cre:simulate -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "33-six-vs-eighteen.stdout.log",
+      "stderr": "33-six-vs-eighteen.stderr.log"
+    },
+    {
+      "name": "human-units",
+      "command": "npm run --silent cre:simulate -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "34-human-units.stdout.log",
+      "stderr": "34-human-units.stderr.log"
+    },
+    {
+      "name": "wrong-token",
+      "command": "npm run --silent cre:simulate -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "35-wrong-token.stdout.log",
+      "stderr": "35-wrong-token.stderr.log"
+    },
+    {
+      "name": "publish-in-read-runner",
+      "command": "npm run --silent cre:simulate -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "36-publish-in-read-runner.stdout.log",
+      "stderr": "36-publish-in-read-runner.stderr.log"
+    },
+    {
+      "name": "malformed-config",
+      "command": "npm run --silent cre:simulate -- --json",
+      "kind": "failure-path",
+      "expectedExit": 2,
+      "exitCode": 2,
+      "passed": true,
+      "stdout": "37-malformed-config.stdout.log",
+      "stderr": "37-malformed-config.stderr.log"
+    },
+    {
+      "name": "live-allow",
+      "command": "npm run --silent cre:simulate -- --json",
+      "kind": "live-read-only",
+      "expectedExit": 0,
+      "exitCode": 1,
+      "passed": false,
+      "stdout": "38-live-allow.stdout.log",
+      "stderr": "38-live-allow.stderr.log"
+    },
+    {
+      "name": "live-allow",
+      "command": "npm run --silent cre:simulate -- --json",
+      "kind": "live-read-only-retry",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "39-live-allow.stdout.log",
+      "stderr": "39-live-allow.stderr.log"
+    },
+    {
+      "name": "live-deny",
+      "command": "npm run --silent cre:simulate -- --deny-budget --json",
+      "kind": "live-read-only",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "40-live-deny.stdout.log",
+      "stderr": "40-live-deny.stderr.log"
+    },
+    {
+      "name": "live-dry-run",
+      "command": "npm run --silent cre:dry-run -- --recording-window 900 --json",
+      "kind": "live-read-only",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "41-live-dry-run.stdout.log",
+      "stderr": "41-live-dry-run.stderr.log"
+    },
+    {
+      "name": "live-capture",
+      "command": "npm run --silent cre:capture -- --json",
+      "kind": "live-read-only-capture",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "42-live-capture.stdout.log",
+      "stderr": "42-live-capture.stderr.log"
+    },
+    {
+      "name": "capture-integrity",
+      "command": "node scripts/check-doc-evidence.mjs",
+      "kind": "verification",
+      "expectedExit": 0,
+      "exitCode": 0,
+      "passed": true,
+      "stdout": "43-capture-integrity.stdout.log",
+      "stderr": "43-capture-integrity.stderr.log"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+Usage: npm run --silent cre:dry-run -- [--recording-window SECONDS] [--save-evidence] [--json]
+Run ALLOW and budget DENY previews sequentially; no broadcast or replacement of captures.
+--recording-window SECONDS  Required freshness headroom, integer 1..3600 (default 600).
+                           --recording-window=SECONDS is also accepted.
+--save-evidence             Save a new directory under docs/evidence/preflight (default .local/cre/preflight).
+--json                      One readiness envelope on stdout; progress on stderr.
+--help                      Show help without running CRE.
+Exit: 0 both expected outcomes with headroom; 1 not ready/execution failure; 2 usage error; 130/143 interrupted.

@@ -1,0 +1,1 @@
+{"schemaVersion":1,"ok":false,"command":"demo:consumer","error":{"code":"CONFIG","message":"PRIVATE_KEY_1 must contain a valid dedicated test-wallet private key."}}

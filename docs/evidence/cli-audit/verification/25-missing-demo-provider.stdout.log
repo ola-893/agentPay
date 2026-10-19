@@ -1,0 +1,1 @@
+{"schemaVersion":1,"ok":false,"command":"demo:provider","error":{"code":"CONFIG","message":"AGENTPAY_STREAM_ADDRESS must be a nonzero EVM address."}}

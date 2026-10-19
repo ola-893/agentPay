@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: legacy CLI validates a real local deployment, rejects wrong chain/units/binding/gas, and emits stable JSON
+not ok 1 - legacy CLI validates a real local deployment, rejects wrong chain/units/binding/gas, and emits stable JSON
+  ---
+  duration_ms: 5641.630542
+  type: 'test'
+  location: '/Users/deonorla/Documents/ChatGPT/agentpay/scripts/test/cli-rpc.test.mjs:79:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    {"schemaVersion":1,"ok":false,"command":"demo:consumer","error":{"code":"OPERATION_FAILED","message":"Provider request failed; demo did not complete."}}
+    🚀 Starting AgentPay Demo Consumer (Real Blockchain Mode)...
+    
+    ⚠️  GEMINI_API_KEY not found - AI decision features will be limited
+    📡 Connecting to Sepolia testnet...
+    ✅ Agent Wallet: 0x84cF17997753e8F5b0eA664F691D75cE300eC6f2
+    
+    --- Checking tUSD Balance ---
+    💰 Current tUSD Balance: 0.0 tUSD
+    
+    ⚠️  Low balance detected. Minting test tUSD tokens...
+    📝 Mint transaction: 0x55bb67d207d3068f52c97956647f9ff2fa7477d1cb61d592ce113a1499caa0ed
+    ✅ New tUSD Balance: 100.0 tUSD
+    
+    --- [Step 1] Making Request to http://localhost:3005/api/premium ---
+    This will trigger the x402 payment flow if the provider requires payment.
+    
+    [AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+    [AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+    [AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+    [AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+    [AgentPaySDK] Approving tUSD...
+    [AgentPaySDK] Approved.
+    [AgentPaySDK] Creating stream to 0x70997970C51812dc3A010C7d01b50e0d17dc79C8...
+    ❌ Request Failed: nonce has already been used (transaction="0x02f901b483aa36a701843b9aca00847b6b93fc8305a71694cf7ed3acca5a467e9e704c703e8d87f634fb0fc980b90144dee04a7200000000000000000000000070997970c51812dc3a010c7d01b50e0d17dc79c80000000000000000000000000000000000000000000000000000000000000e1000000000000000000000000000000000000000000000000004fefa17b7240000000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000987b2274797065223a2253444b5f4155544f222c22746172676574223a22687474703a2f2f6c6f63616c686f73743a333030352f6170692f7072656d69756d222c226167656e744964223a2244656d6f2d436f6e73756d65722d4167656e742d7631222c2274696d657374616d70223a313739323430343539383933332c22636c69656e74223a224167656e7450617953444b2f312e30227d0000000000000000c001a05941c5edc7e3fa83ce49ebeed4cdfea67d46a517e888937f4c0bf83b958af571a0585c3c7aec6657d3c49b5fc061ef4f8c022f0986b96f42d95efce5ad3adc1e49", info={ "error": { "code": -32000, "data": { "data": null, "message": "Nonce too low. Expected nonce to be 2 but got 1. Note that transactions can't be queued when automining." }, "message": "Nonce too low. Expected nonce to be 2 but got 1. Note that transactions can't be queued when automining." } }, code=NONCE_EXPIRED, version=6.16.0)
+    
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///Users/deonorla/Documents/ChatGPT/agentpay/scripts/test/cli-rpc.test.mjs:99:14)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: guarded SDK settles through real local contracts and preserves authority on insufficient allowance/balance
+ok 2 - guarded SDK settles through real local contracts and preserves authority on insufficient allowance/balance
+  ---
+  duration_ms: 1393.979125
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 1
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7461.789334

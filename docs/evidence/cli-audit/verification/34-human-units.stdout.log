@@ -1,0 +1,1 @@
+{"schemaVersion":1,"ok":false,"command":"cre:simulate","error":{"code":"CONFIG","message":"CRE config validation failed: Invalid JSON, integer observations or policy decision."}}

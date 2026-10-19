@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "demo/check-setup.ts --json",
+  "code": 2,
+  "stdout": "{\"schemaVersion\":1,\"ok\":false,\"command\":\"demo:check\",\"error\":{\"code\":\"CONFIG\",\"message\":\"SEPOLIA_RPC_URL must be an HTTP(S) URL.\"}}\n",
+  "stderr": ""
+}

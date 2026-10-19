@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "demo/check-setup.ts --json",
+  "code": 1,
+  "stdout": "{\"schemaVersion\":1,\"ok\":false,\"command\":\"demo:check\",\"error\":{\"code\":\"OPERATION_FAILED\",\"message\":\"Wallet has no Sepolia ETH for gas. No transaction was sent.\"}}\n",
+  "stderr": ""
+}

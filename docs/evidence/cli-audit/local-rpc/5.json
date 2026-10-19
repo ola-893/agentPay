@@ -1,0 +1,8 @@
+{
+  "localFixturesOnly": true,
+  "note": "Disposable Hardhat RPC with test chain ID; no public Sepolia deployment or payment.",
+  "command": "node_modules/hardhat/internal/cli/cli.js run --no-compile scripts/deploy-cre-demo.js --network sepolia-demo",
+  "code": 0,
+  "stdout": "[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }\n[dotenv@17.2.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`\n{\n  \"simulationOnly\": true,\n  \"skipWorkflowIdentity\": true,\n  \"chainId\": 11155111,\n  \"receiver\": \"0x610178dA211FEF7D417bC0e6FeD39F05609AD788\",\n  \"forwarder\": \"0x15fC6ae953E024d975e77382eEeC56A9101f9F88\",\n  \"deployer\": \"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266\",\n  \"deploymentTransaction\": \"0x125bcce3557db3b4cb25d702b1bbae7046a5515c61782df6ed80172ab3291024\",\n  \"explorerUrl\": \"https://sepolia.etherscan.io/address/0x610178dA211FEF7D417bC0e6FeD39F05609AD788\"\n}\nDEMO ONLY: no workflow identity authentication and no payment-settlement API. Strict AgentPayGuard is unchanged.\n",
+  "stderr": ""
+}

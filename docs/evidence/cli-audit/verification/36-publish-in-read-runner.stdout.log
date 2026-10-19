@@ -1,0 +1,1 @@
+{"schemaVersion":1,"ok":false,"command":"cre:simulate","error":{"code":"CONFIG","message":"The read-only runner requires publishReport=false. Use the explicit cre:simulate:write path for report writes."}}

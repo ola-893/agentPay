@@ -1,0 +1,17 @@
+
+> agentpay@1.0.0 build:web
+> npm --prefix vite-project run build
+
+
+> vite-project@0.0.0 build
+> vite build
+
+vite v7.1.1 building for production...
+transforming...
+✓ 1764 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.94 kB │ gzip:   0.52 kB
+dist/assets/index-vyFdW5GE.css   61.06 kB │ gzip:  10.66 kB
+dist/assets/index-BmSx2Dx8.js   585.82 kB │ gzip: 196.05 kB
+✓ built in 1.90s
