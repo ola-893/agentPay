@@ -1,0 +1,71 @@
+{
+  "chainId": 11155111,
+  "deployer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "forwarder": "0xF8344CFd5c43616a4366C34E3EEE75af79a74482",
+  "forwarderSource": "cre workflow supported-chains (tenant-scoped)",
+  "startedAt": "2026-10-19T12:32:26.206Z",
+  "workflowId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "reportingEnabled": false,
+  "contracts": {
+    "AgentPayGuard": {
+      "address": "0xf07af10A7Af5D3d6E5beF3B3f22195a89C257770",
+      "transactionHash": "0xd918cc5b755d00887ac94bbcc85b6980e4c527c6a12ab7d0faa890084f648250",
+      "blockNumber": 11948191,
+      "blockHash": "0x1697680c3fb95d1cdba1ad89a5f35950bd4bc39ebd547df663885c83471f648b",
+      "status": 1,
+      "gasUsed": "12296599",
+      "feeWei": "12296599000000000",
+      "runtimeCodeHash": "0x4ec64fe8df526f7659fac5bf8952145b4eaaa4325abf8a848511a57cb7b8caf7",
+      "matchesCompiledRuntimeExceptImmutables": true,
+      "confirmations": 23
+    },
+    "AgentPaySettlement": {
+      "address": "0x8DB1bc06b9e448c8bB3fC95f12da55Da1e1f631A",
+      "transactionHash": "0x34c83b98ef57bfc365f573fd28501d5ee8b157ba7299f3d98505f7a15142663e",
+      "blockNumber": 11948193,
+      "blockHash": "0xd2c57829c8e1eb633376c4af8516a0b84d3f21103577a781116e19590bf5b31e",
+      "status": 1,
+      "gasUsed": "3740914",
+      "feeWei": "374091400000000",
+      "runtimeCodeHash": "0x07b9a60585ca763ea1ed9e603f14b3bd61abd4beb6501ae67fea3dd77b5a69c6",
+      "matchesCompiledRuntimeExceptImmutables": true,
+      "confirmations": 21
+    }
+  },
+  "settlementBinding": {
+    "transactionHash": "0xbcbd146283a061b70d46b4b506f954eda34f6387882eae82115e3afb7cb13ed0",
+    "status": 1,
+    "blockNumber": 11948195,
+    "gasUsed": "130599",
+    "feeWei": "130599000000000"
+  },
+  "verifiedAt": "2026-10-19T12:37:36.944Z",
+  "remainingDeployerBalanceWei": "16847162600000000",
+  "payment": {
+    "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "tokenDecimals": 6,
+    "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+    "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+    "requestId": "0xd70ef349ebbedc7ffcad700d0d1bc920b04332c2da82f734a07cc19438037651",
+    "amountRaw": "10000",
+    "agentBalanceRaw": "40000000",
+    "recipientBalanceRaw": "0",
+    "reported": false,
+    "consumed": false,
+    "canPay": false
+  },
+  "sourceCommit": "9045fe3acdbd86eb1928e2e93637077df44696ac",
+  "workflowDeploymentStatus": "blocked: CRE organization deployment access not enabled",
+  "paymentTestStatus": "not executed: no authenticated report",
+  "workflowBuild": {
+    "succeeded": true,
+    "binaryHash": "2d3c6428e871f320263e802730e91fb64554c001c89b55b50632f571bcc396b1",
+    "deploymentRegistered": false
+  },
+  "liveAddressSimulation": {
+    "succeeded": false,
+    "attempts": 2,
+    "error": "Coinbase HTTP request exceeded the 10-second simulation limit",
+    "reportPublished": false
+  }
+}
