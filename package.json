@@ -16,6 +16,7 @@
     "demo:provider": "npx ts-node --project demo/tsconfig.json demo/provider.ts",
     "demo:consumer": "npx ts-node --project demo/tsconfig.json demo/consumer.ts",
     "demo:check": "npx ts-node --project demo/tsconfig.json demo/check-setup.ts",
+    "demo:agent": "node demo/agent-demo.mjs",
     "test:server": "npm --prefix server test",
     "test:cre": "bun test --cwd cre/payment-guard",
     "install:cre": "bun install --cwd cre/payment-guard",

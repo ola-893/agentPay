@@ -37,7 +37,7 @@ function redact(value) {
   let message = String(value);
   for (const [key, secret] of Object.entries(process.env)) {
     if (
-      /(?:PRIVATE_KEY(?:_\d+)?|API_KEY|SECRET|PASSWORD|ACCESS_TOKEN|AUTH_TOKEN|RPC_URL)$/.test(
+      /(?:PRIVATE_KEY(?:_\d+)?|API_KEY|OPEN_AI_KEY|SECRET|PASSWORD|ACCESS_TOKEN|AUTH_TOKEN|RPC_URL)$/.test(
         key
       ) &&
       secret?.length >= 4
