@@ -45,9 +45,9 @@ JSON captures include a config SHA-256 and sanitized CLI transcript SHA-256. Tra
 
 ## Demonstrated scope
 
-This submission uses the **successful simulation** path in the supplied brief. It does not claim live DON deployment or public-network settlement. Consumer and settlement behavior is tested separately on Hardhat with a simulated trusted forwarder.
+This submission uses the **successful local simulation** path in the supplied brief. Workflow deployment to Chainlink's network and the DON-authorized public USDC payment test are outside scope, rather than pending requirements. Consumer and settlement behavior is tested separately on Hardhat with a simulated trusted forwarder.
 
-The staging live-read workflow uses placeholder payment parties, zero receiver and no publication. A separate [prepared live target](deployment/guarded-usdc.md) now points to deployed Sepolia guard/settlement contracts and real parties. Deployment access is pending, so it has no deployed workflow ID or accepted report and has not settled USDC. The consumer keeps identity validation enabled: CRE's simulation mock forwarder lacks production identity metadata.
+The staging live-read workflow uses placeholder payment parties, zero receiver and no publication. Previously deployed Sepolia guard/settlement contracts are retained in the [contract record](deployment/guarded-usdc.md); their workflow ID remains zero and reporting is closed. The unused live target and public-network payment-test procedure have been removed. The consumer keeps identity validation enabled: CRE's simulation mock forwarder lacks production identity metadata.
 
 The sample is one cron-driven payment intent. Real payments need fresh request IDs and real configuration. Rolling budgets, KYC, confidential execution, multi-chain settlement and a complete x402 transport are not shipped features.
 

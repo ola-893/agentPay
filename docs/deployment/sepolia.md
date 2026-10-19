@@ -2,13 +2,9 @@
 
 The supported chain is Ethereum Sepolia (`11155111`). Use a dedicated test wallet, test ETH for gas, and ignored `.env`; never commit a key or use a `VITE_` variable for credentials. The project is unaudited and testnet tokens have no monetary value.
 
-## Strict USDC consumer path
+## Guard and settlement contract record
 
-The [current guarded deployment](guarded-usdc.md) has connected public Sepolia contracts and a prepared live target. CRE deployment access and an authenticated report remain outstanding; the guard is closed and the positive payment test has not run.
-
-Follow [root deployment instructions](../../DEPLOYMENT.md) to deploy `AgentPayGuard`/`AgentPaySettlement`, configure the production forwarder, bind the deployed CRE workflow identity and set real report parties/receiver/unique request ID. The guard stays closed while workflow ID is zero. Circle USDC is already deployed; this command does not mint/deploy it. Obtain test USDC from the Circle faucet. [Verified addresses](../USDC_SEPOLIA.md).
-
-Deployment access is separate from successful CLI simulation. The simulator's mock forwarder does not supply strict production identity metadata; the strict guard intentionally rejects it.
+The [contract record](guarded-usdc.md) retains the connected public Sepolia guard and settlement addresses. These contracts remain closed with a zero workflow ID. The project uses local CRE simulation; workflow deployment to Chainlink's network and the public DON-authorized USDC payment test are outside scope. Neither deployment approval nor USDC funding is needed for read-only CLI simulation. [USDC addresses and units](../USDC_SEPOLIA.md).
 
 ## Legacy stream path
 

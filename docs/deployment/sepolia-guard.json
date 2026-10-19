@@ -55,8 +55,8 @@
     "canPay": false
   },
   "sourceCommit": "9045fe3acdbd86eb1928e2e93637077df44696ac",
-  "workflowDeploymentStatus": "blocked: CRE organization deployment access not enabled",
-  "paymentTestStatus": "not executed: no authenticated report",
+  "workflowDeploymentStatus": "out of scope: CRE runs as local CLI simulation; no workflow deployment planned",
+  "paymentTestStatus": "removed from scope: DON-authorized public USDC payment test",
   "workflowBuild": {
     "succeeded": true,
     "binaryHash": "2d3c6428e871f320263e802730e91fb64554c001c89b55b50632f571bcc396b1",
@@ -67,5 +67,6 @@
     "attempts": 2,
     "error": "Coinbase HTTP request exceeded the 10-second simulation limit",
     "reportPublished": false
-  }
+  },
+  "projectScope": "Local CRE simulation; existing Sepolia contracts retained with reporting closed. Receipt and balance fields are historical verification observations."
 }

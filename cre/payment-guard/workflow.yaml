@@ -5,12 +5,3 @@ staging-settings:
     workflow-path: ./main.ts
     config-path: ./config.staging.json
     secrets-path: ""
-
-sepolia-live:
-  user-workflow:
-    workflow-name: agentpay-payment-guard-live
-    deployment-registry: "private"
-  workflow-artifacts:
-    workflow-path: ./main.ts
-    config-path: ./config.sepolia.json
-    secrets-path: ""

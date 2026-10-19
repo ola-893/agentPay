@@ -2,7 +2,7 @@
 
 **Agent payments with deliberate control, orchestrated by Chainlink CRE.**
 
-The CRE Payment Guard fetches a real Coinbase USDC/USD quote, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, checks freshness, source disagreement, deviation from the $1 peg and a per-request spending cap, then generates a bounded payment report. A report consumer and TypeScript client connect accepted onchain authorization to one token settlement.
+The CRE Payment Guard runs locally through the CRE CLI. It fetches a real Coinbase USDC/USD quote, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, checks freshness, source disagreement, deviation from the $1 peg and a per-request spending cap, then generates a bounded payment report. Consumer contracts and a TypeScript client are included and tested locally; the simulation does not transfer USDC. Deploying the workflow to Chainlink's network is outside this project's scope.
 
 **Successful real CRE CLI simulations:** [ALLOW transcript](docs/evidence/cre-allow.log) · [DENY transcript](docs/evidence/cre-deny-budget.log)
 
@@ -16,9 +16,8 @@ flowchart LR
   B --> C[CRE EVMClient: Chainlink feed on Sepolia]
   C --> D[Freshness, disagreement, USDC peg and budget]
   D --> E[CRE report generation]
-  E --> F[Opt-in deployed workflow publication]
-  F --> G[AgentPayGuard: identity, destination, expiry, replay]
-  G --> H[GuardedPaymentClient → AgentPaySettlement]
+  E --> F[CLI ALLOW or DENY result]
+  F --> G[Recorded evidence in the frontend]
 ```
 
 The guarded path uses Circle’s six-decimal Sepolia USDC. The policy uses integer prices and raw token units: 0.01 USDC = `10000`, with a 0.1 USDC cap = `100000`. Both price sources must be within 1% of $1 and within 1% of each other. Reports bind chain, receiver, unique request ID, agent, recipient, token, maximum authorized amount and expiry. One settlement may use a positive amount up to that bound; it consumes the entire authorization, including unused headroom. The guard trusts a specific forwarder and owner-configured workflow ID. Settlement consumes authorization atomically with token transfer. The SDK checks onchain authority before approval and again before paying.
@@ -85,11 +84,11 @@ Current suites: **124 tests** — 29 contracts, 52 SDK, eight middleware, eleven
 
 ## Current scope
 
-- The bounty's simulation path is demonstrated. No workflow is deployed to a live DON, and no public-network payment was sent by these simulations.
-- Checked-in payment parties are placeholders, the receiver is zero, and publication is disabled. Evidence JSON is never payment authority.
+- The bounty's simulation path is demonstrated. CRE runs locally through the CLI; workflow deployment to a DON and the DON-authorized public USDC payment test are excluded from scope.
+- The simulation configuration uses placeholder payment parties, a zero receiver and disabled publication. Evidence JSON is never payment authority.
 - Consumer and settlement behavior is separately tested on Hardhat's local network. The simulator's mock forwarder lacks production workflow identity metadata; guard identity checks remain enabled.
 - The sample cron configuration represents one payment intent. Real payments need fresh request IDs and real deployment configuration. Duplicate IDs fail closed.
-- The spending cap is per request, not a rolling budget, KYC, or compliance service. The deployed workflow configuration and its owner are trusted.
+- The spending cap is per request, not a rolling budget, KYC, or compliance service. The local workflow configuration is trusted.
 - The original stream tools are separate from guarded settlement. The frontend provides contract setup guidance and a local guarded-payment integration draft; it does not claim live agent telemetry or emergency controls. The gateway uses AgentPay-specific HTTP 402 headers, not the full current x402 standard. Unverified transaction hashes are disabled.
 - Guarded payments use [Circle Sepolia USDC](https://developers.circle.com/stablecoins/usdc-contract-addresses), with six decimals and no monetary value. Get test USDC from the [Circle faucet](https://faucet.circle.com/). Legacy streams still use MockUSD (`tUSD`), an 18-decimal test fixture; do not configure USDC in the stream UI or legacy streaming SDK.
 

@@ -2,6 +2,8 @@
 
 ## Simulation and frontend
 
+The supported CRE journey is local CLI simulation. Workflow deployment to Chainlink's network and the DON-authorized public USDC payment test are outside scope; deployment approval is not a prerequisite for running the project.
+
 Recorded evidence and read-only CRE simulation require no deployed AgentPay contracts. Follow [README](README.md). The RPC is in `cre/project.yaml`; use a reliable Sepolia HTTPS endpoint if the public RPC is busy.
 
 `npm run build:web` produces `vite-project/dist`, a static React app with evidence JSON from `public/evidence`. Preserve the SPA fallback (`_redirects` / `netlify.toml`) when hosting. No hosting deployment is included in the recorded evidence.
@@ -10,32 +12,11 @@ Recorded evidence and read-only CRE simulation require no deployed AgentPay cont
 
 See [recording readiness](docs/RECORDING_READINESS.md) for the optional `AgentPaySimulationReceiver`, its dedicated Sepolia test wallet, explicit identity-skip opt-in, and receipt-verified broadcast runner. It records a mock-forwarder demo but cannot authorize or settle payments. No demo deployment or broadcast was performed during this repository update.
 
-## Strict consumer deployment
+## Existing guard and settlement contracts
 
-The [current guarded USDC deployment](docs/deployment/guarded-usdc.md) has public Sepolia guard/settlement addresses and successful deployment/binding receipts. The live workflow target compiles, but CRE deployment access is pending: the workflow is not registered, the guard's workflow ID remains zero and no USDC payment has been settled. Follow that guide to resume this deployment; the steps below describe deploying your own contracts.
+The [Sepolia contract record](docs/deployment/guarded-usdc.md) retains public guard/settlement addresses and successful deployment/binding receipts. Those contracts remain deployed with reporting closed. The live workflow target, network-deployment instructions and public DON payment-test procedure have been removed; no workflow deployment or workflow-ID binding is planned.
 
-1. Copy `.env.example` to `.env` and set a testnet `PRIVATE_KEY` and RPC.
-2. Set `CRE_FORWARDER_ADDRESS` from the official Chainlink CRE forwarder directory for Sepolia. Use the production forwarder, not a wallet or a mock.
-3. Run `npm run deploy:guard`. It deploys and connects AgentPayGuard and AgentPaySettlement. With a blank `CRE_WORKFLOW_ID`, reporting remains disabled.
-4. In `cre/payment-guard/config.staging.json`, configure real agent and recipient, six-decimal USDC integer amounts and cap, a fresh random 32-byte request ID, the guard receiver address, and `publishReport: true`.
-5. Obtain CRE deployment access and follow the [official deployment guide](https://docs.chain.link/cre/guides/operations/deploying-workflows). Deploy the configured workflow, then call `guard.setWorkflowId(actualWorkflowId)` from its deploying owner. Updates that change workflow identity need a corresponding binding update. Reports fail until identity matches.
-6. Once a report has been accepted onchain, use the guarded client with a funded signer and the deployed addresses.
-
-Save integration fragments inside `sdk/` (for example `sdk/integration.ts`), importing `./src` and `ethers` there. Supply the deployment variables and run awaited calls inside an async function. Root and SDK ethers copies currently have incompatible signer types; see the [checked integration example](docs/sdk/guarded-payment-client.md).
-
-```ts
-import { GuardedPaymentClient } from './src';
-const payments = new GuardedPaymentClient(signer, {
-  guardAddress, settlementAddress, chainId: 11155111,
-});
-// Circle USDC on Ethereum Sepolia; 0.01 USDC = 10000 atomic units.
-const token = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238';
-const receipt = await payments.pay(requestId, recipient, token, 10000n);
-```
-
-The consumer accepts 62-byte packed identity metadata and the 64-byte production forwarder form. It verifies forwarder, workflow ID, destination chain and receiver, request uniqueness, payment parties, and expiry. Settlement consumes authorization before transfer; transfer failure reverts the complete operation. An ABI report body or frontend JSON cannot call the consumer directly. The reported amount is an upper bound: one positive payment up to it can consume the request, after which unused headroom is not reusable.
-
-The forwarder is immutable. The owner can configure workflow identity and connect a deployed settlement contract once. Protect that owner key and review workflow configuration. This is an unaudited prototype, not a production payments service.
+Contract and SDK authorization behavior remains covered by local tests. See the [guarded client reference](docs/sdk/guarded-payment-client.md) for the implemented API and prerequisites. A local simulation's ALLOW output is not onchain payment authority. No additional contract deployment or USDC payment is required for the local CRE simulation journey.
 
 ## Legacy stream deployment
 
