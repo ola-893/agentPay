@@ -1,0 +1,22 @@
+[dotenv@17.2.1] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🔧 Provider Configuration:
+   AgentPayStream Contract: 
+   tUSD Token: 
+   RPC URL: https://ethereum-sepolia-rpc.publicnode.com
+Error: listen EPERM: operation not permitted 0.0.0.0:3005
+    at Server.setupListenHandle [as _listen2] (node:net:1919:21)
+    at listenInCluster (node:net:1998:12)
+    at Server.listen (node:net:2103:7)
+    at Function.listen (<checkout>/node_modules/express/lib/application.js:635:24)
+    at Object.<anonymous> (<checkout>/demo/provider.ts:116:9)
+    at Module._compile (node:internal/modules/cjs/loader:1781:14)
+    at Module.m._compile (<checkout>/node_modules/ts-node/src/index.ts:1618:23)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1913:10)
+    at Object.require.extensions.<computed> [as .ts] (<checkout>/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1505:32) {
+  code: 'EPERM',
+  errno: -1,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 3005
+}

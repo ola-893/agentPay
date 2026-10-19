@@ -1,0 +1,28 @@
+Running CRE CLI: /definitely-missing-cre workflow simulate payment-guard --target staging-settings --trigger-index 0 --non-interactive --config <checkout>/.local/cre/allow.config.json
+node:internal/child_process:285
+      const err = new ErrnoException(exitCode, syscall);
+                  ^
+
+Error: spawn /definitely-missing-cre ENOENT
+    at ChildProcess._handle.onexit (node:internal/child_process:285:19)
+    at onErrorNT (node:internal/child_process:483:16)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'spawn /definitely-missing-cre',
+  path: '/definitely-missing-cre',
+  spawnargs: [
+    'workflow',
+    'simulate',
+    'payment-guard',
+    '--target',
+    'staging-settings',
+    '--trigger-index',
+    '0',
+    '--non-interactive',
+    '--config',
+    '<checkout>/.local/cre/allow.config.json'
+  ]
+}
+
+Node.js v22.23.2

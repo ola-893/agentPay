@@ -1,0 +1,50 @@
+[
+  {
+    "case": "simulate-help",
+    "command": "npm run --silent cre:simulate -- --help",
+    "exitCode": 1,
+    "log": "simulate-help.log"
+  },
+  {
+    "case": "simulate-json",
+    "command": "npm run --silent cre:simulate -- --json",
+    "exitCode": 1,
+    "log": "simulate-json.log"
+  },
+  {
+    "case": "unknown-flag",
+    "command": "npm run --silent cre:simulate -- --captur",
+    "exitCode": 1,
+    "log": "unknown-flag.log"
+  },
+  {
+    "case": "window-separated",
+    "command": "npm run --silent cre:dry-run -- --recording-window 900",
+    "exitCode": 1,
+    "log": "window-separated.log"
+  },
+  {
+    "case": "check-missing-key",
+    "command": "npm run --silent demo:check",
+    "exitCode": 0,
+    "log": "check-missing-key.log"
+  },
+  {
+    "case": "consumer-missing-key",
+    "command": "npm run --silent demo:consumer",
+    "exitCode": 0,
+    "log": "consumer-missing-key.log"
+  },
+  {
+    "case": "provider-help",
+    "command": "npm run --silent demo:provider -- --help",
+    "exitCode": 1,
+    "log": "provider-help.log"
+  },
+  {
+    "case": "write-help",
+    "command": "npm run --silent cre:simulate:write -- --help",
+    "exitCode": 1,
+    "log": "write-help.log"
+  }
+]

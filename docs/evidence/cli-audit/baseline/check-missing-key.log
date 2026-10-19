@@ -1,0 +1,8 @@
+[dotenv@17.2.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+🔍 AgentPay Demo Setup Check
+
+1️⃣  Environment Variables:
+   ❌ PRIVATE_KEY_1: Missing - Add to .env file
+   ⚠️  GEMINI_API_KEY: Missing - AI features will use fallback heuristics
+
+❌ Cannot continue without PRIVATE_KEY_1
