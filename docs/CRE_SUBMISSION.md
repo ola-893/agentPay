@@ -47,7 +47,7 @@ JSON captures include a config SHA-256 and sanitized CLI transcript SHA-256. Tra
 
 This submission uses the **successful simulation** path in the supplied brief. It does not claim live DON deployment or public-network settlement. Consumer and settlement behavior is tested separately on Hardhat with a simulated trusted forwarder.
 
-The live-read workflow uses placeholder payment parties, zero receiver and no publication. The consumer keeps identity validation enabled: CRE's simulation mock forwarder lacks production identity metadata. See [deployment instructions](../DEPLOYMENT.md) for a real deployment.
+The staging live-read workflow uses placeholder payment parties, zero receiver and no publication. A separate [prepared live target](deployment/guarded-usdc.md) now points to deployed Sepolia guard/settlement contracts and real parties. Deployment access is pending, so it has no deployed workflow ID or accepted report and has not settled USDC. The consumer keeps identity validation enabled: CRE's simulation mock forwarder lacks production identity metadata.
 
 The sample is one cron-driven payment intent. Real payments need fresh request IDs and real configuration. Rolling budgets, KYC, confidential execution, multi-chain settlement and a complete x402 transport are not shipped features.
 
@@ -55,7 +55,7 @@ The sample is one cron-driven payment intent. Real payments need fresh request I
 
 Follow [the readiness guide](RECORDING_READINESS.md) before recording. It runs both npm scenarios live and verifies freshness headroom without replacing the existing backup captures. The policy now checks the payment asset itself: Circle Sepolia USDC with six-decimal units, independently observed USDC/USD prices and an explicit $1 peg bound. Testnet USDC has no monetary value.
 
-The latest versioned preflight transcripts are linked in that guide; previous ETH/USD captures are retained under content-addressed backups and are historical evidence of the earlier policy, not the current USDC workflow. A separate simulation-only receiver and opt-in write runner are available. They do not weaken AgentPayGuard and cannot settle tokens. No public write has been performed; only a separately verified RPC receipt and matching receiver event may be presented as an Etherscan demo.
+The latest versioned preflight transcripts are linked in that guide; previous ETH/USD captures are retained under content-addressed backups and are historical evidence of the earlier policy, not the current USDC workflow. A separate simulation-only receiver and opt-in write runner are available. They do not weaken AgentPayGuard and cannot settle tokens. Public stream and guard/settlement deployment transactions are recorded separately; no public CRE report write or USDC settlement has been performed. Only a separately verified RPC receipt and matching receiver event may be presented as an Etherscan report demo.
 
 ## Short demo sequence
 

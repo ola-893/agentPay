@@ -1,0 +1,27 @@
+Initializing...
+Loading settings...
+
+! Deployment access is not yet enabled for your organization.
+
+Request deployment access? [Y/n] 
+
+Purpose of this request 
+1. Hackathon
+2. Evaluation
+3. Production Integration
+Enter a number between 1 and 3: 
+
+Briefly describe your use case 
+
+
+Submitting access request...
+
+✓ Access request submitted successfully!
+
+Thanks for applying.
+We're carefully reviewing each request to ensure we can provide the best experience. If your request is approved, we'll contact you with next steps.
+
+
+⚠️  Update available! You’re running 1.37.0, but 1.38.0 is the latest.
+Run `cre update` or visit https://github.com/smartcontractkit/cre-cli/releases to upgrade.
+

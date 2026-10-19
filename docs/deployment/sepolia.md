@@ -4,6 +4,8 @@ The supported chain is Ethereum Sepolia (`11155111`). Use a dedicated test walle
 
 ## Strict USDC consumer path
 
+The [current guarded deployment](guarded-usdc.md) has connected public Sepolia contracts and a prepared live target. CRE deployment access and an authenticated report remain outstanding; the guard is closed and the positive payment test has not run.
+
 Follow [root deployment instructions](../../DEPLOYMENT.md) to deploy `AgentPayGuard`/`AgentPaySettlement`, configure the production forwarder, bind the deployed CRE workflow identity and set real report parties/receiver/unique request ID. The guard stays closed while workflow ID is zero. Circle USDC is already deployed; this command does not mint/deploy it. Obtain test USDC from the Circle faucet. [Verified addresses](../USDC_SEPOLIA.md).
 
 Deployment access is separate from successful CLI simulation. The simulator's mock forwarder does not supply strict production identity metadata; the strict guard intentionally rejects it.

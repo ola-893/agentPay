@@ -1,0 +1,32 @@
+{
+  "checkedAt": "2026-10-19T12:41:54.646Z",
+  "chainId": 11155111,
+  "mode": "public-Sepolia-negative-test",
+  "guard": "0xf07af10A7Af5D3d6E5beF3B3f22195a89C257770",
+  "settlement": "0x8DB1bc06b9e448c8bB3fC95f12da55Da1e1f631A",
+  "request": {
+    "requestId": "0xd70ef349ebbedc7ffcad700d0d1bc920b04332c2da82f734a07cc19438037651",
+    "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+    "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+    "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "amount": "10000",
+    "spendingCap": "100000"
+  },
+  "workflowId": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "expectedError": "CRE authorization missing, denied, expired, or already consumed",
+  "paymentRejectedBeforeApproval": true,
+  "noTransactionSent": true,
+  "before": {
+    "payerBalanceRaw": "40000000",
+    "recipientBalanceRaw": "0",
+    "allowanceRaw": "0",
+    "nonce": 5
+  },
+  "after": {
+    "payerBalanceRaw": "40000000",
+    "recipientBalanceRaw": "0",
+    "allowanceRaw": "0",
+    "nonce": 5
+  },
+  "positivePaymentTestCompleted": false
+}

@@ -10,7 +10,9 @@ Recorded evidence and read-only CRE simulation require no deployed AgentPay cont
 
 See [recording readiness](docs/RECORDING_READINESS.md) for the optional `AgentPaySimulationReceiver`, its dedicated Sepolia test wallet, explicit identity-skip opt-in, and receipt-verified broadcast runner. It records a mock-forwarder demo but cannot authorize or settle payments. No demo deployment or broadcast was performed during this repository update.
 
-## Optional production consumer deployment (not performed here)
+## Strict consumer deployment
+
+The [current guarded USDC deployment](docs/deployment/guarded-usdc.md) has public Sepolia guard/settlement addresses and successful deployment/binding receipts. The live workflow target compiles, but CRE deployment access is pending: the workflow is not registered, the guard's workflow ID remains zero and no USDC payment has been settled. Follow that guide to resume this deployment; the steps below describe deploying your own contracts.
 
 1. Copy `.env.example` to `.env` and set a testnet `PRIVATE_KEY` and RPC.
 2. Set `CRE_FORWARDER_ADDRESS` from the official Chainlink CRE forwarder directory for Sepolia. Use the production forwarder, not a wallet or a mock.

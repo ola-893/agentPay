@@ -1,0 +1,8 @@
+  Compiling workflow...
+✓ Workflow compiled successfully
+  Binary hash: 2d3c6428e871f320263e802730e91fb64554c001c89b55b50632f571bcc396b1
+✓ Build output written to <repo>/.local/cre/live.wasm
+
+⚠️  Update available! You’re running 1.37.0, but 1.38.0 is the latest.
+Run `cre update` or visit https://github.com/smartcontractkit/cre-cli/releases to upgrade.
+

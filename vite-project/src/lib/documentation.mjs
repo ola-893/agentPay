@@ -154,7 +154,7 @@ export const documentation = {
       ]),
       section("From report to settlement", [
         p(
-          "The checked-in receiver is zero and publishReport is false. A deployed workflow must submit an authenticated report through the trusted forwarder to AgentPayGuard. The guard requires the configured workflow ID and validates destination, expiry, parties, amount and replay protection. Settlement consumes that authorization atomically with token transfer."
+          "The staging receiver is zero and publishReport is false. A separate sepolia-live target points to deployed guard and settlement contracts with real parties. CRE deployment access is pending: that workflow is not registered, the guard remains closed with a zero workflow ID and no public USDC settlement is claimed. A deployed workflow must submit an authenticated report through the trusted forwarder. The guard validates workflow ID, destination, expiry, parties, amount and replay; settlement consumes authorization atomically with token transfer."
         ),
         p(
           "The ALLOW report’s maximum is the requested 10000 units (0.01 USDC), not the 100000-unit policy cap. Reports expire after 300 seconds in the sample. Request IDs are single-use, so a real intent needs a fresh ID and real parties. The fixed sample ID is for read-only reproduction."
@@ -172,6 +172,10 @@ export const documentation = {
     related: [
       ["/docs/usdc", "Read the USDC policy"],
       ["/docs/integration", "Settle through the SDK"],
+      [
+        "https://github.com/ola-893/agentPay/blob/main/docs/deployment/guarded-usdc.md",
+        "Current guarded deployment and pending steps",
+      ],
     ],
   },
   usdc: {
