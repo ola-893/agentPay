@@ -2,25 +2,26 @@
 
 **Agent payments with deliberate control, orchestrated by Chainlink CRE.**
 
-The CRE Payment Guard runs locally through the CRE CLI. It fetches a real Coinbase USDC/USD quote, reads a finalized Chainlink USDC/USD feed on Ethereum Sepolia, checks freshness, source disagreement, deviation from the $1 peg and a per-request spending cap, then generates a bounded payment report. Consumer contracts and a TypeScript client are included and tested locally; the simulation does not transfer USDC. Deploying the workflow to Chainlink's network is outside this project's scope.
+AgentPay escrows a session's token deposit and accrues the provider's earnings per second. Many API requests reuse one stream. A local Chainlink CRE workflow reads service observations and Sepolia stream state to decide `OPEN`, `CONTINUE`, `CLOSE` or `DENY`; the agent wallet creates or cancels the stream, paying earned funds and refunding unused escrow.
 
-**Successful real CRE CLI simulations:** [ALLOW transcript](docs/evidence/cre-allow.log) · [DENY transcript](docs/evidence/cre-deny-budget.log)
+The AI CLI uses Circle's six-decimal Sepolia USDC. An initial CRE price check compares Coinbase and the finalized Chainlink USDC/USD feed. The service supervisor then ties stream funding and continuation to observed service availability and budget. Workflow deployment to Chainlink's network is outside scope.
 
-[Documentation](docs/README.md) · [Quick start](docs/getting-started/quick-start.md) · [Submission guide](docs/CRE_SUBMISSION.md) · [Workflow source](cre/payment-guard/main.ts) · [Deployment guide](DEPLOYMENT.md)
+**Verified stream demo:** [CRE/agent transcript](docs/evidence/stream-demo/run.log) · [escrow, earnings and refund evidence](docs/evidence/stream-demo/rpc-verification.json).
 
-## Architecture
+[AI streaming demo](docs/AI_AGENT_DEMO.md) · [Documentation](docs/README.md) · [Submission guide](docs/CRE_SUBMISSION.md) · [Supervisor source](cre/payment-guard/stream-main.ts) · [Stream contract](contracts/AgentPayStream.sol)
 
 ```mermaid
-flowchart LR
-  A[Cron trigger] --> B[CRE HTTPClient: Coinbase USDC/USD]
-  B --> C[CRE EVMClient: Chainlink feed on Sepolia]
-  C --> D[Freshness, disagreement, USDC peg and budget]
-  D --> E[CRE report generation]
-  E --> F[CLI ALLOW or DENY result]
-  F --> G[Recorded evidence in the frontend]
+flowchart TD
+  A[Agent encounters HTTP 402] --> B[CRE: price safety + stream admission]
+  B --> C[Wallet approves and funds escrow stream]
+  C --> D[Many API requests reuse one authenticated stream]
+  D --> E[CRE: HTTP service observations + Sepolia stream reads]
+  E -->|CONTINUE| D
+  E -->|CLOSE| F[Wallet cancels stream]
+  F --> G[Accrued earnings to provider; unused funds to sender]
 ```
 
-The guarded path uses Circle’s six-decimal Sepolia USDC. The policy uses integer prices and raw token units: 0.01 USDC = `10000`, with a 0.1 USDC cap = `100000`. Both price sources must be within 1% of $1 and within 1% of each other. Reports bind chain, receiver, unique request ID, agent, recipient, token, maximum authorized amount and expiry. One settlement may use a positive amount up to that bound; it consumes the entire authorization, including unused headroom. The guard trusts a specific forwarder and owner-configured workflow ID. Settlement consumes authorization atomically with token transfer. The SDK checks onchain authority before approval and again before paying.
+The contract holds the deposit upfront; it does not send a transaction every second. The recipient can withdraw accrued funds, and either party can cancel. Cancellation pays unwithdrawn earnings and refunds the remainder. Expiry makes all remaining funds claimable but does not automatically close or refund a stream. The CLI's provider authenticates the payer's signed session as well as checking onchain state.
 
 ## Run locally
 
@@ -69,19 +70,21 @@ No wallet key or testnet funds are needed for the read-only scenarios. CRE servi
 
 ## Run the AI purchasing agent
 
-The separate CLI agent uses real Qwen or OpenAI tool calls to request a paid resource, runs CRE locally for its quote, and enforces that decision in the wallet process. Configure a funded model key and dedicated Sepolia wallet as described in the [AI agent guide](docs/AI_AGENT_DEMO.md), then preview:
+The CLI uses actual Qwen/OpenAI tool calls and real local CRE executions. Configure the funded model key, dedicated Sepolia payer, recipient and [verified USDC stream deployment](docs/deployment/usdc-stream.json) using the [AI streaming guide](docs/AI_AGENT_DEMO.md), then preview:
 
 ```sh
-npm run demo:agent
+npm run --silent demo:agent
 ```
 
-To enable the test-USDC purchase:
+To escrow up to 0.01 test USDC and demonstrate the full lifecycle:
 
 ```sh
-npm run demo:agent -- --pay
+npm run --silent demo:agent -- --pay
 ```
 
-Basic costs 0.01 USDC; premium costs 0.2 against a 0.1 per-request cap and must be denied. With `--pay`, the resource unlocks only after a matching confirmed transfer and exact balance changes. Each paid invocation is a new purchase. Use `--verbose` for response IDs, oracle prices and the full model explanation. This uses local wallet enforcement and a demo HTTP 402 receipt protocol, not DON authentication, AgentPaySettlement or full x402. No additional deployment is required. The browser Agent setup page remains a local integration draft.
+The paid demo reuses one stream for ten successful API requests, observes CRE `CONTINUE`, injects three labeled service failures, then obtains `CLOSE` and cancels with verified earnings/refund. Premium proposes a 0.2 deposit against a 0.1 cap and must be denied. Each paid invocation is a new stream and uses test ETH gas. `--verbose` shows model details; `--json` preserves structured output. Recovery uses `--close-stream <id>`.
+
+Local wallet enforcement is separate from DON authentication and the closed AgentPayGuard/AgentPaySettlement examples. This is an AgentPay HTTP 402 streaming protocol, not full x402. The browser Agent setup remains a local SDK draft, and the browser Streams page retains its separate 18-decimal tUSD deployment.
 
 ## Verify
 
@@ -94,16 +97,16 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **139 tests** — 29 contracts, 52 SDK, eight middleware, eleven CRE policy, 39 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
+Current suites: **150 tests** — 29 contracts, 52 SDK, eight middleware, 20 CRE policy, 41 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
 
 `docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
 
 ## Current scope
 
 - The bounty's simulation path is demonstrated. CRE runs locally through the CLI; workflow deployment to a DON and the DON-authorized public USDC payment test are excluded from scope.
-- The simulation configuration uses placeholder payment parties, a zero receiver and disabled publication. Evidence JSON is never payment authority.
+- The standalone price/report sample uses placeholder parties, zero receiver and disabled publication. The AI stream runner supplies actual parties and service observations in per-run configs. Evidence JSON is never onchain payment authority.
 - Consumer and settlement behavior is separately tested on Hardhat's local network. The simulator's mock forwarder lacks production workflow identity metadata; guard identity checks remain enabled.
-- The sample cron configuration represents one payment intent. Real payments need fresh request IDs and real deployment configuration. Duplicate IDs fail closed.
+- Stream supervisor runs are driven by the local agent at session checkpoints. CRE decisions do not change the stream contract automatically; the wallet executes them. Outage detection cannot reverse already-earned time.
 - The spending cap is per request, not a rolling budget, KYC, or compliance service. The local workflow configuration is trusted.
 - The original stream tools are separate from guarded settlement. The frontend provides contract setup guidance and a local guarded-payment integration draft; it does not claim live agent telemetry or emergency controls. The gateway uses AgentPay-specific HTTP 402 headers, not the full current x402 standard. Unverified transaction hashes are disabled.
 - Guarded payments use [Circle Sepolia USDC](https://developers.circle.com/stablecoins/usdc-contract-addresses), with six decimals and no monetary value. Get test USDC from the [Circle faucet](https://faucet.circle.com/). Legacy streams still use MockUSD (`tUSD`), an 18-decimal test fixture; do not configure USDC in the stream UI or legacy streaming SDK.

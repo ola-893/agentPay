@@ -6,6 +6,8 @@ The supported chain is Ethereum Sepolia (`11155111`). Use a dedicated test walle
 
 The [contract record](guarded-usdc.md) retains the connected public Sepolia guard and settlement addresses. These contracts remain closed with a zero workflow ID. The project uses local CRE simulation; workflow deployment to Chainlink's network and the public DON-authorized USDC payment test are outside scope. Neither deployment approval nor USDC funding is needed for read-only CLI simulation. [USDC addresses and units](../USDC_SEPOLIA.md).
 
+The AI streaming CLI now has a separate [Circle USDC stream deployment](usdc-stream.json). Its [guide](../AI_AGENT_DEMO.md) documents real escrow, reuse and refund verification. The records below retain the original tUSD/browser and strict-contract contexts.
+
 ## Legacy stream path
 
 ### Confirmed project deployment

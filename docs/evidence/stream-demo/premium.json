@@ -1,0 +1,22 @@
+{
+  "status": "denied",
+  "tier": "premium",
+  "policy": {
+    "reason": "AMOUNT_EXCEEDS_POLICY",
+    "amountRaw": "200000",
+    "amountUsdc": "0.2",
+    "capRaw": "100000",
+    "capUsdc": "0.1"
+  },
+  "noTransactionSigned": true,
+  "before": {
+    "agentBalanceRaw": "39969400",
+    "recipientBalanceRaw": "30600",
+    "nonce": 12
+  },
+  "after": {
+    "agentBalanceRaw": "39969400",
+    "recipientBalanceRaw": "30600",
+    "nonce": 12
+  }
+}

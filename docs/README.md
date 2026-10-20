@@ -1,6 +1,6 @@
 # AgentPay documentation
 
-AgentPay orchestrates guarded **Circle USDC payments on Ethereum Sepolia** with Chainlink CRE. Its frontend shows recorded CLI decisions, provides a local agent integration draft, and keeps legacy tUSD streaming separate. This is an unaudited prototype; testnet tokens have no monetary value.
+AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, supervised by local Chainlink CRE workflows. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend retains recorded price-policy evidence, a local SDK draft, and the separate legacy tUSD stream UI. Testnet tokens have no monetary value.
 
 ## Start here
 
@@ -20,16 +20,14 @@ AgentPay orchestrates guarded **Circle USDC payments on Ethereum Sepolia** with 
 | Check consequential claims and reproduced results | [Documentation correctness audit](DOCUMENTATION_AUDIT.md) |
 | Inspect command flags, output, exit codes and CLI verification | [CLI contract audit](CLI_AUDIT.md) |
 
-## Two payment paths
+## Payment paths and examples
 
-| | CRE guarded settlement | Legacy streaming |
+| Path | Asset and contract | Authority and interface |
 | --- | --- | --- |
-| Token | Circle Sepolia USDC, 6 decimals | Deployed MockUSD/tUSD, 18 decimals |
-| Units | `0.01 USDC = 10000` | `1 tUSD = 1000000000000000000` |
-| Client | `GuardedPaymentClient.pay` | `AgentPaySDK.makeRequest` / `createStream` |
-| Contracts | `AgentPayGuard` + `AgentPaySettlement` | `AgentPayStream` + `MockUSD` |
-| Frontend | Recorded workflow evidence and local SDK draft | Connected-wallet management, after deployment |
+| AI streaming CLI | Circle Sepolia USDC, 6 decimals; USDC-configured AgentPayStream | Local CRE returns OPEN/CONTINUE/CLOSE/DENY; wallet funds or cancels; signed session reuses stream |
+| Existing browser/SDK streams | MockUSD/tUSD, 18 decimals; separate AgentPayStream | Connected wallet or legacy AgentPaySDK; retained original UI |
+| Strict settlement reference | Circle USDC; AgentPayGuard + AgentPaySettlement | Requires authenticated onchain report; public guard remains closed and this is not the streaming CLI |
 
-The gateway’s HTTP 402 headers are project-specific. Neither path is a complete current x402 transport/facilitator integration, and guarded settlement does not automatically grant gateway access. [Architecture and trust boundaries](architecture/README.md).
+The HTTP 402 protocols are project-specific, not a complete x402 transport/facilitator integration. Guarded settlement does not automatically grant streaming gateway access. [Architecture and trust boundaries](architecture/README.md).
 
 The [frontend docs](../vite-project/src/lib/documentation.mjs) describe the same supported flows with copyable commands and examples. [Table of contents](SUMMARY.md) links only to existing guides. Historical migration files and saved earlier captures remain provenance, not current setup instructions.

@@ -1,101 +1,98 @@
-# AI agent and local CRE demo
+# AI agent with CRE-supervised payment streams
 
-This CLI runs a real Qwen or OpenAI tool-calling agent. It requests research from a loopback HTTP service, obtains a payment quote, invokes CRE locally against live Coinbase and Sepolia data, and enforces the result before signing a Circle test-USDC transfer. The service verifies the transfer receipt before returning its sample research note. The model then explains its actual tool results.
+AgentPay keeps its original payment model: a sender funds an escrow stream, the recipient earns tokens with time, and many API requests reuse that stream. The AI CLI now uses **AgentPayStream**, rather than sending a token transfer for every purchase.
 
-**Verified on 2026-10-19:** Qwen `qwen3.5-plus` completed both live tool journeys. Basic received local CRE ALLOW, transferred **0.01 Circle test USDC**, unlocked the receipt-verified sample resource, and increased the recipient balance by `10000` raw units. Premium received `AMOUNT_EXCEEDS_POLICY` with unchanged balances and nonce. [Original run transcript](evidence/agent-demo/run.log) · [Structured result](evidence/agent-demo/result.json) · [Independent RPC receipt and historical balances](evidence/agent-demo/rpc-verification.json) · [Sepolia transaction](https://sepolia.etherscan.io/tx/0x9e0e57611cd2bf0f4a85f45e313d03f03750129dc00f6f8db58f5ab2f81eb59b).
+A local CRE workflow combines real HTTP service observations with Sepolia wallet and stream reads to return `OPEN`, `CONTINUE`, `CLOSE` or `DENY`. The sender's wallet executes those decisions. CRE is not deployed to Chainlink's network, and simulation output is not DON-authenticated authority.
 
-The initial OpenAI generation attempt returned HTTP 429 `credit_balance_exhausted`; OpenAI is covered by mocked protocol tests but its live generation/payment journey was not verified. The successful run explicitly selected Qwen; it was not an automatic fallback.
+**Verified October 20, 2026:** real Qwen calls and local CRE executions opened Sepolia stream #1, reused it for ten successful requests, continued on healthy observations, and closed after three injected failures. A 0.01-USDC deposit produced **0.0006 USDC earned + 0.0094 USDC refunded**. [Original transcript](evidence/stream-demo/run.log) · [Structured result](evidence/stream-demo/result.json) · [Independent RPC verification](evidence/stream-demo/rpc-verification.json) · [Verification record](evidence/stream-demo/VERIFICATION.md).
 
 ## Configure
 
-Use Node 22+, installed root/CRE dependencies, Bun and the CRE CLI with a working login. Put secrets only in ignored root `.env`:
+Use Node 22+, root dependencies, Bun, installed CRE dependencies and a working CRE login. Put settings only in ignored root `.env`:
 
 ```dotenv
+QWEN_API_KEY=<funded-key>
 AGENTPAY_AI_PROVIDER=qwen
-QWEN_API_KEY=<funded-Qwen-API-key>
 QWEN_MODEL=qwen3.5-plus
 QWEN_REGION=singapore
 PRIVATE_KEY_1=<dedicated-Sepolia-test-wallet-key>
-AGENTPAY_AGENT_RECIPIENT=<different-Sepolia-recipient-address>
+AGENTPAY_AGENT_RECIPIENT=<different-recipient-address>
+AGENTPAY_USDC_STREAM_ADDRESS=0x5199d1dcaB9496d37677DAD8F53481DCc511d585
 SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 ```
 
-Qwen defaults to the Singapore international endpoint. Use `virginia` or `beijing` for keys issued in those regions. For workspace-specific endpoints, set `QWEN_BASE_URL` to your official Model Studio URL ending `/compatible-mode/v1`. Only official HTTPS Model Studio hosts are accepted. See [Alibaba's Responses API documentation](https://www.alibabacloud.com/help/en/model-studio/qwen-api-via-openai-responses).
+The [verified USDC stream deployment](deployment/usdc-stream.json) points at Circle's six-decimal Ethereum Sepolia USDC. The existing tUSD stream deployment cannot be substituted: its token was fixed in its constructor. The CLI verifies the audited stream runtime and Circle token binding before use. The separate browser Streams page and legacy AgentPaySDK still use 18-decimal tUSD.
 
-For OpenAI instead, set `AGENTPAY_AI_PROVIDER=openai`, `OPENAI_API_KEY`, and optionally `OPENAI_MODEL` (default `gpt-4.1-mini`). Without an explicit provider, a configured Qwen key selects Qwen; otherwise OpenAI is selected. Errors never trigger a provider or rules fallback.
+For OpenAI, set `AGENTPAY_AI_PROVIDER=openai`, `OPENAI_API_KEY` and optionally `OPENAI_MODEL` (default `gpt-4.1-mini`). `OPEN_AI_KEY` is an alias. Qwen defaults to Singapore; `QWEN_REGION` also accepts `virginia` and `beijing`. Optional `QWEN_BASE_URL` must be an official Model Studio HTTPS endpoint ending `/compatible-mode/v1`. Without an explicit provider, a Qwen key selects Qwen, otherwise OpenAI. No provider or heuristic fallback occurs.
 
-Existing local settings named `OPEN_AI_KEY` and `CRE_PAYMENT_RECIPIENT_ADDRESS` are accepted as aliases. `PRIVATE_KEY` is a fallback for `PRIVATE_KEY_1`. Explicit primary values take precedence. Never use `VITE_` variables or browser fields for these keys. The selected model must support Responses API function calls. API calls require available credit and incur usage. Host-side argument validation applies regardless of the provider's schema enforcement.
+`PRIVATE_KEY` is a fallback for `PRIVATE_KEY_1`; `CRE_PAYMENT_RECIPIENT_ADDRESS` is an alias for the recipient. Explicit primary values take precedence. Never use browser fields or `VITE_` variables for secrets. Model calls may incur API charges. Fund the sender with test USDC and Sepolia ETH; [Circle's faucet](https://faucet.circle.com/) provides test USDC. Testnet tokens have no monetary value.
 
-For payment, fund the payer with at least 0.01 Circle test USDC and Sepolia ETH for gas. The recipient must differ from the payer and USDC contract. Circle's [test faucet](https://faucet.circle.com/) must have **Ethereum Sepolia** selected. No new contract or CRE network workflow deployment is required.
-
-## Run
-
-Preview uses the configured model API and CRE, but never signs, pays, or unlocks paid content:
+## Preview
 
 ```sh
-npm run demo:agent
+npm run --silent demo:agent
 ```
 
-To execute a complete test purchase:
+Preview makes real model, CRE, HTTP and blockchain calls. It evaluates basic admission (`OPEN`) and premium admission (`DENY`) but does not approve tokens, create a stream, unlock paid content or fabricate a funded checkpoint.
+
+## Fund and supervise a stream
 
 ```sh
-npm run demo:agent -- --pay
+npm run --silent demo:agent -- --pay
 ```
 
-The default terminal view groups each request, its CRE decision and any confirmed payment, then shows verified balances and a full explorer link. It uses colours on supported interactive terminals and plain output when redirected; `NO_COLOR` disables colours. Long model explanations and response IDs stay in the evidence by default.
+Each invocation can deposit **at most 0.01 test USDC**, plus test ETH for approval/open/close gas. This is a new stream, not a read-only check or a resumed purchase.
 
-For response IDs, oracle prices and the full model explanation, use:
+1. Qwen/OpenAI requests basic and premium sessions through real tool calls. The model chooses only a tier and purpose; it cannot change deposit, duration, rate, recipients or policy.
+2. The loopback provider returns HTTP 402 with a bound streaming quote. Basic deposits `10000` raw USDC over **1000 seconds**, earning `10` raw units per second. Premium proposes `200000` against the CRE deposit cap `100000` and is denied. The wallet independently limits this demo to `10000`.
+3. Before basic funding, the existing CRE price workflow checks live Coinbase and finalized Chainlink USDC/USD observations, peg bounds and freshness. These checks remain a secondary asset-safety gate.
+4. The stream supervisor fetches a frozen health snapshot over real HTTP and reads the stream's token, token decimals and wallet balance at an explicit Sepolia block. A healthy, bounded proposal returns `OPEN`.
+5. The wallet approves the exact deposit if allowance is insufficient, then calls `createStream()`. Two confirmations, the StreamCreated event, exact parties/rate/duration/metadata and balances must establish that funds entered escrow without paying the recipient upfront.
+6. The agent signs a session authorization binding the provider origin, chain, quote, contract, stream ID and payer. The provider checks this signature and onchain stream state before serving content. A public stream ID alone is insufficient.
+7. Five real service requests reuse the stream. A real CRE checkpoint compares the provider's HTTP counters with client-observed successes/failures and reads the matching onchain stream, returning `CONTINUE`. Five more requests reuse the same ID. Wallet nonce snapshots establish no payment transactions during either batch.
+8. The demo explicitly injects a provider outage. Three real requests return labeled HTTP 503 responses. CRE reads that snapshot and stream state and returns `CLOSE / SERVICE_UNAVAILABLE`.
+9. The sender wallet calls `cancelStream()`. The contract pays accrued, unwithdrawn earnings to the recipient and refunds the unearned amount to the sender. The runner verifies the cancellation event, inactive state, both balance deltas and `earned + refunded = deposit`. Access using the closed stream must fail.
+10. The model receives the actual results and summarizes them. The host separately prints funded, earned and refunded amounts as authoritative facts.
+
+The 1000-second window allows time for CLI compilation and confirmations. It is not a charge for 1000 requests. Earnings are time-based and continue until cancellation is mined; the workflow cannot retroactively refund already-earned time. This demo uses cancellation's built-in accrued payout, not a separate recipient withdrawal transaction. The contract also supports recipient withdrawals independently.
+
+## Output and evidence
+
+The terminal groups stream decisions and request batches, with a final escrow/earnings/refund summary. Supported terminals receive colour; redirected output and `NO_COLOR` use plain text. Use `--verbose` for model response IDs, price observations and unverified model prose. `--json` preserves one result envelope on stdout and progress on stderr.
+
+The result data schema is now **version 2**: modes `local-agent-stream` / `local-stream-preview`, with `fundedRaw`, `earnedRaw`, `refundedRaw` and basic status `stream-completed`. This is an intentional change from the older direct-payment result (`paidRaw`, `purchased`). The outer CLI envelope and existing flags remain compatible.
+
+Every run writes `.local/agent-demo/runs/<id>/`:
+
+- Original CRE price and supervisor transcripts, exact configurations, validated results and SHA-256 hashes.
+- `approval.json`, `open.json`, `close.json`: transaction hash journaled **before broadcast**, then confirmed receipt metadata. No signed payload or private key is saved.
+- `settlement.json`: the stream cancellation's earned/refunded amounts; this filename does not mean AgentPaySettlement was used.
+- `basic.json`, `premium.json`, model `events.jsonl`, and completed `result.json` or `failure.json`.
+
+Repeated model requests for a tier reuse its result. Funding is never automatically retried after uncertainty. If a funded run fails, the host attempts one safety cancellation when it knows the stream ID and has not already attempted closure. A failed cancellation is reported with recovery instructions. The fixed stream expiry still bounds accrual; it does not automatically execute a refund.
+
+## Recover an interrupted stream
+
+Inspect `open.json` / `close.json` and their public transaction hashes before repeating any transaction. If the stream remains active and owned by this payer:
 
 ```sh
-npm run demo:agent -- --verbose
+npm run --silent demo:agent -- --close-stream 1
 ```
 
-Model text is explicitly labeled unverified. In preview, request IDs are never displayed as payment receipts in the verified summary. `--json` keeps one result envelope on stdout and plain progress on stderr; `--verbose` changes presentation only.
+Replace `1` with the actual stream ID. Recovery needs the wallet, stream address and RPC only; it makes no model or CRE call and cannot open another stream. Already-closed and other-payer streams are rejected. If creation confirmation was uncertain, inspect the open transaction's StreamCreated event to determine the ID first.
 
-Each new `--pay` run can transfer **at most 0.01 test USDC**, plus Sepolia ETH for gas. It is not a read-only health check. Model usage is additionally billed by the selected model provider. For structured output, use `npm run --silent demo:agent -- --pay --json`. `--help` performs no environment loading, network or model calls.
-
-## Expected journey
-
-1. The host starts a loopback demo research service. No separately managed provider process is required.
-2. The model returns actual `buy_research` tool calls. The demonstration task asks it to attempt both tiers. The model controls only the tier and a short purpose; it cannot set prices, recipients, token, chain, cap or transaction data.
-3. Basic research returns an HTTP 402 quote for `10000` raw USDC units (0.01). Premium costs `200000` (0.2). The CRE cap is `100000` (0.1).
-4. Each quote gets a distinct request ID and an isolated CRE config with the real parties, pinned Circle token/feed/API, zero receiver and `publishReport: false`. The runner verifies the complete CRE result, request tuple, policy and ABI body. Canonical staging captures are not replaced.
-5. An ALLOW for basic can unlock the local wallet executor when `--pay` is present. The host checks chain, six-decimal token, exact quote/intent, balances, feed freshness, elapsed approval lifetime and a separate 0.01-USDC run limit before signing. It saves the signed transaction's hash before broadcasting, without saving the signed payload or private key.
-6. After two confirmations, receipt verification requires success, exact sender/recipient/token/amount, exact transfer calldata and a matching USDC Transfer event. Balance snapshots must show an exact `10000` recipient increase and payer decrease. Only then does the service return its sample operational note.
-7. Premium must return `DENY (AMOUNT_EXCEEDS_POLICY)` without signing. Balance and nonce snapshots must remain unchanged for that request. Any earlier price/freshness denial stops the expected demo; limits are never loosened to obtain success.
-8. The model receives the actual tool outputs and generates a final explanation. The default CLI prints the host-verified basic/premium status and recipient increase; the model explanation is saved and shown only with `--verbose`. Model prose is not payment evidence.
-
-Repeated model calls for the same tier reuse the existing result. A run never retries an attempted payment automatically. If confirmation or later processing fails after submission, inspect that run's `payment.json` and its transaction hash before starting another paid run. A new invocation is a new purchase, not a resume command.
-
-## Evidence and limits
-
-Each invocation writes `.local/agent-demo/runs/<run-id>/` with:
-
-- `events.jsonl`: Model response IDs, reported usage, visible tool arguments/results and model text; no keys or hidden reasoning.
-- `cre-basic.*` / `cre-premium.*`: exact configs, original CLI transcripts and validated results, with config/transcript SHA-256 hashes.
-- `basic.json`, `premium.json`: authoritative tool outcomes.
-- `payment.json`: submission hash, confirmed receipt and before/after balances when payment occurs.
-- `result.json`: completed journey and final model explanation; or `failure.json` when completion fails.
-
-The service's note is explicitly labeled sample operational guidance. Its receipt protocol is `agentpay-demo-receipt-v1`, **not full x402** and not the separate legacy streaming gateway's hash header. Receipt age, exact transfer matching and per-quote reuse checks prevent an older/different payment from unlocking a new quote.
-
-The trust boundary is local: **the wallet-owning process enforces the CRE result**. This is not a DON-authenticated report, onchain guard enforcement, or `AgentPaySettlement` payment. Existing strict contracts stay closed and unchanged. CRE observation timestamps and host capture timestamps are recorded separately; the local executor bounds elapsed approval age with a monotonic clock and consumes feed freshness headroom while it waits. It does not present simulation output as a signed onchain credential.
-
-No fallback model, mock decision, fabricated receipt or heuristic is used in a live demo. Tests use explicitly synthetic model/CRE outputs and a disposable local ERC-20 fixture. Those passing tests prove local code paths; they do not prove a successful model call or Circle Sepolia transfer.
-
-Model explanations are untrusted prose. The host prints authoritative status and integer balance changes separately, and supplies explicit six-decimal display values to reduce unit errors. Policy approval is not a compliance guarantee.
-
-## Verification
-
-[Commands, results and clean-source verification](evidence/agent-demo/VERIFICATION.md).
+## Verification and limits
 
 ```sh
 npm test
 npm run docs:check
+npm run typecheck:cre
 ```
 
-The new tests cover model/tool failures, duplicate calls, secret redaction, exact quote binding, denial/expiry/freshness/run limits, receipt matching and an actual signed local transfer with receipt-gated content and replay rejection. CLI success exits 0; operational failure exits 1; invalid arguments/configuration exits 2. The JSON envelope follows the existing CLI convention.
+Policy tests cover all four decisions, party/amount/rate/duration/metadata binding, wrong assets, balance limits, counter disagreement and malformed configuration. Signed local-chain tests cover real escrow funding, authenticated API reuse, no per-request transactions, injected outages, cancellation/refund reconciliation and denied funding before signing.
 
-For OpenAI `credit_balance_exhausted`, fix API billing or save a funded key before rerunning. A successful model metadata lookup alone does not establish generation access. [Official OpenAI error guidance](https://developers.openai.com/api/docs/guides/error-codes).
+The provider is a local demo service serving labeled sample guidance. The outage is injected intentionally. Its counters and the client run under one operator; agreement is not independent proof of service quality. HTTP 402/session headers are an AgentPay demo protocol, **not full x402**. Session signatures bind access to a payer but do not add onchain CRE enforcement.
 
-[Qwen Responses API](https://www.alibabacloud.com/help/en/model-studio/qwen-api-via-openai-responses) · [OpenAI function calling](https://developers.openai.com/api/docs/guides/function-calling) · [CRE workflow](WORKFLOW.md) · [USDC addresses and units](USDC_SEPOLIA.md)
+Stream/wallet reads use an explicit recent block; funding/closure wait two confirmations, not finality. The existing price feed read remains finalized. Local CRE is single-node execution, and wallet credentials remain under the operator's control. Closed strict guard/settlement contracts are unused by this path.
+
+Historical direct-transfer evidence remains under `evidence/agent-demo/`, documenting the earlier implementation. It is not evidence of stream creation or refund. [CRE source](../cre/payment-guard/stream-main.ts) · [Stream contract](../contracts/AgentPayStream.sol) · [USDC addresses](USDC_SEPOLIA.md) · [CRE simulation](https://docs.chain.link/cre/guides/operations/simulating-workflows) · [Qwen Responses API](https://www.alibabacloud.com/help/en/model-studio/qwen-api-via-openai-responses)

@@ -18,7 +18,7 @@ export const documentation = {
   overview: {
     title: "Payments with boundaries you can inspect.",
     intro:
-      "AgentPay uses Chainlink CRE to evaluate a USDC payment intent with external data and finalized Ethereum Sepolia reads.",
+      "AgentPay uses prepaid USDC escrow streams and local CRE service-health checkpoints in its AI CLI. The browser retains recorded price-policy evidence, a local SDK draft and a separate tUSD stream UI.",
     source: "docs/README.md",
     sections: [
       section("Choose your starting point", [
@@ -51,8 +51,8 @@ export const documentation = {
       section("Current scope", [
         list([
           "Ethereum Sepolia only; testnet USDC and tUSD have no monetary value.",
-          "No live DON deployment or public-chain settlement is claimed by the saved evidence.",
-          "The guard enforces a per-request cap, expiry and single use. It is not a rolling budget, KYC or compliance service.",
+          "CRE stays local. The AI CLI has separate verified Sepolia stream funding, request reuse, closure and refund evidence.",
+          "The stream contract accrues earnings with time and refunds unused escrow on cancellation. CRE decisions are enforced by the sender wallet.",
           "The legacy gateway uses AgentPay-specific HTTP 402 headers. It does not implement the full current x402 transport/facilitator protocol.",
           "This is an unaudited prototype.",
         ]),
@@ -264,11 +264,11 @@ export const documentation = {
       ]),
       section("Run the AI CLI demo", [
         p(
-          "The separate CLI uses real Qwen or OpenAI tool calls, a loopback paid-resource service and live local CRE simulations. Configure the model key, dedicated Sepolia payer and distinct USDC recipient in the ignored root .env. No secrets belong in the browser."
+          "The separate CLI uses real Qwen or OpenAI tool calls and a USDC-configured escrow stream. Local CRE evaluates admission, healthy continuation and outage-triggered closure using HTTP observations and Sepolia state. Configure the model key, dedicated payer, recipient and AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env."
         ),
         code("sh", "npm run demo:agent\nnpm run demo:agent -- --pay"),
         p(
-          "Basic costs 0.01 USDC; premium costs 0.2 against a 0.1 cap and must be denied. The paid run verifies the transfer receipt and recipient balance increase before returning content. Each paid invocation is a new purchase. Use --verbose for model details and --json for structured output. The wallet process enforces the local CRE result; no additional contract or workflow deployment is required. This demo is not DON authentication, AgentPaySettlement or full x402, and does not read this browser draft."
+          "Preview evaluates OPEN and DENY without signing. With --pay, basic deposits 0.01 USDC over 1000 seconds, ten successful API requests reuse the stream, and an injected outage produces CRE CLOSE. The wallet cancels, paying time-accrued earnings and refunding unused funds. Premium proposes 0.2 against a 0.1 deposit cap and is denied. Each paid run is a new stream and spends test ETH gas. Use --close-stream <id> to recover an owned stream, --verbose for model details and --json for structured output. The USDC stream has its own deployment; no CRE network deployment is needed. This is wallet-side enforcement, not DON authentication, AgentPaySettlement or full x402."
         ),
       ]),
       section("Strict SDK integration prerequisites", [

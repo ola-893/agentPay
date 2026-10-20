@@ -1,6 +1,6 @@
 # Legacy tUSD payment streams
 
-The streaming frontend and `AgentPaySDK` assume **18-decimal MockUSD/tUSD**, with no monetary value. Circle's six-decimal USDC is supported only by the separate guarded workflow/client. [Deploy and configure](../../DEPLOYMENT.md) before connecting a wallet.
+The streaming frontend and `AgentPaySDK` assume **18-decimal MockUSD/tUSD**, with no monetary value. The separate AI CLI now uses the same escrow contract with six-decimal Circle USDC and local CRE lifecycle supervision; see the [AI streaming guide](../AI_AGENT_DEMO.md). [Deploy and configure](../../DEPLOYMENT.md) before connecting a wallet.
 
 ## UI workflow
 

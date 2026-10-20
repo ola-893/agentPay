@@ -1,0 +1,100 @@
+{
+  "capturedAt": "2026-10-20T17:31:44.477Z",
+  "configSha256": "0fc090d0bacefaeeab68c2c71364562e53a9f97d9df2d8d767f274a8ae9ec441",
+  "logSha256": "568728d1c105989d0fb51f78ab154a48011975ae3007d522a6e0cb3a5947ba5b",
+  "config": {
+    "chainId": 11155111,
+    "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "tokenDecimals": 6,
+    "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+    "requestId": "0x31741ed77890f94aa0db372c1d4f356bddd96ed1311828562c1f747b67265855",
+    "quoteId": "0xe6a7f1aa3986956a5f053b9b1892dba4ef7380f7e2ee27b652afb31371469c1c",
+    "sessionId": "0xb8803445ce518fec32299c4fa8d3d932b16be37139160b9d32462984794829f9",
+    "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+    "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+    "amountRaw": "10000",
+    "spendingCapRaw": "100000",
+    "durationSeconds": 1000,
+    "maxRateRawPerSecond": "100",
+    "phase": "checkpoint",
+    "streamId": "1",
+    "observationBlock": 11956799,
+    "healthUrl": "http://127.0.0.1:62683/health/13d50416b7176f8a46889d8e15b66400ac0414fcf9966bd52bfa430a3e754366",
+    "expectedHealth": {
+      "sessionId": "0xb8803445ce518fec32299c4fa8d3d932b16be37139160b9d32462984794829f9",
+      "observationId": "0x13d50416b7176f8a46889d8e15b66400ac0414fcf9966bd52bfa430a3e754366",
+      "serviceAvailable": false,
+      "successfulRequests": 10,
+      "failedRequests": 3
+    },
+    "client": {
+      "successfulRequests": 10,
+      "failedRequests": 3
+    },
+    "maxFailedRequests": 3
+  },
+  "result": {
+    "schemaVersion": 1,
+    "workflow": "agentpay-stream-supervisor",
+    "mode": "local-simulation",
+    "config": {
+      "chainId": 11155111,
+      "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      "tokenDecimals": 6,
+      "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+      "requestId": "0x31741ed77890f94aa0db372c1d4f356bddd96ed1311828562c1f747b67265855",
+      "quoteId": "0xe6a7f1aa3986956a5f053b9b1892dba4ef7380f7e2ee27b652afb31371469c1c",
+      "sessionId": "0xb8803445ce518fec32299c4fa8d3d932b16be37139160b9d32462984794829f9",
+      "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+      "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+      "amountRaw": "10000",
+      "spendingCapRaw": "100000",
+      "durationSeconds": 1000,
+      "maxRateRawPerSecond": "100",
+      "phase": "checkpoint",
+      "streamId": "1",
+      "observationBlock": 11956799,
+      "healthUrl": "http://127.0.0.1:62683/health/13d50416b7176f8a46889d8e15b66400ac0414fcf9966bd52bfa430a3e754366",
+      "expectedHealth": {
+        "sessionId": "0xb8803445ce518fec32299c4fa8d3d932b16be37139160b9d32462984794829f9",
+        "observationId": "0x13d50416b7176f8a46889d8e15b66400ac0414fcf9966bd52bfa430a3e754366",
+        "serviceAvailable": false,
+        "successfulRequests": 10,
+        "failedRequests": 3
+      },
+      "client": {
+        "successfulRequests": 10,
+        "failedRequests": 3
+      },
+      "maxFailedRequests": 3
+    },
+    "health": {
+      "sessionId": "0xb8803445ce518fec32299c4fa8d3d932b16be37139160b9d32462984794829f9",
+      "observationId": "0x13d50416b7176f8a46889d8e15b66400ac0414fcf9966bd52bfa430a3e754366",
+      "serviceAvailable": false,
+      "successfulRequests": 10,
+      "failedRequests": 3
+    },
+    "onchain": {
+      "paymentToken": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      "tokenDecimals": 6,
+      "agentBalanceRaw": "39960000",
+      "stream": {
+        "sender": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+        "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+        "totalAmount": "10000",
+        "flowRate": "10",
+        "startTime": "1792517460",
+        "stopTime": "1792518460",
+        "amountWithdrawn": "0",
+        "isActive": true,
+        "metadata": "{\"sessionId\":\"0xb8803445ce518fec32299c4fa8d3d932b16be37139160b9d32462984794829f9\",\"quoteId\":\"0xe6a7f1aa3986956a5f053b9b1892dba4ef7380f7e2ee27b652afb31371469c1c\"}",
+        "claimableRaw": "120"
+      }
+    },
+    "action": "CLOSE",
+    "reason": "SERVICE_UNAVAILABLE",
+    "observedAt": 1792517504,
+    "donAuthenticated": false
+  }
+}

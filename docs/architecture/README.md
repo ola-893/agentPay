@@ -1,35 +1,37 @@
 # Architecture and trust boundaries
 
-AgentPay has two explicit payment paths. Only the CRE guarded path is the current bounty orchestration workflow.
+AgentPay's current AI demo supervises the original prepaid stream mechanism with local Chainlink CRE. The same AgentPayStream contract is deployed separately for six-decimal Circle USDC and legacy 18-decimal tUSD.
 
 ```mermaid
-flowchart LR
-  Trigger[Cron intent] --> HTTP[Coinbase USDC/USD via CRE HTTP consensus]
-  HTTP --> EVM[Finalized Sepolia feed and token reads]
-  EVM --> Policy[Freshness, disagreement, peg, cap]
-  Policy --> Report[CRE report]
-  Report --> Preview[Saved evidence viewer]
-  Report --> Forwarder[Deployed workflow and trusted forwarder]
-  Forwarder --> Guard[AgentPayGuard]
-  Guard --> Settlement[Single-use AgentPaySettlement]
-  Settlement --> USDC[Circle Sepolia USDC transfer]
+flowchart TD
+  Agent[AI requests service] --> Quote[Provider HTTP 402 streaming quote]
+  Quote --> Admission[Local CRE price safety + stream admission]
+  Admission --> Wallet[Sender approves and funds AgentPayStream escrow]
+  Wallet --> Access[Signed payer session; many requests reuse one stream]
+  Access --> Check[CRE HTTP observations + explicit-block stream reads]
+  Check -->|CONTINUE| Access
+  Check -->|CLOSE| Cancel[Sender wallet cancels stream]
+  Cancel --> Payout[Earned funds to recipient; unused escrow refunded]
 ```
 
-## Guarded USDC
+## USDC stream supervision
 
-- [Workflow](../WORKFLOW.md) joins external and blockchain data, evaluates raw integer values and generates a destination-bound report.
-- [AgentPayGuard](../contracts/guarded-settlement.md) trusts its immutable forwarder and owner-bound workflow identity. It checks request identity, parties, destination, amount, expiry and replay. It does not recompute oracle policy.
-- [GuardedPaymentClient](../sdk/guarded-payment-client.md) verifies the chain, settlement/guard binding and live authority before approvals and again before settlement.
-- The browser evidence viewer shows historical results only. [Agent setup](../AGENT_SETUP.md) saves a local integration draft; it does not operate an agent or publish a policy.
+The [AI runner](../AI_AGENT_DEMO.md) obtains actual model tool calls, but quotes and financial parameters remain host-controlled. A price admission gate uses the [existing USDC workflow](../WORKFLOW.md). The [stream supervisor](../../cre/payment-guard/stream-main.ts) then combines a frozen HTTP observation with wallet/token/stream reads at an explicit recent Sepolia block.
 
-A failed settlement reverts authorization consumption and token transfer together. A denied, expired or consumed report cannot pay. Fresh intents need unique IDs; the fixed sample intent is for read-only reproduction.
+Decisions bind the session, quote, parties, token, stream address/ID, deposit, rate and duration. Provider and client request counters must agree. A healthy admission returns OPEN, a healthy funded checkpoint CONTINUE, and service failure CLOSE. An oversized proposal returns DENY.
 
-## Separate tUSD streaming
+The sender wallet signs transactions; the stream contract itself has no CRE authorization hook. Local simulation is single-node and does not establish DON consensus. The demo waits two confirmations for writes, not finality; the separate oracle read uses finalized state. A nonce comparison establishes that service request batches caused no additional wallet transactions.
 
-The [legacy SDK/provider](x402-protocol.md) negotiates project-specific HTTP 402 headers. It can establish a [MockUSD stream](payment-streams.md) and attach its stream ID on later requests. The provider checks active status, recipient, timestamps and minimum per-second rate. It does not implement an authenticated payer/session binding or durable metering. A public stream ID is not a production access credential.
+The provider requires a signed session bound to its origin, quote, chain, payer and stream ID, then verifies the stream before serving each request. The outage scenario is deliberately injected; client/provider counter agreement under one operator is not independent proof of service quality. This is an AgentPay HTTP 402 protocol, not full x402.
 
-The gateway rejects direct transaction-hash proof and does not automatically accept guarded settlement receipts. Full current x402 transport/facilitator integration is not shipped. Claimed gas savings/signature counts from old illustrative guides are not measured guarantees.
+The contract is time-based, not per-request metering. It accrues until cancellation is mined, pays unwithdrawn earnings on closure and refunds unearned escrow. At expiry the full remainder is claimable, but no refund transaction runs automatically.
 
-## Scope
+## Strict authorization reference
 
-Ethereum Sepolia only. Circle USDC has 6 decimals; legacy tUSD has 18. Testnet tokens have no monetary value. Saved simulation is demonstrated, not live DON deployment or public settlement. The optional mock receiver is record-only. Rolling budgets, KYC/compliance, private execution and multi-chain settlement are not included. This is an unaudited prototype, and workflow configuration/owner are trusted. [Submission](../CRE_SUBMISSION.md).
+AgentPayGuard and AgentPaySettlement implement a different one-time settlement example. The guard authenticates forwarder/workflow identity and bounds destination, parties, expiry and replay. GuardedPaymentClient checks that authority before token approval and settlement. The existing public guard remains closed; the AI stream demo does not use these contracts. A simulation result cannot unlock them. [Reference](../contracts/guarded-settlement.md).
+
+## Retained tUSD UI and SDK
+
+The [legacy provider/SDK](x402-protocol.md) and browser Streams page still use 18-decimal tUSD and their original [stream lifecycle](payment-streams.md). That gateway checks stream state but lacks payer-bound session authentication; do not confuse it with the new CLI provider. Agent setup is a local strict-client draft, not live agent control.
+
+Both tokens are valueless testnet assets. Rolling onchain budgets, independent service attestation, private execution and multichain settlement are outside this prototype. [Submission and evidence](../CRE_SUBMISSION.md).

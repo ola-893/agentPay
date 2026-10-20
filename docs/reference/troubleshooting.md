@@ -57,7 +57,7 @@ Then rerun `npm run cre:dry-run`. The [before/after evidence](../evidence/networ
 | Qwen 401 or model access error | Match `QWEN_REGION` / optional official `QWEN_BASE_URL` to the key's issuing region and workspace; check model access and billing. |
 | OpenAI `credit_balance_exhausted` | Add API credits or use a funded key. ChatGPT access and a successful model metadata lookup do not establish API generation credit. |
 | CRE denied basic | Inspect the original transcript, live prices and feed age. Do not loosen policy to force an approval. |
-| Payment confirmation uncertain | Inspect the transaction hash in this run's `payment.json` before another paid run. The CLI never automatically retries; a new `--pay` invocation can spend another 0.01 test USDC. |
+| Payment confirmation uncertain | Inspect this run's `approval.json`, `open.json` and `close.json` before another paid run. A new `--pay` can fund another stream. Use `--close-stream <id>` to recover an owned active stream after checking its receipts. |
 | Strict SDK says unauthorized | The AI CLI uses a separate local wallet gate. Its simulation cannot authorize the closed public strict guard. |
 
 Provider failures do not trigger a rules-based agent or automatic provider fallback. Model summaries are untrusted prose; use the host-verified status, raw units and receipt as evidence.

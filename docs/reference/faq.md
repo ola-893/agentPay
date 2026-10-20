@@ -2,7 +2,7 @@
 
 ## What does AgentPay currently demonstrate?
 
-A Chainlink CRE workflow combining Coinbase USDC/USD and finalized Ethereum Sepolia reads, deterministic payment policy and report generation. Saved ALLOW and budget-DENY captures are real CLI runs. The browser shows historical evidence and does not execute a live workflow. [Submission](../CRE_SUBMISSION.md).
+An AI agent funds a USDC escrow stream, reuses it for service requests, and uses local CRE HTTP/onchain checkpoints to continue or close it with earned-payment/refund verification. A secondary price gate compares Coinbase and finalized Chainlink USDC/USD. The browser shows separate historical price evidence. [Submission](../CRE_SUBMISSION.md).
 
 ## Is a wallet required?
 
@@ -10,7 +10,7 @@ Not to view evidence, read Docs or prepare an Agent setup draft. Read-only authe
 
 ## Which token and decimals?
 
-Guarded path: Circle Sepolia USDC, **6 decimals** (`0.01 = 10000`). Legacy streams: MockUSD/tUSD, **18 decimals**. Both are valueless testnet tokens. Do not use USDC in the streaming UI/SDK. [USDC policy](../USDC_SEPOLIA.md).
+AI streaming CLI and guarded reference: Circle Sepolia USDC, **6 decimals** (`0.01 = 10000`). Legacy streams: MockUSD/tUSD, **18 decimals**. Both are valueless testnet tokens. The retained browser stream UI and legacy AgentPaySDK still require tUSD. [USDC policy](../USDC_SEPOLIA.md).
 
 ## Why USDC/USD, and can two matching depegged prices pass?
 
@@ -18,7 +18,7 @@ The price check follows the payment asset. Each source must be within 1% of $1 a
 
 ## Does saved ALLOW authorize payment?
 
-No. It is historical evidence with placeholder parties/zero receiver. A deployed workflow must submit a fresh authenticated report to the strict guard. The SDK checks that onchain authority before approval and again before settlement. [Guarded client](../sdk/guarded-payment-client.md).
+No. Saved captures are historical evidence, never spend credentials. The streaming CLI uses fresh local CRE decisions as wallet-side policy; the wallet signs escrow funding or cancellation. The separate strict settlement reference requires an authenticated report accepted by its onchain guard and is not used by the streaming CLI. [Guarded client](../sdk/guarded-payment-client.md).
 
 ## Does Agent setup run or pause an agent?
 
@@ -26,7 +26,7 @@ No. It validates a non-secret local draft, stores it in this browser and generat
 
 ## Is the project deployed or audited?
 
-Saved evidence demonstrates simulation, not live DON deployment or public payment. No public AgentPay consumer/stream address is claimed by these docs. This is an unaudited prototype. [Deployment](../../DEPLOYMENT.md) covers optional Sepolia operator steps.
+A USDC-configured AgentPayStream is deployed on Sepolia, and the AI demo has verified real funding, request reuse, cancellation, earned payout and unused-funds refund. CRE stays local; no workflow is deployed to a DON. This is an unaudited prototype. [Deployment](../../DEPLOYMENT.md) and [AI guide](../AI_AGENT_DEMO.md).
 
 ## Does this implement x402?
 

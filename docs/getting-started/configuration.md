@@ -45,6 +45,7 @@ Copy `.env.example` to ignored `.env` when deploying or running a server that ne
 | `QWEN_API_KEY`, `QWEN_MODEL`, `QWEN_REGION`, `QWEN_BASE_URL` | AI CLI Qwen credentials, model and regional endpoint; defaults `qwen3.5-plus` / `singapore` |
 | `OPENAI_API_KEY` (`OPEN_AI_KEY` alias), `OPENAI_MODEL` | Alternative AI CLI provider; default model `gpt-4.1-mini` |
 | `PRIVATE_KEY_1` (`PRIVATE_KEY` fallback) | AI CLI dedicated Sepolia payer; also used by the legacy consumer |
+| `AGENTPAY_USDC_STREAM_ADDRESS` | AI CLI AgentPayStream instance configured for Circle USDC; separate from tUSD UI/SDK |
 | `AGENTPAY_AGENT_RECIPIENT` (`CRE_PAYMENT_RECIPIENT_ADDRESS` alias) | AI CLI USDC recipient, different from payer and token |
 | `CRE_BIN` | Override simulator CLI executable path |
 

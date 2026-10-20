@@ -1,0 +1,271 @@
+{
+  "schemaVersion": 2,
+  "runId": "20261020T172956Z-3e6da4e6",
+  "mode": "local-agent-stream",
+  "completedAt": "2026-10-20T17:32:43.384Z",
+  "provider": "qwen",
+  "model": "qwen3.5-plus",
+  "chainId": 11155111,
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+  "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+  "fundedRaw": "10000",
+  "earnedRaw": "600",
+  "refundedRaw": "9400",
+  "initial": {
+    "agentBalanceRaw": "39970000",
+    "recipientBalanceRaw": "30000",
+    "nonce": 9
+  },
+  "final": {
+    "agentBalanceRaw": "39969400",
+    "recipientBalanceRaw": "30600",
+    "nonce": 12
+  },
+  "responses": [
+    {
+      "id": "resp_a8dfcd1c-6ab4-99ce-91dd-904535731fd9",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 657,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 94,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 751,
+        "x_details": [
+          {
+            "input_tokens": 657,
+            "output_tokens": 94,
+            "total_tokens": 751,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"basic\", \"purpose\": \"Demonstrate local CRE OPEN, stream reuse, CONTINUE and outage-triggered CLOSE/refund\"}",
+          "call_id": "call_8b2f625551884a8b9c68b840",
+          "id": "msg_493ab676-b787-4256-b910-369ab82e0342",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_c43cdb87-9870-928e-9086-a757f80f7ee6",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1746,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 44,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1790,
+        "x_details": [
+          {
+            "input_tokens": 1746,
+            "output_tokens": 44,
+            "total_tokens": 1790,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"premium\", \"purpose\": \"Attempt premium session to demonstrate budget denial against 0.1 deposit cap\"}",
+          "call_id": "call_1c12cb5ece5c40c58e9eafa0",
+          "id": "msg_a55434a0-b182-451f-8a34-e5bbdb1e78ce",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_1e85dc76-29b1-9643-9e13-4ca292414904",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1614,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 514,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 2128,
+        "x_details": [
+          {
+            "input_tokens": 1614,
+            "output_tokens": 514,
+            "total_tokens": 2128,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "content": [
+            {
+              "annotations": [],
+              "text": "### Factual Summary\n\n**Basic Streaming Session (Tier: Basic)**\n*   **Status:** Stream-completed.\n*   **Funding:** A total of **10,000 raw units (0.01 USDC)** was funded to stream address `0x5199d1dcaB9496d37677DAD8F53481DCc511d585` (Stream ID: 1). This was confirmed by transaction hash `0x5e3c45d52bbf407161feeb0d093e2f6e674a36565f4534ede2cbc87a2ffc855b`.\n*   **Operation:** The session successfully demonstrated local CRE OPEN and CONTINUE states. It processed **10 successful requests** across three batches without individual payment transactions (stream reuse), utilizing a single admission nonce update.\n*   **Outage & Closure:** A demo outage was injected, triggering an automatic CLOSE checkpoint. The Client Request Executor (CRE) requested closure, and the wallet cancelled the stream.\n*   **Settlement:**\n    *   **Earned:** **600 raw units (0.0006 USDC)** were paid to the recipient for time accrued.\n    *   **Refunded:** **9,400 raw units (0.0094 USDC)** were refunded to the agent for the unused deposit.\n    *   **Final Transaction:** Settlement confirmed via hash `0x3d22cd3855b6bc10c4cf29e9496630ff698d3697c85ea9c2f2e2db8d78a432ca`.\n*   **Authentication:** No DON/onchain CRE authorization was present (`donAuthenticated: false`).\n\n**Premium Streaming Session (Tier: Premium)**\n*   **Status:** Denied.\n*   **Reason:** The requested amount of **200,000 raw units (0.2 USDC)** exceeded the policy cap of **100,000 raw units (0.1 USDC)**.\n*   **Result:** No transaction was signed or executed; agent and recipient balances remained unchanged from the post-basic-settlement state.",
+              "type": "output_text"
+            }
+          ],
+          "id": "msg_7bb0da33-2d37-4119-ac73-3f638b0cd3f5",
+          "role": "assistant",
+          "status": "completed",
+          "type": "message"
+        }
+      ]
+    }
+  ],
+  "summary": "### Factual Summary\n\n**Basic Streaming Session (Tier: Basic)**\n*   **Status:** Stream-completed.\n*   **Funding:** A total of **10,000 raw units (0.01 USDC)** was funded to stream address `0x5199d1dcaB9496d37677DAD8F53481DCc511d585` (Stream ID: 1). This was confirmed by transaction hash `0x5e3c45d52bbf407161feeb0d093e2f6e674a36565f4534ede2cbc87a2ffc855b`.\n*   **Operation:** The session successfully demonstrated local CRE OPEN and CONTINUE states. It processed **10 successful requests** across three batches without individual payment transactions (stream reuse), utilizing a single admission nonce update.\n*   **Outage & Closure:** A demo outage was injected, triggering an automatic CLOSE checkpoint. The Client Request Executor (CRE) requested closure, and the wallet cancelled the stream.\n*   **Settlement:**\n    *   **Earned:** **600 raw units (0.0006 USDC)** were paid to the recipient for time accrued.\n    *   **Refunded:** **9,400 raw units (0.0094 USDC)** were refunded to the agent for the unused deposit.\n    *   **Final Transaction:** Settlement confirmed via hash `0x3d22cd3855b6bc10c4cf29e9496630ff698d3697c85ea9c2f2e2db8d78a432ca`.\n*   **Authentication:** No DON/onchain CRE authorization was present (`donAuthenticated: false`).\n\n**Premium Streaming Session (Tier: Premium)**\n*   **Status:** Denied.\n*   **Reason:** The requested amount of **200,000 raw units (0.2 USDC)** exceeded the policy cap of **100,000 raw units (0.1 USDC)**.\n*   **Result:** No transaction was signed or executed; agent and recipient balances remained unchanged from the post-basic-settlement state.",
+  "purchases": {
+    "basic": {
+      "status": "stream-completed",
+      "tier": "basic",
+      "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+      "streamId": "1",
+      "fundedRaw": "10000",
+      "earnedRaw": "600",
+      "refundedRaw": "9400",
+      "admission": "OPEN",
+      "healthyCheckpoint": "CONTINUE",
+      "outageCheckpoint": "CLOSE",
+      "outageInjected": true,
+      "client": {
+        "successfulRequests": 10,
+        "failedRequests": 3
+      },
+      "requestBatches": [
+        {
+          "requests": 5,
+          "walletNonceBefore": 11,
+          "walletNonceAfter": 11,
+          "noPaymentTransactions": true
+        },
+        {
+          "requests": 5,
+          "walletNonceBefore": 11,
+          "walletNonceAfter": 11,
+          "noPaymentTransactions": true
+        },
+        {
+          "requests": 3,
+          "walletNonceBefore": 11,
+          "walletNonceAfter": 11,
+          "noPaymentTransactions": true
+        }
+      ],
+      "funded": {
+        "streamId": "1",
+        "state": {
+          "sender": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+          "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+          "totalAmount": "10000",
+          "flowRate": "10",
+          "startTime": "1792517460",
+          "stopTime": "1792518460",
+          "amountWithdrawn": "0",
+          "isActive": true,
+          "metadata": "{\"sessionId\":\"0xb8803445ce518fec32299c4fa8d3d932b16be37139160b9d32462984794829f9\",\"quoteId\":\"0xe6a7f1aa3986956a5f053b9b1892dba4ef7380f7e2ee27b652afb31371469c1c\"}"
+        },
+        "before": {
+          "agentBalanceRaw": "39970000",
+          "recipientBalanceRaw": "30000",
+          "nonce": 9
+        },
+        "after": {
+          "agentBalanceRaw": "39960000",
+          "recipientBalanceRaw": "30000",
+          "nonce": 11
+        },
+        "transactions": [
+          {
+            "state": "confirmed",
+            "transactionHash": "0x5e3c45d52bbf407161feeb0d093e2f6e674a36565f4534ede2cbc87a2ffc855b",
+            "blockNumber": 11956796,
+            "confirmations": 2,
+            "gasUsed": "137745",
+            "feeWei": "137747341665"
+          },
+          {
+            "state": "confirmed",
+            "transactionHash": "0x81966282be0a35356f5b3de5835ce5c080270148a230c1116d3a251dea781746",
+            "blockNumber": 11956798,
+            "confirmations": 2,
+            "gasUsed": "1726626",
+            "feeWei": "1726655352642"
+          }
+        ],
+        "fundedRaw": "10000"
+      },
+      "settlement": {
+        "streamId": "1",
+        "closed": true,
+        "earnedRaw": "600",
+        "refundedRaw": "9400",
+        "before": {
+          "agentBalanceRaw": "39960000",
+          "recipientBalanceRaw": "30000",
+          "nonce": 11
+        },
+        "after": {
+          "agentBalanceRaw": "39969400",
+          "recipientBalanceRaw": "30600",
+          "nonce": 12
+        },
+        "transaction": {
+          "state": "confirmed",
+          "transactionHash": "0x3d22cd3855b6bc10c4cf29e9496630ff698d3697c85ea9c2f2e2db8d78a432ca",
+          "blockNumber": 11956802,
+          "confirmations": 2,
+          "gasUsed": "88225",
+          "feeWei": "88226499825"
+        }
+      },
+      "closedAccessRejected": true,
+      "research": {
+        "source": "AgentPay stream demo (sample operational guidance)",
+        "content": "A funded stream amortizes payment transactions across service requests; earnings accrue with time until cancellation or expiry."
+      },
+      "donAuthenticated": false
+    },
+    "premium": {
+      "status": "denied",
+      "tier": "premium",
+      "policy": {
+        "reason": "AMOUNT_EXCEEDS_POLICY",
+        "amountRaw": "200000",
+        "amountUsdc": "0.2",
+        "capRaw": "100000",
+        "capUsdc": "0.1"
+      },
+      "noTransactionSigned": true,
+      "before": {
+        "agentBalanceRaw": "39969400",
+        "recipientBalanceRaw": "30600",
+        "nonce": 12
+      },
+      "after": {
+        "agentBalanceRaw": "39969400",
+        "recipientBalanceRaw": "30600",
+        "nonce": 12
+      }
+    }
+  },
+  "donAuthenticated": false,
+  "strictGuardUsed": false,
+  "evidenceDirectory": ".local/agent-demo/runs/20261020T172956Z-3e6da4e6"
+}

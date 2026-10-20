@@ -8,9 +8,13 @@ Recorded evidence and read-only CRE simulation require no deployed AgentPay cont
 
 `npm run build:web` produces `vite-project/dist`, a static React app with evidence JSON from `public/evidence`. Preserve the SPA fallback (`_redirects` / `netlify.toml`) when hosting. No hosting deployment is included in the recorded evidence.
 
-## AI agent wallet payment demo
+## AI agent USDC streaming demo
 
-The [AI CLI demo](docs/AI_AGENT_DEMO.md) uses a funded Qwen or OpenAI API key and a dedicated Sepolia wallet. It runs the existing workflow locally for each quote, then the wallet process may send a direct Circle USDC transfer. It requires no new contract, workflow deployment or workflow-ID binding. The service independently verifies the receipt before returning content. This authority path is separate from the closed strict contracts below.
+The [AI CLI demo](docs/AI_AGENT_DEMO.md) funds AgentPayStream escrow, reuses it across API requests, and cancels on a local CRE service-health decision. A separate [verified USDC stream instance](docs/deployment/usdc-stream.json) was deployed at `0x5199d1dcaB9496d37677DAD8F53481DCc511d585`. Set `AGENTPAY_USDC_STREAM_ADDRESS` in root `.env`; its paymentToken must be Circle Sepolia USDC. Existing tUSD deployments cannot change their token.
+
+To deploy another USDC stream instance, compile with `npm run test:contracts`, configure the dedicated Sepolia wallet and RPC, then run `npm run deploy:usdc-stream`. It deploys only AgentPayStream, verifies runtime and six-decimal token binding, and updates the public deployment record. It spends test ETH. No token, guard or CRE network workflow is deployed.
+
+The CLI journals hashes before broadcast and verifies escrow, reuse, cancellation and refund. On interrupted runs, inspect the journal and use `npm run demo:agent -- --close-stream <id>` for an owned active stream. This recovery cannot open a new stream.
 
 ## Separate simulation-only write demo
 

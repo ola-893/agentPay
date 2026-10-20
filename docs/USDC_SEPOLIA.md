@@ -57,3 +57,7 @@ npm run cre:capture -- --deny-budget
 ```
 
 The two CLI scenarios use live Coinbase and finalized Sepolia reads. Only successful expected outcomes replace captures; older ETH/USD evidence is retained under `docs/evidence/backups/` as the previous policy’s history. Depeg and boundary outcomes are tested deterministically in `cre/payment-guard/policy.test.ts`; the recorded live DENY scenario is an over-budget denial, not a claim of a real USDC depeg.
+
+## USDC stream demo
+
+The AI CLI now uses a separate AgentPayStream instance configured for Circle Sepolia USDC. A 0.01-USDC deposit (`10000` raw) over 1000 seconds accrues `10` raw units per second. Many API calls reuse the funded stream; cancellation pays earned funds and refunds unearned escrow. The contract uses raw integers, while the existing browser stream UI and legacy SDK still explicitly require 18-decimal tUSD. Do not point those old interfaces at the USDC deployment. [Current CLI guide](AI_AGENT_DEMO.md) and [deployment record](deployment/usdc-stream.json).

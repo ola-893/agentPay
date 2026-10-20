@@ -1,0 +1,69 @@
+
+  AgentPay  AI streaming demo
+  ------------------------------------------------------------------------------------
+  Mode        PAYMENT ENABLED
+              At most 0.01 test USDC escrowed + test ETH gas
+  Network     Ethereum Sepolia
+  Agent       Qwen / qwen3.5-plus
+  Payer       0xe26468ae02368a75DBDBea58F367B7313942ad26
+  Balance     39.97 test USDC
+  Recipient   0x9950D8950BF80722860f2B6a9e120893a0fE79f7
+  Authority   Local CRE decision enforced by the wallet
+
+  Escrow      0x5199d1dcaB9496d37677DAD8F53481DCc511d585
+  Agent       Choosing the next streaming session...
+
+  01  Basic research
+  Intent      Demonstrate local CRE OPEN, stream reuse, CONTINUE and
+              outage-triggered CLOSE/refund
+  Deposit     0.01 USDC over 1000s
+  Rate        10 raw units / second
+  CRE         Checking USDC price safety with real HTTP + Sepolia reads...
+  Decision    ALLOW / Within payment policy
+  CRE         Checking open with real HTTP + Sepolia reads...
+  Decision    OPEN / healthy within budget
+  Wallet      approval: signed; awaiting 2 confirmations...
+  Wallet      open: signed; awaiting 2 confirmations...
+  Escrow      Stream #1 funded with 0.01 USDC
+  Recipient   Deposit is held in escrow; earnings accrue with time
+  API reuse   Stream #1 / 5 successes / 0 failures / no payment transactions
+  CRE         Checking healthy with real HTTP + Sepolia reads...
+  Decision    CONTINUE / service healthy
+  API reuse   Stream #1 / 10 successes / 0 failures / no payment transactions
+  Demo fault  Injecting a provider outage (HTTP 503)
+  API reuse   Stream #1 / 10 successes / 3 failures / no payment transactions
+  CRE         Checking outage with real HTTP + Sepolia reads...
+  Decision    CLOSE / service unavailable
+  Wallet      close: signed; awaiting 2 confirmations...
+  Escrow      Stream #1 CLOSED
+  Earned      0.0006 USDC paid on cancellation
+  Refunded    0.0094 USDC returned to payer
+  Agent       Choosing the next streaming session...
+
+  02  Premium research
+  Intent      Attempt premium session to demonstrate budget denial against 0.1
+              deposit cap
+  Deposit     0.20 USDC over 1000s
+  Rate        200 raw units / second
+  CRE         Checking deny with real HTTP + Sepolia reads...
+  Decision    DENY / amount exceeds policy
+  Wallet      No transaction signed; balances and nonce unchanged
+  Agent       Reviewing verified tool results...
+
+  ------------------------------------------------------------------------------------
+  COMPLETE  Verified by AgentPay
+
+  Basic       Stream #1 CLOSED / earnings + refund verified
+  Premium     DENIED / deposit exceeds 0.10 USDC cap
+  Funded      0.01 test USDC
+  Earned      0.0006 USDC to recipient
+  Refunded    0.0094 USDC to payer
+  Payer       39.97 -> 39.9694 USDC
+  API requests10 successful / 3 injected failures on one stream
+  Transactions3 total: open + close + token approval; none per API request
+  Open tx     https://sepolia.etherscan.io/tx/0x81966282be0a35356f5b3de5835ce5c080270148a230c1116d3a251dea781746
+  Close tx    https://sepolia.etherscan.io/tx/0x3d22cd3855b6bc10c4cf29e9496630ff698d3697c85ea9c2f2e2db8d78a432ca
+
+  Evidence    .local/agent-demo/runs/20261020T172956Z-3e6da4e6
+  Agent notes .local/agent-demo/runs/20261020T172956Z-3e6da4e6/result.json
+

@@ -54,7 +54,7 @@ npm run build:web
 
 `docs:check` also compiles the exact documented TypeScript fragments with their declared external inputs and an async-function wrapper, and compares historical transcripts, hashes, frontend copies and ABI report fields. It does not execute payment examples or establish production signature verification.
 
-The current suite has **139 tests**: 29 contract, 52 SDK, 8 gateway, 11 CRE policy and 39 evidence/CLI/tooling checks. Tests and CI do not call the authenticated CRE simulator; successful live executions are separately recorded under `docs/evidence`. SDK/gateway and CLI tests open localhost servers (including temporary Hardhat RPCs), so the environment must permit local listeners.
+The current suite has **150 tests**: 29 contract, 52 SDK, 8 gateway, 20 CRE policy and 41 evidence/CLI/tooling checks. Tests and CI do not call the authenticated CRE simulator; successful live executions are separately recorded under `docs/evidence`. SDK/gateway and CLI tests open localhost servers (including temporary Hardhat RPCs), so the environment must permit local listeners.
 
 Build output: `sdk/dist` and `vite-project/dist`. Static frontend hosting needs a fallback to `index.html` for application routes. [Frontend README](../../vite-project/README.md).
 

@@ -1,5 +1,7 @@
 # CRE payment guard
 
+This page documents the standalone USDC price/report workflow, also used as the initial price-safety gate in the AI demo. The current [stream supervisor](../cre/payment-guard/stream-main.ts) separately evaluates OPEN/CONTINUE/CLOSE/DENY using service observations and escrow state. [AI streaming lifecycle](AI_AGENT_DEMO.md).
+
 The [TypeScript workflow](../cre/payment-guard/main.ts) orchestrates an external API, finalized Ethereum Sepolia reads, deterministic policy and report generation. The checked-in configuration demonstrates the bounty's simulation path; it is not a deployed DON workflow.
 
 ## Inputs and decisions

@@ -1,6 +1,6 @@
 # AgentPayStream
 
-[Source](../../contracts/AgentPayStream.sol). Legacy stream escrow; the UI and streaming SDK use 18-decimal MockUSD/tUSD. No public deployment address is claimed. [Deployment](../../DEPLOYMENT.md).
+[Source](../../contracts/AgentPayStream.sol). Prepaid stream escrow using raw integer token units. The AI CLI uses a separate [Circle USDC deployment](../deployment/usdc-stream.json), while the retained UI and legacy SDK use 18-decimal MockUSD/tUSD. [Deployment](../../DEPLOYMENT.md).
 
 ## Constructor and reads
 
