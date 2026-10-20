@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "chainId": 11155111,
+  "address": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "deployer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "transactionHash": "0xbe04cb990b1a3ab1276f231acdfb27baccae54f3aab065530b97f4649cc4e2d3",
+  "blockNumber": 11956739,
+  "status": 1,
+  "confirmations": 2,
+  "runtimeCodeHash": "0xd23d661e3cd9b14333160218b7f4c5f75854441c34c5e0af2e3df26085bb8e4b",
+  "matchesCompiledRuntime": true,
+  "verifiedAt": "2026-10-20T17:19:27.487Z",
+  "creWorkflowDeployed": false
+}

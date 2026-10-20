@@ -13,63 +13,76 @@ import {
   formatUnits,
 } from "ethers";
 import cli from "../scripts/lib/cli.cjs";
-import { callModel, modelSettings, runAgent } from "./agent/model.mjs";
-import { runCreIntent } from "./agent/cre.mjs";
+import { modelSettings, callModel, runAgent } from "./agent/model.mjs";
+import { runCreIntent, runStreamCheck } from "./agent/cre.mjs";
+import { assertLocalApproval } from "./agent/payments.mjs";
 import { createAgentOutput } from "./agent/output.mjs";
 import {
-  CHAIN_ID,
   USDC,
+  CHAIN_ID,
   TIERS,
-  validateQuote,
-  startResearchService,
+  verifyStreamDeployment,
+  startStreamService,
+  validateStreamQuote,
+  openStream,
+  closeStream,
   snapshotWallet,
-  sendLocalPayment,
-} from "./agent/payments.mjs";
-
+  sessionMessage,
+  readStream,
+  assertStreamIntent,
+} from "./agent/streams.mjs";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const same = (a, b) => a.toLowerCase() === b.toLowerCase();
-await cli.cliMain(
-  "demo:agent",
-  { pay: "boolean", verbose: "boolean" },
-  `AgentPay / AI payment demo
+const help = `AgentPay / CRE-supervised streaming demo
 
 Usage
   npm run --silent demo:agent -- [--pay] [--verbose] [--json] [--help]
+  npm run --silent demo:agent -- --close-stream <id> [--json]
 
-Default: real AI tool calls + live local CRE preview. No signing or payment.
+Default: real AI + local CRE admission preview; no signing or token funding.
+--pay      Deposit at most 0.01 Circle test USDC into a Sepolia stream.
+           Reuse it for 10 requests, demonstrate CONTINUE, inject a demo outage,
+           then cancel: earned funds go to the recipient and unused funds refund.
+           A new paid run can fund another stream and uses test ETH for gas.
+--close-stream <id>  Recover an owned USDC stream; no AI or CRE call required.
+--verbose  Show response IDs, oracle observations and unverified model text.
+--json     One result envelope on stdout; plain progress on stderr.
+--help     No credentials, API calls, network or transactions.
 
-Options
-  --pay      Buy basic research for 0.01 Circle test USDC on Sepolia.
-             Premium must be denied. Each run can spend 0.01 USDC + test ETH gas.
-             No automatic payment retry.
-  --verbose  Show response IDs, oracle prices and the unverified model explanation.
-  --json     One result envelope on stdout; plain progress on stderr.
-  --help     Show this help without credentials, model calls or network access.
+Set QWEN_API_KEY or OPENAI_API_KEY (OPEN_AI_KEY alias accepted), PRIVATE_KEY_1
+or PRIVATE_KEY, AGENTPAY_AGENT_RECIPIENT (CRE_PAYMENT_RECIPIENT_ADDRESS alias),
+and AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env. Recovery needs only wallet
+and stream settings. Requires CRE CLI, Bun and network access for the main demo.
+Qwen is selected when its key is present; AGENTPAY_AI_PROVIDER overrides this.
+Defaults: QWEN_MODEL=qwen3.5-plus, QWEN_REGION=singapore,
+OPENAI_MODEL=gpt-4.1-mini. Model calls may incur charges; no model/rules fallback.
 
-Setup (ignored root .env)
-  QWEN_API_KEY or OPENAI_API_KEY (OPEN_AI_KEY alias accepted)
-  PRIVATE_KEY_1 or PRIVATE_KEY / dedicated Sepolia test wallet
-  AGENTPAY_AGENT_RECIPIENT or CRE_PAYMENT_RECIPIENT_ADDRESS
-  CRE CLI, Bun and network access
-
-  AGENTPAY_AI_PROVIDER selects qwen or openai. A configured Qwen key selects Qwen
-  by default; otherwise OpenAI. Defaults: QWEN_MODEL=qwen3.5-plus,
-  QWEN_REGION=singapore, OPENAI_MODEL=gpt-4.1-mini.
-  Model calls may incur usage charges. No rules-based or provider fallback.
-
-Authority: local CRE result enforced by the wallet, not DON authentication,
-strict-guard settlement or full x402. Evidence: .local/agent-demo/runs/.
-
-Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`,
+CRE stays local. The owning wallet executes stream decisions. This is not DON
+or strict-guard authorization, nor full x402. Stream earnings accrue until the
+cancellation transaction is mined. No automatic repeat funding on uncertainty.
+Evidence: .local/agent-demo/runs/. Exit: 0 complete / 1 failed / 2 config or usage.`;
+await cli.cliMain(
+  "demo:agent",
+  { pay: "boolean", verbose: "boolean", "close-stream": "value" },
+  help,
   async ({ flags }) => {
+    if (flags.pay && flags["close-stream"])
+      throw new cli.CliError(
+        "USAGE",
+        "Use either --pay or --close-stream, not both.",
+        2
+      );
+    if (
+      flags["close-stream"] &&
+      (!/^[1-9][0-9]*$/.test(flags["close-stream"]) ||
+        BigInt(flags["close-stream"]) >= 2n ** 256n)
+    )
+      throw new cli.CliError(
+        "USAGE",
+        "--close-stream requires a positive uint256 ID.",
+        2
+      );
     dotenv.config({ path: path.join(root, ".env"), quiet: true });
-    const settings = modelSettings(process.env);
-    const { model } = settings;
-    const output = createAgentOutput({
-      pay: flags.pay,
-      json: flags.json,
-      verbose: flags.verbose,
-    });
     let signer;
     try {
       signer = new Wallet(
@@ -82,40 +95,31 @@ Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`
         2
       );
     }
-    const recipient =
-      process.env.AGENTPAY_AGENT_RECIPIENT ||
-      process.env.CRE_PAYMENT_RECIPIENT_ADDRESS;
-    if (
-      !recipient ||
-      !isAddress(recipient) ||
-      recipient === ZeroAddress ||
-      same(recipient, signer.address) ||
-      same(recipient, USDC)
-    )
-      throw new cli.CliError(
-        "CONFIG",
-        "Set AGENTPAY_AGENT_RECIPIENT to a nonzero recipient different from the payer and USDC token.",
-        2
-      );
-    const rpcUrl =
+    const rpc =
       process.env.SEPOLIA_RPC_URL ||
       "https://ethereum-sepolia-rpc.publicnode.com";
     try {
-      if (!["https:", "http:"].includes(new URL(rpcUrl).protocol))
+      if (!["http:", "https:"].includes(new URL(rpc).protocol))
         throw new Error();
     } catch {
       throw new cli.CliError("CONFIG", "SEPOLIA_RPC_URL must be HTTP(S).", 2);
     }
-    const request = new FetchRequest(rpcUrl);
+    const request = new FetchRequest(rpc);
     request.timeout = 15000;
     const provider = new JsonRpcProvider(request, undefined, {
-      batchMaxCount: 1,
-      cacheTimeout: -1,
-    });
-    const wallet = signer.connect(provider);
-    const id = `${new Date().toISOString().replace(/[:.]/g, "-")}-${randomBytes(
-      4
-    ).toString("hex")}`;
+        batchMaxCount: 1,
+        cacheTimeout: -1,
+      }),
+      wallet = signer.connect(provider);
+    let settings,
+      service,
+      openedId,
+      closeAttempted = false,
+      cleanup;
+    const id =
+      new Date().toISOString().slice(0, 19).replace(/[-:]/g, "") +
+      "Z-" +
+      randomBytes(4).toString("hex");
     const directory = path.join(root, ".local/agent-demo/runs", id);
     await mkdir(directory, { recursive: true });
     const save = (name, value) =>
@@ -123,19 +127,56 @@ Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`
         path.join(directory, name),
         cli.redact(JSON.stringify(value, null, 2)) + "\n"
       );
-    const events = [];
-    const event = (data) => {
-      const row = { at: new Date().toISOString(), ...data };
-      events.push(row);
+    const output = createAgentOutput({
+        pay: flags.pay,
+        json: flags.json,
+        verbose: flags.verbose,
+      }),
+      events = [];
+    const persist = async (kind, data) => {
+      await save(`${kind}.json`, data);
+      if (kind === "open" && data.streamId) openedId = data.streamId;
+      if (data.state === "submitting") output.streamTransaction(kind, data);
     };
-    let service;
-    let paidRaw = 0n;
-    let paymentStarted = false;
     try {
-      if ((await provider.getNetwork()).chainId !== CHAIN_ID)
+      const streamAddress = process.env.AGENTPAY_USDC_STREAM_ADDRESS;
+      await verifyStreamDeployment(provider, streamAddress);
+      if (flags["close-stream"]) {
+        const result = await closeStream({
+          provider,
+          wallet,
+          streamAddress,
+          streamId: flags["close-stream"],
+          persist,
+        });
+        console.log(
+          `Stream #${result.streamId} closed; earned ${formatUnits(
+            result.earnedRaw,
+            6
+          )} USDC; refunded ${formatUnits(
+            result.refundedRaw,
+            6
+          )} USDC.\nhttps://sepolia.etherscan.io/tx/${
+            result.transaction.transactionHash
+          }`
+        );
+        return { ...result, evidenceDirectory: path.relative(root, directory) };
+      }
+      settings = modelSettings(process.env);
+      const recipient =
+        process.env.AGENTPAY_AGENT_RECIPIENT ||
+        process.env.CRE_PAYMENT_RECIPIENT_ADDRESS;
+      if (
+        !isAddress(recipient || "") ||
+        recipient === ZeroAddress ||
+        same(recipient, wallet.address) ||
+        same(recipient, USDC) ||
+        same(recipient, streamAddress)
+      )
         throw new cli.CliError(
-          "WRONG_NETWORK",
-          "Agent demo requires Ethereum Sepolia."
+          "CONFIG",
+          "Set a distinct nonzero USDC recipient.",
+          2
         );
       const initial = await snapshotWallet(provider, wallet.address, recipient);
       if (
@@ -145,18 +186,15 @@ Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`
       )
         throw new cli.CliError(
           "BALANCE",
-          "Fund the demo payer with 0.01 Circle test USDC and Sepolia ETH."
+          "Fund the payer with test USDC and Sepolia ETH."
         );
-      const base = JSON.parse(
-        await readFile(
-          path.join(root, "cre/payment-guard/config.staging.json"),
-          "utf8"
-        )
-      );
-      service = await startResearchService({
+      const sessionId = "0x" + randomBytes(32).toString("hex");
+      service = await startStreamService({
         provider,
         agent: wallet.address,
         recipient,
+        streamAddress,
+        sessionId,
       });
       output.start({
         settings,
@@ -164,62 +202,119 @@ Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`
         recipient,
         balanceRaw: initial.agentBalanceRaw,
       });
+      output.streamContract(streamAddress);
+      const check = async (q, phase, label, client, streamId = "0") => {
+        const snapshot = service.snapshot();
+        const config = {
+          chainId: Number(CHAIN_ID),
+          token: USDC,
+          tokenDecimals: 6,
+          streamAddress,
+          requestId: "0x" + randomBytes(32).toString("hex"),
+          quoteId: q.id,
+          sessionId,
+          agent: wallet.address,
+          recipient,
+          amountRaw: q.amountRaw,
+          spendingCapRaw: "100000",
+          durationSeconds: q.durationSeconds,
+          maxRateRawPerSecond: "100",
+          phase,
+          streamId,
+          observationBlock: await provider.getBlockNumber(),
+          healthUrl: snapshot.url,
+          expectedHealth: snapshot.health,
+          client: { ...client },
+          maxFailedRequests: 3,
+        };
+        output.streamChecking(label);
+        const evidence = await runStreamCheck({
+          config,
+          root,
+          directory,
+          label,
+        });
+        output.streamDecision(evidence.result);
+        return { config, decision: evidence.result };
+      };
       const purchase = async ({ tier, purpose }) => {
         output.requested({ tier, purpose });
-        const endpoint = `${service.url}/research/${tier}`;
-        const quoteResponse = await fetch(endpoint, {
-          signal: AbortSignal.timeout(20000),
+        const endpoint = `${service.url}/research/${tier}`,
+          response = await fetch(endpoint, {
+            signal: AbortSignal.timeout(20000),
+          });
+        if (response.status !== 402)
+          throw new cli.CliError(
+            "SERVICE_PROTOCOL",
+            "Expected an HTTP 402 streaming quote."
+          );
+        const { quote: q } = await response.json();
+        validateStreamQuote(q, {
+          tier,
+          agent: wallet.address,
+          recipient,
+          streamAddress,
+          sessionId,
         });
-        if (quoteResponse.status !== 402)
-          throw new cli.CliError(
-            "SERVICE_PROTOCOL",
-            "Expected an HTTP 402 resource quote."
+        output.streamQuote(q);
+        const client = { successfulRequests: 0, failedRequests: 0 };
+        // Premium may run after basic; use actual service counters in its admission check.
+        const counts = service.snapshot().health;
+        client.successfulRequests = counts.successfulRequests;
+        client.failedRequests = counts.failedRequests;
+        let priceGate = () => {};
+        if (tier === "basic") {
+          const base = JSON.parse(
+            await readFile(
+              path.join(root, "cre/payment-guard/config.staging.json"),
+              "utf8"
+            )
           );
-        const { quote, protocol } = await quoteResponse.json();
-        if (protocol !== "agentpay-demo-receipt-v1")
-          throw new cli.CliError(
-            "SERVICE_PROTOCOL",
-            "Unexpected research-service protocol."
-          );
-        validateQuote(quote, { tier, agent: wallet.address, recipient });
-        output.quote(quote);
-        const config = {
-          ...base,
-          receiverAddress: ZeroAddress,
-          publishReport: false,
-          request: {
-            ...base.request,
-            requestId: quote.id,
-            agent: wallet.address,
-            recipient,
-            token: USDC,
-            amount: quote.amount,
-            spendingCap: "100000",
-          },
-        };
+          const config = {
+            ...base,
+            publishReport: false,
+            receiverAddress: ZeroAddress,
+            request: {
+              ...base.request,
+              requestId: q.id,
+              agent: wallet.address,
+              recipient,
+              token: USDC,
+              amount: q.amountRaw,
+            },
+          };
+          output.streamChecking("USDC price safety");
+          const price = await runCreIntent({
+            config,
+            root,
+            directory,
+            tier: "price",
+          });
+          output.decision(price.result);
+          const priceCompleted = performance.now();
+          priceGate = () =>
+            assertLocalApproval(price, config, {
+              elapsedMs: performance.now() - priceCompleted,
+            });
+          if (!price.result.approved)
+            throw new cli.CliError(
+              "PRICE_POLICY_DENIED",
+              `USDC admission blocked: ${price.result.reason}`
+            );
+        }
         const before = await snapshotWallet(
           provider,
           wallet.address,
           recipient
         );
-        const evidence = await runCreIntent({ config, root, directory, tier });
-        const completedAt = performance.now();
-        const decision = evidence.result;
-        output.decision(decision);
-        const policy = {
-          approved: decision.approved,
-          reason: decision.reason,
-          requestId: quote.id,
-          tokenSymbol: "USDC",
-          tokenDecimals: 6,
-          amountRaw: quote.amount,
-          amountUsdc: formatUnits(quote.amount, 6),
-          capRaw: "100000",
-          capUsdc: "0.1",
-          chainlinkPriceUsd8: decision.chainlinkPriceUsd8,
-          externalPriceUsd8: decision.externalPriceUsd8,
-        };
-        if (!decision.approved) {
+        const admission = await check(
+            q,
+            "admission",
+            tier === "basic" ? "open" : "deny",
+            client
+          ),
+          completedAt = performance.now();
+        if (admission.decision.action === "DENY") {
           const after = await snapshotWallet(
             provider,
             wallet.address,
@@ -228,12 +323,18 @@ Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`
           if (JSON.stringify(before) !== JSON.stringify(after))
             throw new cli.CliError(
               "DENY_VERIFICATION",
-              "Wallet state changed during the denied request; inspect evidence."
+              "Wallet changed during denied admission."
             );
           const result = {
             status: "denied",
             tier,
-            policy,
+            policy: {
+              reason: admission.decision.reason,
+              amountRaw: q.amountRaw,
+              amountUsdc: formatUnits(q.amountRaw, 6),
+              capRaw: "100000",
+              capUsdc: "0.1",
+            },
             noTransactionSigned: true,
             before,
             after,
@@ -242,115 +343,224 @@ Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`
           output.denied();
           return result;
         }
-        if (tier !== "basic" || quote.amount !== TIERS.basic)
+        if (tier !== "basic" || admission.decision.action !== "OPEN")
           throw new cli.CliError(
-            "UNEXPECTED_POLICY",
-            "An over-budget quote was not denied; no payment will be sent."
+            "POLICY",
+            "Expected basic OPEN and premium DENY."
           );
         if (!flags.pay) {
           const result = {
             status: "preview",
             tier,
-            policy,
+            admission: admission.decision,
             paymentSent: false,
             resourceUnlocked: false,
           };
-          await save(`${tier}.json`, result);
+          await save("basic.json", result);
           output.preview();
           return result;
         }
-        if (paymentStarted)
-          throw new cli.CliError(
-            "PAYMENT_REPLAY",
-            "A payment was already attempted in this run. Automatic retry is disabled."
-          );
-        paymentStarted = true;
-        output.preparing();
-        const payment = await sendLocalPayment({
+        const funded = await openStream({
           provider,
           wallet,
-          quote,
-          evidence,
-          config,
+          quote: q,
+          ...admission,
           elapsed: () => performance.now() - completedAt,
-          paidRaw,
-          persist: async (data) => {
-            await save("payment.json", data);
-            if (data.state === "submitting") output.submitting(data);
-          },
+          persist,
+          additionalGate: priceGate,
         });
-        paidRaw += BigInt(quote.amount);
-        output.confirmed(payment.receipt);
-        const paidResponse = await fetch(endpoint, {
-          headers: { "x-agentpay-payment-tx": payment.receipt.transactionHash },
-          signal: AbortSignal.timeout(20000),
-        });
-        const resource = await paidResponse.json();
+        output.streamOpened(funded);
+        const signature = await wallet.signMessage(
+          sessionMessage(service.url, q, funded.streamId)
+        );
+        const headers = {
+          "x-agentpay-stream-id": funded.streamId,
+          "x-agentpay-session-signature": signature,
+        };
+        const resources = [];
+        const batch = async (count, expectFailure = false) => {
+          const beforeNonce = await provider.getTransactionCount(
+            wallet.address,
+            "pending"
+          );
+          for (let i = 0; i < count; i++) {
+            const res = await fetch(endpoint, {
+              headers,
+              signal: AbortSignal.timeout(20000),
+            });
+            const body = await res.json();
+            if (expectFailure) {
+              if (res.status !== 503 || body.faultInjected !== true)
+                throw new cli.CliError(
+                  "OUTAGE_TEST",
+                  "Expected the explicit injected 503 response."
+                );
+              client.failedRequests++;
+            } else {
+              if (
+                res.status !== 200 ||
+                body.streamId !== funded.streamId ||
+                body.sessionId !== sessionId ||
+                body.quoteId !== q.id
+              )
+                throw new cli.CliError(
+                  "ACCESS_VERIFICATION",
+                  "Provider did not verify the funded session."
+                );
+              client.successfulRequests++;
+              resources.push(body.research);
+            }
+          }
+          if (
+            (await provider.getTransactionCount(wallet.address, "pending")) !==
+            beforeNonce
+          )
+            throw new cli.CliError(
+              "REQUEST_TRANSACTION",
+              "Wallet nonce changed during stream reuse."
+            );
+          output.streamRequests(client, funded.streamId);
+          return {
+            requests: count,
+            walletNonceBefore: beforeNonce,
+            walletNonceAfter: beforeNonce,
+            noPaymentTransactions: true,
+          };
+        };
+        const first = await batch(5);
+        const healthy = await check(
+          q,
+          "checkpoint",
+          "healthy",
+          client,
+          funded.streamId
+        );
+        if (healthy.decision.action !== "CONTINUE")
+          throw new cli.CliError(
+            "CHECKPOINT",
+            `Healthy checkpoint returned ${healthy.decision.action}; cleanup will close the stream.`
+          );
+        const second = await batch(5);
+        service.injectOutage();
+        output.streamOutage();
+        const failures = await batch(3, true);
+        const outage = await check(
+          q,
+          "checkpoint",
+          "outage",
+          client,
+          funded.streamId
+        );
         if (
-          paidResponse.status !== 200 ||
-          resource.receipt?.transactionHash !==
-            payment.receipt.transactionHash ||
-          resource.research?.quoteId !== quote.id
+          outage.decision.action !== "CLOSE" ||
+          outage.decision.reason !== "SERVICE_UNAVAILABLE"
         )
           throw new cli.CliError(
-            "SERVICE_VERIFICATION",
-            "Payment was confirmed, but the paid resource was not verified. Do not pay again automatically."
+            "CHECKPOINT",
+            "Outage must produce CLOSE/SERVICE_UNAVAILABLE."
+          );
+        assertStreamIntent(
+          await readStream(provider, streamAddress, funded.streamId),
+          q
+        );
+        closeAttempted = true;
+        const settled = await closeStream({
+          provider,
+          wallet,
+          streamAddress,
+          streamId: funded.streamId,
+          persist,
+        });
+        output.streamClosed(settled);
+        if (BigInt(settled.refundedRaw) === 0n)
+          throw new cli.CliError(
+            "DEMO_EXPIRED",
+            "Stream closed after expiry; no unused balance remained to demonstrate a refund."
+          );
+        const rejected = await fetch(endpoint, {
+          headers,
+          signal: AbortSignal.timeout(20000),
+        });
+        if (rejected.status === 200)
+          throw new cli.CliError(
+            "ACCESS_VERIFICATION",
+            "Closed stream still unlocked content."
           );
         const result = {
-          status: "purchased",
+          status: "stream-completed",
           tier,
-          policy,
-          payment,
-          research: resource.research,
+          streamAddress,
+          streamId: funded.streamId,
+          fundedRaw: q.amountRaw,
+          earnedRaw: settled.earnedRaw,
+          refundedRaw: settled.refundedRaw,
+          admission: admission.decision.action,
+          healthyCheckpoint: healthy.decision.action,
+          outageCheckpoint: outage.decision.action,
+          outageInjected: true,
+          client,
+          requestBatches: [first, second, failures],
+          funded,
+          settlement: settled,
+          closedAccessRejected: true,
+          research: resources[resources.length - 1],
+          donAuthenticated: false,
         };
-        await save(`${tier}.json`, result);
-        output.unlocked();
+        await save("basic.json", result);
         return result;
       };
       const agent = await runAgent({
-        model,
+        model: settings.model,
         modelCall: (args) => {
           output.thinking(args.complete);
           return callModel({ ...args, ...settings });
         },
         purchase,
         onEvent: (data) => {
-          event(data);
+          events.push({ at: new Date().toISOString(), ...data });
           if (data.type === "model_response") output.response(data);
         },
       });
       if (
         agent.purchases.premium?.status !== "denied" ||
         agent.purchases.premium.policy.reason !== "AMOUNT_EXCEEDS_POLICY" ||
-        agent.purchases.basic?.status !== (flags.pay ? "purchased" : "preview")
+        agent.purchases.basic?.status !==
+          (flags.pay ? "stream-completed" : "preview")
       )
         throw new cli.CliError(
           "DEMO_INCOMPLETE",
-          "Both expected end-to-end outcomes were not established."
+          "Expected both streaming basic and over-budget denial outcomes."
         );
-      const final = await snapshotWallet(provider, wallet.address, recipient);
+      const final = await snapshotWallet(provider, wallet.address, recipient),
+        basic = agent.purchases.basic;
+      const earned = BigInt(basic.earnedRaw || "0");
       if (
         BigInt(final.recipientBalanceRaw) -
           BigInt(initial.recipientBalanceRaw) !==
-        paidRaw
+          earned ||
+        BigInt(initial.agentBalanceRaw) - BigInt(final.agentBalanceRaw) !==
+          earned
       )
         throw new cli.CliError(
           "BALANCE_MISMATCH",
-          "Final recipient increase differs from the run payment total."
+          "Net payment did not equal stream earnings."
         );
       const result = {
-        schemaVersion: 1,
+        schemaVersion: 2,
         runId: id,
-        mode: flags.pay ? "local-agent-payment" : "local-agent-preview",
+        mode: flags.pay ? "local-agent-stream" : "local-stream-preview",
         completedAt: new Date().toISOString(),
         provider: settings.provider,
-        model,
+        model: settings.model,
         chainId: Number(CHAIN_ID),
         token: USDC,
         tokenDecimals: 6,
+        streamAddress,
         payer: wallet.address,
         recipient,
-        paidRaw: paidRaw.toString(),
+        fundedRaw: basic.fundedRaw || "0",
+        earnedRaw: earned.toString(),
+        refundedRaw: basic.refundedRaw || "0",
         initial,
         final,
         ...agent,
@@ -362,22 +572,47 @@ Exit codes: 0 complete / 1 operational failure / 2 invalid arguments or config.`
       output.finish(result);
       return result;
     } catch (error) {
+      if (openedId && !closeAttempted) {
+        closeAttempted = true;
+        try {
+          cleanup = await closeStream({
+            provider,
+            wallet,
+            streamAddress: process.env.AGENTPAY_USDC_STREAM_ADDRESS,
+            streamId: openedId,
+            persist,
+          });
+          output.streamClosed(cleanup);
+        } catch (closeError) {
+          console.error(
+            `Cleanup needs attention: stream #${openedId}. Inspect close.json, then use --close-stream ${openedId}.`
+          );
+          cleanup = {
+            failed: true,
+            message:
+              closeError instanceof cli.CliError
+                ? closeError.message
+                : "RPC/transaction failure",
+          };
+        }
+      }
       await save("failure.json", {
         failedAt: new Date().toISOString(),
         code: error.code || "OPERATION_FAILED",
         message:
           error instanceof cli.CliError
             ? error.message
-            : "Agent demo failed. Inspect the local run artifacts.",
-        paidRaw: paidRaw.toString(),
-        paymentStarted,
+            : "Stream demo failed; inspect evidence.",
+        streamId: openedId || null,
+        closeAttempted,
+        cleanup,
       });
       output.failed(path.relative(root, directory));
       throw error;
     } finally {
       await appendFile(
         path.join(directory, "events.jsonl"),
-        cli.redact(events.map((x) => JSON.stringify(x)).join("\n")) + "\n"
+        cli.redact(events.map((e) => JSON.stringify(e)).join("\n")) + "\n"
       );
       if (service) await service.close();
       provider.destroy();

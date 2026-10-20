@@ -1,7 +1,7 @@
 {
   "name": "agentpay",
   "version": "1.0.0",
-  "description": "AgentPay \u2014 agent payment policies orchestrated with Chainlink CRE",
+  "description": "AgentPay — agent payment policies orchestrated with Chainlink CRE",
   "main": "index.js",
   "scripts": {
     "test": "npm run test:contracts && npm run test:sdk && npm run test:server && npm run test:cre && npm run test:tooling",
@@ -29,7 +29,8 @@
     "test:tooling": "npm run build:sdk && node --test scripts/test/*.test.mjs",
     "deploy:cre-demo": "npx hardhat run scripts/deploy-cre-demo.js --network sepolia-demo",
     "cre:simulate:write": "node scripts/simulate-cre-write.mjs",
-    "docs:check": "node scripts/check-docs.mjs && node scripts/check-doc-examples.mjs && node scripts/check-doc-evidence.mjs"
+    "docs:check": "node scripts/check-docs.mjs && node scripts/check-doc-examples.mjs && node scripts/check-doc-evidence.mjs",
+    "deploy:usdc-stream": "node scripts/deploy-usdc-stream.mjs"
   },
   "keywords": [],
   "author": "",

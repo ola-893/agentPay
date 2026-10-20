@@ -138,6 +138,8 @@ export async function verifyUsdcReceipt(provider, hash, quote) {
   };
 }
 
+// Historical direct-payment service, retained for regression/evidence compatibility.
+// The current AI CLI uses the escrow/session service in streams.mjs.
 export async function startResearchService({ provider, agent, recipient }) {
   const quotes = new Map();
   const accepted = new Map();
@@ -218,6 +220,7 @@ export async function snapshotWallet(provider, agent, recipient) {
   };
 }
 
+// Historical direct executor; never called by the current streaming CLI.
 export async function sendLocalPayment({
   provider,
   wallet,

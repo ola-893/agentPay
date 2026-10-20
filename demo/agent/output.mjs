@@ -52,10 +52,10 @@ export function createAgentOutput({
     return lines;
   };
   const field = (label, value, style = (text) => text) => {
-    const lines = wrap(value, Math.max(20, width - 14));
+    const lines = wrap(value, Math.max(20, width - 16));
     lines.forEach((line, index) =>
       write(
-        `  ${index ? " ".repeat(12) : muted(label.padEnd(12))}${style(line)}`
+        `  ${index ? " ".repeat(14) : muted(label.padEnd(14))}${style(line)}`
       )
     );
   };
@@ -63,13 +63,13 @@ export function createAgentOutput({
   return {
     start({ settings, payer, recipient, balanceRaw }) {
       write("");
-      write(`  ${accent(bold("AgentPay"))}  ${muted("AI payment demo")}`);
+      write(`  ${accent(bold("AgentPay"))}  ${muted("AI streaming demo")}`);
       separator();
       field("Mode", pay ? "PAYMENT ENABLED" : "PREVIEW ONLY", warning);
       field(
         "",
         pay
-          ? "Maximum 0.01 test USDC per run + test ETH gas"
+          ? "At most 0.01 test USDC escrowed + test ETH gas"
           : "No signing, token transfers or paid content access"
       );
       field("Network", "Ethereum Sepolia");
@@ -85,7 +85,7 @@ export function createAgentOutput({
         "Agent",
         complete
           ? "Reviewing verified tool results..."
-          : "Choosing the next research request..."
+          : "Choosing the next streaming session..."
       );
     },
     response(data) {
@@ -144,11 +144,121 @@ export function createAgentOutput({
     unlocked() {
       field("Access", "Research unlocked; receipt verified", ok);
     },
+    streamContract(address) {
+      field("Escrow", address);
+    },
+    streamQuote(q) {
+      field(
+        "Deposit",
+        `${amount(q.amountRaw)} USDC over ${q.durationSeconds}s`
+      );
+      field("Rate", `${q.rateRawPerSecond} raw units / second`);
+    },
+    streamChecking(label) {
+      field("CRE", `Checking ${label} with real HTTP + Sepolia reads...`);
+    },
+    streamDecision(result) {
+      field(
+        "Decision",
+        `${result.action}${dot}${result.reason
+          .replaceAll("_", " ")
+          .toLowerCase()}`,
+        ["OPEN", "CONTINUE"].includes(result.action) ? ok : warning
+      );
+    },
+    streamTransaction(kind, data) {
+      field("Wallet", `${kind}: signed; awaiting 2 confirmations...`);
+      if (verbose) field("Tx hash", data.transactionHash);
+    },
+    streamOpened(value) {
+      field(
+        "Escrow",
+        `Stream #${value.streamId} funded with ${amount(value.fundedRaw)} USDC`,
+        ok
+      );
+      field(
+        "Recipient",
+        "Deposit is held in escrow; earnings accrue with time"
+      );
+    },
+    streamRequests(client, id) {
+      field(
+        "API reuse",
+        `Stream #${id}${dot}${client.successfulRequests} successes${dot}${client.failedRequests} failures${dot}no payment transactions`
+      );
+    },
+    streamOutage() {
+      field("Demo fault", "Injecting a provider outage (HTTP 503)", warning);
+    },
+    streamClosed(value) {
+      field("Escrow", `Stream #${value.streamId} CLOSED`, ok);
+      field("Earned", `${amount(value.earnedRaw)} USDC paid on cancellation`);
+      field(
+        "Refunded",
+        `${amount(value.refundedRaw)} USDC returned to payer`,
+        ok
+      );
+    },
     finish(result) {
       write("");
       separator();
       write(`  ${ok(bold("COMPLETE"))}  ${muted("Verified by AgentPay")}`);
       write("");
+      if (result.schemaVersion === 2) {
+        const basic = result.purchases.basic;
+        field(
+          "Basic",
+          basic.status === "stream-completed"
+            ? `Stream #${basic.streamId} CLOSED / earnings + refund verified`
+            : "OPEN approved / preview only",
+          ok
+        );
+        field("Premium", "DENIED / deposit exceeds 0.10 USDC cap", warning);
+        field("Funded", `${amount(result.fundedRaw)} test USDC`);
+        field("Earned", `${amount(result.earnedRaw)} USDC to recipient`);
+        field("Refunded", `${amount(result.refundedRaw)} USDC to payer`);
+        field(
+          "Payer",
+          `${amount(result.initial.agentBalanceRaw)} -> ${amount(
+            result.final.agentBalanceRaw
+          )} USDC`
+        );
+        if (basic.status === "stream-completed") {
+          field(
+            "API requests",
+            `${basic.client.successfulRequests} successful / ${basic.client.failedRequests} injected failures on one stream`
+          );
+          field(
+            "Transactions",
+            `${basic.funded.transactions.length + 1} total: open + close${
+              basic.funded.transactions.length > 1 ? " + token approval" : ""
+            }; none per API request`
+          );
+          field(
+            "Open tx",
+            `https://sepolia.etherscan.io/tx/${
+              basic.funded.transactions.at(-1).transactionHash
+            }`
+          );
+          field(
+            "Close tx",
+            `https://sepolia.etherscan.io/tx/${basic.settlement.transaction.transactionHash}`
+          );
+        } else field("Transaction", "None / stream was not funded");
+        write("");
+        field("Evidence", result.evidenceDirectory);
+        field("Agent notes", `${result.evidenceDirectory}/result.json`);
+        if (verbose) {
+          write("");
+          write(
+            `  ${bold("Agent explanation")} ${muted("(unverified model text)")}`
+          );
+          for (const line of wrap(result.summary, width - 2))
+            write(`  ${line}`);
+        }
+        write("");
+        return;
+      }
       field(
         "Basic",
         result.purchases.basic.status === "purchased"
@@ -200,7 +310,7 @@ export function createAgentOutput({
       field("Evidence", directory);
       field(
         "",
-        "Check payment.json for any prepared transaction before another paid run."
+        "Inspect open.json and close.json before retrying; --close-stream <id> recovers an owned stream."
       );
       write("");
     },

@@ -77,3 +77,82 @@ export async function runCreIntent({ config, root, directory, tier }) {
   );
   return evidence;
 }
+
+export async function runStreamCheck({ config, root, directory, label }) {
+  await mkdir(directory, { recursive: true });
+  const file = path.join(directory, `stream-${label}.config.json`),
+    serialized = JSON.stringify(config, null, 2) + "\n";
+  await writeFile(file, serialized);
+  const validator = path.join(root, "scripts/lib/validate-stream-config.ts");
+  const validate = async (result) => {
+    const checked = await cli.runChild(
+      "bun",
+      [validator, file, ...(result ? [JSON.stringify(result)] : [])],
+      { cwd: root, quiet: true, label: "Stream policy validator" }
+    );
+    if (checked.code !== 0)
+      throw new cli.CliError(
+        "STREAM_RESULT_MISMATCH",
+        `Stream policy validation failed: ${checked.output.trim()}`
+      );
+  };
+  await validate();
+  const env = { ...process.env };
+  for (const key of Object.keys(env))
+    if (
+      /(?:PRIVATE_KEY(?:_\d+)?|API_KEY|OPEN_AI_KEY|SECRET|PASSWORD|ACCESS_TOKEN|AUTH_TOKEN|RPC_URL)$/.test(
+        key
+      )
+    )
+      delete env[key];
+  const args = [
+    "workflow",
+    "simulate",
+    "payment-guard",
+    "--target",
+    "stream-settings",
+    "--trigger-index",
+    "0",
+    "--non-interactive",
+    "--config",
+    path.relative(path.join(root, "cre/payment-guard"), file),
+  ];
+  const run = await cli.runChild(process.env.CRE_BIN || "cre", args, {
+    cwd: path.join(root, "cre"),
+    env,
+    quiet: true,
+    label: "CRE stream supervisor",
+    timeoutMs: 180000,
+  });
+  const log = stripAnsi(run.output).split(root).join("<repo>");
+  await writeFile(path.join(directory, `stream-${label}.log`), log);
+  if (run.code !== 0)
+    throw new cli.CliError(
+      "CRE_FAILED",
+      `CRE stream supervisor failed (${label}); inspect its transcript.`
+    );
+  const lines = stripAnsi(run.output).split("\n");
+  const marker = lines.findIndex((line) =>
+    line.includes("Workflow Simulation Result:")
+  );
+  if (marker < 0)
+    throw new cli.CliError(
+      "STREAM_RESULT_MISMATCH",
+      "CRE returned no complete supervisor result."
+    );
+  const outer = JSON.parse(lines.slice(marker + 1).find((line) => line.trim()));
+  const result = typeof outer === "string" ? JSON.parse(outer) : outer;
+  await validate(result);
+  const evidence = {
+    capturedAt: new Date().toISOString(),
+    configSha256: createHash("sha256").update(serialized).digest("hex"),
+    logSha256: createHash("sha256").update(log).digest("hex"),
+    config,
+    result,
+  };
+  await writeFile(
+    path.join(directory, `stream-${label}.json`),
+    JSON.stringify(evidence, null, 2) + "\n"
+  );
+  return evidence;
+}

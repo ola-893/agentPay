@@ -5,3 +5,10 @@ staging-settings:
     workflow-path: ./main.ts
     config-path: ./config.staging.json
     secrets-path: ""
+stream-settings:
+  user-workflow:
+    workflow-name: agentpay-stream-supervisor
+  workflow-artifacts:
+    workflow-path: ./stream-main.ts
+    config-path: ./config.stream.json
+    secrets-path: ""
