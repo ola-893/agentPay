@@ -40,9 +40,27 @@ On October 20, 2026, Qwen and the local CRE CLI completed all four lifecycle dec
 
 [Stream creation](https://sepolia.etherscan.io/tx/0x81966282be0a35356f5b3de5835ce5c080270148a230c1116d3a251dea781746) · [Cancellation and refund](https://sepolia.etherscan.io/tx/0x3d22cd3855b6bc10c4cf29e9496630ff698d3697c85ea9c2f2e2db8d78a432ca).
 
+## Inspect the CRE work
+
+The [price workflow](../cre/payment-guard/main.ts) uses CRE `HTTPClient` for Coinbase and `EVMClient.callContract` for finalized feed/token reads. The [stream workflow](../cre/payment-guard/stream-main.ts) uses `HTTPClient` for frozen service-health snapshots and `EVMClient.callContract` for token, wallet and stream reads at the configured block. Its [policy](../cre/payment-guard/stream-policy.ts) combines those observations into lifecycle decisions. The CLI invokes both through `cre workflow simulate`; it parses the results, binds them to the exact configuration and re-evaluates policy before using them. Neither workflow writes to a contract in this demo.
+
+These are original captures from the October 20 funded run, not fresh executions or reusable authorization:
+
+| Check | CRE-observed inputs and outcome | Original transcript | Exact config and result |
+| --- | --- | --- | --- |
+| USDC price safety | Chainlink $0.99990138, Coinbase $1; feed age 69,050s against 86,400s maximum; `ALLOW / WITHIN_POLICY` | [Price log](evidence/stream-demo/cre-price.log) | [Price config/result](evidence/stream-demo/cre-price.json) |
+| Admission | Block 11956794; provider available, 0 successes/0 failures; deposit 10000 raw against cap 100000; `OPEN / HEALTHY_WITHIN_BUDGET` | [OPEN log](evidence/stream-demo/stream-open.log) | [OPEN config/result](evidence/stream-demo/stream-open.json) |
+| Healthy checkpoint | Block 11956799; provider/client report 5 successes/0 failures; active stream #1, 120 raw claimable; `CONTINUE / SERVICE_HEALTHY` | [CONTINUE log](evidence/stream-demo/stream-healthy.log) | [CONTINUE config/result](evidence/stream-demo/stream-healthy.json) |
+| Injected outage | Same read block 11956799; provider unavailable, 10 successes/3 failures; `CLOSE / SERVICE_UNAVAILABLE` | [CLOSE log](evidence/stream-demo/stream-outage.log) | [CLOSE config/result](evidence/stream-demo/stream-outage.json) |
+| Premium admission | Block 11956803; deposit 200000 raw exceeds cap 100000; `DENY / AMOUNT_EXCEEDS_POLICY` | [DENY log](evidence/stream-demo/stream-deny.log) | [DENY config/result](evidence/stream-demo/stream-deny.json) |
+
+The transcript shows workflow compilation, binary/config hashes, trigger execution and the serialized result. Current CLI output also displays the exact invocation, input observations, limits and transcript path by default; `--verbose` adds saved-file hashes. A policy can stop at its first rejecting condition: premium is denied for budget before health, while outage rejection does not establish that every later stream-binding check passed. The wallet separately verifies the intended stream before cancellation. Displayed claimable amounts belong to the read block; the cancellation transaction determines the actual payout.
+
+Run a fresh admission preview with `npm run --silent demo:agent`. Only `--pay` funds a new stream and reaches funded checkpoints. The loopback health URL in a saved config belongs to that historical process, so rerunning that file alone is not a supported replay; the CLI creates a new service/session and configuration for each live run.
+
 ## Trust and verification limits
 
-- The local wallet enforces CRE decisions. A simulation is not DON consensus or onchain CRE authorization. AgentPayGuard and AgentPaySettlement remain closed/unused by this path.
+- The CLI validates local CRE results and gates wallet signing. AgentPayStream enforces escrow accounting, time accrual, recipient withdrawals and cancellation payouts. It has no CRE-result check: a payer can bypass the CLI and call it directly. A simulation is not DON consensus or onchain CRE authorization. AgentPayGuard and AgentPaySettlement remain closed/unused by this path.
 - Service counters come from a co-located demo provider and client. Comparing them detects discrepancies but is not independent proof of service quality. The outage is injected, not a claimed real incident.
 - Earnings accrue until cancellation is mined; outage detection cannot reverse already-earned amounts. Cancellation pays accrued earnings and refunds unused escrow in one contract transaction.
 - Stream/wallet reads use an explicit recent block. The host waits two confirmations for writes; those writes are not claimed finalized. The separate Chainlink price-feed read is finalized.
@@ -52,7 +70,7 @@ On October 20, 2026, Qwen and the local CRE CLI completed all four lifecycle dec
 
 ## Tests and evidence
 
-The repository suite has 150 tests: 29 contracts, 52 SDK, eight gateway, 20 CRE policy and 41 CLI/tooling. New policy tests cover stream decisions and bound observations; signed local-chain tests verify escrow, payer authentication, reuse without per-request transactions, cancellation and exact refund reconciliation.
+The repository suite has 151 tests: 29 contracts, 52 SDK, eight gateway, 20 CRE policy and 42 CLI/tooling. New policy tests cover stream decisions and bound observations; signed local-chain tests verify escrow, payer authentication, reuse without per-request transactions, cancellation and exact refund reconciliation.
 
 Historical standalone price captures remain at [ALLOW](evidence/cre-allow.log) / [DENY](evidence/cre-deny-budget.log). Historical direct-transfer AI evidence in `evidence/agent-demo/` documents the earlier implementation and must not be presented as streaming/refund evidence. Fresh streaming runs write exact configs, original CLI transcripts, hashes, model response records, transaction journals and accounting under `.local/agent-demo/runs/`.
 

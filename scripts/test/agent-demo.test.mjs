@@ -188,6 +188,60 @@ test("preview output cannot present model-invented receipts as verified transact
   assert.match(verbose.join("\n"), /unverified model text/);
   assert.ok(verbose.join("\n").includes(quote.id));
 });
+test("stream output shows recorded CRE observations and limits without claiming onchain CRE enforcement", () => {
+  const load = (name) =>
+    JSON.parse(
+      readFileSync(
+        new URL(`../../docs/evidence/stream-demo/${name}.json`, import.meta.url)
+      )
+    );
+  const lines = [];
+  const output = createAgentOutput({
+    stream: { isTTY: false, columns: 200 },
+    write: (line) => lines.push(line),
+  });
+  output.start({
+    settings: { provider: "qwen", model: "test" },
+    payer: agent,
+    recipient,
+    balanceRaw: "10000",
+  });
+  output.priceEvidence(load("cre-price"));
+  for (const name of ["open", "healthy", "outage", "deny"])
+    output.streamEvidence(load(`stream-${name}`));
+  const text = lines.join("\n").replace(/\s+/g, " ");
+  for (const value of [
+    "CLI checks gate signing of createStream / cancelStream",
+    "Contract does not verify CRE results; payer can call it directly",
+    "$0.99990138 USDC/USD / finalized read",
+    "69050s / maximum 86400s",
+    "Each source within 100 bps of $1; disagreement at most 100 bps",
+    "block 11956799 / paymentToken(), decimals(), balanceOf(payer)",
+    "streams(1) + getClaimableBalance(1)",
+    "120 raw claimable / 0 raw withdrawn",
+    "10 successes / 3 failures",
+    "200000 raw deposit / cap 100000 raw USDC",
+    "OPEN",
+    "CONTINUE",
+    "CLOSE",
+    "DENY",
+    "amount exceeds policy",
+    "None / decision returned to wallet-owning CLI",
+  ])
+    assert.ok(text.includes(value), `Missing output: ${value}`);
+  assert.doesNotMatch(
+    text,
+    /onchain CRE authorization accepted|Config SHA256|\x1b/
+  );
+  assert.equal(text.includes(load("stream-open").config.healthUrl), true);
+  const verbose = [];
+  createAgentOutput({
+    verbose: true,
+    write: (line) => verbose.push(line),
+    stream: { isTTY: false },
+  }).streamEvidence(load("stream-open"));
+  assert.ok(verbose.join("\n").includes(load("stream-open").logSha256));
+});
 test("terminal styles never leak to JSON, redirected or NO_COLOR output, and model control sequences are stripped", () => {
   for (const options of [
     {
@@ -419,13 +473,52 @@ test("agent CRE runner uses workflow-relative short paths and strips agent crede
     OPEN_AI_KEY: "fixture-secret",
   });
   try {
+    let invocation;
     const result = await runCreIntent({
       root,
       directory,
       tier: "basic",
       config: evidence().config,
+      onStart: (value) => {
+        invocation = value;
+      },
     });
     assert.equal(result.result.approved, true);
+    assert.deepEqual(invocation, {
+      command: [
+        process.env.CRE_BIN,
+        "workflow",
+        "simulate",
+        "payment-guard",
+        "--target",
+        "staging-settings",
+        "--trigger-index",
+        "0",
+        "--non-interactive",
+        "--config",
+        path.relative(
+          path.join(root, "cre/payment-guard"),
+          path.join(directory, "cre-basic.config.json")
+        ),
+      ],
+      cwd: "cre",
+      configPath: path.relative(
+        root,
+        path.join(directory, "cre-basic.config.json")
+      ),
+      transcriptPath: path.relative(
+        root,
+        path.join(directory, "cre-basic.log")
+      ),
+    });
+    const lines = [];
+    createAgentOutput({
+      stream: { isTTY: false },
+      write: (line) => lines.push(line),
+    }).creInvocation(invocation);
+    const text = lines.join("\n").replace(/\s+/g, " ");
+    assert.ok(text.includes(invocation.command.join(" ")));
+    assert.ok(text.includes(invocation.transcriptPath));
   } finally {
     for (const key of keys)
       if (previous[key] === undefined) delete process.env[key];

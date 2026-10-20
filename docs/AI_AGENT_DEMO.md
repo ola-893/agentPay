@@ -2,7 +2,7 @@
 
 AgentPay keeps its original payment model: a sender funds an escrow stream, the recipient earns tokens with time, and many API requests reuse that stream. The AI CLI now uses **AgentPayStream**, rather than sending a token transfer for every purchase.
 
-A local CRE workflow combines real HTTP service observations with Sepolia wallet and stream reads to return `OPEN`, `CONTINUE`, `CLOSE` or `DENY`. The sender's wallet executes those decisions. CRE is not deployed to Chainlink's network, and simulation output is not DON-authenticated authority.
+A local CRE workflow combines real HTTP service observations with Sepolia wallet and stream reads to return `OPEN`, `CONTINUE`, `CLOSE` or `DENY`. The CLI validates those results before the sender's wallet signs stream transactions. **AgentPayStream enforces escrow accounting, time accrual, withdrawal permissions and cancellation payouts; it does not verify CRE results.** A payer can call the contract directly without this CLI or a CRE approval. CRE is not deployed to Chainlink's network, and simulation output is not DON-authenticated authority.
 
 **Verified October 20, 2026:** real Qwen calls and local CRE executions opened Sepolia stream #1, reused it for ten successful requests, continued on healthy observations, and closed after three injected failures. A 0.01-USDC deposit produced **0.0006 USDC earned + 0.0094 USDC refunded**. [Original transcript](evidence/stream-demo/run.log) · [Structured result](evidence/stream-demo/result.json) · [Independent RPC verification](evidence/stream-demo/rpc-verification.json) · [Verification record](evidence/stream-demo/VERIFICATION.md).
 
@@ -58,7 +58,13 @@ The 1000-second window allows time for CLI compilation and confirmations. It is 
 
 ## Output and evidence
 
-The terminal groups stream decisions and request batches, with a final escrow/earnings/refund summary. Supported terminals receive colour; redirected output and `NO_COLOR` use plain text. Use `--verbose` for model response IDs, price observations and unverified model prose. `--json` preserves one result envelope on stdout and progress on stderr.
+The terminal shows the exact CRE CLI command and working directory, configuration and original transcript paths, then observations from the validated result. Price checks show both USDC/USD prices, feed age and freshness limit, peg/disagreement limits and raw-unit budget. Stream checks show the HTTP endpoint, provider/client counters, failure threshold, Sepolia read block, token binding, wallet balance, deposit/rate limits and any existing stream's active/claimable state. Decisions are followed by the host validation status and an explicit statement that CRE made no onchain write. These are observations at the displayed block/time, not a claim of current health or balance.
+
+The CLI then groups request batches and the escrow/earnings/refund summary. Supported terminals receive colour; redirected output and `NO_COLOR` use plain text. Use `--verbose` for model response IDs, configuration/transcript SHA-256 hashes and unverified model prose. `--json` preserves one result envelope on stdout and progress on stderr. Hashes bind saved files for drift checks; they do not authenticate a local result as a DON report.
+
+For the full recorded `OPEN` → `CONTINUE` → `CLOSE` sequence and premium `DENY`, inspect the [original workflow transcripts and exact observations](CRE_SUBMISSION.md#inspect-the-cre-work). A new preview cannot reproduce funded checkpoints without creating a stream; use the historical evidence to review them without another deposit.
+
+[Current CLI output capture](evidence/stream-demo/preview-output.log): a fresh Qwen + CRE preview completed October 20, 2026 (`20261020T181607Z-5247c337`), with price `ALLOW`, admission `OPEN` and premium `DENY`. JSON stdout remained one successful envelope; initial/final wallet snapshots matched and funded/earned/refunded amounts were all zero. The linked output is historical, not a new payment or funded checkpoint test; its `.local/` paths identify artifacts on the capturing machine. Presentation and invocation regression checks pass with the 42 CLI/tooling tests; docs checks, frontend lint and build also pass. No contract was changed or redeployed for this output update.
 
 The result data schema is now **version 2**: modes `local-agent-stream` / `local-stream-preview`, with `fundedRaw`, `earnedRaw`, `refundedRaw` and basic status `stream-completed`. This is an intentional change from the older direct-payment result (`paidRaw`, `purchased`). The outer CLI envelope and existing flags remain compatible.
 

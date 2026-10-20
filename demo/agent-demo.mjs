@@ -45,7 +45,7 @@ Default: real AI + local CRE admission preview; no signing or token funding.
            then cancel: earned funds go to the recipient and unused funds refund.
            A new paid run can fund another stream and uses test ETH for gas.
 --close-stream <id>  Recover an owned USDC stream; no AI or CRE call required.
---verbose  Show response IDs, oracle observations and unverified model text.
+--verbose  Add response IDs, CRE evidence hashes and unverified model text.
 --json     One result envelope on stdout; plain progress on stderr.
 --help     No credentials, API calls, network or transactions.
 
@@ -57,8 +57,10 @@ Qwen is selected when its key is present; AGENTPAY_AI_PROVIDER overrides this.
 Defaults: QWEN_MODEL=qwen3.5-plus, QWEN_REGION=singapore,
 OPENAI_MODEL=gpt-4.1-mini. Model calls may incur charges; no model/rules fallback.
 
-CRE stays local. The owning wallet executes stream decisions. This is not DON
-or strict-guard authorization, nor full x402. Stream earnings accrue until the
+CRE commands, observed inputs, policy limits and transcript paths are shown.
+CRE stays local. CLI checks gate wallet signing; the contract enforces escrow
+accounting, not CRE approvals. No DON or strict-guard authorization, nor full
+x402. Stream earnings accrue until the
 cancellation transaction is mined. No automatic repeat funding on uncertainty.
 Evidence: .local/agent-demo/runs/. Exit: 0 complete / 1 failed / 2 config or usage.`;
 await cli.cliMain(
@@ -233,8 +235,9 @@ await cli.cliMain(
           root,
           directory,
           label,
+          onStart: (invocation) => output.creInvocation(invocation),
         });
-        output.streamDecision(evidence.result);
+        output.streamEvidence(evidence);
         return { config, decision: evidence.result };
       };
       const purchase = async ({ tier, purpose }) => {
@@ -289,8 +292,9 @@ await cli.cliMain(
             root,
             directory,
             tier: "price",
+            onStart: (invocation) => output.creInvocation(invocation),
           });
-          output.decision(price.result);
+          output.priceEvidence(price);
           const priceCompleted = performance.now();
           priceGate = () =>
             assertLocalApproval(price, config, {

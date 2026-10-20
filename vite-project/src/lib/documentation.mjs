@@ -52,7 +52,7 @@ export const documentation = {
         list([
           "Ethereum Sepolia only; testnet USDC and tUSD have no monetary value.",
           "CRE stays local. The AI CLI has separate verified Sepolia stream funding, request reuse, closure and refund evidence.",
-          "The stream contract accrues earnings with time and refunds unused escrow on cancellation. CRE decisions are enforced by the sender wallet.",
+          "The CLI gates wallet signing on local CRE decisions. The stream contract enforces escrow accounting and payouts; it does not verify CRE results, and a payer can call it directly.",
           "The legacy gateway uses AgentPay-specific HTTP 402 headers. It does not implement the full current x402 transport/facilitator protocol.",
           "This is an unaudited prototype.",
         ]),
@@ -268,7 +268,7 @@ export const documentation = {
         ),
         code("sh", "npm run demo:agent\nnpm run demo:agent -- --pay"),
         p(
-          "Preview evaluates OPEN and DENY without signing. With --pay, basic deposits 0.01 USDC over 1000 seconds, ten successful API requests reuse the stream, and an injected outage produces CRE CLOSE. The wallet cancels, paying time-accrued earnings and refunding unused funds. Premium proposes 0.2 against a 0.1 deposit cap and is denied. Each paid run is a new stream and spends test ETH gas. Use --close-stream <id> to recover an owned stream, --verbose for model details and --json for structured output. The USDC stream has its own deployment; no CRE network deployment is needed. This is wallet-side enforcement, not DON authentication, AgentPaySettlement or full x402."
+          "Preview evaluates OPEN and DENY without signing. With --pay, basic deposits 0.01 USDC over 1000 seconds, ten successful API requests reuse the stream, and an injected outage produces CRE CLOSE. The wallet cancels, paying time-accrued earnings and refunding unused funds. Premium proposes 0.2 against a 0.1 deposit cap and is denied. Each paid run is a new stream and spends test ETH gas. Output shows each CRE command, HTTP observations, Sepolia block, policy limits and transcript path. Use --close-stream <id> to recover an owned stream, --verbose for model details and evidence hashes, and --json for structured output. The CLI gates signing; the contract enforces escrow and payouts without checking CRE results. A payer can call the contract directly. No CRE network deployment, DON authentication, AgentPaySettlement or full x402 is used."
         ),
       ]),
       section("Strict SDK integration prerequisites", [

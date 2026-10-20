@@ -77,7 +77,16 @@ export function createAgentOutput({
       field("Payer", payer);
       field("Balance", `${amount(balanceRaw)} test USDC`);
       field("Recipient", recipient);
-      field("Authority", "Local CRE decision enforced by the wallet");
+      field("CRE", "Local simulation supplies decisions; no DON authorization");
+      field("Wallet", "CLI checks gate signing of createStream / cancelStream");
+      field(
+        "Contract",
+        "Enforces escrow, time accrual and cancellation payouts"
+      );
+      field(
+        "Trust",
+        "Contract does not verify CRE results; payer can call it directly"
+      );
       write("");
     },
     thinking(complete) {
@@ -104,7 +113,7 @@ export function createAgentOutput({
       field("Quote", `${amount(quote.amount)} USDC${dot}CRE cap 0.10 USDC`);
       field("CRE", "Running local simulation with live price + chain data...");
     },
-    decision(result) {
+    decision(result, { prices = verbose } = {}) {
       field(
         "Decision",
         `${result.approved ? "ALLOW" : "DENY"}${dot}${
@@ -116,7 +125,7 @@ export function createAgentOutput({
         }`,
         result.approved ? ok : warning
       );
-      if (verbose) {
+      if (prices) {
         field("Chainlink", `$${amount(result.chainlinkPriceUsd8, 8)} USDC/USD`);
         field("Coinbase", `$${amount(result.externalPriceUsd8, 8)} USDC/USD`);
       }
@@ -156,6 +165,125 @@ export function createAgentOutput({
     },
     streamChecking(label) {
       field("CRE", `Checking ${label} with real HTTP + Sepolia reads...`);
+    },
+    creInvocation({ command, cwd, configPath, transcriptPath }) {
+      field("Run from", `${cwd}/ (repository root relative)`);
+      field(
+        "Command",
+        command
+          .map((arg) =>
+            /^[a-zA-Z0-9_./=-]+$/.test(arg) ? arg : JSON.stringify(arg)
+          )
+          .join(" ")
+      );
+      field("Config", configPath);
+      field("Transcript", `${transcriptPath} (saved when CRE exits)`);
+    },
+    priceEvidence({ result: r, capturedAt, configSha256, logSha256 }) {
+      field("HTTP GET", r.marketApiUrl);
+      field("Coinbase", `$${amount(r.externalPriceUsd8, 8)} USDC/USD`);
+      field("Feed", r.feedAddress);
+      field(
+        "Chainlink",
+        `$${amount(r.chainlinkPriceUsd8, 8)} USDC/USD / finalized read`
+      );
+      field(
+        "Feed age",
+        `${r.observedAt - r.feedUpdatedAt}s / maximum ${
+          r.maxFeedAgeSeconds
+        }s at observation`
+      );
+      field(
+        "Price bounds",
+        `Each source within ${r.maxPegDeviationBps} bps of $1; disagreement at most ${r.maxDeviationBps} bps`
+      );
+      field(
+        "Budget",
+        `${r.request.amount} raw USDC / cap ${r.request.spendingCap} raw (6 decimals)`
+      );
+      this.decision(r, { prices: false });
+      field(
+        "CRE write",
+        r.published
+          ? "Report publication requested; inspect result and receipt"
+          : "None / report preview only; not payment authority"
+      );
+      this.creValidation({ capturedAt, configSha256, logSha256 });
+    },
+    streamEvidence({
+      config: c,
+      result: r,
+      capturedAt,
+      configSha256,
+      logSha256,
+    }) {
+      field("HTTP GET", c.healthUrl);
+      field(
+        "Provider",
+        `${r.health.serviceAvailable ? "available" : "unavailable"}${dot}${
+          r.health.successfulRequests
+        } successes / ${r.health.failedRequests} failures`
+      );
+      field(
+        "Client",
+        `${c.client.successfulRequests} successes / ${c.client.failedRequests} failures`
+      );
+      field(
+        "Health rule",
+        `Snapshot/session and counters must match; unavailable or >= ${c.maxFailedRequests} failures rejects`
+      );
+      field(
+        "Sepolia read",
+        `block ${c.observationBlock} / paymentToken(), decimals(), balanceOf(payer)`
+      );
+      field(
+        "Token",
+        `${r.onchain.paymentToken} / ${r.onchain.tokenDecimals} decimals`
+      );
+      field("Balance", `${amount(r.onchain.agentBalanceRaw)} USDC`);
+      field(
+        "Budget",
+        `${c.amountRaw} raw deposit / cap ${c.spendingCapRaw} raw USDC`
+      );
+      field(
+        "Rate bound",
+        `${BigInt(c.amountRaw) / BigInt(c.durationSeconds)} raw/s / maximum ${
+          c.maxRateRawPerSecond
+        } raw/s; ${c.durationSeconds}s duration`
+      );
+      const s = r.onchain.stream;
+      if (s) {
+        field(
+          "Stream read",
+          `streams(${c.streamId})${
+            s.isActive ? ` + getClaimableBalance(${c.streamId})` : ""
+          }`
+        );
+        field(
+          "State",
+          `${s.isActive ? "active" : "inactive"}${dot}${
+            s.totalAmount
+          } raw deposit / ${s.flowRate} raw/s`
+        );
+        field(
+          "Accrued",
+          `${s.claimableRaw} raw claimable / ${s.amountWithdrawn} raw withdrawn at read block`
+        );
+      } else field("Stream read", "Admission / no existing stream requested");
+      this.streamDecision(r);
+      field("CRE write", "None / decision returned to wallet-owning CLI");
+      this.creValidation({ capturedAt, configSha256, logSha256 });
+    },
+    creValidation({ capturedAt, configSha256, logSha256 }) {
+      field(
+        "Host check",
+        "Result validated against run config and policy re-evaluated"
+      );
+      if (verbose) {
+        field("Captured", capturedAt);
+        field("Config SHA256", configSha256);
+        field("Log SHA256", logSha256);
+      }
     },
     streamDecision(result) {
       field(
@@ -202,7 +330,7 @@ export function createAgentOutput({
     finish(result) {
       write("");
       separator();
-      write(`  ${ok(bold("COMPLETE"))}  ${muted("Verified by AgentPay")}`);
+      write(`  ${ok(bold("COMPLETE"))}  ${muted("Run checks passed")}`);
       write("");
       if (result.schemaVersion === 2) {
         const basic = result.purchases.basic;

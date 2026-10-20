@@ -11,7 +11,7 @@ import {
   stripAnsi,
 } from "../../scripts/lib/cre-evidence.mjs";
 
-export async function runCreIntent({ config, root, directory, tier }) {
+export async function runCreIntent({ config, root, directory, tier, onStart }) {
   await mkdir(directory, { recursive: true });
   const text = JSON.stringify(config, null, 2) + "\n";
   const file = path.join(directory, `cre-${tier}.config.json`);
@@ -43,6 +43,15 @@ export async function runCreIntent({ config, root, directory, tier }) {
     "--config",
     configArgument,
   ];
+  onStart?.({
+    command: [process.env.CRE_BIN || "cre", ...args],
+    cwd: "cre",
+    configPath: path.relative(root, file),
+    transcriptPath: path.relative(
+      root,
+      path.join(directory, `cre-${tier}.log`)
+    ),
+  });
   const { code, output } = await cli.runChild(
     process.env.CRE_BIN || "cre",
     args,
@@ -78,7 +87,13 @@ export async function runCreIntent({ config, root, directory, tier }) {
   return evidence;
 }
 
-export async function runStreamCheck({ config, root, directory, label }) {
+export async function runStreamCheck({
+  config,
+  root,
+  directory,
+  label,
+  onStart,
+}) {
   await mkdir(directory, { recursive: true });
   const file = path.join(directory, `stream-${label}.config.json`),
     serialized = JSON.stringify(config, null, 2) + "\n";
@@ -117,6 +132,15 @@ export async function runStreamCheck({ config, root, directory, label }) {
     "--config",
     path.relative(path.join(root, "cre/payment-guard"), file),
   ];
+  onStart?.({
+    command: [process.env.CRE_BIN || "cre", ...args],
+    cwd: "cre",
+    configPath: path.relative(root, file),
+    transcriptPath: path.relative(
+      root,
+      path.join(directory, `stream-${label}.log`)
+    ),
+  });
   const run = await cli.runChild(process.env.CRE_BIN || "cre", args, {
     cwd: path.join(root, "cre"),
     env,
