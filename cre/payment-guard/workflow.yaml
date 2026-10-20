@@ -12,3 +12,10 @@ stream-settings:
     workflow-path: ./stream-main.ts
     config-path: ./config.stream.json
     secrets-path: ""
+toolbuyer-settings:
+  user-workflow:
+    workflow-name: agentpay-toolbuyer
+  workflow-artifacts:
+    workflow-path: ./toolbuyer-main.ts
+    config-path: ./config.toolbuyer.json
+    secrets-path: ""

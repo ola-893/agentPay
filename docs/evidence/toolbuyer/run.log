@@ -1,0 +1,50 @@
+
+  ToolBuyer / LOCAL CRE + SEPOLIA READS
+  Synthetic providers; benchmark credits only. No token transfers or wallet signing.
+  Visible examples (free): budget 2/9 | expert 9/9 | showcase 9/9
+  CRE: (cd cre) cre workflow simulate payment-guard --target toolbuyer-settings --trigger-index 0 --non-interactive --config ../../.local/toolbuyer/runs/20261020T2154213-428cf5/17-invoice.config.json
+  CRE read: Circle USDC 6 decimals; balance 39968920 raw at Sepolia block 11958098
+  Trial 1: budget, correct; cost 30; expected gross value 966.67 / net 936.67 raw
+
+  17/invoice: BUY budget; trials 1, cost 30 raw
+  Stop: NO_POSITIVE_ONE_STEP_INFORMATION_VALUE; best remaining trial net value -30.00 raw
+  budget    posterior quality 0.667 / SD 0.236 (1/1 trials)
+  expert    posterior quality 0.500 / SD 0.289 (0/0 trials)
+  showcase  posterior quality 0.500 / SD 0.289 (0/0 trials)
+  CRE: (cd cre) cre workflow simulate payment-guard --target toolbuyer-settings --trigger-index 0 --non-interactive --config ../../.local/toolbuyer/runs/20261020T2154213-428cf5/17-units.config.json
+  CRE read: Circle USDC 6 decimals; balance 39968920 raw at Sepolia block 11958098
+  Trial 1: budget, incorrect; cost 30; expected gross value 966.67 / net 936.67 raw
+  Trial 2: showcase, incorrect; cost 45; expected gross value 700.00 / net 655.00 raw
+  Trial 3: expert, correct; cost 90; expected gross value 1133.33 / net 1043.33 raw
+  Trial 4: budget, incorrect; cost 30; expected gross value 355.56 / net 325.56 raw
+
+  17/units: BUY expert; trials 4, cost 195 raw
+  Stop: NO_POSITIVE_ONE_STEP_INFORMATION_VALUE; best remaining trial net value -30.00 raw
+  budget    posterior quality 0.250 / SD 0.194 (0/2 trials)
+  expert    posterior quality 0.667 / SD 0.236 (1/1 trials)
+  showcase  posterior quality 0.333 / SD 0.236 (0/1 trials)
+  CRE: (cd cre) cre workflow simulate payment-guard --target toolbuyer-settings --trigger-index 0 --non-interactive --config ../../.local/toolbuyer/runs/20261020T2154213-428cf5/17-routing.config.json
+  CRE read: Circle USDC 6 decimals; balance 39968920 raw at Sepolia block 11958098
+  Trial 1: budget, incorrect; cost 30; expected gross value 966.67 / net 936.67 raw
+  Trial 2: showcase, incorrect; cost 45; expected gross value 700.00 / net 655.00 raw
+  Trial 3: expert, correct; cost 90; expected gross value 1133.33 / net 1043.33 raw
+  Trial 4: budget, correct; cost 30; expected gross value 355.56 / net 325.56 raw
+  Trial 5: budget, incorrect; cost 30; expected gross value 466.67 / net 436.67 raw
+  Trial 6: expert, correct; cost 90; expected gross value 800.00 / net 710.00 raw
+  Trial 7: expert, correct; cost 90; expected gross value 100.00 / net 10.00 raw
+
+  17/routing: BUY expert; trials 7, cost 405 raw
+  Stop: NO_POSITIVE_ONE_STEP_INFORMATION_VALUE; best remaining trial net value -30.00 raw
+  budget    posterior quality 0.400 / SD 0.200 (1/3 trials)
+  expert    posterior quality 0.800 / SD 0.163 (3/3 trials)
+  showcase  posterior quality 0.333 / SD 0.236 (0/1 trials)
+
+  Held-out comparison / all trial and service costs included (raw benchmark units)
+  Strategy          Correct       Trials   Service     Total    Utility
+  toolbuyer         44/60           630     13600     14230      29770
+  cheapest          15/60             0      4800      4800      10200
+  fixed-showcase    0/60              0      9000      9000      -9000
+  fixed-expert      60/60             0     18000     18000      42000
+
+  Evidence: .local/toolbuyer/runs/20261020T2154213-428cf5/result.json
+

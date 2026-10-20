@@ -88,6 +88,17 @@ The CLI displays the exact CRE command, HTTP observations, Sepolia read block, p
 
 The CLI gates wallet signing on local CRE results. **The stream contract enforces escrow accounting and payouts, not CRE approval**; a payer can call it directly. No DON authentication or closed AgentPayGuard/AgentPaySettlement contract is used. This is an AgentPay HTTP 402 streaming protocol, not full x402. The browser Agent setup remains a local SDK draft, and the browser Streams page retains its separate 18-decimal tUSD deployment.
 
+## ToolBuyer: evaluate quality before choosing a provider
+
+A local CRE workflow buys task-specific trial answers, updates Beta quality beliefs and stops when the expected one-step information value no longer covers trial cost. It compares its held-out results against cheapest-only, fixed-showcase and fixed-expert purchasing, including every trial and answer cost.
+
+```sh
+npm run --silent demo:toolbuyer
+npm run --silent demo:toolbuyer -- --offline --seeds 17,29,43,71,97
+```
+
+The three providers are synthetic; costs debit benchmark credits, not USDC. The default path performs real CRE HTTP trial calls and Sepolia budget reads; `--offline` explicitly uses neither CRE nor the chain. No model key, private key or signing is required. The recorded run beats cheapest-only and the visible-example specialist but loses to fixed-expert purchasing; the myopic stopping failure is documented. [Mechanism, original CRE evidence and full comparison](docs/TOOLBUYER.md).
+
 ## Verify
 
 ```sh
@@ -99,7 +110,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **151 tests** — 29 contracts, 52 SDK, eight middleware, 20 CRE policy, 42 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
+Current suites: **162 tests** — 29 contracts, 52 SDK, eight middleware, 27 CRE policy, 46 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
 
 `docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
 

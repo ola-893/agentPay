@@ -1,0 +1,831 @@
+{
+  "capturedAt": "2026-10-20T21:54:52.404Z",
+  "configSha256": "1b8f55365c83e69f831d3897d24d2ae35a5aca0ba000e24f1d787ac4ea118577",
+  "logSha256": "bada5eeb551e8f5f525a97c2a022fb57246b14898bc4c3b3400eb093476dba74",
+  "result": {
+    "schemaVersion": 1,
+    "workflow": "agentpay-toolbuyer",
+    "mode": "local-simulation",
+    "billingMode": "benchmark-credits",
+    "config": {
+      "seed": 17,
+      "family": "routing",
+      "batchSize": 20,
+      "rewardRaw": 1000,
+      "budgetRaw": 20000,
+      "maxTrialSpendRaw": 2000,
+      "maxTrialsPerProvider": 12,
+      "serviceUrl": "http://127.0.0.1:53415/run/e194d2b77116a268",
+      "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+      "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      "observationBlock": 11958098
+    },
+    "onchain": {
+      "balanceRaw": "39968920",
+      "tokenDecimals": 6,
+      "observationBlock": 11958098
+    },
+    "decision": {
+      "action": "BUY",
+      "provider": "expert",
+      "reason": "NO_POSITIVE_ONE_STEP_INFORMATION_VALUE",
+      "spentRaw": 405,
+      "stats": [
+        {
+          "id": "budget",
+          "label": "Cheap / weak",
+          "trialCostRaw": 30,
+          "serviceCostRaw": 80,
+          "trials": 3,
+          "successes": 1,
+          "alpha": 2,
+          "beta": 3,
+          "mean": 0.4,
+          "sd": 0.2
+        },
+        {
+          "id": "expert",
+          "label": "Costly / strong",
+          "trialCostRaw": 90,
+          "serviceCostRaw": 300,
+          "trials": 3,
+          "successes": 3,
+          "alpha": 4,
+          "beta": 1,
+          "mean": 0.8,
+          "sd": 0.16329931618554522
+        },
+        {
+          "id": "showcase",
+          "label": "Visible-example specialist",
+          "trialCostRaw": 45,
+          "serviceCostRaw": 150,
+          "trials": 1,
+          "successes": 0,
+          "alpha": 1,
+          "beta": 2,
+          "mean": 0.3333333333333333,
+          "sd": 0.23570226039551584
+        }
+      ],
+      "candidates": [
+        {
+          "provider": "budget",
+          "grossValueRaw": 0,
+          "costRaw": 30,
+          "netValueRaw": -30
+        },
+        {
+          "provider": "showcase",
+          "grossValueRaw": 0,
+          "costRaw": 45,
+          "netValueRaw": -45
+        },
+        {
+          "provider": "expert",
+          "grossValueRaw": 0,
+          "costRaw": 90,
+          "netValueRaw": -90
+        }
+      ],
+      "expectedNetUtilityRaw": 9595
+    },
+    "observations": [
+      {
+        "task": {
+          "id": "routing-17-100",
+          "family": "routing",
+          "input": {
+            "routes": [
+              {
+                "id": "route-0",
+                "feeRaw": 134,
+                "latencyMs": 66
+              },
+              {
+                "id": "route-1",
+                "feeRaw": 42,
+                "latencyMs": 16
+              },
+              {
+                "id": "route-2",
+                "feeRaw": 57,
+                "latencyMs": 45
+              }
+            ],
+            "maxLatencyMs": 100
+          }
+        },
+        "provider": "budget",
+        "answer": "route-0",
+        "costRaw": 30,
+        "receiptId": "4b40eef1761cd7ce0a546075674955e736e4b9eabc9921a7fbe36347873597fd"
+      },
+      {
+        "task": {
+          "id": "routing-17-100",
+          "family": "routing",
+          "input": {
+            "routes": [
+              {
+                "id": "route-0",
+                "feeRaw": 134,
+                "latencyMs": 66
+              },
+              {
+                "id": "route-1",
+                "feeRaw": 42,
+                "latencyMs": 16
+              },
+              {
+                "id": "route-2",
+                "feeRaw": 57,
+                "latencyMs": 45
+              }
+            ],
+            "maxLatencyMs": 100
+          }
+        },
+        "provider": "showcase",
+        "answer": "UNKNOWN",
+        "costRaw": 45,
+        "receiptId": "9f7b0e0da1a1c6119bba85e2e554052f5afb2cc8ae66a6c655687d411fd5c8c8"
+      },
+      {
+        "task": {
+          "id": "routing-17-100",
+          "family": "routing",
+          "input": {
+            "routes": [
+              {
+                "id": "route-0",
+                "feeRaw": 134,
+                "latencyMs": 66
+              },
+              {
+                "id": "route-1",
+                "feeRaw": 42,
+                "latencyMs": 16
+              },
+              {
+                "id": "route-2",
+                "feeRaw": 57,
+                "latencyMs": 45
+              }
+            ],
+            "maxLatencyMs": 100
+          }
+        },
+        "provider": "expert",
+        "answer": "route-1",
+        "costRaw": 90,
+        "receiptId": "3dca44c0d2e5cf145396d8d7127af016cfeef5e757bad51719b08799bc7451d0"
+      },
+      {
+        "task": {
+          "id": "routing-17-101",
+          "family": "routing",
+          "input": {
+            "routes": [
+              {
+                "id": "route-0",
+                "feeRaw": 47,
+                "latencyMs": 71
+              },
+              {
+                "id": "route-1",
+                "feeRaw": 143,
+                "latencyMs": 33
+              },
+              {
+                "id": "route-2",
+                "feeRaw": 161,
+                "latencyMs": 57
+              }
+            ],
+            "maxLatencyMs": 100
+          }
+        },
+        "provider": "budget",
+        "answer": "route-0",
+        "costRaw": 30,
+        "receiptId": "1c056db8654f19b1a43d1b46f85dffef4714931da1ef5b7c9bd1daf7d0ca3901"
+      },
+      {
+        "task": {
+          "id": "routing-17-102",
+          "family": "routing",
+          "input": {
+            "routes": [
+              {
+                "id": "route-0",
+                "feeRaw": 129,
+                "latencyMs": 97
+              },
+              {
+                "id": "route-1",
+                "feeRaw": 118,
+                "latencyMs": 16
+              },
+              {
+                "id": "route-2",
+                "feeRaw": 175,
+                "latencyMs": 9
+              }
+            ],
+            "maxLatencyMs": 30
+          }
+        },
+        "provider": "budget",
+        "answer": "NONE",
+        "costRaw": 30,
+        "receiptId": "a91bd262fa8e595093912c8b18b79d7a6edfe2fbee6d62d84dd8e8fb645cf323"
+      },
+      {
+        "task": {
+          "id": "routing-17-101",
+          "family": "routing",
+          "input": {
+            "routes": [
+              {
+                "id": "route-0",
+                "feeRaw": 47,
+                "latencyMs": 71
+              },
+              {
+                "id": "route-1",
+                "feeRaw": 143,
+                "latencyMs": 33
+              },
+              {
+                "id": "route-2",
+                "feeRaw": 161,
+                "latencyMs": 57
+              }
+            ],
+            "maxLatencyMs": 100
+          }
+        },
+        "provider": "expert",
+        "answer": "route-0",
+        "costRaw": 90,
+        "receiptId": "6d43df2b5084fbc0a1212462e91a3e76dd1d0c1a38f8374ac994286e1a4e23d7"
+      },
+      {
+        "task": {
+          "id": "routing-17-102",
+          "family": "routing",
+          "input": {
+            "routes": [
+              {
+                "id": "route-0",
+                "feeRaw": 129,
+                "latencyMs": 97
+              },
+              {
+                "id": "route-1",
+                "feeRaw": 118,
+                "latencyMs": 16
+              },
+              {
+                "id": "route-2",
+                "feeRaw": 175,
+                "latencyMs": 9
+              }
+            ],
+            "maxLatencyMs": 30
+          }
+        },
+        "provider": "expert",
+        "answer": "route-1",
+        "costRaw": 90,
+        "receiptId": "cbcd09cbb8ad6479cca60ca466dfa7936d9b73dddcd655e91afef8b81793ae97"
+      }
+    ],
+    "trace": [
+      {
+        "action": "TRIAL",
+        "provider": "budget",
+        "reason": "EXPECTED_INFORMATION_VALUE_EXCEEDS_COST",
+        "spentRaw": 0,
+        "stats": [
+          {
+            "id": "budget",
+            "label": "Cheap / weak",
+            "trialCostRaw": 30,
+            "serviceCostRaw": 80,
+            "trials": 0,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 1,
+            "mean": 0.5,
+            "sd": 0.28867513459481287
+          },
+          {
+            "id": "expert",
+            "label": "Costly / strong",
+            "trialCostRaw": 90,
+            "serviceCostRaw": 300,
+            "trials": 0,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 1,
+            "mean": 0.5,
+            "sd": 0.28867513459481287
+          },
+          {
+            "id": "showcase",
+            "label": "Visible-example specialist",
+            "trialCostRaw": 45,
+            "serviceCostRaw": 150,
+            "trials": 0,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 1,
+            "mean": 0.5,
+            "sd": 0.28867513459481287
+          }
+        ],
+        "candidates": [
+          {
+            "provider": "budget",
+            "grossValueRaw": 966.6666666666661,
+            "costRaw": 30,
+            "netValueRaw": 936.6666666666661
+          },
+          {
+            "provider": "showcase",
+            "grossValueRaw": 966.6666666666661,
+            "costRaw": 45,
+            "netValueRaw": 921.6666666666661
+          },
+          {
+            "provider": "expert",
+            "grossValueRaw": 0,
+            "costRaw": 90,
+            "netValueRaw": -90
+          }
+        ],
+        "expectedNetUtilityRaw": 8400
+      },
+      {
+        "action": "TRIAL",
+        "provider": "showcase",
+        "reason": "EXPECTED_INFORMATION_VALUE_EXCEEDS_COST",
+        "spentRaw": 30,
+        "stats": [
+          {
+            "id": "budget",
+            "label": "Cheap / weak",
+            "trialCostRaw": 30,
+            "serviceCostRaw": 80,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          },
+          {
+            "id": "expert",
+            "label": "Costly / strong",
+            "trialCostRaw": 90,
+            "serviceCostRaw": 300,
+            "trials": 0,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 1,
+            "mean": 0.5,
+            "sd": 0.28867513459481287
+          },
+          {
+            "id": "showcase",
+            "label": "Visible-example specialist",
+            "trialCostRaw": 45,
+            "serviceCostRaw": 150,
+            "trials": 0,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 1,
+            "mean": 0.5,
+            "sd": 0.28867513459481287
+          }
+        ],
+        "candidates": [
+          {
+            "provider": "showcase",
+            "grossValueRaw": 699.9999999999991,
+            "costRaw": 45,
+            "netValueRaw": 654.9999999999991
+          },
+          {
+            "provider": "budget",
+            "grossValueRaw": 466.66666666666697,
+            "costRaw": 30,
+            "netValueRaw": 436.66666666666697
+          },
+          {
+            "provider": "expert",
+            "grossValueRaw": 166.66666666666606,
+            "costRaw": 90,
+            "netValueRaw": 76.66666666666606
+          }
+        ],
+        "expectedNetUtilityRaw": 6970
+      },
+      {
+        "action": "TRIAL",
+        "provider": "expert",
+        "reason": "EXPECTED_INFORMATION_VALUE_EXCEEDS_COST",
+        "spentRaw": 75,
+        "stats": [
+          {
+            "id": "budget",
+            "label": "Cheap / weak",
+            "trialCostRaw": 30,
+            "serviceCostRaw": 80,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          },
+          {
+            "id": "expert",
+            "label": "Costly / strong",
+            "trialCostRaw": 90,
+            "serviceCostRaw": 300,
+            "trials": 0,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 1,
+            "mean": 0.5,
+            "sd": 0.28867513459481287
+          },
+          {
+            "id": "showcase",
+            "label": "Visible-example specialist",
+            "trialCostRaw": 45,
+            "serviceCostRaw": 150,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          }
+        ],
+        "candidates": [
+          {
+            "provider": "expert",
+            "grossValueRaw": 1133.333333333333,
+            "costRaw": 90,
+            "netValueRaw": 1043.333333333333
+          },
+          {
+            "provider": "showcase",
+            "grossValueRaw": 644.4444444444453,
+            "costRaw": 45,
+            "netValueRaw": 599.4444444444453
+          },
+          {
+            "provider": "budget",
+            "grossValueRaw": 400.0000000000009,
+            "costRaw": 30,
+            "netValueRaw": 370.0000000000009
+          }
+        ],
+        "expectedNetUtilityRaw": 4991.666666666666
+      },
+      {
+        "action": "TRIAL",
+        "provider": "budget",
+        "reason": "EXPECTED_INFORMATION_VALUE_EXCEEDS_COST",
+        "spentRaw": 165,
+        "stats": [
+          {
+            "id": "budget",
+            "label": "Cheap / weak",
+            "trialCostRaw": 30,
+            "serviceCostRaw": 80,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          },
+          {
+            "id": "expert",
+            "label": "Costly / strong",
+            "trialCostRaw": 90,
+            "serviceCostRaw": 300,
+            "trials": 1,
+            "successes": 1,
+            "alpha": 2,
+            "beta": 1,
+            "mean": 0.6666666666666666,
+            "sd": 0.23570226039551584
+          },
+          {
+            "id": "showcase",
+            "label": "Visible-example specialist",
+            "trialCostRaw": 45,
+            "serviceCostRaw": 150,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          }
+        ],
+        "candidates": [
+          {
+            "provider": "budget",
+            "grossValueRaw": 355.55555555555657,
+            "costRaw": 30,
+            "netValueRaw": 325.55555555555657
+          },
+          {
+            "provider": "expert",
+            "grossValueRaw": 355.55555555555657,
+            "costRaw": 90,
+            "netValueRaw": 265.55555555555657
+          },
+          {
+            "provider": "showcase",
+            "grossValueRaw": 0,
+            "costRaw": 45,
+            "netValueRaw": -45
+          }
+        ],
+        "expectedNetUtilityRaw": 7168.333333333332
+      },
+      {
+        "action": "TRIAL",
+        "provider": "budget",
+        "reason": "EXPECTED_INFORMATION_VALUE_EXCEEDS_COST",
+        "spentRaw": 195,
+        "stats": [
+          {
+            "id": "budget",
+            "label": "Cheap / weak",
+            "trialCostRaw": 30,
+            "serviceCostRaw": 80,
+            "trials": 2,
+            "successes": 1,
+            "alpha": 2,
+            "beta": 2,
+            "mean": 0.5,
+            "sd": 0.22360679774997896
+          },
+          {
+            "id": "expert",
+            "label": "Costly / strong",
+            "trialCostRaw": 90,
+            "serviceCostRaw": 300,
+            "trials": 1,
+            "successes": 1,
+            "alpha": 2,
+            "beta": 1,
+            "mean": 0.6666666666666666,
+            "sd": 0.23570226039551584
+          },
+          {
+            "id": "showcase",
+            "label": "Visible-example specialist",
+            "trialCostRaw": 45,
+            "serviceCostRaw": 150,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          }
+        ],
+        "candidates": [
+          {
+            "provider": "budget",
+            "grossValueRaw": 466.66666666666606,
+            "costRaw": 30,
+            "netValueRaw": 436.66666666666606
+          },
+          {
+            "provider": "expert",
+            "grossValueRaw": 400,
+            "costRaw": 90,
+            "netValueRaw": 310
+          },
+          {
+            "provider": "showcase",
+            "grossValueRaw": 0,
+            "costRaw": 45,
+            "netValueRaw": -45
+          }
+        ],
+        "expectedNetUtilityRaw": 8205
+      },
+      {
+        "action": "TRIAL",
+        "provider": "expert",
+        "reason": "EXPECTED_INFORMATION_VALUE_EXCEEDS_COST",
+        "spentRaw": 225,
+        "stats": [
+          {
+            "id": "budget",
+            "label": "Cheap / weak",
+            "trialCostRaw": 30,
+            "serviceCostRaw": 80,
+            "trials": 3,
+            "successes": 1,
+            "alpha": 2,
+            "beta": 3,
+            "mean": 0.4,
+            "sd": 0.2
+          },
+          {
+            "id": "expert",
+            "label": "Costly / strong",
+            "trialCostRaw": 90,
+            "serviceCostRaw": 300,
+            "trials": 1,
+            "successes": 1,
+            "alpha": 2,
+            "beta": 1,
+            "mean": 0.6666666666666666,
+            "sd": 0.23570226039551584
+          },
+          {
+            "id": "showcase",
+            "label": "Visible-example specialist",
+            "trialCostRaw": 45,
+            "serviceCostRaw": 150,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          }
+        ],
+        "candidates": [
+          {
+            "provider": "expert",
+            "grossValueRaw": 800.0000000000018,
+            "costRaw": 90,
+            "netValueRaw": 710.0000000000018
+          },
+          {
+            "provider": "budget",
+            "grossValueRaw": 426.66666666666697,
+            "costRaw": 30,
+            "netValueRaw": 396.66666666666697
+          },
+          {
+            "provider": "showcase",
+            "grossValueRaw": 0,
+            "costRaw": 45,
+            "netValueRaw": -45
+          }
+        ],
+        "expectedNetUtilityRaw": 7108.333333333332
+      },
+      {
+        "action": "TRIAL",
+        "provider": "expert",
+        "reason": "EXPECTED_INFORMATION_VALUE_EXCEEDS_COST",
+        "spentRaw": 315,
+        "stats": [
+          {
+            "id": "budget",
+            "label": "Cheap / weak",
+            "trialCostRaw": 30,
+            "serviceCostRaw": 80,
+            "trials": 3,
+            "successes": 1,
+            "alpha": 2,
+            "beta": 3,
+            "mean": 0.4,
+            "sd": 0.2
+          },
+          {
+            "id": "expert",
+            "label": "Costly / strong",
+            "trialCostRaw": 90,
+            "serviceCostRaw": 300,
+            "trials": 2,
+            "successes": 2,
+            "alpha": 3,
+            "beta": 1,
+            "mean": 0.75,
+            "sd": 0.19364916731037085
+          },
+          {
+            "id": "showcase",
+            "label": "Visible-example specialist",
+            "trialCostRaw": 45,
+            "serviceCostRaw": 150,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          }
+        ],
+        "candidates": [
+          {
+            "provider": "expert",
+            "grossValueRaw": 100,
+            "costRaw": 90,
+            "netValueRaw": 10
+          },
+          {
+            "provider": "budget",
+            "grossValueRaw": 0,
+            "costRaw": 30,
+            "netValueRaw": -30
+          },
+          {
+            "provider": "showcase",
+            "grossValueRaw": 0,
+            "costRaw": 45,
+            "netValueRaw": -45
+          }
+        ],
+        "expectedNetUtilityRaw": 8685
+      },
+      {
+        "action": "BUY",
+        "provider": "expert",
+        "reason": "NO_POSITIVE_ONE_STEP_INFORMATION_VALUE",
+        "spentRaw": 405,
+        "stats": [
+          {
+            "id": "budget",
+            "label": "Cheap / weak",
+            "trialCostRaw": 30,
+            "serviceCostRaw": 80,
+            "trials": 3,
+            "successes": 1,
+            "alpha": 2,
+            "beta": 3,
+            "mean": 0.4,
+            "sd": 0.2
+          },
+          {
+            "id": "expert",
+            "label": "Costly / strong",
+            "trialCostRaw": 90,
+            "serviceCostRaw": 300,
+            "trials": 3,
+            "successes": 3,
+            "alpha": 4,
+            "beta": 1,
+            "mean": 0.8,
+            "sd": 0.16329931618554522
+          },
+          {
+            "id": "showcase",
+            "label": "Visible-example specialist",
+            "trialCostRaw": 45,
+            "serviceCostRaw": 150,
+            "trials": 1,
+            "successes": 0,
+            "alpha": 1,
+            "beta": 2,
+            "mean": 0.3333333333333333,
+            "sd": 0.23570226039551584
+          }
+        ],
+        "candidates": [
+          {
+            "provider": "budget",
+            "grossValueRaw": 0,
+            "costRaw": 30,
+            "netValueRaw": -30
+          },
+          {
+            "provider": "showcase",
+            "grossValueRaw": 0,
+            "costRaw": 45,
+            "netValueRaw": -45
+          },
+          {
+            "provider": "expert",
+            "grossValueRaw": 0,
+            "costRaw": 90,
+            "netValueRaw": -90
+          }
+        ],
+        "expectedNetUtilityRaw": 9595
+      }
+    ],
+    "observedAt": 1792533292,
+    "donAuthenticated": false,
+    "published": false
+  }
+}

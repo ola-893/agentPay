@@ -1,0 +1,13 @@
+{
+  "seed": 17,
+  "family": "invoice",
+  "batchSize": 20,
+  "rewardRaw": 1000,
+  "budgetRaw": 20000,
+  "maxTrialSpendRaw": 2000,
+  "maxTrialsPerProvider": 12,
+  "serviceUrl": "http://127.0.0.1:53415/run/e194d2b77116a268",
+  "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "observationBlock": 11958098
+}

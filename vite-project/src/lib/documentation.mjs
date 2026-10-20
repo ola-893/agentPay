@@ -271,6 +271,18 @@ export const documentation = {
           "Preview evaluates OPEN and DENY without signing. With --pay, basic deposits 0.01 USDC over 1000 seconds, ten successful API requests reuse the stream, and an injected outage produces CRE CLOSE. The wallet cancels, paying time-accrued earnings and refunding unused funds. Premium proposes 0.2 against a 0.1 deposit cap and is denied. Each paid run is a new stream and spends test ETH gas. Output shows each CRE command, HTTP observations, Sepolia block, policy limits and transcript path. Use --close-stream <id> to recover an owned stream, --verbose for model details and evidence hashes, and --json for structured output. The CLI gates signing; the contract enforces escrow and payouts without checking CRE results. A payer can call the contract directly. No CRE network deployment, DON authentication, AgentPaySettlement or full x402 is used."
         ),
       ]),
+      section("ToolBuyer: trial quality before purchasing", [
+        p(
+          "The ToolBuyer CLI asks a local CRE workflow to buy task-specific trial answers, update uncertain quality estimates and stop when another trial costs more than its expected one-step benefit. It compares held-out results against cheapest, fixed-showcase and fixed-expert providers, counting every trial and service answer."
+        ),
+        code(
+          "sh",
+          "npm run --silent demo:toolbuyer\nnpm run --silent demo:toolbuyer -- --offline --seeds 17,29,43,71,97"
+        ),
+        p(
+          "Providers are synthetic and purchases debit benchmark credits, not USDC. Default mode makes real CRE HTTP and Sepolia budget reads; offline mode uses neither CRE nor the chain. No model API key or signing is required. The recorded selector beats cheapest/showcase but loses to the always-strong baseline. This browser page does not run the benchmark or show live results."
+        ),
+      ]),
       section("Strict SDK integration prerequisites", [
         p(
           "The generated GuardedPaymentClient example uses a different authority path: configured strict consumers and an authenticated unexpired report for the exact intent. The current public guard is closed and this project does not deploy a workflow to Chainlink. The SDK checks onchain authorization before approval and settlement; local simulation output cannot unlock it."
@@ -281,6 +293,7 @@ export const documentation = {
       ["/agent", "Open Agent setup"],
       ["/docs/integration", "SDK integration"],
       [repo + "docs/AI_AGENT_DEMO.md", "AI purchasing CLI guide"],
+      [repo + "docs/TOOLBUYER.md", "ToolBuyer mechanism and comparison"],
     ],
   },
   integration: {

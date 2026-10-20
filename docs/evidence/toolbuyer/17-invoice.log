@@ -1,0 +1,31 @@
+Initializing...
+Loading settings...
+! Using default private key for chain write simulation. To use your own key, set CRE_ETH_PRIVATE_KEY in your .env file or system environment.
+Checking RPC connectivity...
+Compiling workflow...
+✓ Workflow compiled
+✓ Simulation limits enabled
+  HTTP: req=120kb resp=250kb timeout=10s | ConfHTTP: req=125kb resp=500kb timeout=1m30s | Consensus obs=25kb | ChainWrite evm_report=50kb evm_gas=10000000 solana_report=265b solana_cu=300000 | WASM binary=100mb compressed=20mb
+  Binary hash: f02d5d8308ade9a42e2d41f8f160743c09ff6ac1d9183c5af19430a59b2a4bbd
+  Config hash: d543b9f810db1f23350211a133b7d8d5068d103d37803769b0070a681bd0f0db
+2026-10-20T22:54:34Z [SIMULATION] Simulator Initialized
+
+2026-10-20T22:54:34Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-10-20T22:54:34Z [USER LOG] ToolBuyer trial budget/invoice: quoted cost=30; answer=299962
+2026-10-20T22:54:34Z [USER LOG] ToolBuyer invoice: BUY budget; trials=1; trial cost=30
+
+✓ Workflow Simulation Result:
+"{\"schemaVersion\":1,\"workflow\":\"agentpay-toolbuyer\",\"mode\":\"local-simulation\",\"billingMode\":\"benchmark-credits\",\"config\":{\"seed\":17,\"family\":\"invoice\",\"batchSize\":20,\"rewardRaw\":1000,\"budgetRaw\":20000,\"maxTrialSpendRaw\":2000,\"maxTrialsPerProvider\":12,\"serviceUrl\":\"http://127.0.0.1:53415/run/e194d2b77116a268\",\"payer\":\"0xe26468ae02368a75DBDBea58F367B7313942ad26\",\"token\":\"0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238\",\"observationBlock\":11958098},\"onchain\":{\"balanceRaw\":\"39968920\",\"tokenDecimals\":6,\"observationBlock\":11958098},\"decision\":{\"action\":\"BUY\",\"provider\":\"budget\",\"reason\":\"NO_POSITIVE_ONE_STEP_INFORMATION_VALUE\",\"spentRaw\":30,\"stats\":[{\"id\":\"budget\",\"label\":\"Cheap / weak\",\"trialCostRaw\":30,\"serviceCostRaw\":80,\"trials\":1,\"successes\":1,\"alpha\":2,\"beta\":1,\"mean\":0.6666666666666666,\"sd\":0.23570226039551584},{\"id\":\"expert\",\"label\":\"Costly / strong\",\"trialCostRaw\":90,\"serviceCostRaw\":300,\"trials\":0,\"successes\":0,\"alpha\":1,\"beta\":1,\"mean\":0.5,\"sd\":0.28867513459481287},{\"id\":\"showcase\",\"label\":\"Visible-example specialist\",\"trialCostRaw\":45,\"serviceCostRaw\":150,\"trials\":0,\"successes\":0,\"alpha\":1,\"beta\":1,\"mean\":0.5,\"sd\":0.28867513459481287}],\"candidates\":[{\"provider\":\"budget\",\"grossValueRaw\":0,\"costRaw\":30,\"netValueRaw\":-30},{\"provider\":\"showcase\",\"grossValueRaw\":0,\"costRaw\":45,\"netValueRaw\":-45},{\"provider\":\"expert\",\"grossValueRaw\":0,\"costRaw\":90,\"netValueRaw\":-90}],\"expectedNetUtilityRaw\":11703.333333333332},\"observations\":[{\"task\":{\"id\":\"invoice-17-100\",\"family\":\"invoice\",\"input\":{\"lines\":[{\"unitRaw\":22366,\"quantity\":3},{\"unitRaw\":58216,\"quantity\":4}],\"discountBps\":0}},\"provider\":\"budget\",\"answer\":\"299962\",\"costRaw\":30,\"receiptId\":\"d25986b14c268dac3614874d1565394fdbe689e87c365eafd008d6c1457fb37f\"}],\"trace\":[{\"action\":\"TRIAL\",\"provider\":\"budget\",\"reason\":\"EXPECTED_INFORMATION_VALUE_EXCEEDS_COST\",\"spentRaw\":0,\"stats\":[{\"id\":\"budget\",\"label\":\"Cheap / weak\",\"trialCostRaw\":30,\"serviceCostRaw\":80,\"trials\":0,\"successes\":0,\"alpha\":1,\"beta\":1,\"mean\":0.5,\"sd\":0.28867513459481287},{\"id\":\"expert\",\"label\":\"Costly / strong\",\"trialCostRaw\":90,\"serviceCostRaw\":300,\"trials\":0,\"successes\":0,\"alpha\":1,\"beta\":1,\"mean\":0.5,\"sd\":0.28867513459481287},{\"id\":\"showcase\",\"label\":\"Visible-example specialist\",\"trialCostRaw\":45,\"serviceCostRaw\":150,\"trials\":0,\"successes\":0,\"alpha\":1,\"beta\":1,\"mean\":0.5,\"sd\":0.28867513459481287}],\"candidates\":[{\"provider\":\"budget\",\"grossValueRaw\":966.6666666666661,\"costRaw\":30,\"netValueRaw\":936.6666666666661},{\"provider\":\"showcase\",\"grossValueRaw\":966.6666666666661,\"costRaw\":45,\"netValueRaw\":921.6666666666661},{\"provider\":\"expert\",\"grossValueRaw\":0,\"costRaw\":90,\"netValueRaw\":-90}],\"expectedNetUtilityRaw\":8400},{\"action\":\"BUY\",\"provider\":\"budget\",\"reason\":\"NO_POSITIVE_ONE_STEP_INFORMATION_VALUE\",\"spentRaw\":30,\"stats\":[{\"id\":\"budget\",\"label\":\"Cheap / weak\",\"trialCostRaw\":30,\"serviceCostRaw\":80,\"trials\":1,\"successes\":1,\"alpha\":2,\"beta\":1,\"mean\":0.6666666666666666,\"sd\":0.23570226039551584},{\"id\":\"expert\",\"label\":\"Costly / strong\",\"trialCostRaw\":90,\"serviceCostRaw\":300,\"trials\":0,\"successes\":0,\"alpha\":1,\"beta\":1,\"mean\":0.5,\"sd\":0.28867513459481287},{\"id\":\"showcase\",\"label\":\"Visible-example specialist\",\"trialCostRaw\":45,\"serviceCostRaw\":150,\"trials\":0,\"successes\":0,\"alpha\":1,\"beta\":1,\"mean\":0.5,\"sd\":0.28867513459481287}],\"candidates\":[{\"provider\":\"budget\",\"grossValueRaw\":0,\"costRaw\":30,\"netValueRaw\":-30},{\"provider\":\"showcase\",\"grossValueRaw\":0,\"costRaw\":45,\"netValueRaw\":-45},{\"provider\":\"expert\",\"grossValueRaw\":0,\"costRaw\":90,\"netValueRaw\":-90}],\"expectedNetUtilityRaw\":11703.333333333332}],\"observedAt\":1792533274,\"donAuthenticated\":false,\"published\":false}"
+
+2026-10-20T22:54:34Z [SIMULATION] Execution finished signal received
+2026-10-20T22:54:34Z [SIMULATION] Skipping WorkflowEngineV2
+
+╭──────────────────────────────────────────────────────╮
+│ Simulation complete! Ready to deploy your workflow?  │
+│                                                      │
+│ Run cre account access to request deployment access. │
+╰──────────────────────────────────────────────────────╯
+
+⚠️  Update available! You’re running 1.37.0, but 1.38.0 is the latest.
+Run `cre update` or visit https://github.com/smartcontractkit/cre-cli/releases to upgrade.
+
