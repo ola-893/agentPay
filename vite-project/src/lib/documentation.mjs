@@ -271,6 +271,18 @@ export const documentation = {
           "Preview evaluates OPEN and DENY without signing. With --pay, basic deposits 0.01 USDC over 1000 seconds, ten successful API requests reuse the stream, and an injected outage produces CRE CLOSE. The wallet cancels, paying time-accrued earnings and refunding unused funds. Premium proposes 0.2 against a 0.1 deposit cap and is denied. Each paid run is a new stream and spends test ETH gas. Output shows each CRE command, HTTP observations, Sepolia block, policy limits and transcript path. Use --close-stream <id> to recover an owned stream, --verbose for model details and evidence hashes, and --json for structured output. The CLI gates signing; the contract enforces escrow and payouts without checking CRE results. A payer can call the contract directly. No CRE network deployment, DON authentication, AgentPaySettlement or full x402 is used."
         ),
       ]),
+      section("Spend reviews and audit receipts", [
+        p(
+          "Before each business transaction, the streaming CLI now runs a local CRE spend review with an RPC dry-run, raw-unit caps and risk gates. It persists ALLOW, BLOCK and ERROR records in durable local blobs. Paid execution requires a confirmed Merkle inclusion receipt before wallet signing; receipt gas is separate from payment lifecycle gas. The receipt contract anchors operator-submitted hashes, not DON approval or risk correctness."
+        ),
+        code(
+          "sh",
+          "npm run --silent demo:spend-review\nnpm run --silent demo:spend-review -- --anchor --resume"
+        ),
+        p(
+          "The first command signs no transaction. The second uses test ETH to anchor pending decisions without transferring USDC. Live evidence contains nine decisions and two Sepolia receipts, including a genuine stale-feed block. Local tests cover the complete audited stream path; the current live AI preview correctly blocked on feed freshness. Recovery cancellation now needs CRE and audit receipts, but no model call. Local blob files need durable storage and backups. This browser does not submit reviews."
+        ),
+      ]),
       section("ToolBuyer: trial quality before purchasing", [
         p(
           "The ToolBuyer CLI asks a local CRE workflow to buy task-specific trial answers, update uncertain quality estimates and stop when another trial costs more than its expected one-step benefit. It compares held-out results against cheapest, fixed-showcase and fixed-expert providers, counting every trial and service answer."
@@ -294,6 +306,7 @@ export const documentation = {
       ["/docs/integration", "SDK integration"],
       [repo + "docs/AI_AGENT_DEMO.md", "AI purchasing CLI guide"],
       [repo + "docs/TOOLBUYER.md", "ToolBuyer mechanism and comparison"],
+      [repo + "docs/SPEND_AUDIT.md", "Spend audit and receipt evidence"],
     ],
   },
   integration: {

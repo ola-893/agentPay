@@ -1,0 +1,227 @@
+{
+  "schemaVersion": 1,
+  "storage": "durable-local-blobs",
+  "workflowMode": "local-cre-simulation",
+  "donAuthenticated": false,
+  "tokenTransfers": false,
+  "capturedAt": "2026-10-20T22:37:54.857260+00:00",
+  "entries": [
+    {
+      "blobHash": "0xd7fd367972832b89122809111b2fd10b212e60e257b35bfef50345a9e16cdbbc",
+      "intentId": "0x3706533fa8a63df1a0695d80ccb446bf1dbd5ea96dc5d21136aada80356b1623"
+    },
+    {
+      "blobHash": "0x57c2a68486e67439374cd6ba9eec4769aab76b82690d3afad7cabb4d1d4934f1",
+      "intentId": "0x3e84f5b290bdf2e54b7c4e899b3f4c43b2051bc561030042e04df217c72ed9d4"
+    },
+    {
+      "blobHash": "0x5726511eb41e3677dccdb10a7bd1796ec60454f1fb0dd3d627efcf66e74dbdbc",
+      "intentId": "0x409274852ea12840d26057905d63659614e1e486749cb97ec6289167c17b1eea"
+    },
+    {
+      "blobHash": "0x5e8d65a827ef9aff0e7b9be0b4b3d4ef3763f5a4ea01587aa8a655f76e6691b2",
+      "intentId": "0x4602b7a07914216a62a739774024512f757c239586ee934533fac19b70ca5306"
+    },
+    {
+      "blobHash": "0x844825bd4a26f94acf23e684f660714d628761140a110aae72b867bca5daf836",
+      "intentId": "0x4ee123fc579510e280a8d882acd670c1fbdf7748c76b33aaa3424f53942306ce"
+    },
+    {
+      "blobHash": "0x22124edafaf8f737c0659d22a5ac844e3f33201dd265d9622ce31ccda28e1ff3",
+      "intentId": "0x65bf5dfc84fa6f9f0cdf31fecfe17c094ff7b79167aa231de09acc315e94be77"
+    },
+    {
+      "blobHash": "0x9c0752a752fb913b6a8e7e5c4743fd1c8118b05926d852def368fe7deba70679",
+      "intentId": "0x843aaf3c2af05cacfb102e72efd1bd8664568e2c32c56c26ea7104c5f5411ed3"
+    },
+    {
+      "blobHash": "0xdfc0aa7cf9cb52357cf2615c1dac3cb86c407c7392ee9286a0d8bc395c32299c",
+      "intentId": "0x88186d43337788085b3cd7774c0edd681cbfc1136f2698f2b200c3b3db1e9199"
+    },
+    {
+      "blobHash": "0x7d0783cbb1faf15b422c782ff8e80aa3c0f9f72635fe128abe1ec2e7d3681fe8",
+      "intentId": "0xbdb3e881a4b1bbdef6b92d07dd89181be18f56bf3de9108aedba8cf7a4dce7c7"
+    }
+  ],
+  "batches": [
+    {
+      "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+      "blockNumber": 11958242,
+      "chainId": 11155111,
+      "entries": [
+        {
+          "blobHash": "0xd7fd367972832b89122809111b2fd10b212e60e257b35bfef50345a9e16cdbbc",
+          "intentId": "0x3706533fa8a63df1a0695d80ccb446bf1dbd5ea96dc5d21136aada80356b1623",
+          "proof": [
+            "0x8e9dd48caf1c7e708348c6721a8acf6ae295f22bb30c296af4f634aa4a6330c9",
+            "0x99c9c205e6ff32d2aefc65606d44ddd808b3c0a9d5743f5589f8137fbe1ec580",
+            "0x91254580f81221dc8c211d13904bc173db4ad2a011d92130bd1bd6a01385dc78"
+          ],
+          "sequence": 1
+        },
+        {
+          "blobHash": "0x57c2a68486e67439374cd6ba9eec4769aab76b82690d3afad7cabb4d1d4934f1",
+          "intentId": "0x3e84f5b290bdf2e54b7c4e899b3f4c43b2051bc561030042e04df217c72ed9d4",
+          "proof": [
+            "0x378de2c40df2ae42faef7a75822e6d7f7e7702217d1ae7e9e6646573fab6c086",
+            "0x99c9c205e6ff32d2aefc65606d44ddd808b3c0a9d5743f5589f8137fbe1ec580",
+            "0x91254580f81221dc8c211d13904bc173db4ad2a011d92130bd1bd6a01385dc78"
+          ],
+          "sequence": 2
+        },
+        {
+          "blobHash": "0x5e8d65a827ef9aff0e7b9be0b4b3d4ef3763f5a4ea01587aa8a655f76e6691b2",
+          "intentId": "0x4602b7a07914216a62a739774024512f757c239586ee934533fac19b70ca5306",
+          "proof": [
+            "0xbf268e5fadce25084136f544423a1f808e116c35b26920cb428840eaae6bf56a",
+            "0x3081f906e5dda13332d8a46e841d3c817ce12868a9256fe98c529e0bd5fc2169",
+            "0x91254580f81221dc8c211d13904bc173db4ad2a011d92130bd1bd6a01385dc78"
+          ],
+          "sequence": 3
+        },
+        {
+          "blobHash": "0x22124edafaf8f737c0659d22a5ac844e3f33201dd265d9622ce31ccda28e1ff3",
+          "intentId": "0x65bf5dfc84fa6f9f0cdf31fecfe17c094ff7b79167aa231de09acc315e94be77",
+          "proof": [
+            "0xb0fd2e4bf9ff4d8845a3100d8cd2160fa09e6e17f433488d2a31eb38313d2590",
+            "0x3081f906e5dda13332d8a46e841d3c817ce12868a9256fe98c529e0bd5fc2169",
+            "0x91254580f81221dc8c211d13904bc173db4ad2a011d92130bd1bd6a01385dc78"
+          ],
+          "sequence": 4
+        },
+        {
+          "blobHash": "0x7d0783cbb1faf15b422c782ff8e80aa3c0f9f72635fe128abe1ec2e7d3681fe8",
+          "intentId": "0xbdb3e881a4b1bbdef6b92d07dd89181be18f56bf3de9108aedba8cf7a4dce7c7",
+          "proof": [
+            "0x6d280afc9c7e2b2be84776b4f358124dab77a57f405c9a8b06887241fa42795f",
+            "0x47037d077d35e886221a7cf1ed642955c1b5e4933789fb47f40da44d446c9d75",
+            "0xb9429f36eb9d1f513a2a83859ed851a774a534fcefd1e7dff1a4c26e6c4668a8"
+          ],
+          "sequence": 5
+        }
+      ],
+      "feeWei": "363862185552",
+      "firstSequence": 1,
+      "gasUsed": "363856",
+      "root": "0x717b914873e44e56354991c97e360c9d34f391d012b2a9bb47bfde0665be69e7",
+      "schemaVersion": 1,
+      "state": "anchored",
+      "transactionHash": "0x0ce60924b49c8706fb7613b833ecd9c61fcfa6185d44648a74fcfc753047917a",
+      "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+    },
+    {
+      "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+      "blockNumber": 11958255,
+      "chainId": 11155111,
+      "entries": [
+        {
+          "blobHash": "0x5726511eb41e3677dccdb10a7bd1796ec60454f1fb0dd3d627efcf66e74dbdbc",
+          "intentId": "0x409274852ea12840d26057905d63659614e1e486749cb97ec6289167c17b1eea",
+          "proof": [
+            "0x04a23f97426ff13861a1870e216676af492ab8ab70fd17e5484abe2206ce3c67",
+            "0x39b139c8bb2d52113164dbfb2c0149c73b94a5d8b71e39cfe05a288e71d69486"
+          ],
+          "sequence": 6
+        },
+        {
+          "blobHash": "0x844825bd4a26f94acf23e684f660714d628761140a110aae72b867bca5daf836",
+          "intentId": "0x4ee123fc579510e280a8d882acd670c1fbdf7748c76b33aaa3424f53942306ce",
+          "proof": [
+            "0x32945eeacf7e2c7ff5779aab2628f51549ba99039f8d23b46c6a86835b636fb3",
+            "0x39b139c8bb2d52113164dbfb2c0149c73b94a5d8b71e39cfe05a288e71d69486"
+          ],
+          "sequence": 7
+        },
+        {
+          "blobHash": "0x9c0752a752fb913b6a8e7e5c4743fd1c8118b05926d852def368fe7deba70679",
+          "intentId": "0x843aaf3c2af05cacfb102e72efd1bd8664568e2c32c56c26ea7104c5f5411ed3",
+          "proof": [
+            "0x5e068b4ba6208416afd079602238fa226600ae70c0779a66643feaa6f93939e5",
+            "0x14ab9fc681456badd8fc610bb376b32a1b670e7c853c0322429f27f95aff1c99"
+          ],
+          "sequence": 8
+        },
+        {
+          "blobHash": "0xdfc0aa7cf9cb52357cf2615c1dac3cb86c407c7392ee9286a0d8bc395c32299c",
+          "intentId": "0x88186d43337788085b3cd7774c0edd681cbfc1136f2698f2b200c3b3db1e9199",
+          "proof": [
+            "0x4aaafa7bd0d2017ee41b874f093121b97d463e9b0fbcb6fe3e7fb64eccee7409",
+            "0x14ab9fc681456badd8fc610bb376b32a1b670e7c853c0322429f27f95aff1c99"
+          ],
+          "sequence": 9
+        }
+      ],
+      "feeWei": "363862185552",
+      "firstSequence": 6,
+      "gasUsed": "363856",
+      "root": "0xdc0a1c96b9eca8f4b7526f097dc9c92b2815229746c3a1dd1f6bc44c0134c07a",
+      "schemaVersion": 1,
+      "state": "anchored",
+      "transactionHash": "0xb14e4df637d60e343789f9e8e6b2f6ab74044ba5c4651b8780da3ca648d16d52",
+      "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+    }
+  ],
+  "runs": [
+    {
+      "intentId": "0x3706533fa8a63df1a0695d80ccb446bf1dbd5ea96dc5d21136aada80356b1623",
+      "config": "runs/3706533fa8a6.config.json",
+      "transcript": "runs/3706533fa8a6.log",
+      "configSha256": "eccd7e6943a51e6fce2bc7ddb5db882ca42425a795fd66840288da2f91a1bc55",
+      "logSha256": "e5975f67313b089d398472f87fc0a6a5324919d9020969d37509170546a2a8ee"
+    },
+    {
+      "intentId": "0x3e84f5b290bdf2e54b7c4e899b3f4c43b2051bc561030042e04df217c72ed9d4",
+      "config": "runs/3e84f5b290bd.config.json",
+      "transcript": "runs/3e84f5b290bd.log",
+      "configSha256": "7497fd28033909abdb5383e29156e0d8c5e4a9210c2985baeca8cf1b81fac4dd",
+      "logSha256": "5f030ce0978ca8a1feebf6dcc3bbab5b359bcd8dc25ec5650392794e8311fdba"
+    },
+    {
+      "intentId": "0x409274852ea12840d26057905d63659614e1e486749cb97ec6289167c17b1eea",
+      "config": "runs/409274852ea1.config.json",
+      "transcript": "runs/409274852ea1.log",
+      "configSha256": "c9af12762a3b6772ebaae3c304a2f05b2a09ec3045cfcfd8c2da3e6d48d029af",
+      "logSha256": "a6fcf91b805a4edde8979003827e13c4c9bf30e548965df553f4b09cbc6fdffb"
+    },
+    {
+      "intentId": "0x4602b7a07914216a62a739774024512f757c239586ee934533fac19b70ca5306",
+      "config": "runs/4602b7a07914.config.json",
+      "transcript": "runs/4602b7a07914.log",
+      "configSha256": "c41db86f677daea609a8d0318b9d3dfc71473635d048ffca9a59419c2807ed31",
+      "logSha256": "3e344343c37d6a9b2317d5487744938bc1be16dc00e465b6b8be6e552a865e54"
+    },
+    {
+      "intentId": "0x4ee123fc579510e280a8d882acd670c1fbdf7748c76b33aaa3424f53942306ce",
+      "config": "runs/4ee123fc5795.config.json",
+      "transcript": "runs/4ee123fc5795.log",
+      "configSha256": "46c4aff5641156749b95dc56de3b65c902e10d4d2c2ec7eb7c2f114a38e98201",
+      "logSha256": "4c1c1ad2132bf2e778dd1d82172f8a17252aa2e3bc5450deb2ba46c4d0d218d6"
+    },
+    {
+      "intentId": "0x843aaf3c2af05cacfb102e72efd1bd8664568e2c32c56c26ea7104c5f5411ed3",
+      "config": "runs/843aaf3c2af0.config.json",
+      "transcript": "runs/843aaf3c2af0.log",
+      "configSha256": "b15797497b663ab8f8958c006174c2a1dd36bfccd99a6cacd55892cb17993410",
+      "logSha256": "b0cc0d9b9b0bdb6420c0f8a7db86fdae068e1c55211c6649aa69af905bff1047"
+    },
+    {
+      "intentId": "0x88186d43337788085b3cd7774c0edd681cbfc1136f2698f2b200c3b3db1e9199",
+      "config": "runs/88186d433377.config.json",
+      "transcript": "runs/88186d433377.log",
+      "configSha256": "a19939f92a236197bca4b7d6223b23fda8c55c93e971daf9872a5ae602d68f57",
+      "logSha256": "0572085eb9c5a489027b2d7d1be6c35775aefc1041ecc6d5fc5e54380998714c"
+    },
+    {
+      "intentId": "0xbdb3e881a4b1bbdef6b92d07dd89181be18f56bf3de9108aedba8cf7a4dce7c7",
+      "config": "runs/bdb3e881a4b1.config.json",
+      "transcript": "runs/bdb3e881a4b1.log",
+      "configSha256": "d2d371aeaffe2c06d762a2f2ccabdaaf0901ddec86fdf618de90faea08126547",
+      "logSha256": "eec81982d9e7d8b876ef44ff0bd0289fada35c3a113f76717d4e6c0370b521a9"
+    }
+  ],
+  "notes": [
+    "First four spend records used intent creation time for deterministic evaluation; final four record actual CRE evaluation time. No business execution occurred in either public capture.",
+    "Five initial decisions and four final decisions are committed by two receipt transactions.",
+    "ERROR and actual business-signing flows are separately tested on disposable local RPCs."
+  ]
+}

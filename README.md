@@ -88,6 +88,17 @@ The CLI displays the exact CRE command, HTTP observations, Sepolia read block, p
 
 The CLI gates wallet signing on local CRE results. **The stream contract enforces escrow accounting and payouts, not CRE approval**; a payer can call it directly. No DON authentication or closed AgentPayGuard/AgentPaySettlement contract is used. This is an AgentPay HTTP 402 streaming protocol, not full x402. The browser Agent setup remains a local SDK draft, and the browser Streams page retains its separate 18-decimal tUSD deployment.
 
+## Spend reviews and decision receipts
+
+The streaming CLI now dry-runs each business transaction, applies local CRE risk/hard-rule gates, persists its decision to a durable local blob and verifies an onchain inclusion receipt before signing. Denials and errors are retained too. Receipt gas is counted separately; the contract anchors audit hashes and does not enforce CRE approval.
+
+```sh
+npm run --silent demo:spend-review
+npm run --silent demo:spend-review -- --anchor --resume
+```
+
+The first command is unsigned; the second anchors pending decisions using test ETH without transferring USDC. Nine saved decisions—including a genuine stale-feed denial—have verified Sepolia receipts. [Storage, recovery, scope and evidence](docs/SPEND_AUDIT.md).
+
 ## ToolBuyer: evaluate quality before choosing a provider
 
 A local CRE workflow buys task-specific trial answers, updates Beta quality beliefs and stops when the expected one-step information value no longer covers trial cost. It compares its held-out results against cheapest-only, fixed-showcase and fixed-expert purchasing, including every trial and answer cost.
@@ -110,7 +121,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **162 tests** — 29 contracts, 52 SDK, eight middleware, 27 CRE policy, 46 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
+Current suites: **174 tests** — 32 contracts, 52 SDK, eight middleware, 31 CRE policy, 51 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
 
 `docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
 

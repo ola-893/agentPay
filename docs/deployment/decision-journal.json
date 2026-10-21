@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "chainId": 11155111,
+  "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+  "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "transactionHash": "0x23d515153cfa87e03e3c83b14e1fe312d2ad1a9007cf7560885b4587b91e5f01",
+  "blockNumber": 11958227,
+  "runtimeCodeHash": "0xfd3c3c20e48f3c199b8fc7518b24ee7e0abd0f719783cb0caabdd0a9ca06aa8b",
+  "creMode": "local-simulation",
+  "donAuthenticated": false,
+  "purpose": "audit-receipts-only",
+  "verifiedAt": "2026-10-20T22:20:41.441Z"
+}

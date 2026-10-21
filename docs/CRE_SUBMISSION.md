@@ -70,7 +70,7 @@ Run a fresh admission preview with `npm run --silent demo:agent`. Only `--pay` f
 
 ## Tests and evidence
 
-The repository suite has 162 tests: 29 contracts, 52 SDK, eight gateway, 27 CRE policy and 46 CLI/tooling. New policy tests cover stream decisions and bound observations; signed local-chain tests verify escrow, payer authentication, reuse without per-request transactions, cancellation and exact refund reconciliation.
+The repository suite has 174 tests: 32 contracts, 52 SDK, eight gateway, 31 CRE policy and 51 CLI/tooling. New policy tests cover stream decisions and bound observations; signed local-chain tests verify escrow, payer authentication, reuse without per-request transactions, cancellation and exact refund reconciliation.
 
 Historical standalone price captures remain at [ALLOW](evidence/cre-allow.log) / [DENY](evidence/cre-deny-budget.log). Historical direct-transfer AI evidence in `evidence/agent-demo/` documents the earlier implementation and must not be presented as streaming/refund evidence. Fresh streaming runs write exact configs, original CLI transcripts, hashes, model response records, transaction journals and accounting under `.local/agent-demo/runs/`.
 
@@ -79,6 +79,10 @@ Historical standalone price captures remain at [ALLOW](evidence/cre-allow.log) /
 The [ToolBuyer workflow](../cre/payment-guard/toolbuyer-main.ts) adds a separate local simulation: real HTTP trial answers plus Circle USDC budget reads feed task-specific Beta quality estimates and a one-step expected-information-value stopping rule. Held-out comparisons count all trial and service costs against cheapest, fixed-showcase and fixed-expert baselines. Costs are benchmark credits; this feature does not perform token transfers or claim contract-enforced provider selection.
 
 [Original CRE trial logs and comparison](TOOLBUYER.md) show the successful simulations and the limitation: ToolBuyer outperforms cheapest/showcase on this controlled fixture but loses to always buying the strong provider. The providers are synthetic and the local grader is trusted; these results are not independent proof of commercial service quality.
+
+## Spend audit and batched decision receipts
+
+The [spend-review workflow](../cre/payment-guard/spend-main.ts) combines actual RPC dry-runs with Circle USDC chain reads, applies hard-rule and risk-score gates, and posts every returned decision to a durable local blob service. The agent CLI requires an onchain inclusion receipt before business signing. [Nine recorded decisions and two public receipt batches](SPEND_AUDIT.md) include ALLOW and BLOCK results, including the live stale-feed rejection. ERROR and the full audited stream lifecycle are tested separately on a local RPC. The receipt contract attests operator-submitted hashes, not DON identity, risk correctness or complete wallet coverage.
 
 ## Official references
 

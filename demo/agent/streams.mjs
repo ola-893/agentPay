@@ -268,41 +268,51 @@ export async function sendStreamTransaction({
   kind,
   persist,
   gate = () => {},
+  audit,
 }) {
   gate();
-  const populated = await wallet.populateTransaction(transaction);
-  if (populated.chainId !== CHAIN_ID)
-    throw new cli.CliError(
-      "WRONG_NETWORK",
-      "Refusing to sign outside Sepolia."
-    );
-  gate();
-  const raw = await wallet.signTransaction(populated),
-    hash = keccak256(raw);
-  await persist(kind, { state: "submitting", transactionHash: hash });
-  gate();
-  let receipt;
+  const permission = audit ? await audit.authorize(transaction) : null;
   try {
-    const sent = await provider.broadcastTransaction(raw);
-    receipt = await sent.wait(2, 120000);
-  } catch {
-    throw new cli.CliError(
-      "TRANSACTION_UNCERTAIN",
-      `${kind} transaction ${hash} needs inspection. Do not automatically repeat funding.`
-    );
+    const populated = await wallet.populateTransaction(transaction);
+    if (populated.chainId !== CHAIN_ID)
+      throw new cli.CliError(
+        "WRONG_NETWORK",
+        "Refusing to sign outside Sepolia."
+      );
+    gate();
+    if (permission) await permission.assertFresh(populated);
+    const raw = await wallet.signTransaction(populated),
+      hash = keccak256(raw);
+    await persist(kind, { state: "submitting", transactionHash: hash });
+    if (permission) await permission.submitted(hash);
+    gate();
+    let receipt;
+    try {
+      const sent = await provider.broadcastTransaction(raw);
+      receipt = await sent.wait(2, 120000);
+    } catch {
+      throw new cli.CliError(
+        "TRANSACTION_UNCERTAIN",
+        `${kind} transaction ${hash} needs inspection. Do not automatically repeat funding.`
+      );
+    }
+    if (!receipt || receipt.status !== 1)
+      throw new cli.CliError("TRANSACTION_FAILED", `${kind} failed: ${hash}`);
+    const record = {
+      state: "confirmed",
+      transactionHash: hash,
+      blockNumber: receipt.blockNumber,
+      confirmations: await receipt.confirmations(),
+      gasUsed: receipt.gasUsed.toString(),
+      feeWei: receipt.fee.toString(),
+    };
+    await persist(kind, record);
+    if (permission) await permission.confirmed(hash);
+    return { receipt, record };
+  } catch (error) {
+    if (permission) await permission.failed();
+    throw error;
   }
-  if (!receipt || receipt.status !== 1)
-    throw new cli.CliError("TRANSACTION_FAILED", `${kind} failed: ${hash}`);
-  const record = {
-    state: "confirmed",
-    transactionHash: hash,
-    blockNumber: receipt.blockNumber,
-    confirmations: await receipt.confirmations(),
-    gasUsed: receipt.gasUsed.toString(),
-    feeWei: receipt.fee.toString(),
-  };
-  await persist(kind, record);
-  return { receipt, record };
 }
 export async function openStream({
   provider,
@@ -313,6 +323,7 @@ export async function openStream({
   elapsed,
   persist,
   additionalGate = () => {},
+  audit,
 }) {
   validateStreamQuote(q, {
     tier: q.tier,
@@ -366,6 +377,7 @@ export async function openStream({
           kind: "approval",
           persist,
           gate,
+          audit,
           transaction: {
             to: USDC,
             data: tokenIface.encodeFunctionData("approve", [
@@ -382,6 +394,7 @@ export async function openStream({
     kind: "open",
     persist,
     gate,
+    audit,
     transaction: {
       to: q.streamAddress,
       data: iface.encodeFunctionData("createStream", [
@@ -441,6 +454,7 @@ export async function closeStream({
   streamAddress,
   streamId,
   persist,
+  audit,
 }) {
   await verifyStreamDeployment(provider, streamAddress);
   const beforeState = await readStream(provider, streamAddress, streamId);
@@ -461,6 +475,7 @@ export async function closeStream({
     wallet,
     kind: "close",
     persist,
+    audit,
     transaction: {
       to: streamAddress,
       data: iface.encodeFunctionData("cancelStream", [streamId]),

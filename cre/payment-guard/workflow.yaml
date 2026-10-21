@@ -19,3 +19,10 @@ toolbuyer-settings:
     workflow-path: ./toolbuyer-main.ts
     config-path: ./config.toolbuyer.json
     secrets-path: ""
+spend-settings:
+  user-workflow:
+    workflow-name: agentpay-spend-review
+  workflow-artifacts:
+    workflow-path: ./spend-main.ts
+    config-path: ./config.spend.json
+    secrets-path: ""

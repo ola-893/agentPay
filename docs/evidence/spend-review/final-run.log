@@ -1,0 +1,9 @@
+CRE spend review: cre workflow simulate payment-guard --target spend-settings --trigger-index 0 --non-interactive --config ../../.local/sr/843aaf3c2af0.json
+Spend ALLOW: WITHIN_POLICY; risk 5/100; blob 0x9c0752a752fb913b6a8e7e5c4743fd1c8118b05926d852def368fe7deba70679
+CRE spend review: cre workflow simulate payment-guard --target spend-settings --trigger-index 0 --non-interactive --config ../../.local/sr/409274852ea1.json
+Spend BLOCK: AMOUNT_EXCEEDS_CAP; risk 100/100; blob 0x5726511eb41e3677dccdb10a7bd1796ec60454f1fb0dd3d627efcf66e74dbdbc
+CRE spend review: cre workflow simulate payment-guard --target spend-settings --trigger-index 0 --non-interactive --config ../../.local/sr/88186d433377.json
+Spend BLOCK: RECIPIENT_OR_TARGET_NOT_ALLOWED; risk 100/100; blob 0xdfc0aa7cf9cb52357cf2615c1dac3cb86c407c7392ee9286a0d8bc395c32299c
+CRE spend review: cre workflow simulate payment-guard --target spend-settings --trigger-index 0 --non-interactive --config ../../.local/sr/4ee123fc5795.json
+Spend BLOCK: RISK_THRESHOLD; risk 85/100; blob 0x844825bd4a26f94acf23e684f660714d628761140a110aae72b867bca5daf836
+Decisions: 9; pending receipts: 0; receipt transactions: 2

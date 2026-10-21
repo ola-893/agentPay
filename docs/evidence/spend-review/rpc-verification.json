@@ -1,0 +1,33 @@
+{
+  "verifiedAt": "2026-10-21T03:18:17.484Z",
+  "chainId": 11155111,
+  "receiptContract": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+  "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "runtimeCodeMatchesDeployment": true,
+  "receipts": [
+    {
+      "transactionHash": "0x0ce60924b49c8706fb7613b833ecd9c61fcfa6185d44648a74fcfc753047917a",
+      "blockNumber": 11958242,
+      "status": 1,
+      "root": "0x717b914873e44e56354991c97e360c9d34f391d012b2a9bb47bfde0665be69e7",
+      "firstSequence": 1,
+      "count": 5,
+      "gasUsed": "363856",
+      "feeWei": "363862185552",
+      "proofsVerified": 5
+    },
+    {
+      "transactionHash": "0xb14e4df637d60e343789f9e8e6b2f6ab74044ba5c4651b8780da3ca648d16d52",
+      "blockNumber": 11958255,
+      "status": 1,
+      "root": "0xdc0a1c96b9eca8f4b7526f097dc9c92b2815229746c3a1dd1f6bc44c0134c07a",
+      "firstSequence": 6,
+      "count": 4,
+      "gasUsed": "363856",
+      "feeWei": "363862185552",
+      "proofsVerified": 4
+    }
+  ],
+  "writerUsdcBalanceRaw": "39968920",
+  "donAuthenticated": false
+}

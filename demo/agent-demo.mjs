@@ -17,6 +17,7 @@ import { modelSettings, callModel, runAgent } from "./agent/model.mjs";
 import { runCreIntent, runStreamCheck } from "./agent/cre.mjs";
 import { assertLocalApproval } from "./agent/payments.mjs";
 import { createAgentOutput } from "./agent/output.mjs";
+import { createAuditor } from "./audit/controller.mjs";
 import {
   USDC,
   CHAIN_ID,
@@ -44,7 +45,7 @@ Default: real AI + local CRE admission preview; no signing or token funding.
            Reuse it for 10 requests, demonstrate CONTINUE, inject a demo outage,
            then cancel: earned funds go to the recipient and unused funds refund.
            A new paid run can fund another stream and uses test ETH for gas.
---close-stream <id>  Recover an owned USDC stream; no AI or CRE call required.
+--close-stream <id>  Recover an owned USDC stream; no AI call. CRE audit required.
 --verbose  Add response IDs, CRE evidence hashes and unverified model text.
 --json     One result envelope on stdout; plain progress on stderr.
 --help     No credentials, API calls, network or transactions.
@@ -52,12 +53,15 @@ Default: real AI + local CRE admission preview; no signing or token funding.
 Set QWEN_API_KEY or OPENAI_API_KEY (OPEN_AI_KEY alias accepted), PRIVATE_KEY_1
 or PRIVATE_KEY, AGENTPAY_AGENT_RECIPIENT (CRE_PAYMENT_RECIPIENT_ADDRESS alias),
 and AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env. Recovery needs only wallet
-and stream settings. Requires CRE CLI, Bun and network access for the main demo.
+and stream settings plus CRE and an audit-receipt contract. Compile contracts
+with npx hardhat compile. Requires CRE CLI, Bun and network access.
 Qwen is selected when its key is present; AGENTPAY_AI_PROVIDER overrides this.
 Defaults: QWEN_MODEL=qwen3.5-plus, QWEN_REGION=singapore,
 OPENAI_MODEL=gpt-4.1-mini. Model calls may incur charges; no model/rules fallback.
 
 CRE commands, observed inputs, policy limits and transcript paths are shown.
+Every business transaction requires dry-run, risk review, durable blob and receipt.
+Preview logs decisions locally without signing; --pay also spends audit gas.
 CRE stays local. CLI checks gate wallet signing; the contract enforces escrow
 accounting, not CRE approvals. No DON or strict-guard authorization, nor full
 x402. Stream earnings accrue until the
@@ -118,6 +122,7 @@ await cli.cliMain(
       openedId,
       closeAttempted = false,
       cleanup;
+    let auditor;
     const id =
       new Date().toISOString().slice(0, 19).replace(/[-:]/g, "") +
       "Z-" +
@@ -143,6 +148,33 @@ await cli.cliMain(
     try {
       const streamAddress = process.env.AGENTPAY_USDC_STREAM_ADDRESS;
       await verifyStreamDeployment(provider, streamAddress);
+      let journalDeployment;
+      try {
+        journalDeployment = JSON.parse(
+          await readFile(
+            path.join(root, "docs/deployment/decision-journal.json"),
+            "utf8"
+          )
+        );
+      } catch {}
+      const auditRecipient =
+        process.env.AGENTPAY_AGENT_RECIPIENT ||
+        process.env.CRE_PAYMENT_RECIPIENT_ADDRESS ||
+        wallet.address;
+      auditor = await createAuditor({
+        provider,
+        wallet,
+        streamAddress,
+        recipients: [auditRecipient],
+        directory:
+          process.env.AGENTPAY_AUDIT_DIR ||
+          path.join(root, ".local/audit", wallet.address.toLowerCase()),
+        anchorAddress:
+          process.env.AGENTPAY_DECISION_JOURNAL_ADDRESS ||
+          journalDeployment?.address,
+        anchorEnabled: Boolean(flags.pay || flags["close-stream"]),
+        onProgress: (line) => console.log(`  ${line}`),
+      });
       if (flags["close-stream"]) {
         const result = await closeStream({
           provider,
@@ -150,7 +182,9 @@ await cli.cliMain(
           streamAddress,
           streamId: flags["close-stream"],
           persist,
+          audit: auditor,
         });
+        await auditor.flush();
         console.log(
           `Stream #${result.streamId} closed; earned ${formatUnits(
             result.earnedRaw,
@@ -162,7 +196,11 @@ await cli.cliMain(
             result.transaction.transactionHash
           }`
         );
-        return { ...result, evidenceDirectory: path.relative(root, directory) };
+        return {
+          ...result,
+          audit: await auditor.summary(),
+          evidenceDirectory: path.relative(root, directory),
+        };
       }
       settings = modelSettings(process.env);
       const recipient =
@@ -238,6 +276,7 @@ await cli.cliMain(
           onStart: (invocation) => output.creInvocation(invocation),
         });
         output.streamEvidence(evidence);
+        await auditor.recordPolicy(`stream-${label}`, evidence.result);
         return { config, decision: evidence.result };
       };
       const purchase = async ({ tier, purpose }) => {
@@ -295,6 +334,7 @@ await cli.cliMain(
             onStart: (invocation) => output.creInvocation(invocation),
           });
           output.priceEvidence(price);
+          await auditor.recordPolicy("price", price.result);
           const priceCompleted = performance.now();
           priceGate = () =>
             assertLocalApproval(price, config, {
@@ -372,6 +412,7 @@ await cli.cliMain(
           elapsed: () => performance.now() - completedAt,
           persist,
           additionalGate: priceGate,
+          audit: auditor,
         });
         output.streamOpened(funded);
         const signature = await wallet.signMessage(
@@ -474,6 +515,7 @@ await cli.cliMain(
           streamAddress,
           streamId: funded.streamId,
           persist,
+          audit: auditor,
         });
         output.streamClosed(settled);
         if (BigInt(settled.refundedRaw) === 0n)
@@ -572,6 +614,8 @@ await cli.cliMain(
         strictGuardUsed: false,
         evidenceDirectory: path.relative(root, directory),
       };
+      await auditor.flush();
+      result.audit = await auditor.summary();
       await save("result.json", result);
       output.finish(result);
       return result;
@@ -585,6 +629,7 @@ await cli.cliMain(
             streamAddress: process.env.AGENTPAY_USDC_STREAM_ADDRESS,
             streamId: openedId,
             persist,
+            audit: auditor,
           });
           output.streamClosed(cleanup);
         } catch (closeError) {
@@ -600,6 +645,15 @@ await cli.cliMain(
           };
         }
       }
+      if (auditor) {
+        try {
+          await auditor.flush();
+        } catch {
+          console.error(
+            "Audit receipt still pending; inspect the durable journal before retrying."
+          );
+        }
+      }
       await save("failure.json", {
         failedAt: new Date().toISOString(),
         code: error.code || "OPERATION_FAILED",
@@ -610,6 +664,7 @@ await cli.cliMain(
         streamId: openedId || null,
         closeAttempted,
         cleanup,
+        audit: auditor ? await auditor.summary() : null,
       });
       output.failed(path.relative(root, directory));
       throw error;
@@ -619,6 +674,7 @@ await cli.cliMain(
         cli.redact(events.map((e) => JSON.stringify(e)).join("\n")) + "\n"
       );
       if (service) await service.close();
+      if (auditor) await auditor.close();
       provider.destroy();
     }
   }

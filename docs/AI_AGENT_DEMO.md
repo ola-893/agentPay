@@ -33,7 +33,7 @@ For OpenAI, set `AGENTPAY_AI_PROVIDER=openai`, `OPENAI_API_KEY` and optionally `
 npm run --silent demo:agent
 ```
 
-Preview makes real model, CRE, HTTP and blockchain calls. It evaluates basic admission (`OPEN`) and premium admission (`DENY`) but does not approve tokens, create a stream, unlock paid content or fabricate a funded checkpoint.
+Preview now persists its CRE decisions in the [durable local audit journal](SPEND_AUDIT.md), leaving receipt writes pending. It makes real model, CRE, HTTP and blockchain calls. It evaluates basic admission (`OPEN`) and premium admission (`DENY`) but does not approve tokens, create a stream, unlock paid content or fabricate a funded checkpoint.
 
 ## Fund and supervise a stream
 
@@ -41,7 +41,7 @@ Preview makes real model, CRE, HTTP and blockchain calls. It evaluates basic adm
 npm run --silent demo:agent -- --pay
 ```
 
-Each invocation can deposit **at most 0.01 test USDC**, plus test ETH for approval/open/close gas. This is a new stream, not a read-only check or a resumed purchase.
+Each invocation can deposit **at most 0.01 test USDC**, plus test ETH for approval/open/close **and audit-receipt gas**. Actual signing now requires a working local blob journal and the [verified decision-receipt contract](SPEND_AUDIT.md). Every business transaction is simulated, risk-reviewed, persisted and anchored before signing; denials are retained and receipts are counted separately. This is a new stream, not a read-only check or a resumed purchase.
 
 1. Qwen/OpenAI requests basic and premium sessions through real tool calls. The model chooses only a tier and purpose; it cannot change deposit, duration, rate, recipients or policy.
 2. The loopback provider returns HTTP 402 with a bound streaming quote. Basic deposits `10000` raw USDC over **1000 seconds**, earning `10` raw units per second. Premium proposes `200000` against the CRE deposit cap `100000` and is denied. The wallet independently limits this demo to `10000`.
@@ -85,7 +85,7 @@ Inspect `open.json` / `close.json` and their public transaction hashes before re
 npm run --silent demo:agent -- --close-stream 1
 ```
 
-Replace `1` with the actual stream ID. Recovery needs the wallet, stream address and RPC only; it makes no model or CRE call and cannot open another stream. Already-closed and other-payer streams are rejected. If creation confirmation was uncertain, inspect the open transaction's StreamCreated event to determine the ID first.
+Replace `1` with the actual stream ID. Recovery needs the wallet, stream address, RPC, CRE, local audit storage and receipt contract; it makes no model call and cannot open another stream. It now performs the cancellation spend review and anchors its receipt before signing. Already-closed and other-payer streams are rejected. If creation confirmation was uncertain, inspect the open transaction's StreamCreated event to determine the ID first.
 
 ## Verification and limits
 

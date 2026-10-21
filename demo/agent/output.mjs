@@ -358,7 +358,9 @@ export function createAgentOutput({
           );
           field(
             "Transactions",
-            `${basic.funded.transactions.length + 1} total: open + close${
+            `${
+              basic.funded.transactions.length + 1
+            } payment lifecycle: open + close${
               basic.funded.transactions.length > 1 ? " + token approval" : ""
             }; none per API request`
           );
@@ -374,6 +376,16 @@ export function createAgentOutput({
           );
         } else field("Transaction", "None / stream was not funded");
         write("");
+        if (result.audit) {
+          field(
+            "Audit blobs",
+            `${result.audit.decisions} decisions / ${result.audit.directory}`
+          );
+          field(
+            "Audit receipts",
+            `${result.audit.receiptTransactions.length} cumulative receipt transactions (test ETH); ${result.audit.pendingReceipts} pending decisions`
+          );
+        }
         field("Evidence", result.evidenceDirectory);
         field("Agent notes", `${result.evidenceDirectory}/result.json`);
         if (verbose) {
