@@ -8,10 +8,12 @@ export function formatUsdc(raw) {
 // Truncate rather than round a displayed balance above what the wallet holds.
 export function formatEth(raw) {
   if (raw == null) return "—";
+  if (!/^[0-9]+$/.test(String(raw))) throw new Error("Invalid ETH units");
   const digits = (BigInt(raw) / 100000000000000n).toString().padStart(5, "0");
   return `${digits.slice(0, -4)}.${digits.slice(-4)} ETH`;
 }
 export function toRawUsdc(text) {
+  if (text.startsWith(".")) text = "0" + text;
   if (!/^(?:0|[1-9][0-9]*)(?:\.[0-9]{0,6})?$/.test(text))
     throw new Error("Use up to 6 decimals.");
   const [whole, fraction = ""] = text.split(".");
@@ -151,6 +153,19 @@ export function deriveDiagramState(events = []) {
 }
 export function timelinePresentation(event) {
   const d = event.data;
+  if (event.type === "run.start")
+    return {
+      title: "Run started",
+      chip: d.mode === "pay" ? "Pay" : "Preview",
+      metric: "",
+    };
+  if (event.type === "run.end")
+    return {
+      title: `Run ${d.status}`,
+      chip: "",
+      metric:
+        d.amountsVerified === false ? "Unverified" : formatUsdc(d.fundedRaw),
+    };
   if (event.type === "cre.result") {
     const r = d.observations;
     return {

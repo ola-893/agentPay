@@ -55,10 +55,21 @@ export const documentation = {
       ]),
       section("Watch the workflow", [
         p(
-          "The diagram distinguishes the agent request, CRE decision, wallet transaction, escrow and provider access. The request loop reuses a stream; the supervision loop brings HTTP observations and onchain state back to CRE. The dashboard highlights decisions only as CLI events arrive or replay."
+          "The compact Workflow cockpit puts a local agent and mode controls beside an event-driven diagram. Coinbase, Chainlink USDC/USD, service health and stream state feed CRE; dashed edges show signing gates, chain reads and health probes. The agent-to-service arc shows request reuse. A funded gauge splits into earned and refunded amounts only when those observations arrive."
         ),
         p(
-          "Recorded mode is the hosted default and needs no credentials. Live local mode requires npm run dev:live, root .env configuration and an authenticated CRE CLI. The agent is Registered locally by a profile file, not an onchain registry. Wallet keys stay on the server. Advanced cards show spend review and audit receipts; they are distinct from payment transactions."
+          "Recorded mode is the hosted default and needs no credentials. Choose a scenario, then Play/Pause, Step or Restart. Its locked Policy used summary cannot change a replay. Expand a timeline row for observations, raw result, exact command and transcript; hover or keyboard-focus a row to highlight nodes, or click a node to find its latest visible event. Live mode shows cap, feed age and failure threshold first, with rate and peg/disagreement limits under Advanced. USDC inputs convert with integer math; raw units stay in tooltips. Spend reviews and audit receipts appear under Show advanced."
+        ),
+      ]),
+      section("Read the visual evidence honestly", [
+        p(
+          "The agent is registered locally by a profile file, not an onchain registry. Live local needs npm run dev:live, ignored root .env settings and an authenticated CRE CLI; wallet keys stay on the server. Hosted Live setup never contacts your localhost. Recorded labels carry their actual capture date, and balances are run-start observations, not current balances."
+        ),
+        p(
+          "CRE is local simulation with no DON authorization. The wallet CLI gates signing, and the contract does not verify CRE: it enforces escrow, time accrual and payouts. Many authenticated API calls reuse a stream; health checks happen at explicit CLI checkpoints, not continuously. Local health endpoints and per-run configs are simulation shortcuts. A close only refunds unearned funds; detection and mining latency still accrue earnings."
+        ),
+        p(
+          "The one-line transaction count includes lifecycle and observed audit receipts, with the split in its tooltip. Receipts prove inclusion of operator-submitted hashes, not observation truth. An old capture without nonce evidence shows call counts without a fabricated zero-transactions badge. The gauge is not an animated earnings estimate. Reduced-motion replay applies state instantly. This is an unaudited Sepolia prototype, not full x402; test USDC has no monetary value."
         ),
       ]),
       section("Choose your starting point", [

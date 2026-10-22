@@ -130,6 +130,8 @@ test("token and price formatters use integer math, preserve USDC precision and t
   assert.equal(formatPrice("99990493"), "0.99990");
   assert.equal(formatPrice("100000000"), "1.00000");
   assert.equal(toRawUsdc("0.01"), "10000");
+  assert.equal(toRawUsdc(".01"), "10000");
+  assert.throws(() => formatEth("-1"));
   assert.equal(toRawUsdc("0.000001"), "1");
   assert.equal(toRawUsdc("0."), "0");
   assert.equal(

@@ -35,7 +35,7 @@ npm run install:cre
 npm run dev
 ```
 
-The frontend has only **Workflow** (`/`) and **Docs** (`/docs`). Workflow explains the N+1 problem and CRE supervision, then shows recorded Within budget / Over budget evidence with observations, commands and transcripts. Docs includes the [CLI demo guide](docs/AI_AGENT_DEMO.md). Recorded mode needs no wallet or credentials. Workflow now embeds the agent execution dashboard and CRE diagram; agent setup and stream-management routes remain removed.
+The frontend has only **Workflow** (`/`) and **Docs** (`/docs`). Workflow is a compact visual cockpit: agent controls, an event-driven CRE diagram, playback and expandable execution rows. The N+1 problem and full supervision explanation are in Docs. Docs includes the [CLI demo guide](docs/AI_AGENT_DEMO.md). Recorded mode needs no wallet or credentials. Workflow now embeds the agent execution dashboard and CRE diagram; agent setup and stream-management routes remain removed.
 
 ## Workflow dashboard
 
@@ -135,7 +135,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **178 tests** — 32 contracts, 52 SDK, eight middleware, 31 CRE policy, 55 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
+Current suites: **183 tests** — 32 contracts, 52 SDK, eight middleware, 31 CRE policy, 60 evidence/CLI/tooling and presentation checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
 
 `docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
 

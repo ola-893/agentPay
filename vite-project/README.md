@@ -17,7 +17,7 @@ Open the URL Vite prints. Recorded mode needs no wallet, credentials, deployment
 
 | Route | Behavior |
 | --- | --- |
-| `/` | CRE diagram, Recorded/Live local agent dashboard, and optional standalone price-policy captures |
+| `/` | Compact CRE diagram, Recorded/Live local controls, playback and expandable timeline |
 | `/cre` | Redirects to `/` |
 | `/docs` and `/docs/:section` | Seven help topics, including the terminal-based CLI demo |
 

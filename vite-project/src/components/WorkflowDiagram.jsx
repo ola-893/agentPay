@@ -4,146 +4,315 @@ import {
   Wallet,
   Database,
   Globe,
-  ArrowRight,
-  ArrowDown,
-  Repeat2,
-  ShieldCheck,
+  LockKeyhole,
 } from "lucide-react";
-export default function WorkflowDiagram({ decision }) {
-  const nodes = [
-    [
-      Bot,
-      "AI agent",
-      "Requests a paid service",
-      "Gets a bound HTTP 402 quote.",
-    ],
-    [
-      Workflow,
-      "Chainlink CRE",
-      "Decides before the wallet acts",
-      "Price + budget → OPEN / DENY. Health checkpoints → CONTINUE / CLOSE.",
-    ],
-    [
-      Wallet,
-      "Payer wallet",
-      "Gates signing in the CLI",
-      "Exact spend dry-run, risk rules, blob and confirmed audit receipt.",
-    ],
-    [
-      Database,
-      "Onchain escrow",
-      "Accrues earnings with time",
-      "Holds USDC; cancellation pays earnings and refunds unused funds.",
-    ],
-    [
-      Globe,
-      "Paid service",
-      "Reuses one funded session",
-      "Checks the signed session and stream state for each API request.",
-    ],
-  ];
+import { Link } from "react-router-dom";
+import { DecisionBadge } from "./WorkflowBits";
+import { formatUsdc, percentOf, shortAddress } from "../lib/workflow-view.mjs";
+const nodes = [
+  ["agent", "Agent", Bot],
+  ["wallet", "Wallet", Wallet],
+  ["escrow", "Escrow", Database],
+  ["service", "Paid service", Globe],
+];
+const inputs = [
+  ["coinbase", "Coinbase"],
+  ["feed", "Chainlink USDC/USD"],
+  ["health", "Service health"],
+  ["state", "Stream state"],
+];
+function Gauge({ state }) {
+  const funded = state.fundedRaw != null && BigInt(state.fundedRaw) > 0n;
+  return (
+    <div
+      className="wf-gauge-wrap"
+      title={
+        state.unverified
+          ? "Amounts unverified"
+          : `${state.fundedRaw ?? "Unknown"} raw USDC funded`
+      }
+    >
+      <div
+        className="wf-gauge"
+        role="img"
+        aria-label={
+          state.unverified
+            ? "Escrow amounts unverified"
+            : state.closed
+            ? `${formatUsdc(state.earnedRaw)} earned; ${formatUsdc(
+                state.refundedRaw
+              )} refunded`
+            : funded
+            ? `${formatUsdc(state.fundedRaw)} in escrow`
+            : "Escrow not funded"
+        }
+      >
+        <span
+          style={{
+            width: state.closed
+              ? percentOf(state.earnedRaw, state.fundedRaw)
+              : funded
+              ? "100%"
+              : "0%",
+          }}
+        />
+        {state.closed && (
+          <span
+            className="wf-refund-bar"
+            style={{ width: percentOf(state.refundedRaw, state.fundedRaw) }}
+          />
+        )}
+      </div>
+      <small>
+        {state.unverified
+          ? "Unverified"
+          : state.closed
+          ? "Settled"
+          : funded
+          ? formatUsdc(state.fundedRaw)
+          : "Unfunded"}
+      </small>
+    </div>
+  );
+}
+export default function WorkflowDiagram({
+  state,
+  highlight,
+  onNode,
+  onReplay,
+  replayDisabled,
+  mode,
+}) {
+  const idle = state.status === "idle";
+  const active = (id) =>
+    highlight.length ? highlight.includes(id) : state.active.includes(id);
+  const calls =
+    state.successfulRequests == null
+      ? "Calls —"
+      : `${state.successfulRequests} calls${
+          state.reuseTransactions === 0 ? " · 0 txs" : ""
+        }`;
+  const nodeBody = (id, label, Icon) => (
+    <>
+      <Icon size={24} aria-hidden="true" />
+      <strong>{label}</strong>
+      {id === "escrow" && <Gauge state={state} />}
+      {id === "service" && state.service === "outage" && (
+        <>
+          <DecisionBadge value="Outage" />
+          {state.faultStatus != null && <small>{state.faultStatus}</small>}
+        </>
+      )}
+    </>
+  );
+  const hub = (
+    <button
+      type="button"
+      className={`wf-hub ${active("cre") ? "is-active" : ""}`}
+      onClick={() => onNode("cre")}
+      aria-label="Find CRE decisions"
+    >
+      <span>
+        <Workflow size={18} aria-hidden="true" /> Chainlink CRE
+      </span>
+      {state.decision ? (
+        <DecisionBadge value={state.decision} />
+      ) : (
+        <small>Awaiting events</small>
+      )}
+    </button>
+  );
   return (
     <section
-      className="panel overflow-hidden p-5 sm:p-6"
-      aria-labelledby="flow-title"
+      className="wf-surface wf-diagram"
+      aria-label="CRE payment workflow"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="eyebrow">How CRE supercharges a payment stream</p>
-          <h2 id="flow-title" className="mt-2 text-xl font-semibold">
-            One funded stream. Decisions throughout its life.
-          </h2>
-        </div>
-        <span className="rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1 text-xs text-blue-200">
-          CRE: local simulation
-        </span>
-      </div>
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-xl border border-blue-400/20 bg-blue-500/5 p-3 text-xs text-blue-100">
-        <span>HTTP health + client counters</span>
-        <span aria-hidden="true">+</span>
-        <span>Coinbase + Chainlink USDC/USD</span>
-        <span aria-hidden="true">+</span>
-        <span>Sepolia balances + stream state</span>
-        <ArrowDown size={15} aria-hidden="true" />
-        <strong>CRE policy inputs</strong>
-      </div>
-      <ol
-        className="mt-5 grid gap-4 lg:grid-cols-5"
-        aria-label="Payment and decision flow"
-      >
-        {nodes.map(([Icon, title, subtitle, text], i) => (
-          <li
-            key={title}
-            className={`relative min-w-0 rounded-xl border p-4 ${
-              i === 1
-                ? "border-blue-400/60 bg-blue-600/15 ring-1 ring-blue-400/20"
-                : "border-white/10 bg-[#0b101c]/60"
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <Icon
-                size={24}
-                className={i === 1 ? "text-blue-300" : "text-slate-400"}
-                aria-hidden="true"
-              />
-              <span className="font-mono text-xs text-slate-500">0{i + 1}</span>
-            </div>
-            <h3 className="mt-4 font-semibold">{title}</h3>
-            <p className="mt-1 text-xs font-medium text-blue-200">{subtitle}</p>
-            <p className="mt-3 text-xs leading-relaxed text-slate-400">
-              {text}
-            </p>
-            {i === 1 && decision && (
-              <p className="mt-3 rounded-lg bg-blue-500/15 px-2 py-1 font-mono text-xs text-blue-100">
-                Observed decision: {decision}
-              </p>
-            )}
-            {i < 4 && (
-              <ArrowRight
-                size={17}
-                className="absolute -right-4 top-1/2 z-10 hidden text-blue-300 lg:block"
-                aria-hidden="true"
-              />
-            )}
-          </li>
-        ))}
-      </ol>
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <p className="flex gap-3 rounded-xl border border-emerald-400/15 bg-emerald-500/5 p-4 text-xs leading-relaxed text-slate-300">
-          <Repeat2
-            size={21}
-            className="shrink-0 text-emerald-300"
-            aria-hidden="true"
-          />
-          <span>
-            <strong className="block text-emerald-200">
-              Request loop: agent ↔ paid service
-            </strong>
-            Many authenticated API calls reuse escrow. No token transaction per
-            request; earnings accrue per second.
-          </span>
-        </p>
-        <p className="flex gap-3 rounded-xl border border-blue-400/15 bg-blue-500/5 p-4 text-xs leading-relaxed text-slate-300">
-          <ShieldCheck
-            size={21}
-            className="shrink-0 text-blue-300"
-            aria-hidden="true"
-          />
-          <span>
-            <strong className="block text-blue-200">
-              Supervision loop: observations → CRE → wallet
-            </strong>
-            At CLI checkpoints, an observed outage produces CLOSE. The wallet
-            cancels after spend review; the contract settles earned and unused
-            funds.
-          </span>
-        </p>
-      </div>
-      <p className="mt-4 text-xs leading-relaxed text-slate-400">
-        Streaming addresses the N+1 payment problem. CRE adds admission,
-        service-health and spend decisions. Audit receipts add gas; this diagram
-        does not promise fixed savings or continuous monitoring.
+      <p className="sr-only">
+        Price feeds, service health and stream state feed CRE. The wallet CLI
+        gates signing, escrow accrues earnings, and API calls reuse a funded
+        stream. CRE does not authorize the contract directly. Use diagram nodes
+        to find their timeline events.
       </p>
+      <div className={`wf-canvas ${idle ? "wf-ghost" : ""}`}>
+        <div className="wf-inputs">
+          {inputs.map(([id, label]) => (
+            <span
+              key={`${id}-${state.lastSeq}`}
+              className={state.inputs.includes(id) ? "wf-input-pulse" : ""}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+        <div className="wf-desktop-diagram">
+          <svg
+            viewBox="0 0 800 400"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+            className="wf-connections"
+          >
+            <defs>
+              <marker
+                id="wf-arrow"
+                markerWidth="7"
+                markerHeight="7"
+                refX="6"
+                refY="3.5"
+                orient="auto"
+              >
+                <path d="M0,0 L7,3.5 L0,7" fill="#64748b" />
+              </marker>
+            </defs>
+            {[100, 300, 500, 700].map((x) => (
+              <path
+                key={x}
+                d={`M${x},52 Q${x},80 400,103`}
+                className="wf-input-edge"
+              />
+            ))}
+            <path
+              d="M365,161 Q290,173 300,221"
+              className="wf-supervision-edge"
+            />
+            <path
+              d="M420,161 Q485,177 500,221"
+              className="wf-supervision-edge"
+            />
+            <path
+              d="M454,142 Q700,145 700,221"
+              className="wf-supervision-edge"
+            />
+            <text x="236" y="194">
+              gates signing
+            </text>
+            <text x="467" y="194">
+              reads state
+            </text>
+            <text x="649" y="181">
+              probes health
+            </text>
+            <path d="M134,250 H244" className="wf-main-edge" />
+            <path d="M340,250 H450" className="wf-main-edge" />
+            <text x="397" y="238">
+              fund once
+            </text>
+            <path d="M540,250 H650" className="wf-main-edge" />
+            <text x="595" y="238">
+              earns per second
+            </text>
+            <path
+              d="M100,302 C100,389 700,389 700,302"
+              className="wf-reuse-edge"
+            />
+            {state.closed && !state.unverified && (
+              <>
+                <text x="375" y="326" className="wf-settlement-label">
+                  ← {formatUsdc(state.refundedRaw)}
+                </text>
+                <text x="600" y="326" className="wf-settlement-label">
+                  {formatUsdc(state.earnedRaw)} →
+                </text>
+              </>
+            )}
+            {state.packet && (
+              <circle
+                key={state.lastSeq}
+                r="4"
+                cx="300"
+                cy="250"
+                className={`wf-packet wf-packet-${state.packet.kind}`}
+              />
+            )}
+          </svg>
+          {hub}
+          <div className="wf-nodes">
+            {nodes.map(([id, label, Icon]) => (
+              <button
+                type="button"
+                key={id}
+                className={`wf-node ${active(id) ? "is-active" : ""} ${
+                  id === "service" && state.service === "outage"
+                    ? "is-outage"
+                    : ""
+                }`}
+                onClick={() => onNode(id)}
+                aria-label={`Find ${label} events`}
+              >
+                {nodeBody(id, label, Icon)}
+              </button>
+            ))}
+          </div>
+          <span
+            key={state.successfulRequests}
+            className="wf-call-count"
+            title="Successful calls reported by the CLI. Zero transactions is shown only when nonce evidence is present."
+          >
+            {calls}
+          </span>
+          {state.transaction && (
+            <a
+              className="wf-diagram-hash"
+              href={state.transaction.explorerUrl}
+              target="_blank"
+              rel="noreferrer"
+              title={`${state.transaction.kind}: ${state.transaction.status}`}
+            >
+              {shortAddress(state.transaction.hash)} ↗
+            </a>
+          )}
+        </div>
+        <div className="wf-mobile-stepper">
+          {hub}
+          <ol>
+            {nodes.map(([id, label, Icon]) => (
+              <li key={id}>
+                <button
+                  type="button"
+                  className={`wf-node ${active(id) ? "is-active" : ""} ${
+                    id === "service" && state.service === "outage"
+                      ? "is-outage"
+                      : ""
+                  }`}
+                  onClick={() => onNode(id)}
+                >
+                  {nodeBody(id, label, Icon)}
+                </button>
+              </li>
+            ))}
+          </ol>
+          <span className="wf-mobile-calls">{calls}</span>
+          {state.closed && !state.unverified && (
+            <p>
+              {formatUsdc(state.earnedRaw)} earned ·{" "}
+              {formatUsdc(state.refundedRaw)} refunded
+            </p>
+          )}
+        </div>
+      </div>
+      {idle && mode === "recorded" && (
+        <div className="wf-idle-action">
+          <button
+            type="button"
+            className="btn-primary"
+            disabled={replayDisabled}
+            onClick={onReplay}
+          >
+            Replay recorded run
+          </button>
+        </div>
+      )}
+      <div className="wf-trust">
+        {[
+          "CRE: local simulation",
+          "Wallet CLI gates signing",
+          "Contract does not verify CRE",
+        ].map((label) => (
+          <Link key={label} to="/docs/cre" title="Read the trust boundaries">
+            <LockKeyhole size={11} aria-hidden="true" />
+            {label}
+          </Link>
+        ))}
+      </div>
     </section>
   );
 }
