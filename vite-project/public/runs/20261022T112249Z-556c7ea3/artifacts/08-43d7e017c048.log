@@ -1,0 +1,30 @@
+Initializing...
+Loading settings...
+! Using default private key for chain write simulation. To use your own key, set CRE_ETH_PRIVATE_KEY in your .env file or system environment.
+Checking RPC connectivity...
+Compiling workflow...
+✓ Workflow compiled
+✓ Simulation limits enabled
+  HTTP: req=120kb resp=250kb timeout=10s | ConfHTTP: req=125kb resp=500kb timeout=1m30s | Consensus obs=25kb | ChainWrite evm_report=50kb evm_gas=10000000 solana_report=265b solana_cu=300000 | WASM binary=100mb compressed=20mb
+  Binary hash: e25a1a94a58d18a5a8aed8d5837cacb317675879c39fab3e588206ca51ba4d76
+  Config hash: 10454c711bf3f6336041a818048e00d990207700afece83b3553cdb9844b8293
+2026-10-22T12:24:58Z [SIMULATION] Simulator Initialized
+
+2026-10-22T12:24:58Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-10-22T12:24:59Z [USER LOG] Spend ALLOW: WITHIN_POLICY; risk=5; blob=0xdd950f4c90281500c5aaea37d4c2a87142497a040cb5f145a1c808552b5a322f
+
+✓ Workflow Simulation Result:
+"{\"workflow\":\"agentpay-spend-review\",\"mode\":\"local-simulation\",\"record\":{\"schemaVersion\":1,\"type\":\"spend-review\",\"source\":\"local-cre-simulation\",\"donAuthenticated\":false,\"intentId\":\"0x43d7e017c0480958a7d56b64313cdc80b2379eaef132b14cb8dd63fd9d6ad42d\",\"intentHash\":\"0xcbff3db968dd6acbd4f8dfc9dd284b6ca186a610dce92dcc85a2421898ef1aed\",\"intent\":{\"id\":\"0x43d7e017c0480958a7d56b64313cdc80b2379eaef132b14cb8dd63fd9d6ad42d\",\"chainId\":11155111,\"payer\":\"0xe26468ae02368a75DBDBea58F367B7313942ad26\",\"transaction\":{\"to\":\"0x5199d1dcaB9496d37677DAD8F53481DCc511d585\",\"data\":\"0xdee04a720000000000000000000000009950d8950bf80722860f2b6a9e120893a0fe79f700000000000000000000000000000000000000000000000000000000000003e80000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000a17b2273657373696f6e4964223a22307836323937623265613337633930353034326239343031343137353033616463343034396166396131346265323132663138343862666638363564336431623162222c2271756f74654964223a22307833383430303132326236316339363434396264313561323738313465636432643238636338643264666234356630393631636336333732373737623865326136227d00000000000000000000000000000000000000000000000000000000000000\",\"value\":\"0\"},\"createdAt\":1792668290,\"expiresAt\":1792668590,\"policy\":{\"token\":\"0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238\",\"streamAddress\":\"0x5199d1dcaB9496d37677DAD8F53481DCc511d585\",\"recipients\":[\"0x9950D8950BF80722860f2B6a9e120893a0fE79f7\"],\"maxAmountRaw\":\"10000\",\"maxRiskScore\":49,\"qualityRiskScore\":0,\"maxDurationSeconds\":3600}},\"observedBlock\":11969228,\"blockHash\":\"0x16b9ab68a210e322e1194187b28db7d2807dbdadd851fd3915f92a1521713751\",\"simulation\":{\"intentHash\":\"0xcbff3db968dd6acbd4f8dfc9dd284b6ca186a610dce92dcc85a2421898ef1aed\",\"blockNumber\":11969228,\"blockHash\":\"0x16b9ab68a210e322e1194187b28db7d2807dbdadd851fd3915f92a1521713751\",\"status\":\"success\",\"returnData\":\"0x\",\"gasEstimate\":\"1747397\",\"errorCode\":null},\"chain\":{\"tokenDecimals\":6,\"balanceRaw\":\"39967360\"},\"evaluatedAt\":1792668299,\"decision\":{\"action\":\"ALLOW\",\"reason\":\"WITHIN_POLICY\",\"riskScore\":5,\"operation\":\"createStream\"},\"policyVersion\":\"spend-risk-v1\",\"expiresAt\":1792668590},\"stored\":{\"intentId\":\"0x43d7e017c0480958a7d56b64313cdc80b2379eaef132b14cb8dd63fd9d6ad42d\",\"blobHash\":\"0xdd950f4c90281500c5aaea37d4c2a87142497a040cb5f145a1c808552b5a322f\"}}"
+
+2026-10-22T12:24:59Z [SIMULATION] Execution finished signal received
+2026-10-22T12:24:59Z [SIMULATION] Skipping WorkflowEngineV2
+
+╭──────────────────────────────────────────────────────╮
+│ Simulation complete! Ready to deploy your workflow?  │
+│                                                      │
+│ Run cre account access to request deployment access. │
+╰──────────────────────────────────────────────────────╯
+
+⚠️  Update available! You’re running 1.37.0, but 1.39.0 is the latest.
+Run `cre update` or visit https://github.com/smartcontractkit/cre-cli/releases to upgrade.
+

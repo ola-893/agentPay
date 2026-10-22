@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "runs": [
+    {
+      "id": "20261022T113645Z-8920114f",
+      "label": "Stale feed denial",
+      "mode": "preview",
+      "preset": "stale-feed",
+      "capturedAt": "2026-10-22T11:37:03.495Z",
+      "file": "20261022T113645Z-8920114f/events.ndjson",
+      "sha256": "5ff92b889962e8db7f0d9e402caf501202511ba8da2a22b9cb876c8fa76862e2",
+      "artifacts": {
+        ".local/agent-demo/runs/20261022T113645Z-8920114f/cre-price.config.json": "artifacts/01-cre-price.config.json",
+        ".local/agent-demo/runs/20261022T113645Z-8920114f/cre-price.log": "artifacts/02-cre-price.log"
+      }
+    },
+    {
+      "id": "20261022T112249Z-556c7ea3",
+      "label": "Funded stream lifecycle",
+      "mode": "pay",
+      "preset": null,
+      "capturedAt": "2026-10-22T11:28:40.754Z",
+      "file": "20261022T112249Z-556c7ea3/events.ndjson",
+      "sha256": "9841484515a3e387c1b1fdceca1fd35952e3b9e73874dec8549f6309c19ed5c0",
+      "artifacts": {
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/cre-price.config.json": "artifacts/01-cre-price.config.json",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/cre-price.log": "artifacts/02-cre-price.log",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-open.config.json": "artifacts/03-stream-open.config.json",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-open.log": "artifacts/04-stream-open.log",
+        ".local/sr/9d41f6570197.json": "artifacts/05-9d41f6570197.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/9d41f6570197.log": "artifacts/06-9d41f6570197.log",
+        ".local/sr/43d7e017c048.json": "artifacts/07-43d7e017c048.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/43d7e017c048.log": "artifacts/08-43d7e017c048.log",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/cre-renew-1.config.json": "artifacts/09-cre-renew-1.config.json",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/cre-renew-1.log": "artifacts/10-cre-renew-1.log",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-renew-1.config.json": "artifacts/11-stream-renew-1.config.json",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-renew-1.log": "artifacts/12-stream-renew-1.log",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-healthy.config.json": "artifacts/13-stream-healthy.config.json",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-healthy.log": "artifacts/14-stream-healthy.log",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-outage.config.json": "artifacts/15-stream-outage.config.json",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-outage.log": "artifacts/16-stream-outage.log",
+        ".local/sr/79331b433c65.json": "artifacts/17-79331b433c65.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/79331b433c65.log": "artifacts/18-79331b433c65.log",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-deny.config.json": "artifacts/19-stream-deny.config.json",
+        ".local/agent-demo/runs/20261022T112249Z-556c7ea3/stream-deny.log": "artifacts/20-stream-deny.log"
+      }
+    },
+    {
+      "id": "20261022T112017Z-489d72f7",
+      "label": "Unsigned preview",
+      "mode": "preview",
+      "preset": null,
+      "capturedAt": "2026-10-22T11:21:05.689Z",
+      "file": "20261022T112017Z-489d72f7/events.ndjson",
+      "sha256": "481c58023db2fa6d03efa76e928064a1e120c4e05d0548ab469e06da93727fe7",
+      "artifacts": {
+        ".local/agent-demo/runs/20261022T112017Z-489d72f7/cre-price.config.json": "artifacts/01-cre-price.config.json",
+        ".local/agent-demo/runs/20261022T112017Z-489d72f7/cre-price.log": "artifacts/02-cre-price.log",
+        ".local/agent-demo/runs/20261022T112017Z-489d72f7/stream-open.config.json": "artifacts/03-stream-open.config.json",
+        ".local/agent-demo/runs/20261022T112017Z-489d72f7/stream-open.log": "artifacts/04-stream-open.log",
+        ".local/agent-demo/runs/20261022T112017Z-489d72f7/stream-deny.config.json": "artifacts/05-stream-deny.config.json",
+        ".local/agent-demo/runs/20261022T112017Z-489d72f7/stream-deny.log": "artifacts/06-stream-deny.log"
+      }
+    },
+    {
+      "id": "20261022T111851Z-44992c90",
+      "label": "Tiny cap denial",
+      "mode": "preview",
+      "preset": "tiny-cap",
+      "capturedAt": "2026-10-22T11:19:09.093Z",
+      "file": "20261022T111851Z-44992c90/events.ndjson",
+      "sha256": "af5a75db57d3829ed453e730f8efd78a9064b43726a2f68a604ddac1d396b184",
+      "artifacts": {
+        ".local/agent-demo/runs/20261022T111851Z-44992c90/cre-price.config.json": "artifacts/01-cre-price.config.json",
+        ".local/agent-demo/runs/20261022T111851Z-44992c90/cre-price.log": "artifacts/02-cre-price.log"
+      }
+    }
+  ]
+}

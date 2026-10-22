@@ -336,12 +336,12 @@ export function createAgentOutput({
         const basic = result.purchases.basic;
         field(
           "Basic",
-          basic.status === "stream-completed"
+          basic.status === "denied" ? "DENIED / no stream funded" : basic.status === "stream-completed"
             ? `Stream #${basic.streamId} CLOSED / earnings + refund verified`
             : "OPEN approved / preview only",
           ok
         );
-        field("Premium", "DENIED / deposit exceeds 0.10 USDC cap", warning);
+        field("Premium", `DENIED / deposit exceeds ${result.purchases.premium.policy.capUsdc} USDC cap`, warning);
         field("Funded", `${amount(result.fundedRaw)} test USDC`);
         field("Earned", `${amount(result.earnedRaw)} USDC to recipient`);
         field("Refunded", `${amount(result.refundedRaw)} USDC to payer`);

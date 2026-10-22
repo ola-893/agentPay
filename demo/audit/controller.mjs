@@ -20,6 +20,8 @@ export async function createAuditor({
   anchorEnabled = false,
   offline = false,
   onProgress = console.log,
+  onReview = () => {},
+  onReceipt = () => {},
 }) {
   const journal = await new LocalJournal(directory).init();
   const lockFile = path.join(directory, "writer.lock");
@@ -76,10 +78,24 @@ export async function createAuditor({
     if (r.code !== 0)
       throw new Error("Spend review failed config/result validation");
   };
-  const flush = async () =>
-    anchorEnabled
-      ? anchorPending({ journal, provider, wallet, address: anchorAddress })
-      : [];
+  const flush = async () => {
+    if (!anchorEnabled) return [];
+    const previous = new Set(
+      (await journal.status()).batches
+        .filter((b) => b.state === "anchored")
+        .map((b) => b.root)
+    );
+    const batches = await anchorPending({
+      journal,
+      provider,
+      wallet,
+      address: anchorAddress,
+    });
+    for (const batch of batches)
+      if (batch.state === "anchored" && !previous.has(batch.root))
+        onReceipt(batch);
+    return batches;
+  };
   async function reviewTransaction(transaction, { qualityRiskScore = 0 } = {}) {
     const intent = {
       id: "0x" + randomBytes(32).toString("hex"),
@@ -103,7 +119,7 @@ export async function createAuditor({
       },
     };
     await journal.accept(intent);
-    let pointer, record, config;
+    let pointer, record, config, invocation;
     try {
       const block = await provider.getBlock("latest");
       config = {
@@ -117,6 +133,15 @@ export async function createAuditor({
       await validate(config);
       const short = intent.id.slice(2, 14),
         file = path.join(root, ".local/sr", `${short}.json`);
+      invocation = {
+        command: `cre workflow simulate payment-guard --target spend-settings --trigger-index 0 --non-interactive --config ../../.local/sr/${short}.json`,
+        cwd: "cre",
+        configPath: path.relative(root, file),
+        transcriptPath: path.relative(
+          root,
+          path.join(runDirectory, `${short}.log`)
+        ),
+      };
       await durableWrite(file, config);
       if (offline) {
         const simulation = await simulateIntent(provider, intent, block);
@@ -186,6 +211,7 @@ export async function createAuditor({
           path.relative(path.join(root, "cre/payment-guard"), file),
         ];
         onProgress(`CRE spend review: cre ${args.join(" ")}`);
+        onReview({ phase: "start", invocation });
         const child = await cli.runChild(process.env.CRE_BIN || "cre", args, {
           cwd: path.join(root, "cre"),
           env,
@@ -267,6 +293,8 @@ export async function createAuditor({
     onProgress(
       `Spend ${record.decision.action}: ${record.decision.reason}; risk ${record.decision.riskScore}/100; blob ${pointer.blobHash}`
     );
+    if (invocation && !offline)
+      onReview({ phase: "result", invocation, record });
     return { intent, record, pointer };
   }
   async function authorize(transaction) {

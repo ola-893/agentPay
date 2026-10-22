@@ -47,13 +47,15 @@ function redact(value) {
   return message;
 }
 async function cliMain(command, spec, help, action) {
-  const json = process.argv.slice(2).includes('--json');
-  jsonMode = json;
+  const args = process.argv.slice(2);
+  const eventStream = command === 'demo:agent' && (args.includes('--events=ndjson') || args.some((a,i) => a === '--events' && args[i+1] === 'ndjson'));
+  const json = args.includes('--json') && !eventStream;
+  jsonMode = json || eventStream;
   // SDK/demo dependencies may log progress too. JSON stdout is exclusively
   // the final envelope; diagnostics and ongoing server logs go to stderr.
   for (const method of ['log', 'info', 'warn', 'error']) {
     const stream =
-      json || method === 'warn' || method === 'error'
+      json || eventStream || method === 'warn' || method === 'error'
         ? process.stderr
         : process.stdout;
     console[method] = (...args) => stream.write(redact(format(...args)) + '\n');

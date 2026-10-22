@@ -56,3 +56,7 @@ cre/**/main.js
 cre/**/.cre/
 cre/**/.cre_build*
 .local/
+
+# Sanitized, published CRE evidence (not Hardhat build artifacts)
+!vite-project/public/runs/*/artifacts/
+!vite-project/public/runs/*/artifacts/*

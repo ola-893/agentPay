@@ -16,6 +16,8 @@ import cli from "../scripts/lib/cli.cjs";
 import { modelSettings, callModel, runAgent } from "./agent/model.mjs";
 import { runCreIntent, runStreamCheck } from "./agent/cre.mjs";
 import { assertLocalApproval } from "./agent/payments.mjs";
+import { loadProfile } from "./agent/profile.mjs";
+import { createRunEvents, eventOutput, runSummary } from "./agent/events.mjs";
 import { createAgentOutput } from "./agent/output.mjs";
 import { createAuditor } from "./audit/controller.mjs";
 import {
@@ -66,10 +68,19 @@ CRE stays local. CLI checks gate wallet signing; the contract enforces escrow
 accounting, not CRE approvals. No DON or strict-guard authorization, nor full
 x402. Stream earnings accrue until the
 cancellation transaction is mined. No automatic repeat funding on uncertainty.
+--profile <file>  Registered local profile with bounded existing policy fields.
+--events ndjson   Versioned public events on stdout; human progress on stderr.
+                  Incompatible with --json and --close-stream.
 Evidence: .local/agent-demo/runs/. Exit: 0 complete / 1 failed / 2 config or usage.`;
 await cli.cliMain(
   "demo:agent",
-  { pay: "boolean", verbose: "boolean", "close-stream": "value" },
+  {
+    pay: "boolean",
+    verbose: "boolean",
+    "close-stream": "value",
+    events: "value",
+    profile: "value",
+  },
   help,
   async ({ flags }) => {
     if (flags.pay && flags["close-stream"])
@@ -88,7 +99,27 @@ await cli.cliMain(
         "--close-stream requires a positive uint256 ID.",
         2
       );
+    if (
+      flags.events &&
+      (flags.events !== "ndjson" || flags.json || flags["close-stream"])
+    )
+      throw new cli.CliError(
+        "USAGE",
+        "Use --events ndjson without --json or --close-stream.",
+        2
+      );
     dotenv.config({ path: path.join(root, ".env"), quiet: true });
+    let profile;
+    try {
+      profile = await loadProfile(flags.profile);
+    } catch {
+      throw new cli.CliError(
+        "CONFIG",
+        "Invalid registered agent profile or policy bounds.",
+        2
+      );
+    }
+    const policy = profile.policy;
     let signer;
     try {
       signer = new Wallet(
@@ -134,15 +165,35 @@ await cli.cliMain(
         path.join(directory, name),
         cli.redact(JSON.stringify(value, null, 2)) + "\n"
       );
-    const output = createAgentOutput({
-        pay: flags.pay,
-        json: flags.json,
-        verbose: flags.verbose,
-      }),
+    const emit = createRunEvents({
+      runId: id,
+      directory,
+      ndjson: flags.events === "ndjson",
+    });
+    const humanOutput = createAgentOutput({
+      pay: flags.pay,
+      json: Boolean(flags.json || flags.events),
+      verbose: flags.verbose,
+    });
+    humanOutput.payMode = flags.pay ? "pay" : "preview";
+    const output = eventOutput(humanOutput, emit, profile),
       events = [];
+    let started = false,
+      initialSnapshot;
     const persist = async (kind, data) => {
       await save(`${kind}.json`, data);
       if (kind === "open" && data.streamId) openedId = data.streamId;
+      if (
+        ["approval", "open", "close"].includes(kind) &&
+        ["submitting", "confirmed"].includes(data.state)
+      )
+        emit("wallet.tx", {
+          kind,
+          hash: data.transactionHash,
+          explorerUrl: `https://sepolia.etherscan.io/tx/${data.transactionHash}`,
+          status: data.state,
+          ...(data.streamId ? { streamId: data.streamId } : {}),
+        });
       if (data.state === "submitting") output.streamTransaction(kind, data);
     };
     try {
@@ -174,6 +225,31 @@ await cli.cliMain(
           journalDeployment?.address,
         anchorEnabled: Boolean(flags.pay || flags["close-stream"]),
         onProgress: (line) => console.log(`  ${line}`),
+        onReview: (event) => {
+          if (event.phase === "start")
+            emit("step.start", {
+              label: "Dry-running and risk-scoring spend",
+              stage: "cre",
+              ...event.invocation,
+            });
+          else
+            emit("cre.result", {
+              target: "spend",
+              ...event.invocation,
+              observations: event.record,
+              decision: event.record.decision.action,
+              reason: event.record.decision.reason,
+              hostCheck: event.record.type === "spend-review",
+              source: event.record.source,
+            });
+        },
+        onReceipt: (batch) =>
+          emit("audit.receipt", {
+            hash: batch.transactionHash,
+            root: batch.root,
+            count: batch.entries.length,
+            blockNumber: batch.blockNumber,
+          }),
       });
       if (flags["close-stream"]) {
         const result = await closeStream({
@@ -228,6 +304,7 @@ await cli.cliMain(
           "BALANCE",
           "Fund the payer with test USDC and Sepolia ETH."
         );
+      initialSnapshot = initial;
       const sessionId = "0x" + randomBytes(32).toString("hex");
       service = await startStreamService({
         provider,
@@ -241,7 +318,9 @@ await cli.cliMain(
         payer: wallet.address,
         recipient,
         balanceRaw: initial.agentBalanceRaw,
+        ethBalanceRaw: (await provider.getBalance(wallet.address)).toString(),
       });
+      started = true;
       output.streamContract(streamAddress);
       const check = async (q, phase, label, client, streamId = "0") => {
         const snapshot = service.snapshot();
@@ -256,16 +335,16 @@ await cli.cliMain(
           agent: wallet.address,
           recipient,
           amountRaw: q.amountRaw,
-          spendingCapRaw: "100000",
+          spendingCapRaw: policy.depositCapRaw,
           durationSeconds: q.durationSeconds,
-          maxRateRawPerSecond: "100",
+          maxRateRawPerSecond: policy.maxRateRawPerSecond,
           phase,
           streamId,
           observationBlock: await provider.getBlockNumber(),
           healthUrl: snapshot.url,
           expectedHealth: snapshot.health,
           client: { ...client },
-          maxFailedRequests: 3,
+          maxFailedRequests: policy.maxFailedRequests,
         };
         output.streamChecking(label);
         const evidence = await runStreamCheck({
@@ -315,6 +394,9 @@ await cli.cliMain(
           );
           const config = {
             ...base,
+            maxPegDeviationBps: policy.maxPegDeviationBps,
+            maxDeviationBps: policy.maxDeviationBps,
+            maxFeedAgeSeconds: policy.maxFeedAgeSeconds,
             publishReport: false,
             receiverAddress: ZeroAddress,
             request: {
@@ -324,6 +406,7 @@ await cli.cliMain(
               recipient,
               token: USDC,
               amount: q.amountRaw,
+              spendingCap: policy.depositCapRaw,
             },
           };
           checkPrice = async (label = "price") => {
@@ -381,8 +464,8 @@ await cli.cliMain(
               reason: admission.decision.reason,
               amountRaw: q.amountRaw,
               amountUsdc: formatUnits(q.amountRaw, 6),
-              capRaw: "100000",
-              capUsdc: "0.1",
+              capRaw: policy.depositCapRaw,
+              capUsdc: formatUnits(policy.depositCapRaw, 6),
             },
             noTransactionSigned: true,
             before,
@@ -482,7 +565,11 @@ await cli.cliMain(
               "REQUEST_TRANSACTION",
               "Wallet nonce changed during stream reuse."
             );
-          output.streamRequests(client, funded.streamId);
+          output.streamRequests(client, funded.streamId, {
+            walletNonceBefore: beforeNonce,
+            walletNonceAfter: beforeNonce,
+            hostCheckedNoPaymentTransactions: true,
+          });
           return {
             requests: count,
             walletNonceBefore: beforeNonce,
@@ -588,8 +675,9 @@ await cli.cliMain(
       if (
         agent.purchases.premium?.status !== "denied" ||
         agent.purchases.premium.policy.reason !== "AMOUNT_EXCEEDS_POLICY" ||
-        agent.purchases.basic?.status !==
-          (flags.pay ? "stream-completed" : "preview")
+        ![flags.pay ? "stream-completed" : "preview", "denied"].includes(
+          agent.purchases.basic?.status
+        )
       )
         throw new cli.CliError(
           "DEMO_INCOMPLETE",
@@ -636,10 +724,54 @@ await cli.cliMain(
       result.audit = await auditor.summary();
       await save("result.json", result);
       output.finish(result);
+      emit(
+        "run.end",
+        runSummary(result, basic.status === "denied" ? "denied" : "completed")
+      );
       return result;
     } catch (error) {
+      if (started && !openedId && error.code === "PRICE_POLICY_DENIED") {
+        try {
+          const final = await snapshotWallet(
+            provider,
+            wallet.address,
+            process.env.AGENTPAY_AGENT_RECIPIENT ||
+              process.env.CRE_PAYMENT_RECIPIENT_ADDRESS
+          );
+          if (JSON.stringify(final) !== JSON.stringify(initialSnapshot))
+            throw new Error("Wallet changed during price denial");
+          await auditor.flush();
+          const denied = {
+            schemaVersion: 2,
+            runId: id,
+            status: "denied",
+            fundedRaw: "0",
+            earnedRaw: "0",
+            refundedRaw: "0",
+            initial: initialSnapshot,
+            final,
+            reason: error.message,
+          };
+          await save("result.json", denied);
+          console.log(
+            "  DENIED / price policy stopped funding; no business transaction signed."
+          );
+          emit("run.end", runSummary(denied, "denied"));
+          return denied;
+        } catch (denialError) {
+          // Verification/storage failures are execution failures, not policy DENY.
+          error = denialError;
+        }
+      }
+      if (started)
+        emit("error", {
+          code: error instanceof cli.CliError ? error.code : "OPERATION_FAILED",
+          message:
+            "Run did not complete. Inspect the local CLI evidence before retrying a payment.",
+        });
       if (openedId && !closeAttempted) {
         closeAttempted = true;
+        emit("cleanup", { status: "attempting", streamId: openedId });
         try {
           cleanup = await closeStream({
             provider,
@@ -650,10 +782,12 @@ await cli.cliMain(
             audit: auditor,
           });
           output.streamClosed(cleanup);
+          emit("cleanup", { status: "closed", streamId: openedId });
         } catch (closeError) {
           console.error(
             `Cleanup needs attention: stream #${openedId}. Inspect close.json, then use --close-stream ${openedId}.`
           );
+          emit("cleanup", { status: "needs-attention", streamId: openedId });
           cleanup = {
             failed: true,
             message:
@@ -685,6 +819,20 @@ await cli.cliMain(
         audit: auditor ? await auditor.summary() : null,
       });
       output.failed(path.relative(root, directory));
+      if (started)
+        emit("run.end", {
+          ...runSummary({}, "failed"),
+          fundedRaw: openedId ? "10000" : "0",
+          earnedRaw: cleanup?.closed ? cleanup.earnedRaw : null,
+          refundedRaw: cleanup?.closed ? cleanup.refundedRaw : null,
+          amountsVerified: false,
+          streamId: openedId || null,
+          cleanup: cleanup?.closed
+            ? "closed"
+            : openedId
+            ? "inspect-receipts"
+            : "not-funded",
+        });
       throw error;
     } finally {
       await appendFile(
