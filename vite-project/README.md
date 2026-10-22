@@ -1,6 +1,6 @@
 # AgentPay frontend
 
-React 19, Vite 7 and Tailwind. The current app presents a Chainlink CRE USDC workflow, a browser-local agent integration draft, and separate legacy tUSD stream management on **Ethereum Sepolia (11155111)**.
+React 19, Vite 7 and Tailwind. The app explains AgentPay's N+1 payment problem: many API requests reuse prepaid escrow, while local Chainlink CRE decides when the CLI should open, continue or close a USDC stream. Spend dry-runs, risk gates and durable decision receipts add control and traceability. The browser presents recorded price-policy evidence, a local SDK integration draft, and separate legacy tUSD stream management on **Ethereum Sepolia (11155111)**. It does not run the agent or monitor a live stream.
 
 ## Run
 
@@ -15,7 +15,7 @@ Open the URL Vite prints; the port may vary. The evidence dashboard and Agent se
 
 | Route | Behavior |
 | --- | --- |
-| `/` | Recorded USDC ALLOW/DENY evidence; `/cre` redirects here |
+| `/` | Problem, stream supervision and signing/audit boundaries; recorded USDC price-policy ALLOW/DENY evidence; `/cre` redirects here |
 | `/agent` | Validated local draft, save/reset, exact-USDC SDK code generation |
 | `/streams` | Setup guidance until legacy deployments and connected wallet are configured |
 | `/docs` and `/docs/:section` | Eight current help topics with repository guides |
@@ -34,7 +34,7 @@ VITE_PAYMENT_TOKEN_ADDRESS=<new-18-decimal-MockUSD-address>
 
 Restart Vite after changes. The chain is fixed to Sepolia. Old examples using `VITE_TARGET_CHAIN_ID=2810` are obsolete; those network overrides are not supported. No private key or service secret belongs in a `VITE_` variable.
 
-Circle USDC has six decimals and belongs only to the guarded path. Legacy UI/SDK streams use 18-decimal tUSD. [Deployment](../DEPLOYMENT.md).
+Circle USDC has six decimals and is used by the separate streaming CLI and strict-settlement reference. Browser/legacy SDK streams use 18-decimal tUSD. [Deployment](../DEPLOYMENT.md).
 
 ## Evidence and drafts
 

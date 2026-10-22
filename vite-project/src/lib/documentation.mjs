@@ -16,18 +16,51 @@ const table = (headers, rows) => ({ type: "table", headers, rows });
 const section = (title, blocks) => ({ title, blocks });
 export const documentation = {
   overview: {
-    title: "Payments with boundaries you can inspect.",
+    title: "Many API calls. One stream. Decisions you can inspect.",
     intro:
-      "AgentPay uses prepaid USDC escrow streams and local CRE service-health checkpoints in its AI CLI. The browser retains recorded price-policy evidence, a local SDK draft and a separate tUSD stream UI.",
+      "Streams address the cost of paying onchain for every request. Chainlink CRE addresses the next problem: deciding when an agent should fund a service, keep using it, or close the stream and recover unused escrow.",
     source: "docs/README.md",
     sections: [
+      section("Why AgentPay exists", [
+        p(
+          "A naive pay-per-call design makes an agent pay gas for each API request. With an illustrative $5–$50 gas cost per transaction, 1,000 payment transactions would cost $5,000–$50,000 before service fees. This is the N+1 payment problem that motivated AgentPay; these numbers illustrate the problem, not current gas prices."
+        ),
+        p(
+          "Inspired by HTTP 402 and x402, AgentPay escrows a deposit once and lets many authenticated API requests reuse a time-based payment stream. Earnings accrue per second without a transaction each second or each request. Opening, approval when needed, cancellation and audit receipts still use gas; the prototype does not claim a fixed net saving or full x402 compatibility."
+        ),
+      ]),
+      section("What CRE adds to streaming", [
+        table(
+          ["Remaining problem", "CRE's role", "Result in the CLI"],
+          [
+            [
+              "A cheaper payment can still fund an unhealthy or over-budget service.",
+              "Combine HTTP health observations, USDC/USD checks and Sepolia token/balance reads with deposit and rate limits.",
+              "OPEN or DENY before funding; refresh expired decisions before signing.",
+            ],
+            [
+              "A prepaid stream keeps accruing when a provider stops responding.",
+              "At checkpoints, compare provider/client counters and read the matching stream's state.",
+              "CONTINUE for healthy service; CLOSE after the demonstrated outage. The wallet cancels and the contract pays earnings/refunds unused escrow.",
+            ],
+            [
+              "An autonomous wallet needs spend controls and an explanation for blocked actions.",
+              "Dry-run each business transaction, apply hard rules and a transparent risk heuristic, and persist every decision.",
+              "ALLOW, BLOCK and ERROR blobs; confirmed onchain inclusion for a spend approval before signing, with other decisions anchored in batches.",
+            ],
+          ]
+        ),
+        p(
+          "CRE supplies decisions in local simulation. The CLI enforces them before signing; AgentPayStream enforces escrow, time accrual and payouts. The contract does not verify CRE decisions, and the payer can bypass the CLI. Checkpoints are explicit CLI steps, not a continuously running network monitor. Availability observations do not establish answer quality."
+        ),
+      ]),
       section("Choose your starting point", [
         table(
           ["Page", "What it does"],
           [
             [
               "CRE Workflow",
-              "Inspect saved ALLOW and over-budget DENY runs. No wallet required.",
+              "Understand the streaming problem and CRE supervision, then inspect recorded price-safety ALLOW/DENY runs. No wallet required.",
             ],
             [
               "Agent setup",
@@ -51,7 +84,7 @@ export const documentation = {
       section("Current scope", [
         list([
           "Ethereum Sepolia only; testnet USDC and tUSD have no monetary value.",
-          "CRE stays local. The AI CLI has separate verified Sepolia stream funding, request reuse, closure and refund evidence.",
+          "CRE stays local. The AI CLI has verified Sepolia stream funding, ten-request reuse, closure/refund and audit receipt evidence. The browser explains this flow; it does not operate it.",
           "The CLI gates wallet signing on local CRE decisions. The stream contract enforces escrow accounting and payouts; it does not verify CRE results, and a payer can call it directly.",
           "The legacy gateway uses AgentPay-specific HTTP 402 headers. It does not implement the full current x402 transport/facilitator protocol.",
           "This is an unaudited prototype.",
@@ -116,12 +149,65 @@ export const documentation = {
     ],
   },
   cre: {
-    title: "One workflow, two price observations.",
+    title: "CRE decides when to fund, continue and close.",
     intro:
-      "CRE orchestrates the HTTP call, finalized onchain reads, integer policy evaluation and report generation.",
+      "Escrow amortizes payments across many requests. CRE combines offchain observations with blockchain state to supervise that escrow and review wallet actions. The USDC price comparison is one input to this wider flow.",
     source: "docs/WORKFLOW.md",
     sections: [
-      section("Execution flow", [
+      section("From payment efficiency to service control", [
+        p(
+          "Batching payments alone does not stop a time-based stream from accruing during an outage. The local CRE supervisor reads a frozen provider-health snapshot over HTTP, compares it with client-observed counters, and reads the payment token, balance and matching Sepolia stream at an explicit block. It checks the exact session, parties, deposit, duration and rate before returning a decision."
+        ),
+        table(
+          ["Decision", "Observed condition", "What happens next"],
+          [
+            [
+              "OPEN",
+              "Admission is healthy and the proposal fits configured limits.",
+              "The CLI reviews the spend and obtains its audit receipt before the wallet funds escrow.",
+            ],
+            [
+              "CONTINUE",
+              "The funded stream matches the session and observed service health is acceptable.",
+              "More requests reuse the same stream without a new payment transaction.",
+            ],
+            [
+              "CLOSE",
+              "The demonstrated checkpoint observes an unavailable provider after injected failures.",
+              "The wallet cancels; the contract pays time-accrued earnings and refunds the unused deposit.",
+            ],
+            [
+              "DENY",
+              "The proposed stream exceeds the deposit/rate limit, or admission fails another policy condition.",
+              "The CLI refuses to fund it and retains the decision.",
+            ],
+          ]
+        ),
+        p(
+          "The demo runs checkpoints explicitly; it is not a background watcher. The provider observations are part of this local demo's trust boundary. Earnings continue until cancellation is mined, including CRE and receipt latency. Service-health checks cannot retroactively refund earned time or judge the usefulness of an answer."
+        ),
+      ]),
+      section("Spend controls and a durable explanation", [
+        p(
+          "Before approval, creation or cancellation, a separate CRE spend review calls an RPC simulation API and reads Circle USDC state. Hard rules bind Sepolia, six-decimal units, targets/recipients, amount and duration. A versioned risk heuristic can block otherwise eligible spending; it is not a calibrated loss probability. Cancellation does not use quality risk to obstruct a refund."
+        ),
+        p(
+          "Every ALLOW, BLOCK or ERROR is saved as a content-addressed local blob. Before signing, a spend approval needs a confirmed Merkle inclusion receipt and a fresh successful simulation of the same transaction. Remaining policy decisions, including blocks, are anchored in batches. Receipts prove inclusion of operator-submitted hashes, not DON approval or the correctness of the underlying observation. Receipt transactions add gas, independently of request reuse."
+        ),
+      ]),
+      section("Run the full supervision demo", [
+        code(
+          "Terminal",
+          "npm run --silent demo:agent\nnpm run --silent demo:agent -- --pay"
+        ),
+        p(
+          "Preview makes real model and local CRE calls without signing. The paid run escrows 0.01 Circle test USDC, serves ten requests, demonstrates CONTINUE, injects three HTTP 503 failures, obtains CLOSE, cancels and verifies earnings/refund. Premium is denied. Configure the dedicated payer, funded model key, recipient, RPC and stream address in ignored root .env as described in the agent guide. Paid runs spend test ETH on stream and audit transactions."
+        ),
+        p(
+          "The October 22, 2026 run completed with 0.00072 USDC earned and 0.00928 refunded, plus seven decisions in three new audit transactions. Those time-dependent payout amounts are historical, not expected constants for a new run. Expired admission is renewed through new CRE price and stream checks, without extending the old 120-second admission window."
+        ),
+      ]),
+      section("The recorded price-safety step", [
         list([
           "A cron trigger starts the single sample payment intent every five minutes in the configured workflow. Simulation explicitly selects that trigger.",
           "HTTPClient fetches Coinbase USDC/USD and aggregates quotes with median consensus.",
@@ -149,7 +235,7 @@ export const documentation = {
           ]
         ),
         p(
-          "The DENY runner doubles the requested amount only. It does not change the price checks or spending cap. Live unhealthy inputs may trigger an earlier denial; the runner then fails the expected-scenario check."
+          "The DENY runner changes only the requested amount, from 0.01 to 0.2 USDC. It does not change the price checks or spending cap. Live unhealthy inputs may trigger an earlier denial; the runner then fails the expected-scenario check."
         ),
       ]),
       section("Simulation output and contract checks", [
@@ -170,7 +256,13 @@ export const documentation = {
       ]),
     ],
     related: [
+      ["/docs/agent", "Run the AI streaming demo"],
       ["/docs/usdc", "Read the USDC policy"],
+      [
+        repo + "docs/evidence/admission-fix/VERIFICATION.md",
+        "Verified stream and audit receipts",
+      ],
+      [repo + "docs/SPEND_AUDIT.md", "Spend review and receipt boundaries"],
       ["/docs/integration", "Settle through the SDK"],
       [
         "https://github.com/ola-893/agentPay/blob/main/docs/deployment/guarded-usdc.md",
@@ -280,7 +372,7 @@ export const documentation = {
           "npm run --silent demo:spend-review\nnpm run --silent demo:spend-review -- --anchor --resume"
         ),
         p(
-          "The first command signs no transaction. The second uses test ETH to anchor pending decisions without transferring USDC. Live evidence contains nine decisions and two Sepolia receipts, including a genuine stale-feed block. Local tests cover the complete audited stream path; the current live AI preview correctly blocked on feed freshness. Recovery cancellation now needs CRE and audit receipts, but no model call. Local blob files need durable storage and backups. This browser does not submit reviews."
+          "The first command signs no transaction. The second uses test ETH to anchor pending decisions without transferring USDC. The initial nine-decision capture includes a genuine stale-feed block. A later full live AI run on October 22 completed the audited stream lifecycle: ten requests, outage closure, 0.00072 USDC earned, 0.00928 refunded, and seven decisions in three new audit receipts. Recovery cancellation needs CRE and audit receipts, but no model call. Local blob files need durable storage and backups. This browser does not submit reviews."
         ),
       ]),
       section("ToolBuyer: trial quality before purchasing", [

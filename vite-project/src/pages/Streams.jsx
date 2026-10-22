@@ -79,8 +79,8 @@ export default function Streams() {
           </p>
           <h1 className="page-title mt-3">Payment streams.</h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">
-            Create and manage per-second tUSD streams on Sepolia. Guarded USDC
-            payments are available in the{' '}
+            Create and manage the separate per-second tUSD streams on Sepolia.
+            Learn how the CLI uses CRE to supervise USDC streams in the{' '}
             <Link to="/" className="text-blue-300 underline underline-offset-4">
               CRE workflow
             </Link>

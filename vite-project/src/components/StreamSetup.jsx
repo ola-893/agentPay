@@ -22,9 +22,10 @@ export default function StreamSetup() {
           : 'Set up legacy streaming'}
       </h2>
       <p className="mt-3 text-sm leading-relaxed text-slate-400">
-        Streams use a separate 18-decimal tUSD test token. The CRE workflow uses
-        six-decimal Circle USDC. Your wallet is not needed to explore its
-        recorded executions.
+        This page manages 18-decimal tUSD streams. The AI CLI uses six-decimal
+        Circle USDC, with CRE checks before funding and at service-health
+        checkpoints. Explore that workflow and its recorded evidence without a
+        browser wallet.
       </p>
       <ol className="mt-6 space-y-4 text-sm">
         <li className="flex gap-3">

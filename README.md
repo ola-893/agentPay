@@ -2,6 +2,8 @@
 
 **Agent payments with deliberate control, orchestrated by Chainlink CRE.**
 
+Paying gas for every API request makes a naive autonomous-agent payment loop expensive. AgentPay started with the N+1 payment problem: how can hundreds of paid requests reuse one funded session? HTTP 402 and x402 inspired a prepaid stream. CRE adds the next layer: decide whether to fund the service, keep using it, or close the stream when observed health fails—and retain an auditable explanation for wallet actions.
+
 AgentPay escrows a session's token deposit and accrues the provider's earnings per second. Many API requests reuse one stream. A local Chainlink CRE workflow reads service observations and Sepolia stream state to decide `OPEN`, `CONTINUE`, `CLOSE` or `DENY`; the agent wallet creates or cancels the stream, paying earned funds and refunding unused escrow.
 
 The AI CLI uses Circle's six-decimal Sepolia USDC. An initial CRE price check compares Coinbase and the finalized Chainlink USDC/USD feed. The service supervisor then ties stream funding and continuation to observed service availability and budget. Workflow deployment to Chainlink's network is outside scope.

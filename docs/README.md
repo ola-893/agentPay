@@ -2,6 +2,22 @@
 
 AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, supervised by local Chainlink CRE workflows. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend retains recorded price-policy evidence, a local SDK draft, and the separate legacy tUSD stream UI. Testnet tokens have no monetary value.
 
+## The problem, and what CRE adds
+
+An agent making 1,000 paid API calls should not need 1,000 blockchain payment transactions. At an illustrative $5–$50 in gas per transaction, that would mean $5,000–$50,000 before service fees; these are example costs, not current fee estimates. This N+1 payment problem motivated AgentPay's HTTP 402/x402-inspired model: escrow once, then reuse a time-based stream across many authenticated requests.
+
+Streaming amortizes payment transactions. It also creates a control problem: earnings keep accruing if the service stops responding. CRE supplies the decisions around the stream:
+
+| Problem left after streaming | What local CRE checks | How the CLI acts |
+| --- | --- | --- |
+| Funding an unhealthy or over-budget service | HTTP health observations, USDC price safety, Sepolia token/balance state, deposit and rate limits | `OPEN` or `DENY` before funding; renew expired admission through fresh checks |
+| Continuing to pay through an observed outage | Provider/client counters and the matching onchain stream at explicit checkpoints | `CONTINUE`, or `CLOSE` followed by wallet cancellation and earned/refund reconciliation |
+| Signing a bad spend or losing its explanation | RPC dry-run, exact intent, raw units, recipient, caps and a risk heuristic | Require a spend ALLOW, durable blob and confirmed onchain inclusion before signing; retain blocks/errors and anchor remaining decisions in batches |
+
+CRE stays local. The CLI enforces signing policy; the contract enforces escrow accounting, and a payer can bypass the CLI. Checkpoints are explicit demo steps, not continuous monitoring. Health observations do not establish answer quality. The separate [ToolBuyer benchmark](TOOLBUYER.md) explores paid quality trials with synthetic providers and benchmark credits; it is not a quality guarantee for the USDC demo.
+
+Opening, approval when needed, cancellation and audit receipts still cost gas. This prototype neither promises fixed net savings nor implements the full x402 protocol. [How CRE supervises a stream](WORKFLOW.md) · [Verified full lifecycle and receipts](evidence/admission-fix/VERIFICATION.md).
+
 ## Start here
 
 | Goal | Guide |

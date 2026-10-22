@@ -130,10 +130,14 @@ export default function CREWorkflow() {
             <Workflow size={15} aria-hidden="true" />
             Chainlink Runtime Environment
           </p>
-          <h1 className="page-title mt-3">Guarded USDC payments.</h1>
+          <h1 className="page-title mt-3">
+            Fund once. Reuse the stream. Let CRE check the service.
+          </h1>
           <p className="mt-3 text-base leading-relaxed text-slate-400">
-            CRE checks USDC prices, the peg, and a spending cap before an agent
-            pays. Inspect real CLI decisions below.
+            An agent making 1,000 paid API calls should not need 1,000 payment
+            transactions. AgentPay lets those calls reuse prepaid escrow.
+            Chainlink CRE checks whether to open the stream, continue using the
+            service, or close it when observed service health fails.
           </p>
         </div>
         <a
@@ -151,16 +155,81 @@ export default function CREWorkflow() {
           Ethereum Sepolia
         </span>
         <span>Circle USDC · 6 decimals</span>
-        <span>Coinbase + Chainlink USDC/USD</span>
+        <span>Local CRE · HTTP service health + onchain stream state</span>
       </div>
+      <section aria-labelledby="problem-title" className="panel p-5 sm:p-6">
+        <p className="eyebrow">The N+1 payment problem</p>
+        <h2 id="problem-title" className="mt-3 text-xl font-semibold">
+          Cheap requests need more than cheaper payments.
+        </h2>
+        <p className="mt-3 max-w-4xl text-sm leading-relaxed text-slate-400">
+          Paying onchain for every API call can make gas cost more than the
+          service. At an illustrative $5–$50 per transaction, 1,000 payment
+          transactions would cost $5,000–$50,000 in gas alone. Actual fees vary.
+          Inspired by HTTP 402 and x402, AgentPay funds one escrow stream so
+          many requests share it. But a funded stream keeps accruing even if the
+          provider stops responding. That is where CRE adds control.
+        </p>
+        <div className="mt-6 grid gap-6 md:grid-cols-3">
+          {[
+            [
+              "01 / Before funding",
+              "Should this stream open?",
+              "CRE combines HTTP service observations, USDC price checks and Sepolia state with budget limits. The CLI funds only an eligible request and refreshes expired admission decisions before signing.",
+            ],
+            [
+              "02 / While requests reuse it",
+              "Is the service still available?",
+              "At CLI checkpoints, CRE compares provider and client request counters with onchain stream state. Healthy service returns CONTINUE; the demonstrated outage returns CLOSE. The wallet cancels, paying accrued earnings and refunding unused escrow.",
+            ],
+            [
+              "03 / Before wallet actions",
+              "Can this spend proceed, and why?",
+              "CRE reviews an RPC dry-run, token units, recipient, amount and a risk rule. The CLI stores ALLOW, BLOCK and ERROR decisions in durable local blobs. A spend approval needs a confirmed onchain inclusion receipt before signing.",
+            ],
+          ].map(([step, title, text]) => (
+            <div key={step}>
+              <p className="text-xs font-medium text-blue-300">{step}</p>
+              <h3 className="mt-2 font-semibold">{title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                {text}
+              </p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-slate-400">
+          Streams reduce per-request payment transactions; CRE supplies the
+          policy decisions. The CLI gates signing, and the contract enforces
+          escrow and payouts. Audit receipts add gas. Service-health checks do
+          not prove answer quality, and accrued time is payable until
+          cancellation is mined. This prototype uses its own HTTP 402 flow, not
+          full x402.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+          <Link
+            to="/docs/cre"
+            className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+          >
+            How CRE supervises streams <ArrowRight size={15} />
+          </Link>
+          <Link
+            to="/docs/agent"
+            className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+          >
+            Run the full CLI demo <ArrowRight size={15} />
+          </Link>
+        </div>
+      </section>
       <section aria-labelledby="executions-title" className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 id="executions-title" className="text-lg font-semibold">
-              Recorded executions
+              Inspect the price-safety step
             </h2>
             <p className="mt-1 text-sm text-slate-400">
-              Real CRE CLI captures. Select a request to inspect.
+              Recorded CLI simulations of the USDC price and budget gate, one
+              part of stream admission. Select a request to inspect; this page
+              does not run the agent or supervise a live stream.
             </p>
           </div>
           <div
@@ -260,7 +329,7 @@ export default function CREWorkflow() {
             </div>
             <dl className="grid grid-cols-2 gap-5 p-5 sm:grid-cols-3 sm:gap-6 sm:p-6">
               <div>
-                <dt className="text-sm text-slate-400">Requested payment</dt>
+                <dt className="text-sm text-slate-400">Proposed amount</dt>
                 <dd className="mt-2 break-words text-2xl font-semibold tracking-tight">
                   {units(result.request.amount)}
                 </dd>
@@ -269,7 +338,7 @@ export default function CREWorkflow() {
                 </dd>
               </div>
               <div>
-                <dt className="text-sm text-slate-400">Per-request cap</dt>
+                <dt className="text-sm text-slate-400">Per-intent cap</dt>
                 <dd className="mt-2 text-2xl font-semibold tracking-tight">
                   {units(result.request.spendingCap)}
                 </dd>
@@ -290,8 +359,9 @@ export default function CREWorkflow() {
             </dl>
             <p className="flex items-start gap-2 border-t border-white/10 px-5 py-3 text-xs leading-relaxed text-slate-400 sm:px-6">
               <Info size={15} className="mt-0.5 shrink-0" />
-              Historical evidence, not an active authorization. A fresh
-              authenticated report is required before settlement.
+              Historical price-policy evidence. The streaming CLI obtains fresh
+              CRE decisions and gates wallet signing; this saved report cannot
+              fund a stream.
             </p>
           </div>
         )}
@@ -300,7 +370,7 @@ export default function CREWorkflow() {
         <>
           <section aria-labelledby="observations-title">
             <h2 id="observations-title" className="mb-4 text-lg font-semibold">
-              What CRE checked
+              What this price check observed
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <Observation
@@ -345,7 +415,7 @@ export default function CREWorkflow() {
                     Each price within {result.maxPegDeviationBps / 100}% of $1
                   </li>
                   <li>Feed age ≤ {formatDuration(result.maxFeedAgeSeconds)}</li>
-                  <li>Amount checked against per-request cap</li>
+                  <li>Amount checked against the payment-intent cap</li>
                 </ul>
               </Observation>
               <Observation
@@ -371,7 +441,7 @@ export default function CREWorkflow() {
             <section className="panel min-w-0 p-5 sm:p-6">
               <h2 className="flex items-center gap-2 font-semibold">
                 <Terminal size={17} className="text-blue-300" />
-                Reproduce this execution
+                Reproduce this price check
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-slate-400">
                 Run the selected scenario locally. Install CRE and Bun, then

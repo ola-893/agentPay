@@ -32,7 +32,7 @@ export default function Header() {
               AgentPay
             </span>
             <span className="hidden text-[11px] text-slate-400 sm:block">
-              Powered by Chainlink CRE
+              Streams supervised with Chainlink CRE
             </span>
           </span>
         </Link>

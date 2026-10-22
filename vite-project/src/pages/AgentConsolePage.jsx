@@ -95,15 +95,16 @@ export default function AgentConsolePage() {
         </p>
         <h1 className="page-title mt-3">Prepare your agent.</h1>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-400">
-          Create a local integration draft for guarded USDC payments on Sepolia.
-          No wallet or private key is needed here.
+          Run the AI CLI to see CRE supervise a USDC payment stream, or prepare
+          the separate strict-settlement SDK draft below. No wallet or private
+          key is needed to edit this draft.
         </p>
       </header>
       <div className="grid items-start gap-6 lg:grid-cols-2">
         <section className="panel p-5 sm:p-6">
           <h2 className="text-lg font-semibold">Payment configuration</h2>
           <p className="mt-2 text-sm leading-relaxed text-slate-400">
-            Use your deployed production guard and settlement contracts. Saved
+            Use your configured strict guard and settlement contracts. Saved
             simulation results cannot authorize a payment.
           </p>
           <form onSubmit={save} noValidate className="mt-6 space-y-5">
@@ -199,9 +200,20 @@ export default function AgentConsolePage() {
             )}
           </section>
           <div className="panel p-5">
-            <h2 className="font-semibold">Before your agent pays</h2>
+            <h2 className="font-semibold">
+              This SDK draft uses strict settlement
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-slate-400">
+              The streaming demo runs CRE locally and uses the payer wallet to
+              fund or cancel escrow. This separate SDK example requires an
+              authenticated onchain report; local simulation cannot unlock it.
+              The public strict guard remains closed.
+            </p>
             <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm leading-relaxed text-slate-400">
-              <li>Deploy the guard, settlement, and CRE workflow.</li>
+              <li>
+                Configure strict guard and settlement contracts with an
+                authenticated report source.
+              </li>
               <li>
                 Have the guard accept a fresh authenticated report for this
                 payment intent.
@@ -211,6 +223,12 @@ export default function AgentConsolePage() {
                 authorization before token approval and settlement.
               </li>
             </ol>
+            <Link
+              to="/docs/agent"
+              className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+            >
+              Run the local CRE streaming demo <ArrowRight size={15} />
+            </Link>
             <Link
               to="/docs/integration"
               className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"

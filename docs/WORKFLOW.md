@@ -1,6 +1,25 @@
-# CRE payment guard
+# How CRE supervises an agent payment stream
 
-This page documents the standalone USDC price/report workflow, also used as the initial price-safety gate in the AI demo. The current [stream supervisor](../cre/payment-guard/stream-main.ts) separately evaluates OPEN/CONTINUE/CLOSE/DENY using service observations and escrow state. [AI streaming lifecycle](AI_AGENT_DEMO.md).
+AgentPay began with the N+1 payment problem: a naive paid API integration can require a blockchain transaction for every request. Prepaid escrow lets many authenticated requests share one time-based stream. That reduces per-request payment transactions, but does not decide whether the service deserves continued payment. A funded stream keeps accruing during an outage until a cancellation is mined.
+
+Local Chainlink CRE workflows add service and spend decisions to that payment model. They combine HTTP observations with Sepolia state and return deterministic policy results. The wallet-owning CLI validates those results and gates signing; the stream contract enforces escrow, accrual and payouts, not CRE approval. The workflow is simulated locally and is not deployed to a Chainlink DON.
+
+## From cheap request reuse to controlled spending
+
+1. **Before opening:** the price workflow compares Coinbase and finalized Chainlink USDC/USD data. The [stream supervisor](../cre/payment-guard/stream-main.ts) reads provider health over HTTP, compares client counters, and checks token identity, decimals, wallet balance and proposal bounds at an explicit Sepolia block. An eligible proposal receives `OPEN`; the over-budget example receives `DENY`.
+2. **Before wallet actions:** the [spend review](SPEND_AUDIT.md) dry-runs the exact approval, creation or cancellation call, reads Circle token state and applies hard rules plus a transparent risk heuristic. ALLOW, BLOCK and ERROR records go to durable local blobs. Before signing, a spend approval needs an onchain inclusion receipt, an unexpired intent and a fresh successful simulation. Remaining decisions, including blocks, are anchored in batches.
+3. **While the stream is reused:** requests authenticate to the provider using the payer's signed session and onchain stream state. At a healthy checkpoint, CRE combines HTTP counters with the existing stream and returns `CONTINUE`. No per-request token transaction is needed.
+4. **When the observed service fails:** the demo injects three HTTP 503 responses. CRE evaluates the checkpoint and returns `CLOSE / SERVICE_UNAVAILABLE`. The CLI reviews and signs cancellation; the contract pays accrued earnings and refunds unused escrow. The runner verifies the event, state, balance changes and rejection of access after closure.
+
+Admission lasts 120 seconds. If setup confirmations outlive it, the CLI obtains new price and stream decisions before signing; it does not extend the old decision's lifetime or retry an uncertain deposit. The [October 22 live run](evidence/admission-fix/VERIFICATION.md) used one stream for ten successful requests, then paid 0.00072 USDC and refunded 0.00928 USDC. Three new audit receipts committed seven decisions, including premium denial. Payouts vary with elapsed time.
+
+Checkpoints are explicit CLI steps, not an always-running monitor. Local service observations and RPC simulation are trusted inputs, not independent service-quality attestations. Health checks do not score answer usefulness. Risk scores are heuristic, and receipts prove inclusion of operator-submitted hashes. Accrual continues through detection, review and mining latency. Approval, stream lifecycle and audit transactions still consume gas; this prototype does not claim fixed net savings or full x402 compatibility.
+
+Run preview or the funded journey using the [AI CLI guide](AI_AGENT_DEMO.md). The browser explains this lifecycle and displays saved price-policy runs; it does not run the agent or supervise a live stream.
+
+## Standalone USDC price-safety workflow
+
+The remaining reference describes the standalone USDC price/report workflow used as the initial asset-safety gate in the streaming demo. Its ALLOW/DENY captures are the recorded evidence displayed on the frontend.
 
 The [TypeScript workflow](../cre/payment-guard/main.ts) orchestrates an external API, finalized Ethereum Sepolia reads, deterministic policy and report generation. The checked-in configuration demonstrates the bounty's simulation path; it is not a deployed DON workflow.
 
@@ -69,4 +88,4 @@ The sample agent and recipient are placeholders, receiver is zero and `publishRe
 
 `reportWriteSucceeded` can reflect a simulated write. It is not proof of public publication. The isolated mock receiver cannot settle payments; its optional runner claims publication only after independently verifying a successful receipt and matching event. [Optional write demo](RECORDING_READINESS.md).
 
-Rolling budgets, confidential execution, KYC, complete x402 transport and live public settlement are outside the demonstrated scope. The workflow owner/configuration are trusted. [Submission evidence](CRE_SUBMISSION.md).
+Rolling budgets, confidential execution, KYC, complete x402 transport and live DON-authenticated strict settlement are outside the demonstrated scope. The workflow owner/configuration are trusted. [Submission evidence](CRE_SUBMISSION.md).
