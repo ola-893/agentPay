@@ -4,6 +4,16 @@ AgentPay addresses the transaction-per-request payment problem with prepaid escr
 
 CRE supervises that lifecycle. The workflow combines HTTP service observations with Ethereum Sepolia stream state and returns `OPEN`, `CONTINUE`, `CLOSE` or `DENY`. An initial CRE price workflow also compares live Coinbase USDC/USD with a finalized Chainlink USDC/USD feed. The agent wallet executes stream actions. This submission uses local CRE simulation, not a workflow deployed to Chainlink's network.
 
+## Visual workflow and execution dashboard
+
+Open Workflow (`/`) to see how CRE combines price, service and chain observations around an agent’s escrow stream. The dashboard runs the **same CLI** through a local loopback server or replays actual event-emitter captures on the hosted static build. The event timeline displays original inputs, decision/reason, host checks, commands and transcript links. Wallet and audit cards have actual Sepolia explorer links. “Registered locally” means a profile file, not an onchain registry.
+
+```sh
+npm run dev:live
+```
+
+Configure CLI prerequisites first and authenticate CRE; choose Live local and Preview. The Tiny cap preset exercises a genuine over-budget DENY. Pay requires explicit server opt-in and user confirmation with the fixed 0.01 test-USDC cap. Recorded mode carries its capture date, creates no transactions and never calls a hosted visitor’s localhost. [Dashboard guide](WORKFLOW_DASHBOARD.md) · [Event schema](EVENT_SCHEMA.md) · [Actual captured event index](../vite-project/public/runs/index.json).
+
 ## Requirement mapping
 
 | Requirement | Implementation |
@@ -65,7 +75,7 @@ Run a fresh admission preview with `npm run --silent demo:agent`. Only `--pay` f
 - Earnings accrue until cancellation is mined; outage detection cannot reverse already-earned amounts. Cancellation pays accrued earnings and refunds unused escrow in one contract transaction.
 - Stream/wallet reads use an explicit recent block. The host waits two confirmations for writes; those writes are not claimed finalized. The separate Chainlink price-feed read is finalized.
 - The provider requires a signed payer session bound to origin, quote and stream, along with onchain state checks. This is an AgentPay HTTP 402 protocol, not full x402.
-- The frontend's recorded price decisions, local SDK draft and tUSD stream UI remain separate from the live AI streaming CLI. No browser live-agent telemetry is implied.
+- The frontend distinguishes Recorded replay from Live local execution. Hosted mode never accesses a visitor’s localhost. Live events originate in the same CLI through a loopback-only server; no browser wallet or secret field is used. Recorded events cannot authorize a new payment.
 - Circle test USDC has no monetary value. Model calls may incur API charges. The prototype is unaudited.
 
 ## Tests and evidence

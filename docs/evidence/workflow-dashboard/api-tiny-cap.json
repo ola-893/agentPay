@@ -1,0 +1,42 @@
+{
+  "checkedAt": "2026-10-22T11:53:46.096Z",
+  "transport": "HTTP + SSE through local Vite proxy (not browser automation)",
+  "runId": "20261022T115329Z-14971a97",
+  "events": 6,
+  "policy": {
+    "depositCapRaw": "9999",
+    "maxRateRawPerSecond": "100",
+    "maxPegDeviationBps": 100,
+    "maxDeviationBps": 100,
+    "maxFeedAgeSeconds": 86400,
+    "maxFailedRequests": 3
+  },
+  "decisions": [
+    {
+      "target": "price",
+      "decision": "DENY",
+      "reason": "AMOUNT_EXCEEDS_POLICY"
+    }
+  ],
+  "summary": {
+    "status": "denied",
+    "fundedRaw": "0",
+    "earnedRaw": "0",
+    "refundedRaw": "0",
+    "balances": {
+      "before": {
+        "agentBalanceRaw": "39966400",
+        "recipientBalanceRaw": "33600",
+        "nonce": 41
+      },
+      "after": {
+        "agentBalanceRaw": "39966400",
+        "recipientBalanceRaw": "33600",
+        "nonce": 41
+      }
+    },
+    "transactions": [],
+    "donAuthenticated": false
+  },
+  "transcriptEndpointStatus": 200
+}

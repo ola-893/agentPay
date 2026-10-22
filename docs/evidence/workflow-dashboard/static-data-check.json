@@ -1,0 +1,30 @@
+{
+  "checkedAt": "2026-10-22T11:55:12.280Z",
+  "check": "Production bundle capture hashes and complete event-reducer replay in Node; not browser UI verification",
+  "runs": [
+    {
+      "runId": "20261022T113645Z-8920114f",
+      "events": 6,
+      "status": "denied",
+      "mode": "preview"
+    },
+    {
+      "runId": "20261022T112249Z-556c7ea3",
+      "events": 44,
+      "status": "completed",
+      "mode": "pay"
+    },
+    {
+      "runId": "20261022T112017Z-489d72f7",
+      "events": 13,
+      "status": "completed",
+      "mode": "preview"
+    },
+    {
+      "runId": "20261022T111851Z-44992c90",
+      "events": 6,
+      "status": "denied",
+      "mode": "preview"
+    }
+  ]
+}

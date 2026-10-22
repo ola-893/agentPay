@@ -1,0 +1,73 @@
+{
+  "checkedAt": "2026-10-22T11:54:29.230Z",
+  "rpc": "https://ethereum-sepolia-rpc.publicnode.com",
+  "chainId": 11155111,
+  "runId": "20261022T112249Z-556c7ea3",
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "escrow": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+  "streamId": "5",
+  "active": false,
+  "fundedRaw": "10000",
+  "earnedRaw": "960",
+  "refundedRaw": "9040",
+  "balances": {
+    "payer": {
+      "beforeRaw": "39967360",
+      "fundedRaw": "39957360",
+      "afterRaw": "39966400"
+    },
+    "recipient": {
+      "beforeRaw": "32640",
+      "fundedRaw": "32640",
+      "afterRaw": "33600"
+    },
+    "escrow": {
+      "beforeRaw": "0",
+      "fundedRaw": "10000",
+      "afterRaw": "0"
+    }
+  },
+  "transactions": [
+    {
+      "kind": "approval",
+      "hash": "0x4074848a94944027cc389b66fda70d24cbcf37709c199997892bb8d2d421a9a6",
+      "status": 1,
+      "blockNumber": 11969227
+    },
+    {
+      "kind": "open",
+      "hash": "0x6881a00c7ee5779e80561d6f41ad507d4f7323ef1eac67106b71be1f74336597",
+      "status": 1,
+      "blockNumber": 11969234
+    },
+    {
+      "kind": "close",
+      "hash": "0xcd74107ae1d786175a90d548c79c0fc50d60499d94aa2e0f1c0a3245caedb484",
+      "status": 1,
+      "blockNumber": 11969242
+    }
+  ],
+  "auditReceipts": [
+    {
+      "hash": "0x6c42028aec13b817ae6f045ba9d74c6ce9eb2276498eb05414f7cc1144fd8530",
+      "status": 1,
+      "blockNumber": 11969223
+    },
+    {
+      "hash": "0x68fdc295b9c362edad2c9ad632aa29bc80df626f2470664ba0792c4b59334e62",
+      "status": 1,
+      "blockNumber": 11969230
+    },
+    {
+      "hash": "0xf11a10d90d0ad37267c16fc2fb301e6470c673861536af89b4195afbe88e57b0",
+      "status": 1,
+      "blockNumber": 11969239
+    },
+    {
+      "hash": "0x30ab29d9d400218eaf2fe5f4615d6039056d485181a0fb3aa9369001f20392df",
+      "status": 1,
+      "blockNumber": 11969246
+    }
+  ],
+  "limits": "Read-only independent receipt, token binding and block-balance check. No new signing, DON authentication, or proof of external observation truth."
+}

@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { formatTokenUnits } from "../lib/token-units.mjs";
 import { validateEvidence, formatDuration } from "../lib/evidence.mjs";
 import CopyButton from "../components/ui/CopyButton";
+import WorkflowDashboard from "../components/WorkflowDashboard";
 
 const price = (value) => `$${formatTokenUnits(value, 8)}`;
 const units = (value) => `${formatTokenUnits(value, 6)} USDC`;
@@ -157,391 +158,349 @@ export default function CREWorkflow() {
         <span>Circle USDC · 6 decimals</span>
         <span>Local CRE · HTTP service health + onchain stream state</span>
       </div>
-      <section aria-labelledby="problem-title" className="panel p-5 sm:p-6">
-        <p className="eyebrow">The N+1 payment problem</p>
-        <h2 id="problem-title" className="mt-3 text-xl font-semibold">
-          Cheap requests need more than cheaper payments.
-        </h2>
-        <p className="mt-3 max-w-4xl text-sm leading-relaxed text-slate-400">
-          Paying onchain for every API call can make gas cost more than the
-          service. At an illustrative $5–$50 per transaction, 1,000 payment
-          transactions would cost $5,000–$50,000 in gas alone. Actual fees vary.
-          Inspired by HTTP 402 and x402, AgentPay funds one escrow stream so
-          many requests share it. But a funded stream keeps accruing even if the
-          provider stops responding. That is where CRE adds control.
-        </p>
-        <div className="mt-6 grid gap-6 md:grid-cols-3">
-          {[
-            [
-              "01 / Before funding",
-              "Should this stream open?",
-              "CRE combines HTTP service observations, USDC price checks and Sepolia state with budget limits. The CLI funds only an eligible request and refreshes expired admission decisions before signing.",
-            ],
-            [
-              "02 / While requests reuse it",
-              "Is the service still available?",
-              "At CLI checkpoints, CRE compares provider and client request counters with onchain stream state. Healthy service returns CONTINUE; the demonstrated outage returns CLOSE. The wallet cancels, paying accrued earnings and refunding unused escrow.",
-            ],
-            [
-              "03 / Before wallet actions",
-              "Can this spend proceed, and why?",
-              "CRE reviews an RPC dry-run, token units, recipient, amount and a risk rule. The CLI stores ALLOW, BLOCK and ERROR decisions in durable local blobs. A spend approval needs a confirmed onchain inclusion receipt before signing.",
-            ],
-          ].map(([step, title, text]) => (
-            <div key={step}>
-              <p className="text-xs font-medium text-blue-300">{step}</p>
-              <h3 className="mt-2 font-semibold">{title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-400">
-                {text}
+      <WorkflowDashboard />
+      <details className="panel p-5">
+        <summary className="cursor-pointer text-sm font-medium text-slate-300">
+          Standalone price-policy captures (reference)
+        </summary>
+        <section aria-labelledby="executions-title" className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 id="executions-title" className="text-lg font-semibold">
+                Inspect the price-safety step
+              </h2>
+              <p className="mt-1 text-sm text-slate-400">
+                Recorded CLI simulations of the USDC price and budget gate, one
+                part of stream admission. Select a request to inspect; this page
+                does not run the agent or supervise a live stream.
               </p>
             </div>
-          ))}
-        </div>
-        <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-slate-400">
-          Streams reduce per-request payment transactions; CRE supplies the
-          policy decisions. The CLI gates signing, and the contract enforces
-          escrow and payouts. Audit receipts add gas. Service-health checks do
-          not prove answer quality, and accrued time is payable until
-          cancellation is mined. This prototype uses its own HTTP 402 flow, not
-          full x402.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-          <Link
-            to="/docs/cre"
-            className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
-          >
-            How CRE supervises streams <ArrowRight size={15} />
-          </Link>
-          <Link
-            to="/docs/cli"
-            className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
-          >
-            Run the full CLI demo <ArrowRight size={15} />
-          </Link>
-        </div>
-      </section>
-      <section aria-labelledby="executions-title" className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h2 id="executions-title" className="text-lg font-semibold">
-              Inspect the price-safety step
-            </h2>
-            <p className="mt-1 text-sm text-slate-400">
-              Recorded CLI simulations of the USDC price and budget gate, one
-              part of stream admission. Select a request to inspect; this page
-              does not run the agent or supervise a live stream.
-            </p>
-          </div>
-          <div
-            className="inline-flex w-full rounded-xl border border-white/10 bg-[#111827] p-1 sm:w-auto"
-            role="group"
-            aria-label="Execution scenario"
-          >
-            {[
-              ["allow", "Within budget"],
-              ["deny-budget", "Over budget"],
-            ].map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                aria-pressed={scenario === value}
-                onClick={() => setScenario(value)}
-                className={`min-h-11 flex-1 whitespace-nowrap rounded-lg px-4 text-sm font-medium transition-colors sm:flex-none ${
-                  scenario === value
-                    ? "bg-blue-500/20 text-blue-100"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-        {error ? (
-          <div role="alert" className="panel p-6">
-            <h3 className="font-semibold">Evidence unavailable</h3>
-            <p className="mt-2 text-sm text-slate-400">{error}</p>
-            <button
-              type="button"
-              className="btn-outline mt-4"
-              onClick={() => {
-                setCapture({ scenario: null, evidence: null, error: "" });
-                setAttempt((n) => n + 1);
-              }}
-            >
-              <RefreshCw size={16} />
-              Retry
-            </button>
-          </div>
-        ) : !result ? (
-          <div className="panel min-h-64 animate-pulse p-6" role="status">
-            <p className="text-sm text-slate-400">
-              Loading recorded execution…
-            </p>
-            <div className="mt-6 h-12 w-40 rounded-lg bg-white/5" />
-            <div className="mt-8 h-14 rounded-lg bg-white/5" />
-          </div>
-        ) : (
-          <div
-            className={`panel overflow-hidden ${
-              result.approved ? "border-emerald-400/25" : "border-amber-400/25"
-            }`}
-          >
             <div
-              className={`flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-5 py-5 sm:px-6 ${
-                result.approved ? "bg-emerald-500/[.06]" : "bg-amber-500/[.06]"
-              }`}
+              className="inline-flex w-full rounded-xl border border-white/10 bg-[#111827] p-1 sm:w-auto"
+              role="group"
+              aria-label="Execution scenario"
             >
-              <div className="flex items-center gap-4">
-                <span
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
-                    result.approved
-                      ? "bg-emerald-500/10 text-emerald-300"
-                      : "bg-amber-500/10 text-amber-300"
+              {[
+                ["allow", "Within budget"],
+                ["deny-budget", "Over budget"],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={scenario === value}
+                  onClick={() => setScenario(value)}
+                  className={`min-h-11 flex-1 whitespace-nowrap rounded-lg px-4 text-sm font-medium transition-colors sm:flex-none ${
+                    scenario === value
+                      ? "bg-blue-500/20 text-blue-100"
+                      : "text-slate-400 hover:text-white"
                   }`}
                 >
-                  {result.approved ? (
-                    <ShieldCheck size={26} />
-                  ) : (
-                    <ShieldX size={26} />
-                  )}
-                </span>
-                <div>
-                  <p className="text-[11px] uppercase tracking-widest text-slate-400">
-                    Simulation decision
-                  </p>
-                  <h3 className="mt-0.5 text-2xl font-semibold">
-                    {result.approved ? "ALLOW" : "DENY"}
-                    <span className="mt-1 block text-sm font-normal text-slate-300 sm:ml-3 sm:mt-0 sm:inline">
-                      {result.approved
-                        ? "Within spending cap"
-                        : "Spending cap exceeded"}
-                    </span>
-                  </h3>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          {error ? (
+            <div role="alert" className="panel p-6">
+              <h3 className="font-semibold">Evidence unavailable</h3>
+              <p className="mt-2 text-sm text-slate-400">{error}</p>
+              <button
+                type="button"
+                className="btn-outline mt-4"
+                onClick={() => {
+                  setCapture({ scenario: null, evidence: null, error: "" });
+                  setAttempt((n) => n + 1);
+                }}
+              >
+                <RefreshCw size={16} />
+                Retry
+              </button>
+            </div>
+          ) : !result ? (
+            <div className="panel min-h-64 animate-pulse p-6" role="status">
+              <p className="text-sm text-slate-400">
+                Loading recorded execution…
+              </p>
+              <div className="mt-6 h-12 w-40 rounded-lg bg-white/5" />
+              <div className="mt-8 h-14 rounded-lg bg-white/5" />
+            </div>
+          ) : (
+            <div
+              className={`panel overflow-hidden ${
+                result.approved
+                  ? "border-emerald-400/25"
+                  : "border-amber-400/25"
+              }`}
+            >
+              <div
+                className={`flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-5 py-5 sm:px-6 ${
+                  result.approved
+                    ? "bg-emerald-500/[.06]"
+                    : "bg-amber-500/[.06]"
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <span
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
+                      result.approved
+                        ? "bg-emerald-500/10 text-emerald-300"
+                        : "bg-amber-500/10 text-amber-300"
+                    }`}
+                  >
+                    {result.approved ? (
+                      <ShieldCheck size={26} />
+                    ) : (
+                      <ShieldX size={26} />
+                    )}
+                  </span>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-widest text-slate-400">
+                      Simulation decision
+                    </p>
+                    <h3 className="mt-0.5 text-2xl font-semibold">
+                      {result.approved ? "ALLOW" : "DENY"}
+                      <span className="mt-1 block text-sm font-normal text-slate-300 sm:ml-3 sm:mt-0 sm:inline">
+                        {result.approved
+                          ? "Within spending cap"
+                          : "Spending cap exceeded"}
+                      </span>
+                    </h3>
+                  </div>
                 </div>
+                <p className="text-xs text-slate-400">
+                  <span className="block">
+                    Captured {capturedTime(evidence.capturedAt)}
+                  </span>
+                  <span className="mt-1 block font-mono">{result.reason}</span>
+                </p>
               </div>
-              <p className="text-xs text-slate-400">
-                <span className="block">
-                  Captured {capturedTime(evidence.capturedAt)}
-                </span>
-                <span className="mt-1 block font-mono">{result.reason}</span>
+              <dl className="grid grid-cols-2 gap-5 p-5 sm:grid-cols-3 sm:gap-6 sm:p-6">
+                <div>
+                  <dt className="text-sm text-slate-400">Proposed amount</dt>
+                  <dd className="mt-2 break-words text-2xl font-semibold tracking-tight">
+                    {units(result.request.amount)}
+                  </dd>
+                  <dd className="mt-1 text-xs text-slate-400">
+                    {result.request.amount} raw units
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-sm text-slate-400">Per-intent cap</dt>
+                  <dd className="mt-2 text-2xl font-semibold tracking-tight">
+                    {units(result.request.spendingCap)}
+                  </dd>
+                  <dd className="mt-1 text-xs text-slate-400">
+                    {result.request.spendingCap} raw units
+                  </dd>
+                </div>
+                <div className="col-span-2 sm:col-span-1">
+                  <dt className="text-sm text-slate-400">Report status</dt>
+                  <dd className="mt-2 flex items-center gap-2 text-lg font-medium">
+                    <FileCheck2 size={18} className="text-blue-300" />
+                    Preview only
+                  </dd>
+                  <dd className="mt-2 text-xs text-slate-400">
+                    Not published · No funds moved
+                  </dd>
+                </div>
+              </dl>
+              <p className="flex items-start gap-2 border-t border-white/10 px-5 py-3 text-xs leading-relaxed text-slate-400 sm:px-6">
+                <Info size={15} className="mt-0.5 shrink-0" />
+                Historical price-policy evidence. The streaming CLI obtains
+                fresh CRE decisions and gates wallet signing; this saved report
+                cannot fund a stream.
               </p>
             </div>
-            <dl className="grid grid-cols-2 gap-5 p-5 sm:grid-cols-3 sm:gap-6 sm:p-6">
-              <div>
-                <dt className="text-sm text-slate-400">Proposed amount</dt>
-                <dd className="mt-2 break-words text-2xl font-semibold tracking-tight">
-                  {units(result.request.amount)}
-                </dd>
-                <dd className="mt-1 text-xs text-slate-400">
-                  {result.request.amount} raw units
-                </dd>
+          )}
+        </section>
+        {result && (
+          <>
+            <section aria-labelledby="observations-title">
+              <h2
+                id="observations-title"
+                className="mb-4 text-lg font-semibold"
+              >
+                What this price check observed
+              </h2>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <Observation
+                  icon={Globe}
+                  step="01"
+                  label="External price"
+                  value={price(result.externalPriceUsd8)}
+                  href={result.marketApiUrl}
+                  linkLabel="Coinbase API"
+                >
+                  <p>
+                    USDC/USD spot quote, aggregated with CRE HTTP consensus.
+                  </p>
+                </Observation>
+                <Observation
+                  icon={Workflow}
+                  step="02"
+                  label="Onchain price"
+                  value={price(result.chainlinkPriceUsd8)}
+                  href={`https://sepolia.etherscan.io/address/${result.feedAddress}`}
+                  linkLabel="Chainlink feed"
+                >
+                  <p>
+                    Finalized Sepolia read. Feed age at execution:{" "}
+                    {formatDuration(result.observedAt - result.feedUpdatedAt)}.
+                  </p>
+                </Observation>
+                <Observation
+                  icon={ShieldCheck}
+                  step="03"
+                  label="Risk policy"
+                  value={`${(
+                    (Math.abs(
+                      Number(result.externalPriceUsd8) -
+                        Number(result.chainlinkPriceUsd8)
+                    ) /
+                      Number(result.chainlinkPriceUsd8)) *
+                    100
+                  ).toFixed(3)}% disagreement`}
+                >
+                  <ul className="space-y-2">
+                    <li>
+                      Source disagreement ≤ {result.maxDeviationBps / 100}%
+                    </li>
+                    <li>
+                      Each price within {result.maxPegDeviationBps / 100}% of $1
+                    </li>
+                    <li>
+                      Feed age ≤ {formatDuration(result.maxFeedAgeSeconds)}
+                    </li>
+                    <li>Amount checked against the payment-intent cap</li>
+                  </ul>
+                </Observation>
+                <Observation
+                  icon={FileCheck2}
+                  step="04"
+                  label="Bounded report"
+                  value="Report generated"
+                  href="https://github.com/ola-893/agentPay/blob/main/contracts/AgentPayGuard.sol"
+                  linkLabel="Inspect guard"
+                >
+                  <p>
+                    Binds the parties, token, maximum amount, chain, receiver,
+                    request ID, and expiry.
+                  </p>
+                  <p className="mt-2">
+                    {result.validUntil - result.observedAt}s lifetime from
+                    observation.
+                  </p>
+                </Observation>
               </div>
-              <div>
-                <dt className="text-sm text-slate-400">Per-intent cap</dt>
-                <dd className="mt-2 text-2xl font-semibold tracking-tight">
-                  {units(result.request.spendingCap)}
-                </dd>
-                <dd className="mt-1 text-xs text-slate-400">
-                  {result.request.spendingCap} raw units
-                </dd>
-              </div>
-              <div className="col-span-2 sm:col-span-1">
-                <dt className="text-sm text-slate-400">Report status</dt>
-                <dd className="mt-2 flex items-center gap-2 text-lg font-medium">
-                  <FileCheck2 size={18} className="text-blue-300" />
-                  Preview only
-                </dd>
-                <dd className="mt-2 text-xs text-slate-400">
-                  Not published · No funds moved
-                </dd>
-              </div>
-            </dl>
-            <p className="flex items-start gap-2 border-t border-white/10 px-5 py-3 text-xs leading-relaxed text-slate-400 sm:px-6">
-              <Info size={15} className="mt-0.5 shrink-0" />
-              Historical price-policy evidence. The streaming CLI obtains fresh
-              CRE decisions and gates wallet signing; this saved report cannot
-              fund a stream.
-            </p>
-          </div>
+            </section>
+            <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
+              <section className="panel min-w-0 p-5 sm:p-6">
+                <h2 className="flex items-center gap-2 font-semibold">
+                  <Terminal size={17} className="text-blue-300" />
+                  Reproduce this price check
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                  Run the selected scenario locally. Install CRE and Bun, then
+                  authenticate with{" "}
+                  <code className="text-slate-200">cre login</code>.
+                </p>
+                <div className="mt-4 flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-[#0b101c] p-3">
+                  <code className="min-w-0 flex-1 break-all text-sm text-blue-200">
+                    {command}
+                  </code>
+                  <CopyButton value={command} />
+                </div>
+                <p className="mt-3 text-xs leading-relaxed text-slate-400">
+                  Before recording, run{" "}
+                  <code className="text-slate-200">npm run cre:dry-run</code>{" "}
+                  for both scenarios and freshness headroom. Live inputs can
+                  change the decision.
+                </p>
+                <Link
+                  to="/docs/setup"
+                  className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+                >
+                  Setup instructions <ArrowRight size={15} />
+                </Link>
+              </section>
+              <section className="panel p-5 sm:p-6">
+                <h2 className="flex items-center gap-2 font-semibold">
+                  <CircleCheck size={17} className="text-blue-300" />
+                  The payment asset matches the policy
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                  Circle Sepolia USDC uses 6 decimals: 0.01 USDC = 10000 raw
+                  units. Both prices must stay near $1, even if they agree with
+                  each other.
+                </p>
+                <p className="mt-3 text-xs leading-relaxed text-slate-400">
+                  Testnet USDC has no monetary value. The 24-hour feed limit
+                  models risk and does not promise immediate depeg detection.
+                  Legacy tUSD streams are separate.
+                </p>
+                <div className="mt-4 flex flex-wrap gap-x-5">
+                  <a
+                    href={`https://sepolia.etherscan.io/token/${result.request.token}`}
+                    className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Circle USDC <ArrowUpRight size={15} />
+                  </a>
+                  <a
+                    href="https://faucet.circle.com/"
+                    className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Test USDC faucet <ArrowUpRight size={15} />
+                  </a>
+                </div>
+              </section>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+              <a
+                className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+                href={`${
+                  import.meta.env.BASE_URL
+                }evidence/cre-${scenario}.json`}
+                download
+              >
+                <Download size={16} />
+                Download result JSON
+              </a>
+              <a
+                className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
+                href={`https://github.com/ola-893/agentPay/blob/main/docs/evidence/cre-${scenario}.log`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                CLI transcript <ArrowUpRight size={15} />
+              </a>
+              <a
+                className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300 sm:hidden"
+                href="https://github.com/ola-893/agentPay/tree/main/cre/payment-guard"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Workflow source <ArrowUpRight size={15} />
+              </a>
+            </div>
+            <details className="panel min-w-0 p-5">
+              <summary className="cursor-pointer rounded-lg text-sm font-medium text-slate-300">
+                Raw result & evidence hashes
+              </summary>
+              <pre
+                tabIndex={0}
+                aria-label="Captured execution JSON"
+                className="mt-4 max-h-80 overflow-auto rounded-xl bg-[#0b101c] p-4 text-xs leading-relaxed text-slate-300"
+              >
+                {JSON.stringify(evidence, null, 2)}
+              </pre>
+            </details>
+          </>
         )}
-      </section>
-      {result && (
-        <>
-          <section aria-labelledby="observations-title">
-            <h2 id="observations-title" className="mb-4 text-lg font-semibold">
-              What this price check observed
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <Observation
-                icon={Globe}
-                step="01"
-                label="External price"
-                value={price(result.externalPriceUsd8)}
-                href={result.marketApiUrl}
-                linkLabel="Coinbase API"
-              >
-                <p>USDC/USD spot quote, aggregated with CRE HTTP consensus.</p>
-              </Observation>
-              <Observation
-                icon={Workflow}
-                step="02"
-                label="Onchain price"
-                value={price(result.chainlinkPriceUsd8)}
-                href={`https://sepolia.etherscan.io/address/${result.feedAddress}`}
-                linkLabel="Chainlink feed"
-              >
-                <p>
-                  Finalized Sepolia read. Feed age at execution:{" "}
-                  {formatDuration(result.observedAt - result.feedUpdatedAt)}.
-                </p>
-              </Observation>
-              <Observation
-                icon={ShieldCheck}
-                step="03"
-                label="Risk policy"
-                value={`${(
-                  (Math.abs(
-                    Number(result.externalPriceUsd8) -
-                      Number(result.chainlinkPriceUsd8)
-                  ) /
-                    Number(result.chainlinkPriceUsd8)) *
-                  100
-                ).toFixed(3)}% disagreement`}
-              >
-                <ul className="space-y-2">
-                  <li>Source disagreement ≤ {result.maxDeviationBps / 100}%</li>
-                  <li>
-                    Each price within {result.maxPegDeviationBps / 100}% of $1
-                  </li>
-                  <li>Feed age ≤ {formatDuration(result.maxFeedAgeSeconds)}</li>
-                  <li>Amount checked against the payment-intent cap</li>
-                </ul>
-              </Observation>
-              <Observation
-                icon={FileCheck2}
-                step="04"
-                label="Bounded report"
-                value="Report generated"
-                href="https://github.com/ola-893/agentPay/blob/main/contracts/AgentPayGuard.sol"
-                linkLabel="Inspect guard"
-              >
-                <p>
-                  Binds the parties, token, maximum amount, chain, receiver,
-                  request ID, and expiry.
-                </p>
-                <p className="mt-2">
-                  {result.validUntil - result.observedAt}s lifetime from
-                  observation.
-                </p>
-              </Observation>
-            </div>
-          </section>
-          <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-            <section className="panel min-w-0 p-5 sm:p-6">
-              <h2 className="flex items-center gap-2 font-semibold">
-                <Terminal size={17} className="text-blue-300" />
-                Reproduce this price check
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                Run the selected scenario locally. Install CRE and Bun, then
-                authenticate with{" "}
-                <code className="text-slate-200">cre login</code>.
-              </p>
-              <div className="mt-4 flex min-w-0 items-center gap-2 rounded-xl border border-white/10 bg-[#0b101c] p-3">
-                <code className="min-w-0 flex-1 break-all text-sm text-blue-200">
-                  {command}
-                </code>
-                <CopyButton value={command} />
-              </div>
-              <p className="mt-3 text-xs leading-relaxed text-slate-400">
-                Before recording, run{" "}
-                <code className="text-slate-200">npm run cre:dry-run</code> for
-                both scenarios and freshness headroom. Live inputs can change
-                the decision.
-              </p>
-              <Link
-                to="/docs/setup"
-                className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
-              >
-                Setup instructions <ArrowRight size={15} />
-              </Link>
-            </section>
-            <section className="panel p-5 sm:p-6">
-              <h2 className="flex items-center gap-2 font-semibold">
-                <CircleCheck size={17} className="text-blue-300" />
-                The payment asset matches the policy
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                Circle Sepolia USDC uses 6 decimals: 0.01 USDC = 10000 raw
-                units. Both prices must stay near $1, even if they agree with
-                each other.
-              </p>
-              <p className="mt-3 text-xs leading-relaxed text-slate-400">
-                Testnet USDC has no monetary value. The 24-hour feed limit
-                models risk and does not promise immediate depeg detection.
-                Legacy tUSD streams are separate.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-x-5">
-                <a
-                  href={`https://sepolia.etherscan.io/token/${result.request.token}`}
-                  className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Circle USDC <ArrowUpRight size={15} />
-                </a>
-                <a
-                  href="https://faucet.circle.com/"
-                  className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Test USDC faucet <ArrowUpRight size={15} />
-                </a>
-              </div>
-            </section>
-          </div>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <a
-              className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
-              href={`${import.meta.env.BASE_URL}evidence/cre-${scenario}.json`}
-              download
-            >
-              <Download size={16} />
-              Download result JSON
-            </a>
-            <a
-              className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
-              href={`https://github.com/ola-893/agentPay/blob/main/docs/evidence/cre-${scenario}.log`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              CLI transcript <ArrowUpRight size={15} />
-            </a>
-            <a
-              className="inline-flex min-h-11 items-center gap-1 text-sm text-blue-300 sm:hidden"
-              href="https://github.com/ola-893/agentPay/tree/main/cre/payment-guard"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Workflow source <ArrowUpRight size={15} />
-            </a>
-          </div>
-          <details className="panel min-w-0 p-5">
-            <summary className="cursor-pointer rounded-lg text-sm font-medium text-slate-300">
-              Raw result & evidence hashes
-            </summary>
-            <pre
-              tabIndex={0}
-              aria-label="Captured execution JSON"
-              className="mt-4 max-h-80 overflow-auto rounded-xl bg-[#0b101c] p-4 text-xs leading-relaxed text-slate-300"
-            >
-              {JSON.stringify(evidence, null, 2)}
-            </pre>
-          </details>
-        </>
-      )}
+      </details>
     </div>
   );
 }

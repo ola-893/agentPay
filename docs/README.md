@@ -1,6 +1,6 @@
 # AgentPay documentation
 
-AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, supervised by local Chainlink CRE workflows. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend contains only Workflow and Docs, including recorded price-policy evidence and CLI instructions. Testnet tokens have no monetary value.
+AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, supervised by local Chainlink CRE workflows. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend contains only Workflow and Docs, with a CRE diagram, recorded replay, local CLI execution controls and instructions. Testnet tokens have no monetary value.
 
 ## The problem, and what CRE adds
 
@@ -22,8 +22,10 @@ Opening, approval when needed, cancellation and audit receipts still cost gas. T
 
 | Goal | Guide |
 | --- | --- |
-| Run the frontend without a wallet | [Quick start](getting-started/quick-start.md) |
+| Replay the workflow or run it locally | [Quick start](getting-started/quick-start.md) |
 | Install dependencies and verify the repo | [Installation](getting-started/installation.md) |
+| Use live/recorded dashboard modes | [Workflow dashboard](WORKFLOW_DASHBOARD.md) |
+| Inspect the CLI event schema | [Events](EVENT_SCHEMA.md) |
 | Understand configuration and units | [Configuration](getting-started/configuration.md) |
 | Reproduce ALLOW and DENY | [CRE workflow](WORKFLOW.md) |
 | Verify USDC address, feed and peg policy | [Sepolia USDC](USDC_SEPOLIA.md) |

@@ -35,7 +35,19 @@ npm run install:cre
 npm run dev
 ```
 
-The frontend has only **Workflow** (`/`) and **Docs** (`/docs`). Workflow explains the N+1 problem and CRE supervision, then shows recorded Within budget / Over budget evidence with observations, commands and transcripts. Docs includes the [CLI demo guide](docs/AI_AGENT_DEMO.md). The read-only browser needs no wallet or credentials; agent setup, stream management and dashboard screens have been removed.
+The frontend has only **Workflow** (`/`) and **Docs** (`/docs`). Workflow explains the N+1 problem and CRE supervision, then shows recorded Within budget / Over budget evidence with observations, commands and transcripts. Docs includes the [CLI demo guide](docs/AI_AGENT_DEMO.md). Recorded mode needs no wallet or credentials. Workflow now embeds the agent execution dashboard and CRE diagram; agent setup and stream-management routes remain removed.
+
+## Workflow dashboard
+
+Workflow now visualizes the agent → CRE → wallet → escrow → paid-service path, with separate request-reuse and supervision loops. Its dashboard has two explicit modes: **Recorded** replays actual CLI NDJSON with capture dates; **Live local** streams the real CLI through a loopback-only server. The hosted static build never calls a visitor’s localhost.
+
+```sh
+npm run dev:live
+```
+
+Use the existing CLI credentials in ignored root `.env`, matching the [registered local profile](demo/agents/treasury-research.json). Open `http://127.0.0.1:5317/`, choose Live local and run Preview. No key goes into the browser. Pay requires `PAY_ENABLED=1` at server startup plus a fresh dashboard confirmation and sufficient balances; the independent CLI cap remains 0.01 test USDC. Receipt gas is separate. [Setup, controls and trust boundaries](docs/WORKFLOW_DASHBOARD.md) · [Versioned event schema](docs/EVENT_SCHEMA.md).
+
+Publish real new recorded runs with `npm run demo:capture`, `-- --preset tiny-cap`, `-- --preset stale-feed`, or the explicitly funded `-- --pay`. These execute the model/CRE, not synthetic events. The timeline distinguishes local CRE simulation, signed/pending wallet actions, confirmed onchain actions and audit receipts; no decision is computed by the UI.
 
 ## USDC payments and USDC/USD policy
 
@@ -88,7 +100,7 @@ The paid demo reuses one stream for ten successful API requests, observes CRE `C
 
 The CLI displays the exact CRE command, HTTP observations, Sepolia read block, policy limits and transcript paths. [Inspect the recorded CRE work](docs/CRE_SUBMISSION.md#inspect-the-cre-work).
 
-The CLI gates wallet signing on local CRE results. **The stream contract enforces escrow accounting and payouts, not CRE approval**; a payer can call it directly. No DON authentication or closed AgentPayGuard/AgentPaySettlement contract is used. This is an AgentPay HTTP 402 streaming protocol, not full x402. The browser provides only workflow evidence and docs. The CLI and SDK payment paths remain separate from it.
+The CLI gates wallet signing on local CRE results. **The stream contract enforces escrow accounting and payouts, not CRE approval**; a payer can call it directly. No DON authentication or closed AgentPayGuard/AgentPaySettlement contract is used. This is an AgentPay HTTP 402 streaming protocol, not full x402. The dashboard delegates live execution to the CLI on the same computer; recorded replay and SDK reference material do not authorize payments.
 
 ## Spend reviews and decision receipts
 
@@ -123,7 +135,7 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **174 tests** — 32 contracts, 52 SDK, eight middleware, 31 CRE policy, 51 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
+Current suites: **178 tests** — 32 contracts, 52 SDK, eight middleware, 31 CRE policy, 55 evidence/CLI/tooling checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
 
 `docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
 
@@ -134,7 +146,7 @@ Current suites: **174 tests** — 32 contracts, 52 SDK, eight middleware, 31 CRE
 - Consumer and settlement behavior is separately tested on Hardhat's local network. The simulator's mock forwarder lacks production workflow identity metadata; guard identity checks remain enabled.
 - Stream supervisor runs are driven by the local agent at session checkpoints. CRE decisions do not change the stream contract automatically; the wallet executes them. Outage detection cannot reverse already-earned time.
 - The spending cap is per request, not a rolling budget, KYC, or compliance service. The local workflow configuration is trusted.
-- The original stream tools are separate from guarded settlement. The frontend provides only read-only workflow evidence and documentation; payment execution is in the CLI or SDK. The gateway uses AgentPay-specific HTTP 402 headers, not the full current x402 standard. Unverified transaction hashes are disabled.
+- The original stream tools are separate from guarded settlement. The frontend provides workflow replay, local CLI execution controls and documentation; keys and signing stay in the CLI/server or SDK integration. The gateway uses AgentPay-specific HTTP 402 headers, not the full current x402 standard. Unverified transaction hashes are disabled.
 - Guarded payments use [Circle Sepolia USDC](https://developers.circle.com/stablecoins/usdc-contract-addresses), with six decimals and no monetary value. Get test USDC from the [Circle faucet](https://faucet.circle.com/). Legacy streams still use MockUSD (`tUSD`), an 18-decimal test fixture; do not configure USDC in the legacy streaming SDK.
 
 Independent project integrating Chainlink technology. [Migration history](MIGRATION.md) and archived `.kiro` specs preserve the original source names and import provenance.

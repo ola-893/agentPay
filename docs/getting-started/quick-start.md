@@ -10,7 +10,7 @@ npm run dev
 Open the Vite URL from the terminal.
 
 - **Workflow (`/`):** read the N+1 problem and CRE supervision flow, switch Within budget / Over budget, inspect the saved USDC evidence and copy its reproduction command.
-- **Docs (`/docs`):** read setup, workflow, USDC policy, CLI demo, SDK reference and troubleshooting. The frontend has no wallet connection, agent console or stream management.
+- **Docs (`/docs`):** read setup, workflow, USDC policy, CLI demo, SDK reference and troubleshooting. The frontend has no wallet connection, separate agent console or stream management. Workflow embeds local-run controls and recorded replay.
 
 Saved captures are historical, explicitly labeled simulations. The browser does not fetch live market prices or use a saved ALLOW as spend authority.
 
@@ -47,3 +47,5 @@ npm run --silent demo:agent -- --pay
 ```
 
 The paid run consumes test ETH for stream and audit-receipt transactions. The frontend does not execute these commands. The separate [strict SDK reference](../sdk/guarded-payment-client.md) requires authenticated onchain authorization; local CRE simulation cannot unlock that path. Testnet tokens have no monetary value.
+
+To use the local dashboard instead of the terminal runner, configure the same CLI settings, run `npm run dev:live`, open port 5317 and choose Live local. See [dashboard modes](../WORKFLOW_DASHBOARD.md). Hosted/static mode only replays captures.

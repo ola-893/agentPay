@@ -53,13 +53,21 @@ export const documentation = {
           "CRE supplies decisions in local simulation. The CLI enforces them before signing; AgentPayStream enforces escrow, time accrual and payouts. The contract does not verify CRE decisions, and the payer can bypass the CLI. Checkpoints are explicit CLI steps, not a continuously running network monitor. Availability observations do not establish answer quality."
         ),
       ]),
+      section("Watch the workflow", [
+        p(
+          "The diagram distinguishes the agent request, CRE decision, wallet transaction, escrow and provider access. The request loop reuses a stream; the supervision loop brings HTTP observations and onchain state back to CRE. The dashboard highlights decisions only as CLI events arrive or replay."
+        ),
+        p(
+          "Recorded mode is the hosted default and needs no credentials. Live local mode requires npm run dev:live, root .env configuration and an authenticated CRE CLI. The agent is Registered locally by a profile file, not an onchain registry. Wallet keys stay on the server. Advanced cards show spend review and audit receipts; they are distinct from payment transactions."
+        ),
+      ]),
       section("Choose your starting point", [
         table(
           ["Page", "What it does"],
           [
             [
               "CRE Workflow",
-              "Understand the streaming problem and CRE supervision, then inspect recorded price-safety ALLOW/DENY runs. No wallet required.",
+              "Explore the CRE diagram and execution dashboard. Replay captured runs, or use the local server to run the real CLI.",
             ],
             [
               "Docs",
@@ -73,13 +81,13 @@ export const documentation = {
           "The checked-in CRE captures compile the workflow to WASM, fetch Coinbase USDC/USD, read the Chainlink USDC/USD feed and Circle token decimals at finalized blocks, evaluate policy, and generate a bounded report. The ALLOW request is 0.01 USDC against a 0.1 cap; DENY requests 0.2 USDC."
         ),
         p(
-          "The dashboard loads recorded JSON. It does not fetch live prices, deploy a workflow, broadcast a report or send payments. A saved ALLOW result is historical evidence, not an active authorization."
+          "Recorded mode verifies and replays actual CLI event files with their capture dates. Live local mode calls a loopback-only server, which launches the same CLI and streams its events. It is Preview by default; Pay needs server opt-in, sufficient test balances and explicit confirmation. The browser never uses a saved ALLOW as authority."
         ),
       ]),
       section("Current scope", [
         list([
           "Ethereum Sepolia only; testnet USDC and tUSD have no monetary value.",
-          "CRE stays local. The AI CLI has verified Sepolia stream funding, ten-request reuse, closure/refund and audit receipt evidence. The browser explains this flow; it does not operate it.",
+          "CRE stays local. The AI CLI has verified Sepolia stream funding, ten-request reuse, closure/refund and audit receipt evidence. The Workflow dashboard can trigger this CLI through the local server or replay captured events; the hosted page never contacts a visitor’s localhost.",
           "The CLI gates wallet signing on local CRE decisions. The stream contract enforces escrow accounting and payouts; it does not verify CRE results, and a payer can call it directly.",
           "The legacy gateway uses AgentPay-specific HTTP 402 headers. It does not implement the full current x402 transport/facilitator protocol.",
           "This is an unaudited prototype.",
@@ -87,6 +95,8 @@ export const documentation = {
       ]),
     ],
     related: [
+      [repo + "docs/WORKFLOW_DASHBOARD.md", "Dashboard modes and security"],
+      [repo + "docs/EVENT_SCHEMA.md", "CLI event schema"],
       ["/docs/setup", "Run locally"],
       ["/docs/cre", "Understand CRE"],
       ["/docs/cli", "Run the CLI demo"],
@@ -105,6 +115,15 @@ export const documentation = {
         code("Terminal", "npm run install:all\nnpm run dev"),
         p(
           "Node 22 is the verified major version. No wallet, contract deployment, Bun, CRE login, or private key is required to view existing evidence or read the docs."
+        ),
+      ]),
+      section("Run the dashboard locally", [
+        code("Terminal", "npm run install:cre\ncre login\nnpm run dev:live"),
+        p(
+          "Configure the existing AI CLI prerequisites in ignored root .env first. The combined command binds Vite on 127.0.0.1:5317 and the run server on 127.0.0.1:5318. Stop an older Vite process on port 5317 first. Choose Live local and Run Preview. Tiny cap sets 9999 raw against the fixed 10000 request; Stale feed sets a 60-second age limit and depends on observed feed age."
+        ),
+        p(
+          "Pay is disabled unless the server starts with PAY_ENABLED=1, the wallet has at least 0.01 test USDC and 0.001 Sepolia ETH, and the user selects Pay and confirms the new run. The CLI independently limits escrow to 0.01 USDC. Stream and audit transactions use gas. The form exposes six existing bounded policy fields; the quote, parties and model are not user inputs."
         ),
       ]),
       section("2. Run CRE with live inputs", [
@@ -350,7 +369,7 @@ export const documentation = {
           "npm run --silent demo:spend-review\nnpm run --silent demo:spend-review -- --anchor --resume"
         ),
         p(
-          "The first command signs no transaction. The second uses test ETH to anchor pending decisions without transferring USDC. The initial nine-decision capture includes a genuine stale-feed block. A later full live AI run on October 22 completed the audited stream lifecycle: ten requests, outage closure, 0.00072 USDC earned, 0.00928 refunded, and seven decisions in three new audit receipts. Recovery cancellation needs CRE and audit receipts, but no model call. Local blob files need durable storage and backups. This browser does not submit reviews."
+          "The first command signs no transaction. The second uses test ETH to anchor pending decisions without transferring USDC. The initial nine-decision capture includes a genuine stale-feed block. A later full live AI run on October 22 completed the audited stream lifecycle: ten requests, outage closure, 0.00072 USDC earned, 0.00928 refunded, and seven decisions in three new audit receipts. Recovery cancellation needs CRE and audit receipts, but no model call. Local blob files need durable storage and backups. Recorded mode only replays these events; Live local launches the CLI through the loopback server."
         ),
       ]),
       section("ToolBuyer: trial quality before purchasing", [
@@ -470,7 +489,7 @@ export const documentation = {
       ]),
       section("Known verification limits", [
         p(
-          "The browser is read-only: workflow evidence and documentation require no wallet or credentials. A browser page does not execute the CLI or prove a live payment. Repository tests and saved CLI/receipt evidence cover the separate payment paths; documentation checks validate links, exact SDK examples and evidence integrity without making a new public payment."
+          "Recorded mode requires no wallet or credentials and never runs CRE or sends a payment. Live local delegates to the real CLI; key handling and transaction signing stay server-side. A disconnected event feed does not cancel that child. Reconnect the active timeline and inspect receipts before retrying. Documentation checks validate saved evidence, not a new public payment."
         ),
       ]),
     ],

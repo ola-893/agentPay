@@ -15,7 +15,7 @@ Admission lasts 120 seconds. If setup confirmations outlive it, the CLI obtains 
 
 Checkpoints are explicit CLI steps, not an always-running monitor. Local service observations and RPC simulation are trusted inputs, not independent service-quality attestations. Health checks do not score answer usefulness. Risk scores are heuristic, and receipts prove inclusion of operator-submitted hashes. Accrual continues through detection, review and mining latency. Approval, stream lifecycle and audit transactions still consume gas; this prototype does not claim fixed net savings or full x402 compatibility.
 
-Run preview or the funded journey using the [AI CLI guide](AI_AGENT_DEMO.md). The browser explains this lifecycle and displays saved price-policy runs; it does not run the agent or supervise a live stream.
+Run preview or the funded journey using the [AI CLI guide](AI_AGENT_DEMO.md). The [Workflow dashboard](WORKFLOW_DASHBOARD.md) diagrams this lifecycle and replays actual captured runs. In local development it can launch the same CLI through a loopback server and display its events; the CLI performs the model, CRE, supervision and signing work.
 
 ## Standalone USDC price-safety workflow
 
