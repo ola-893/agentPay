@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: real local stream escrow, authenticated request reuse, cancellation earnings and refund reconcile without per-request transactions
+ok 1 - real local stream escrow, authenticated request reuse, cancellation earnings and refund reconcile without per-request transactions
+  ---
+  duration_ms: 13917.176709
+  type: 'test'
+  ...
+# Subtest: denied or substituted stream admission stops before any wallet/provider interaction
+ok 2 - denied or substituted stream admission stops before any wallet/provider interaction
+  ---
+  duration_ms: 567.172333
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14756.342709

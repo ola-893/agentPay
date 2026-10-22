@@ -139,15 +139,95 @@ test(
       };
       const journal = [],
         persist = async (kind, data) => journal.push({ kind, ...data });
+      // Simulate slow receipt confirmations without waiting two real minutes.
+      // Expiry must lead to a new decision, never a longer validity window.
+      let age = 1,
+        refreshes = 0,
+        failedReviews = 0;
+      const audit = {
+        async authorize() {
+          age = 120001;
+          return {
+            assertFresh: async () => {},
+            submitted: async () => {},
+            confirmed: async () => {},
+            failed: async () => {
+              failedReviews++;
+            },
+          };
+        },
+      };
+      const nonceBeforeRejectedRefresh = await provider.getTransactionCount(
+        wallet.address
+      );
+      for (const refreshAdmission of [
+        async () => ({
+          config,
+          decision: { action: "DENY", config },
+          elapsed: () => 1,
+        }),
+        async () => {
+          const swapped = { ...config, recipient: wallet.address };
+          return {
+            config: swapped,
+            decision: { action: "OPEN", config: swapped },
+            elapsed: () => 1,
+          };
+        },
+        async () => {
+          throw new Error("CRE_REFRESH_UNAVAILABLE");
+        },
+      ]) {
+        age = 1;
+        await assert.rejects(
+          openStream({
+            provider,
+            wallet,
+            quote,
+            config,
+            decision: { action: "OPEN", config },
+            elapsed: () => age,
+            persist: async () => assert.fail("Refused refresh must not sign"),
+            audit,
+            refreshAdmission,
+          }),
+          /Exact OPEN|Stream quote|CRE_REFRESH_UNAVAILABLE/
+        );
+      }
+      assert.equal(failedReviews, 3);
+      assert.equal(
+        await provider.getTransactionCount(wallet.address),
+        nonceBeforeRejectedRefresh
+      );
+      age = 1;
       const funded = await openStream({
         provider,
         wallet,
         quote,
         config,
         decision: { action: "OPEN", config },
-        elapsed: () => 1,
+        elapsed: () => age,
         persist,
+        audit,
+        refreshAdmission: async () => {
+          refreshes++;
+          age = 1;
+          const refreshedConfig = {
+            ...config,
+            requestId: id(`fresh-admission-${refreshes}`),
+          };
+          return {
+            config: refreshedConfig,
+            decision: { action: "OPEN", config: refreshedConfig },
+            elapsed: () => age,
+          };
+        },
       });
+      assert.equal(
+        refreshes,
+        2,
+        "Approval and creation each refresh after a delayed audit receipt"
+      );
       assert.equal(await token.balanceOf(streamAddress), 10000n);
       assert.equal(await token.balanceOf(recipient), 0n);
       assert.equal(await token.balanceOf(wallet.address), 990000n);
@@ -285,6 +365,8 @@ test("denied or substituted stream admission stops before any wallet/provider in
         decision,
         elapsed: () => 1,
         persist: async () => assert.fail("Must not sign"),
+        refreshAdmission: async () =>
+          assert.fail("A denial must not trigger renewal"),
       }),
       { code: "POLICY_DENIED" }
     );
@@ -300,4 +382,32 @@ test("denied or substituted stream admission stops before any wallet/provider in
     }),
     { code: "QUOTE_MISMATCH" }
   );
+  for (const age of [120000, NaN, -1]) {
+    let refreshes = 0;
+    await assert.rejects(
+      openStream({
+        provider: {},
+        wallet: { address: config.agent },
+        quote,
+        config,
+        decision: { action: "OPEN", config },
+        elapsed: () => age,
+        persist: async () => assert.fail("Expired approval must not sign"),
+        refreshAdmission: async () => {
+          refreshes++;
+          return {
+            config,
+            decision: { action: "OPEN", config },
+            elapsed: () => age,
+          };
+        },
+      }),
+      { code: "POLICY_EXPIRED" }
+    );
+    assert.equal(
+      refreshes,
+      1,
+      "A still-expired renewal must fail without looping"
+    );
+  }
 });

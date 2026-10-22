@@ -43,6 +43,8 @@ npm run --silent demo:agent -- --pay
 
 Each invocation can deposit **at most 0.01 test USDC**, plus test ETH for approval/open/close **and audit-receipt gas**. Actual signing now requires a working local blob journal and the [verified decision-receipt contract](SPEND_AUDIT.md). Every business transaction is simulated, risk-reviewed, persisted and anchored before signing; denials are retained and receipts are counted separately. This is a new stream, not a read-only check or a resumed purchase.
 
+Admission remains valid for 120 seconds. If approval or audit confirmations outlast that window (or the price approval expires), the CLI reruns both CRE price and admission checks before signing the next transaction. It saves each renewed decision and transcript separately. A failed or denied renewal stops signing; the CLI does not extend the old decision's lifetime or repeat a submitted deposit. The exact spend review must still be anchored, unexpired and freshly simulated before signing.
+
 1. Qwen/OpenAI requests basic and premium sessions through real tool calls. The model chooses only a tier and purpose; it cannot change deposit, duration, rate, recipients or policy.
 2. The loopback provider returns HTTP 402 with a bound streaming quote. Basic deposits `10000` raw USDC over **1000 seconds**, earning `10` raw units per second. Premium proposes `200000` against the CRE deposit cap `100000` and is denied. The wallet independently limits this demo to `10000`.
 3. Before basic funding, the existing CRE price workflow checks live Coinbase and finalized Chainlink USDC/USD observations, peg bounds and freshness. These checks remain a secondary asset-safety gate.

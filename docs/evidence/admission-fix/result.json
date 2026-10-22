@@ -1,0 +1,619 @@
+{
+  "schemaVersion": 2,
+  "runId": "20261022T094328Z-e57efc79",
+  "mode": "local-agent-stream",
+  "completedAt": "2026-10-22T09:46:26.160Z",
+  "provider": "qwen",
+  "model": "qwen3.5-plus",
+  "chainId": 11155111,
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+  "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+  "fundedRaw": "10000",
+  "earnedRaw": "720",
+  "refundedRaw": "9280",
+  "initial": {
+    "agentBalanceRaw": "39968920",
+    "recipientBalanceRaw": "31080",
+    "nonce": 22
+  },
+  "final": {
+    "agentBalanceRaw": "39968200",
+    "recipientBalanceRaw": "31800",
+    "nonce": 26
+  },
+  "responses": [
+    {
+      "id": "resp_a5b461ce-befe-9e31-96e5-5f1751fd79d5",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 657,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 90,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 747,
+        "x_details": [
+          {
+            "input_tokens": 657,
+            "output_tokens": 90,
+            "total_tokens": 747,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"basic\", \"purpose\": \"Demonstrate basic streaming session with reuse and outage-triggered closure\"}",
+          "call_id": "call_52c9044b2a7849779aacac0b",
+          "id": "msg_28eec1cd-2e82-432b-990d-5e6852151e43",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_401dd454-dfd4-93a9-aadb-92eb83314e79",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1620,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 38,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1658,
+        "x_details": [
+          {
+            "input_tokens": 1620,
+            "output_tokens": 38,
+            "total_tokens": 1658,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"premium\", \"purpose\": \"Attempt premium session to demonstrate budget denial policy\"}",
+          "call_id": "call_d029e9aa0eff4424826644c6",
+          "id": "msg_b852407e-812d-46b7-a1d9-8232958741aa",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_165fae22-6286-98bf-8e4e-7584c39d0c4a",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1482,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 345,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1827,
+        "x_details": [
+          {
+            "input_tokens": 1482,
+            "output_tokens": 345,
+            "total_tokens": 1827,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "content": [
+            {
+              "annotations": [],
+              "text": "### Factual Summary\n\n**Basic Tier Session (Stream ID: 3)**\n*   **Funding:** A basic stream was successfully initiated with a deposit of **10,000 raw units (0.01 USDC)**. The funds were escrowed via transaction `0x90436efa...`.\n*   **Operation:** The session demonstrated local CRE `OPEN` status and `CONTINUE` health checks. It processed **10 successful requests** across two batches (5 requests each) without individual payment transactions, proving stream reuse.\n*   **Outage & Closure:** A demo outage was injected, triggering an automatic `CLOSE` checkpoint. The stream terminated early.\n*   **Settlement:**\n    *   **Earned:** **720 raw units** accrued to the recipient based on time elapsed.\n    *   **Refunded:** **9,280 raw units** were returned to the sender wallet.\n    *   **Final Transaction:** Settlement occurred via transaction `0xffdd5b3c...`, updating balances accordingly. No DON/onchain CRE authorization was present (`donAuthenticated: false`).\n\n**Premium Tier Attempt**\n*   **Request:** A premium session was requested for **200,000 raw units (0.2 USDC)**.\n*   **Result:** The request was **denied** immediately due to policy violation (`AMOUNT_EXCEEDS_POLICY`). The system enforces a strict cap of **100,000 raw units (0.1 USDC)**.\n*   **Impact:** No transaction was signed, and wallet balances/nonces remained unchanged.",
+              "type": "output_text"
+            }
+          ],
+          "id": "msg_58f0c5f9-529b-472a-b6d4-e08da38f53a6",
+          "role": "assistant",
+          "status": "completed",
+          "type": "message"
+        }
+      ]
+    }
+  ],
+  "summary": "### Factual Summary\n\n**Basic Tier Session (Stream ID: 3)**\n*   **Funding:** A basic stream was successfully initiated with a deposit of **10,000 raw units (0.01 USDC)**. The funds were escrowed via transaction `0x90436efa...`.\n*   **Operation:** The session demonstrated local CRE `OPEN` status and `CONTINUE` health checks. It processed **10 successful requests** across two batches (5 requests each) without individual payment transactions, proving stream reuse.\n*   **Outage & Closure:** A demo outage was injected, triggering an automatic `CLOSE` checkpoint. The stream terminated early.\n*   **Settlement:**\n    *   **Earned:** **720 raw units** accrued to the recipient based on time elapsed.\n    *   **Refunded:** **9,280 raw units** were returned to the sender wallet.\n    *   **Final Transaction:** Settlement occurred via transaction `0xffdd5b3c...`, updating balances accordingly. No DON/onchain CRE authorization was present (`donAuthenticated: false`).\n\n**Premium Tier Attempt**\n*   **Request:** A premium session was requested for **200,000 raw units (0.2 USDC)**.\n*   **Result:** The request was **denied** immediately due to policy violation (`AMOUNT_EXCEEDS_POLICY`). The system enforces a strict cap of **100,000 raw units (0.1 USDC)**.\n*   **Impact:** No transaction was signed, and wallet balances/nonces remained unchanged.",
+  "purchases": {
+    "basic": {
+      "status": "stream-completed",
+      "tier": "basic",
+      "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+      "streamId": "3",
+      "fundedRaw": "10000",
+      "earnedRaw": "720",
+      "refundedRaw": "9280",
+      "admission": "OPEN",
+      "healthyCheckpoint": "CONTINUE",
+      "outageCheckpoint": "CLOSE",
+      "outageInjected": true,
+      "client": {
+        "successfulRequests": 10,
+        "failedRequests": 3
+      },
+      "requestBatches": [
+        {
+          "requests": 5,
+          "walletNonceBefore": 24,
+          "walletNonceAfter": 24,
+          "noPaymentTransactions": true
+        },
+        {
+          "requests": 5,
+          "walletNonceBefore": 24,
+          "walletNonceAfter": 24,
+          "noPaymentTransactions": true
+        },
+        {
+          "requests": 3,
+          "walletNonceBefore": 24,
+          "walletNonceAfter": 24,
+          "noPaymentTransactions": true
+        }
+      ],
+      "funded": {
+        "streamId": "3",
+        "state": {
+          "sender": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+          "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+          "totalAmount": "10000",
+          "flowRate": "10",
+          "startTime": "1792662276",
+          "stopTime": "1792663276",
+          "amountWithdrawn": "0",
+          "isActive": true,
+          "metadata": "{\"sessionId\":\"0x3fa1f2acf374eeb75110fd479e8b15b43bc00267c5f8a113964da5d1fa826805\",\"quoteId\":\"0xd677b54bd39c23c60e16e60aad54d754f3955208872b510d4c39f6bb3f0e6740\"}"
+        },
+        "before": {
+          "agentBalanceRaw": "39968920",
+          "recipientBalanceRaw": "31080",
+          "nonce": 22
+        },
+        "after": {
+          "agentBalanceRaw": "39958920",
+          "recipientBalanceRaw": "31080",
+          "nonce": 24
+        },
+        "transactions": [
+          {
+            "state": "confirmed",
+            "transactionHash": "0x90436efa218eb077c763807e79f3b709bbb32898fcce7ce5052a2925ac519467",
+            "blockNumber": 11968734,
+            "confirmations": 2,
+            "gasUsed": "1726626",
+            "feeWei": "48345528"
+          }
+        ],
+        "fundedRaw": "10000"
+      },
+      "settlement": {
+        "streamId": "3",
+        "closed": true,
+        "earnedRaw": "720",
+        "refundedRaw": "9280",
+        "before": {
+          "agentBalanceRaw": "39958920",
+          "recipientBalanceRaw": "31080",
+          "nonce": 24
+        },
+        "after": {
+          "agentBalanceRaw": "39968200",
+          "recipientBalanceRaw": "31800",
+          "nonce": 26
+        },
+        "transaction": {
+          "state": "confirmed",
+          "transactionHash": "0xffdd5b3c63e2703e50bb305d868d7577343cdda59883309598dab45fa3b44346",
+          "blockNumber": 11968740,
+          "confirmations": 2,
+          "gasUsed": "88225",
+          "feeWei": "2470300"
+        }
+      },
+      "closedAccessRejected": true,
+      "research": {
+        "source": "AgentPay stream demo (sample operational guidance)",
+        "content": "A funded stream amortizes payment transactions across service requests; earnings accrue with time until cancellation or expiry."
+      },
+      "donAuthenticated": false
+    },
+    "premium": {
+      "status": "denied",
+      "tier": "premium",
+      "policy": {
+        "reason": "AMOUNT_EXCEEDS_POLICY",
+        "amountRaw": "200000",
+        "amountUsdc": "0.2",
+        "capRaw": "100000",
+        "capUsdc": "0.1"
+      },
+      "noTransactionSigned": true,
+      "before": {
+        "agentBalanceRaw": "39968200",
+        "recipientBalanceRaw": "31800",
+        "nonce": 26
+      },
+      "after": {
+        "agentBalanceRaw": "39968200",
+        "recipientBalanceRaw": "31800",
+        "nonce": 26
+      }
+    }
+  },
+  "donAuthenticated": false,
+  "strictGuardUsed": false,
+  "evidenceDirectory": ".local/agent-demo/runs/20261022T094328Z-e57efc79",
+  "audit": {
+    "directory": "/Users/deonorla/Documents/ChatGPT/agentpay/.local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26",
+    "decisions": 24,
+    "pendingIntents": 0,
+    "pendingReceipts": 0,
+    "receiptTransactions": [
+      "0xd75e36b70b13f9e412f5800cdc1f508280c6c20b63c9ebf165b20c8f9fcaf47f",
+      "0x7552aa9b68edf3b2ac3cdf52b2f0c2fb0a8d298050d6bb56f8a2e1b24952606e",
+      "0x95a161cf889b4610a333fb4fd5ea7339d14ac106ae5d4d9bccd17d2ef20a85a8",
+      "0xa400de1de830bb7259d31f6e7cfde446733c44ae3121f9f73b66e9e4180ef486",
+      "0x0ce60924b49c8706fb7613b833ecd9c61fcfa6185d44648a74fcfc753047917a",
+      "0x0d0e57cef241e6ddbc148ae2f3e277e419677ba73ca7f636a756d2c19c07f841",
+      "0xb14e4df637d60e343789f9e8e6b2f6ab74044ba5c4651b8780da3ca648d16d52",
+      "0x66c8727c9ab7d889494c060e1deeef4dc1fcfd9dbf447702e4087d11f38c0ab5"
+    ],
+    "receipts": [
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 11968732,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x7993d649c4f423c08c523e41cbc5130dc6b67a3c57e5332d8953588ba31b987f",
+            "intentId": "0x66bd6de253c3f8865498e4cefc928d57d7f2612899c072ff18913481a5a82f53",
+            "proof": [
+              "0x95545c9877450e2c99de23c898b98c069a354214ef84e7410ab5bc462b1cd129",
+              "0x2bf7dbe1396dc4a372077b18919b88074f09f9bd9d74dcbf0ed9d030c52765bb"
+            ],
+            "sequence": 18
+          },
+          {
+            "blobHash": "0x2e21f502dac2a97b44ee328ae33b6d12549e919068a85bcda8cf55bfdc559350",
+            "intentId": "0x6e3a8823b8e5af2881483e66f4b161c472dc488679a448875561ee84fc7f1e59",
+            "proof": [
+              "0x3864e5010b7ea08467a8aabc733820f5550c9db0c8de082f33d9f9834f0d0ddd",
+              "0x2bf7dbe1396dc4a372077b18919b88074f09f9bd9d74dcbf0ed9d030c52765bb"
+            ],
+            "sequence": 19
+          },
+          {
+            "blobHash": "0x890028bbc1ef69017b3ed24146f49b1762c6ebb9d79f6d7e5b131843b8902d48",
+            "intentId": "0xe4cbf24956a3d51bcf04c32d3129b93b8675177257b0a1e61da844058390d2b7",
+            "proof": [
+              "0x3b506463568d69cd6da77848198887ed21062d7bd927d55e4d506c54287abadd",
+              "0xbab4e7db7596c47d1c95ab3822625e4860b86cfd7f1a95ab155ceb8ec937321e"
+            ],
+            "sequence": 20
+          }
+        ],
+        "feeWei": "10187632",
+        "firstSequence": 18,
+        "gasUsed": "363844",
+        "root": "0x27859c53824c3ed27ef433e7c3164ea9d1c3e0284dc366471947b7913132e000",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0xd75e36b70b13f9e412f5800cdc1f508280c6c20b63c9ebf165b20c8f9fcaf47f",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 11968662,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x1cdcbcc3c9ed1d0086acab78f75b9a5a08c30991a8ff645755fca078cb7bf059",
+            "intentId": "0x857e0d2cae6b917dea198f8d57e8024df3a07ea513d7c54462df14350c7b41cf",
+            "proof": [],
+            "sequence": 17
+          }
+        ],
+        "feeWei": "10187968",
+        "firstSequence": 17,
+        "gasUsed": "363856",
+        "root": "0x51f57a7e213e5b06a22eb9d2ceb9948b7482a4954796cae88ef612407d2bbdc8",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x7552aa9b68edf3b2ac3cdf52b2f0c2fb0a8d298050d6bb56f8a2e1b24952606e",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 11968652,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0xf7541a567622c0be88799c4e7e5929bb50df2141c2dfb4eb6167661fee251c04",
+            "intentId": "0x01d2129862f43098183e10c259e7fb380570d46c2e489389f0291a10f75a7c62",
+            "proof": [
+              "0xf57752b451c01e47fc4a53599d924ab503782fd840fadb1af3c7892728bdf159",
+              "0x7f442b76c14f05dd263842f4c3b0d98c32a1385bf5551f425e6852f2f912fa1a",
+              "0xc636cf36850489e5b3e9283913c9a6b9fbd7afe49ddd03e3448835a4513f29b1"
+            ],
+            "sequence": 10
+          },
+          {
+            "blobHash": "0xeaf52debb5f9e77aaaf734bb34bacb168c156549f6243b7539276198f2ad6c9b",
+            "intentId": "0x0c2bcfdacb3411d99fc4045bf32bf5b62d08cb484861a0c1bb02011f5f1cce6e",
+            "proof": [
+              "0x6faf884870fc7b37e5a34afd1830699a4b7090e35de12bd37f721cf4b739b947",
+              "0x7f442b76c14f05dd263842f4c3b0d98c32a1385bf5551f425e6852f2f912fa1a",
+              "0xc636cf36850489e5b3e9283913c9a6b9fbd7afe49ddd03e3448835a4513f29b1"
+            ],
+            "sequence": 11
+          },
+          {
+            "blobHash": "0xf54514b415af9e6b00fb3ca75e89043cf6e2c91083ba16763f3b5e504c0a6a06",
+            "intentId": "0x15d97c978c196c9163e4eee1e88ab505b27ab3654c079dc1825ceb07e283c78b",
+            "proof": [
+              "0x011c373f49c14408774fc42303ac3a9ba00fda704aea6d05dfbdff5eed5c0e4c",
+              "0x3e0b5f8cfb9e61f54577912c0ea2a7250e63ad61e3072d0fe42dff8677039df3",
+              "0xc636cf36850489e5b3e9283913c9a6b9fbd7afe49ddd03e3448835a4513f29b1"
+            ],
+            "sequence": 12
+          },
+          {
+            "blobHash": "0xbd913b56bcc75699e473be629cfe530f02c8b5bbd6e2f57b527b95aa59fabcb8",
+            "intentId": "0x69161d6098b55bfa2540e07ea0dcfee17f06c2d546ab6e374b6d18b15ecd0c1c",
+            "proof": [
+              "0x94c9208dfd9797d0cd76700cff31b0ea68c434938bf7f5ec839999cf1c8307be",
+              "0x3e0b5f8cfb9e61f54577912c0ea2a7250e63ad61e3072d0fe42dff8677039df3",
+              "0xc636cf36850489e5b3e9283913c9a6b9fbd7afe49ddd03e3448835a4513f29b1"
+            ],
+            "sequence": 13
+          },
+          {
+            "blobHash": "0x0561ab007587b316056e09cef12b9c363ebde8395604135d2cbe7d512d269f3a",
+            "intentId": "0x9f342266c3375bcbf0c34abc40d9ad8dcff59501743751314ad6eff00702825d",
+            "proof": [
+              "0x301991405f8e3d79e8290c1e418f1ccb6a8cff29f0ea1d9748a11418f492cfa7",
+              "0x6c2162da67e81a31fdb787177927676af0190e20d306c0d0a82bd1e628381eaa",
+              "0x12804baf3ae64fa9816128b3b431f09d87ad2b12fc330b25ae506ed74e0ba88e"
+            ],
+            "sequence": 14
+          },
+          {
+            "blobHash": "0x1f31c283bdcac7f292fcc769bfd828043d25c04a6ad34cd8bf700c4d9db53156",
+            "intentId": "0xbdde364df24a8aa522a179b67bad388ca892f637b61d4d7b43600058153f802b",
+            "proof": [
+              "0x37e2fa430432cdce91dc063afe061682a43987cfa2941be9755e7071f199759b",
+              "0x6c2162da67e81a31fdb787177927676af0190e20d306c0d0a82bd1e628381eaa",
+              "0x12804baf3ae64fa9816128b3b431f09d87ad2b12fc330b25ae506ed74e0ba88e"
+            ],
+            "sequence": 15
+          }
+        ],
+        "feeWei": "9824112",
+        "firstSequence": 10,
+        "gasUsed": "363856",
+        "root": "0x5bd194e5e0d8ac5e8bbd51c7e4ae9b6237cdff5b88f1fd4ea325a75fd29c1dca",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x95a161cf889b4610a333fb4fd5ea7339d14ac106ae5d4d9bccd17d2ef20a85a8",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 11968660,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x91a6a2d5eb28bc9fd93c5dbf985180f3bc1bcec70c4c2337933ba7bd8198f863",
+            "intentId": "0x1f921a38ae5a617bac21819a45a88759efd735b9bf30c5a49934f57cb185e33d",
+            "proof": [],
+            "sequence": 16
+          }
+        ],
+        "feeWei": "10187968",
+        "firstSequence": 16,
+        "gasUsed": "363856",
+        "root": "0x6c0adb782011650839dfc54e5c71801b1cebb3ccf040e84fe8562b636e447f96",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0xa400de1de830bb7259d31f6e7cfde446733c44ae3121f9f73b66e9e4180ef486",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 11958242,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0xd7fd367972832b89122809111b2fd10b212e60e257b35bfef50345a9e16cdbbc",
+            "intentId": "0x3706533fa8a63df1a0695d80ccb446bf1dbd5ea96dc5d21136aada80356b1623",
+            "proof": [
+              "0x8e9dd48caf1c7e708348c6721a8acf6ae295f22bb30c296af4f634aa4a6330c9",
+              "0x99c9c205e6ff32d2aefc65606d44ddd808b3c0a9d5743f5589f8137fbe1ec580",
+              "0x91254580f81221dc8c211d13904bc173db4ad2a011d92130bd1bd6a01385dc78"
+            ],
+            "sequence": 1
+          },
+          {
+            "blobHash": "0x57c2a68486e67439374cd6ba9eec4769aab76b82690d3afad7cabb4d1d4934f1",
+            "intentId": "0x3e84f5b290bdf2e54b7c4e899b3f4c43b2051bc561030042e04df217c72ed9d4",
+            "proof": [
+              "0x378de2c40df2ae42faef7a75822e6d7f7e7702217d1ae7e9e6646573fab6c086",
+              "0x99c9c205e6ff32d2aefc65606d44ddd808b3c0a9d5743f5589f8137fbe1ec580",
+              "0x91254580f81221dc8c211d13904bc173db4ad2a011d92130bd1bd6a01385dc78"
+            ],
+            "sequence": 2
+          },
+          {
+            "blobHash": "0x5e8d65a827ef9aff0e7b9be0b4b3d4ef3763f5a4ea01587aa8a655f76e6691b2",
+            "intentId": "0x4602b7a07914216a62a739774024512f757c239586ee934533fac19b70ca5306",
+            "proof": [
+              "0xbf268e5fadce25084136f544423a1f808e116c35b26920cb428840eaae6bf56a",
+              "0x3081f906e5dda13332d8a46e841d3c817ce12868a9256fe98c529e0bd5fc2169",
+              "0x91254580f81221dc8c211d13904bc173db4ad2a011d92130bd1bd6a01385dc78"
+            ],
+            "sequence": 3
+          },
+          {
+            "blobHash": "0x22124edafaf8f737c0659d22a5ac844e3f33201dd265d9622ce31ccda28e1ff3",
+            "intentId": "0x65bf5dfc84fa6f9f0cdf31fecfe17c094ff7b79167aa231de09acc315e94be77",
+            "proof": [
+              "0xb0fd2e4bf9ff4d8845a3100d8cd2160fa09e6e17f433488d2a31eb38313d2590",
+              "0x3081f906e5dda13332d8a46e841d3c817ce12868a9256fe98c529e0bd5fc2169",
+              "0x91254580f81221dc8c211d13904bc173db4ad2a011d92130bd1bd6a01385dc78"
+            ],
+            "sequence": 4
+          },
+          {
+            "blobHash": "0x7d0783cbb1faf15b422c782ff8e80aa3c0f9f72635fe128abe1ec2e7d3681fe8",
+            "intentId": "0xbdb3e881a4b1bbdef6b92d07dd89181be18f56bf3de9108aedba8cf7a4dce7c7",
+            "proof": [
+              "0x6d280afc9c7e2b2be84776b4f358124dab77a57f405c9a8b06887241fa42795f",
+              "0x47037d077d35e886221a7cf1ed642955c1b5e4933789fb47f40da44d446c9d75",
+              "0xb9429f36eb9d1f513a2a83859ed851a774a534fcefd1e7dff1a4c26e6c4668a8"
+            ],
+            "sequence": 5
+          }
+        ],
+        "feeWei": "363862185552",
+        "firstSequence": 1,
+        "gasUsed": "363856",
+        "root": "0x717b914873e44e56354991c97e360c9d34f391d012b2a9bb47bfde0665be69e7",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x0ce60924b49c8706fb7613b833ecd9c61fcfa6185d44648a74fcfc753047917a",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 11968738,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x7007c2ef5bfc58bb451f3a8bce5b06c40d74eecd76de28c2a19c165cf775e253",
+            "intentId": "0x13c0e011b762159aab78c25da6626b90f673f3c9d9b1b69a061b88b4bb47e7ea",
+            "proof": [
+              "0xd23e1882de65cdaf6b9cf27cd621ea67f5375ce0a446fc87a78f57d8274dabff",
+              "0x4a844dd858cbd7c1dd2643485fd2bf56a60c3fea935415de0494604b108259b8"
+            ],
+            "sequence": 21
+          },
+          {
+            "blobHash": "0xa989d14882fcfc7d97a47a8b7402e41a7c331ffb72cc80c9819fdb16b5a0ddc9",
+            "intentId": "0x5b716f74b4bbbf5c452263bab917940b05d0ab23661783e74dee21092c951aa7",
+            "proof": [
+              "0xe4b0edce3d3b96c00e5efc184359359d3b35214f4bd444f6c8c33558cfe46269",
+              "0x4a844dd858cbd7c1dd2643485fd2bf56a60c3fea935415de0494604b108259b8"
+            ],
+            "sequence": 22
+          },
+          {
+            "blobHash": "0x3c9e2f08a5ebbb3ea122b05514f628a3e72551a9cd6437396ef7445c48257513",
+            "intentId": "0x614705baa20999ab20b155936b7b4e4b5f1887afe61f88800ac8c4a5e05ba8f0",
+            "proof": [
+              "0x385eb6db1893d921acb28ea491dae1ad52cf241bd9d07c96dc60210e93e1f3f3",
+              "0x70755a70273a49472c5bb5e398604be94344b25db74c98273d0cf8641e70a24e"
+            ],
+            "sequence": 23
+          }
+        ],
+        "feeWei": "10187968",
+        "firstSequence": 21,
+        "gasUsed": "363856",
+        "root": "0xce54763c55092bd368d2b2584529ec0d8b935105f0f0ee8e533f405ab8f3d987",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x0d0e57cef241e6ddbc148ae2f3e277e419677ba73ca7f636a756d2c19c07f841",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 11958255,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x5726511eb41e3677dccdb10a7bd1796ec60454f1fb0dd3d627efcf66e74dbdbc",
+            "intentId": "0x409274852ea12840d26057905d63659614e1e486749cb97ec6289167c17b1eea",
+            "proof": [
+              "0x04a23f97426ff13861a1870e216676af492ab8ab70fd17e5484abe2206ce3c67",
+              "0x39b139c8bb2d52113164dbfb2c0149c73b94a5d8b71e39cfe05a288e71d69486"
+            ],
+            "sequence": 6
+          },
+          {
+            "blobHash": "0x844825bd4a26f94acf23e684f660714d628761140a110aae72b867bca5daf836",
+            "intentId": "0x4ee123fc579510e280a8d882acd670c1fbdf7748c76b33aaa3424f53942306ce",
+            "proof": [
+              "0x32945eeacf7e2c7ff5779aab2628f51549ba99039f8d23b46c6a86835b636fb3",
+              "0x39b139c8bb2d52113164dbfb2c0149c73b94a5d8b71e39cfe05a288e71d69486"
+            ],
+            "sequence": 7
+          },
+          {
+            "blobHash": "0x9c0752a752fb913b6a8e7e5c4743fd1c8118b05926d852def368fe7deba70679",
+            "intentId": "0x843aaf3c2af05cacfb102e72efd1bd8664568e2c32c56c26ea7104c5f5411ed3",
+            "proof": [
+              "0x5e068b4ba6208416afd079602238fa226600ae70c0779a66643feaa6f93939e5",
+              "0x14ab9fc681456badd8fc610bb376b32a1b670e7c853c0322429f27f95aff1c99"
+            ],
+            "sequence": 8
+          },
+          {
+            "blobHash": "0xdfc0aa7cf9cb52357cf2615c1dac3cb86c407c7392ee9286a0d8bc395c32299c",
+            "intentId": "0x88186d43337788085b3cd7774c0edd681cbfc1136f2698f2b200c3b3db1e9199",
+            "proof": [
+              "0x4aaafa7bd0d2017ee41b874f093121b97d463e9b0fbcb6fe3e7fb64eccee7409",
+              "0x14ab9fc681456badd8fc610bb376b32a1b670e7c853c0322429f27f95aff1c99"
+            ],
+            "sequence": 9
+          }
+        ],
+        "feeWei": "363862185552",
+        "firstSequence": 6,
+        "gasUsed": "363856",
+        "root": "0xdc0a1c96b9eca8f4b7526f097dc9c92b2815229746c3a1dd1f6bc44c0134c07a",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0xb14e4df637d60e343789f9e8e6b2f6ab74044ba5c4651b8780da3ca648d16d52",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 11968745,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0xd017969968692b9a053f3f78fe5eb0de5ac6dd4b84f96c395c7feab18f29f450",
+            "intentId": "0xe57e567ee4ddda22a37b238a354233fecd30e00930d86d5a644aec4d34980593",
+            "proof": [],
+            "sequence": 24
+          }
+        ],
+        "feeWei": "10187968",
+        "firstSequence": 24,
+        "gasUsed": "363856",
+        "root": "0xfcaef4dcb0c0a32f5e556586ce1c93b2ce6b50102ce40a0e1dd2ad3114bf1e81",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x66c8727c9ab7d889494c060e1deeef4dc1fcfd9dbf447702e4087d11f38c0ab5",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      }
+    ]
+  }
+}

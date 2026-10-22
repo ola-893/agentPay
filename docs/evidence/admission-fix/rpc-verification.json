@@ -1,0 +1,62 @@
+{
+  "verifiedAt": "2026-10-22T09:48:10.243Z",
+  "runId": "20261022T094328Z-e57efc79",
+  "chainId": 11155111,
+  "streamId": "3",
+  "streamInactive": true,
+  "fundedRaw": "10000",
+  "earnedRaw": "720",
+  "refundedRaw": "9280",
+  "initial": {
+    "agentBalanceRaw": "39968920",
+    "recipientBalanceRaw": "31080",
+    "nonce": 22
+  },
+  "final": {
+    "agentBalanceRaw": "39968200",
+    "recipientBalanceRaw": "31800",
+    "nonce": 26
+  },
+  "receipts": [
+    {
+      "kind": "open",
+      "transactionHash": "0x90436efa218eb077c763807e79f3b709bbb32898fcce7ce5052a2925ac519467",
+      "status": 1,
+      "blockNumber": 11968734,
+      "confirmations": 18
+    },
+    {
+      "kind": "close",
+      "transactionHash": "0xffdd5b3c63e2703e50bb305d868d7577343cdda59883309598dab45fa3b44346",
+      "status": 1,
+      "blockNumber": 11968740,
+      "confirmations": 12
+    }
+  ],
+  "audit": [
+    {
+      "transactionHash": "0xd75e36b70b13f9e412f5800cdc1f508280c6c20b63c9ebf165b20c8f9fcaf47f",
+      "status": 1,
+      "blockNumber": 11968732,
+      "root": "0x27859c53824c3ed27ef433e7c3164ea9d1c3e0284dc366471947b7913132e000",
+      "proofsVerified": 3
+    },
+    {
+      "transactionHash": "0x0d0e57cef241e6ddbc148ae2f3e277e419677ba73ca7f636a756d2c19c07f841",
+      "status": 1,
+      "blockNumber": 11968738,
+      "root": "0xce54763c55092bd368d2b2584529ec0d8b935105f0f0ee8e533f405ab8f3d987",
+      "proofsVerified": 3
+    },
+    {
+      "transactionHash": "0x66c8727c9ab7d889494c060e1deeef4dc1fcfd9dbf447702e4087d11f38c0ab5",
+      "status": 1,
+      "blockNumber": 11968745,
+      "root": "0xfcaef4dcb0c0a32f5e556586ce1c93b2ce6b50102ce40a0e1dd2ad3114bf1e81",
+      "proofsVerified": 1
+    }
+  ],
+  "donAuthenticated": false,
+  "renewalObservedInLiveRun": false,
+  "renewalTestedWithDelayedLocalReceipts": true
+}

@@ -1,0 +1,177 @@
+
+  AgentPay  AI streaming demo
+  ------------------------------------------------------------------------------------
+  Mode          PAYMENT ENABLED
+                At most 0.01 test USDC escrowed + test ETH gas
+  Network       Ethereum Sepolia
+  Agent         Qwen / qwen3.5-plus
+  Payer         0xe26468ae02368a75DBDBea58F367B7313942ad26
+  Balance       39.96892 test USDC
+  Recipient     0x9950D8950BF80722860f2B6a9e120893a0fE79f7
+  CRE           Local simulation supplies decisions; no DON authorization
+  Wallet        CLI checks gate signing of createStream / cancelStream
+  Contract      Enforces escrow, time accrual and cancellation payouts
+  Trust         Contract does not verify CRE results; payer can call it directly
+
+  Escrow        0x5199d1dcaB9496d37677DAD8F53481DCc511d585
+  Agent         Choosing the next streaming session...
+
+  01  Basic research
+  Intent        Demonstrate basic streaming session with reuse and outage-triggered
+                closure
+  Deposit       0.01 USDC over 1000s
+  Rate          10 raw units / second
+  CRE           Checking USDC price safety with real HTTP + Sepolia reads...
+  Run from      cre/ (repository root relative)
+  Command       cre workflow simulate payment-guard --target staging-settings
+                --trigger-index 0 --non-interactive --config
+                ../../.local/agent-demo/runs/20261022T094328Z-e57efc79/cre-price.config.json
+  Config        .local/agent-demo/runs/20261022T094328Z-e57efc79/cre-price.config.json
+  Transcript    .local/agent-demo/runs/20261022T094328Z-e57efc79/cre-price.log
+                (saved when CRE exits)
+  HTTP GET      https://api.coinbase.com/v2/prices/USDC-USD/spot
+  Coinbase      $1.00 USDC/USD
+  Feed          0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E
+  Chainlink     $0.99990493 USDC/USD / finalized read
+  Feed age      2315s / maximum 86400s at observation
+  Price bounds  Each source within 100 bps of $1; disagreement at most 100 bps
+  Budget        10000 raw USDC / cap 100000 raw (6 decimals)
+  Decision      ALLOW / Within payment policy
+  CRE write     None / report preview only; not payment authority
+  Host check    Result validated against run config and policy re-evaluated
+  CRE           Checking open with real HTTP + Sepolia reads...
+  Run from      cre/ (repository root relative)
+  Command       cre workflow simulate payment-guard --target stream-settings
+                --trigger-index 0 --non-interactive --config
+                ../../.local/agent-demo/runs/20261022T094328Z-e57efc79/stream-open.config.json
+  Config        .local/agent-demo/runs/20261022T094328Z-e57efc79/stream-open.config.json
+  Transcript    .local/agent-demo/runs/20261022T094328Z-e57efc79/stream-open.log
+                (saved when CRE exits)
+  HTTP GET      http://127.0.0.1:51643/health/b155dfd549b272e3a355d39531bab4a6c10176d818897ce2e89fe1a2fbac8299
+  Provider      available / 0 successes / 0 failures
+  Client        0 successes / 0 failures
+  Health rule   Snapshot/session and counters must match; unavailable or >= 3
+                failures rejects
+  Sepolia read  block 11968729 / paymentToken(), decimals(), balanceOf(payer)
+  Token         0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 / 6 decimals
+  Balance       39.96892 USDC
+  Budget        10000 raw deposit / cap 100000 raw USDC
+  Rate bound    10 raw/s / maximum 100 raw/s; 1000s duration
+  Stream read   Admission / no existing stream requested
+  Decision      OPEN / healthy within budget
+  CRE write     None / decision returned to wallet-owning CLI
+  Host check    Result validated against run config and policy re-evaluated
+  CRE spend review: cre workflow simulate payment-guard --target spend-settings --trigger-index 0 --non-interactive --config ../../.local/sr/66bd6de253c3.json
+  Spend ALLOW: WITHIN_POLICY; risk 5/100; blob 0x7993d649c4f423c08c523e41cbc5130dc6b67a3c57e5332d8953588ba31b987f
+  Wallet        open: signed; awaiting 2 confirmations...
+  Escrow        Stream #3 funded with 0.01 USDC
+  Recipient     Deposit is held in escrow; earnings accrue with time
+  API reuse     Stream #3 / 5 successes / 0 failures / no payment transactions
+  CRE           Checking healthy with real HTTP + Sepolia reads...
+  Run from      cre/ (repository root relative)
+  Command       cre workflow simulate payment-guard --target stream-settings
+                --trigger-index 0 --non-interactive --config
+                ../../.local/agent-demo/runs/20261022T094328Z-e57efc79/stream-healthy.config.json
+  Config        .local/agent-demo/runs/20261022T094328Z-e57efc79/stream-healthy.config.json
+  Transcript    .local/agent-demo/runs/20261022T094328Z-e57efc79/stream-healthy.log
+                (saved when CRE exits)
+  HTTP GET      http://127.0.0.1:51643/health/19dd4605909da4af5aa984197eec1644581ead7832d7564dd5066d5c5e3bf40e
+  Provider      available / 5 successes / 0 failures
+  Client        5 successes / 0 failures
+  Health rule   Snapshot/session and counters must match; unavailable or >= 3
+                failures rejects
+  Sepolia read  block 11968735 / paymentToken(), decimals(), balanceOf(payer)
+  Token         0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 / 6 decimals
+  Balance       39.95892 USDC
+  Budget        10000 raw deposit / cap 100000 raw USDC
+  Rate bound    10 raw/s / maximum 100 raw/s; 1000s duration
+  Stream read   streams(3) + getClaimableBalance(3)
+  State         active / 10000 raw deposit / 10 raw/s
+  Accrued       120 raw claimable / 0 raw withdrawn at read block
+  Decision      CONTINUE / service healthy
+  CRE write     None / decision returned to wallet-owning CLI
+  Host check    Result validated against run config and policy re-evaluated
+  API reuse     Stream #3 / 10 successes / 0 failures / no payment transactions
+  Demo fault    Injecting a provider outage (HTTP 503)
+  API reuse     Stream #3 / 10 successes / 3 failures / no payment transactions
+  CRE           Checking outage with real HTTP + Sepolia reads...
+  Run from      cre/ (repository root relative)
+  Command       cre workflow simulate payment-guard --target stream-settings
+                --trigger-index 0 --non-interactive --config
+                ../../.local/agent-demo/runs/20261022T094328Z-e57efc79/stream-outage.config.json
+  Config        .local/agent-demo/runs/20261022T094328Z-e57efc79/stream-outage.config.json
+  Transcript    .local/agent-demo/runs/20261022T094328Z-e57efc79/stream-outage.log
+                (saved when CRE exits)
+  HTTP GET      http://127.0.0.1:51643/health/b0e833e3087473a908718f47f79bcbc6b61cb68061ba36dc3af5f0322ac90a1b
+  Provider      unavailable / 10 successes / 3 failures
+  Client        10 successes / 3 failures
+  Health rule   Snapshot/session and counters must match; unavailable or >= 3
+                failures rejects
+  Sepolia read  block 11968736 / paymentToken(), decimals(), balanceOf(payer)
+  Token         0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 / 6 decimals
+  Balance       39.95892 USDC
+  Budget        10000 raw deposit / cap 100000 raw USDC
+  Rate bound    10 raw/s / maximum 100 raw/s; 1000s duration
+  Stream read   streams(3) + getClaimableBalance(3)
+  State         active / 10000 raw deposit / 10 raw/s
+  Accrued       240 raw claimable / 0 raw withdrawn at read block
+  Decision      CLOSE / service unavailable
+  CRE write     None / decision returned to wallet-owning CLI
+  Host check    Result validated against run config and policy re-evaluated
+  CRE spend review: cre workflow simulate payment-guard --target spend-settings --trigger-index 0 --non-interactive --config ../../.local/sr/614705baa209.json
+  Spend ALLOW: WITHIN_POLICY; risk 5/100; blob 0x3c9e2f08a5ebbb3ea122b05514f628a3e72551a9cd6437396ef7445c48257513
+  Wallet        close: signed; awaiting 2 confirmations...
+  Escrow        Stream #3 CLOSED
+  Earned        0.00072 USDC paid on cancellation
+  Refunded      0.00928 USDC returned to payer
+  Agent         Choosing the next streaming session...
+
+  02  Premium research
+  Intent        Attempt premium session to demonstrate budget denial policy
+  Deposit       0.20 USDC over 1000s
+  Rate          200 raw units / second
+  CRE           Checking deny with real HTTP + Sepolia reads...
+  Run from      cre/ (repository root relative)
+  Command       cre workflow simulate payment-guard --target stream-settings
+                --trigger-index 0 --non-interactive --config
+                ../../.local/agent-demo/runs/20261022T094328Z-e57efc79/stream-deny.config.json
+  Config        .local/agent-demo/runs/20261022T094328Z-e57efc79/stream-deny.config.json
+  Transcript    .local/agent-demo/runs/20261022T094328Z-e57efc79/stream-deny.log
+                (saved when CRE exits)
+  HTTP GET      http://127.0.0.1:51643/health/649a87e301ae98853ee4fa24a8ada6dfd8151e17cd8a9fac986c40d91a1b16c6
+  Provider      unavailable / 10 successes / 3 failures
+  Client        10 successes / 3 failures
+  Health rule   Snapshot/session and counters must match; unavailable or >= 3
+                failures rejects
+  Sepolia read  block 11968741 / paymentToken(), decimals(), balanceOf(payer)
+  Token         0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 / 6 decimals
+  Balance       39.9682 USDC
+  Budget        200000 raw deposit / cap 100000 raw USDC
+  Rate bound    200 raw/s / maximum 100 raw/s; 1000s duration
+  Stream read   Admission / no existing stream requested
+  Decision      DENY / amount exceeds policy
+  CRE write     None / decision returned to wallet-owning CLI
+  Host check    Result validated against run config and policy re-evaluated
+  Wallet        No transaction signed; balances and nonce unchanged
+  Agent         Reviewing verified tool results...
+
+  ------------------------------------------------------------------------------------
+  COMPLETE  Run checks passed
+
+  Basic         Stream #3 CLOSED / earnings + refund verified
+  Premium       DENIED / deposit exceeds 0.10 USDC cap
+  Funded        0.01 test USDC
+  Earned        0.00072 USDC to recipient
+  Refunded      0.00928 USDC to payer
+  Payer         39.96892 -> 39.9682 USDC
+  API requests  10 successful / 3 injected failures on one stream
+  Transactions  2 payment lifecycle: open + close; none per API request
+  Open tx       https://sepolia.etherscan.io/tx/0x90436efa218eb077c763807e79f3b709bbb32898fcce7ce5052a2925ac519467
+  Close tx      https://sepolia.etherscan.io/tx/0xffdd5b3c63e2703e50bb305d868d7577343cdda59883309598dab45fa3b44346
+
+  Audit blobs   24 decisions /
+                /Users/deonorla/Documents/ChatGPT/agentpay/.local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26
+  Audit receipts8 cumulative receipt transactions (test ETH); 0 pending decisions
+  Evidence      .local/agent-demo/runs/20261022T094328Z-e57efc79
+  Agent notes   .local/agent-demo/runs/20261022T094328Z-e57efc79/result.json
+

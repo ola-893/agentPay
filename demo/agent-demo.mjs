@@ -305,6 +305,7 @@ await cli.cliMain(
         client.successfulRequests = counts.successfulRequests;
         client.failedRequests = counts.failedRequests;
         let priceGate = () => {};
+        let checkPrice = async () => {};
         if (tier === "basic") {
           const base = JSON.parse(
             await readFile(
@@ -325,39 +326,43 @@ await cli.cliMain(
               amount: q.amountRaw,
             },
           };
-          output.streamChecking("USDC price safety");
-          const price = await runCreIntent({
-            config,
-            root,
-            directory,
-            tier: "price",
-            onStart: (invocation) => output.creInvocation(invocation),
-          });
-          output.priceEvidence(price);
-          await auditor.recordPolicy("price", price.result);
-          const priceCompleted = performance.now();
-          priceGate = () =>
-            assertLocalApproval(price, config, {
-              elapsedMs: performance.now() - priceCompleted,
+          checkPrice = async (label = "price") => {
+            output.streamChecking("USDC price safety");
+            const price = await runCreIntent({
+              config,
+              root,
+              directory,
+              tier: label,
+              onStart: (invocation) => output.creInvocation(invocation),
             });
-          if (!price.result.approved)
-            throw new cli.CliError(
-              "PRICE_POLICY_DENIED",
-              `USDC admission blocked: ${price.result.reason}`
-            );
+            output.priceEvidence(price);
+            await auditor.recordPolicy("price", price.result);
+            const priceCompleted = performance.now();
+            priceGate = () =>
+              assertLocalApproval(price, config, {
+                elapsedMs: performance.now() - priceCompleted,
+              });
+            if (!price.result.approved)
+              throw new cli.CliError(
+                "PRICE_POLICY_DENIED",
+                `USDC admission blocked: ${price.result.reason}`
+              );
+          };
+          await checkPrice();
         }
         const before = await snapshotWallet(
           provider,
           wallet.address,
           recipient
         );
-        const admission = await check(
+        let admission = await check(
             q,
             "admission",
             tier === "basic" ? "open" : "deny",
             client
           ),
           completedAt = performance.now();
+        let refreshes = 0;
         if (admission.decision.action === "DENY") {
           const after = await snapshotWallet(
             provider,
@@ -411,7 +416,20 @@ await cli.cliMain(
           ...admission,
           elapsed: () => performance.now() - completedAt,
           persist,
-          additionalGate: priceGate,
+          additionalGate: () => priceGate(),
+          refreshAdmission: async () => {
+            const label = `renew-${++refreshes}`;
+            console.log(
+              "  Admission expired during setup; refreshing CRE price and stream checks before signing."
+            );
+            await checkPrice(label);
+            admission = await check(q, "admission", label, client);
+            completedAt = performance.now();
+            return {
+              ...admission,
+              elapsed: () => performance.now() - completedAt,
+            };
+          },
           audit: auditor,
         });
         output.streamOpened(funded);

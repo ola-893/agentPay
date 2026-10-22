@@ -268,11 +268,16 @@ export async function sendStreamTransaction({
   kind,
   persist,
   gate = () => {},
+  prepare = async () => {},
   audit,
 }) {
+  await prepare();
   gate();
   const permission = audit ? await audit.authorize(transaction) : null;
   try {
+    // Receipt confirmation can outlive admission. Refresh policy before wallet
+    // population/signing, while retaining the exact anchored spend permission.
+    await prepare();
     const populated = await wallet.populateTransaction(transaction);
     if (populated.chainId !== CHAIN_ID)
       throw new cli.CliError(
@@ -281,6 +286,7 @@ export async function sendStreamTransaction({
       );
     gate();
     if (permission) await permission.assertFresh(populated);
+    gate();
     const raw = await wallet.signTransaction(populated),
       hash = keccak256(raw);
     await persist(kind, { state: "submitting", transactionHash: hash });
@@ -323,16 +329,17 @@ export async function openStream({
   elapsed,
   persist,
   additionalGate = () => {},
+  refreshAdmission,
   audit,
 }) {
-  validateStreamQuote(q, {
-    tier: q.tier,
-    agent: wallet.address,
-    recipient: config.recipient,
-    streamAddress: config.streamAddress,
-    sessionId: config.sessionId,
-  });
   const gate = () => {
+    validateStreamQuote(q, {
+      tier: q.tier,
+      agent: wallet.address,
+      recipient: config.recipient,
+      streamAddress: config.streamAddress,
+      sessionId: config.sessionId,
+    });
     additionalGate();
     if (
       decision.action !== "OPEN" ||
@@ -361,7 +368,18 @@ export async function openStream({
         "CRE admission decision expired."
       );
   };
-  gate();
+  const prepare = async () => {
+    try {
+      gate();
+    } catch (error) {
+      if (error.code !== "POLICY_EXPIRED" || !refreshAdmission) throw error;
+      // One fresh evaluation, never a reset of the old decision's clock or a
+      // retry of a signed transaction. New failures/denials propagate unchanged.
+      ({ decision, config, elapsed } = await refreshAdmission());
+      gate();
+    }
+  };
+  await prepare();
   await verifyStreamDeployment(provider, q.streamAddress);
   const before = await snapshotWallet(provider, q.agent, q.recipient),
     token = new Contract(USDC, TOKEN_ABI, provider),
@@ -377,6 +395,7 @@ export async function openStream({
           kind: "approval",
           persist,
           gate,
+          prepare,
           audit,
           transaction: {
             to: USDC,
@@ -394,6 +413,7 @@ export async function openStream({
     kind: "open",
     persist,
     gate,
+    prepare,
     audit,
     transaction: {
       to: q.streamAddress,
