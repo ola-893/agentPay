@@ -527,7 +527,7 @@ export function WorkflowDashboardView({ c }) {
             )}
           </div>
         </div>
-        <div className="wf-summary" role="status">
+        <div className="wf-summary" role="group" aria-label="Run summary">
           {summary ? (
             state.unverified ? (
               <span>Amounts unverified · inspect receipts.</span>
