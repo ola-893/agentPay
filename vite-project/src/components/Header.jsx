@@ -1,18 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Wallet, LogOut, Loader2 } from 'lucide-react';
-import { useWallet } from '../context/WalletContext';
 import { navigation, isCurrentPage } from '../lib/navigation';
-import CopyButton from './ui/CopyButton';
 
 export default function Header() {
   const { pathname } = useLocation();
-  const {
-    walletAddress,
-    chainId,
-    connectWallet,
-    disconnectWallet,
-    isConnecting,
-  } = useWallet();
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-[#0b101c]/95 backdrop-blur-xl safe-area-top">
       <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
@@ -57,56 +47,10 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex min-w-0 items-center gap-2">
-          <span className="hidden items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-xs text-slate-300 xl:inline-flex">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-1.5 text-xs text-slate-300">
             <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
             Sepolia testnet
           </span>
-          {walletAddress ? (
-            <>
-              <span
-                className={`hidden text-xs sm:block ${
-                  chainId === 11155111 ? 'text-slate-400' : 'text-amber-300'
-                }`}
-              >
-                {chainId === 11155111 ? 'Sepolia' : 'Wrong network'}
-              </span>
-              <CopyButton
-                value={walletAddress}
-                label="Copy wallet address"
-                className="btn-outline px-2.5 text-xs"
-              >
-                <span className="font-mono">
-                  {walletAddress.slice(0, 6)}…{walletAddress.slice(-4)}
-                </span>
-              </CopyButton>
-              <button
-                type="button"
-                onClick={disconnectWallet}
-                className="icon-button"
-                aria-label="Disconnect wallet from AgentPay"
-                title="Disconnect"
-              >
-                <LogOut size={17} />
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={connectWallet}
-              disabled={isConnecting}
-              aria-busy={isConnecting}
-              className="btn-primary px-3 text-sm"
-            >
-              <span className="hidden sm:block">
-                {isConnecting ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <Wallet size={16} />
-                )}
-              </span>
-              {isConnecting ? 'Connecting…' : 'Connect wallet'}
-            </button>
-          )}
         </div>
       </div>
     </header>

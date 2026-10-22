@@ -1,6 +1,8 @@
 # AgentPay frontend
 
-React 19, Vite 7 and Tailwind. The app explains AgentPay's N+1 payment problem: many API requests reuse prepaid escrow, while local Chainlink CRE decides when the CLI should open, continue or close a USDC stream. Spend dry-runs, risk gates and durable decision receipts add control and traceability. The browser presents recorded price-policy evidence, a local SDK integration draft, and separate legacy tUSD stream management on **Ethereum Sepolia (11155111)**. It does not run the agent or monitor a live stream.
+React 19, Vite 7 and Tailwind. The frontend has two destinations: **Workflow** and **Docs**. Workflow explains how prepaid escrow addresses the N+1 payment problem and how local Chainlink CRE supervises the CLI, then displays recorded USDC price-policy evidence. Docs covers the workflow, CLI demo, policy and SDK reference.
+
+The frontend is read-only. It has no wallet connection, agent console, draft editor, stream management or dashboard. Payment execution remains in the separate CLI on Ethereum Sepolia.
 
 ## Run
 
@@ -11,32 +13,17 @@ npm --prefix vite-project install
 npm run dev
 ```
 
-Open the URL Vite prints; the port may vary. The evidence dashboard and Agent setup work without a wallet, contract deployment or credentials.
+Open the URL Vite prints. No wallet, credentials, deployment or frontend environment variables are needed.
 
 | Route | Behavior |
 | --- | --- |
-| `/` | Problem, stream supervision and signing/audit boundaries; recorded USDC price-policy ALLOW/DENY evidence; `/cre` redirects here |
-| `/agent` | Validated local draft, save/reset, exact-USDC SDK code generation |
-| `/streams` | Setup guidance until legacy deployments and connected wallet are configured |
-| `/docs` and `/docs/:section` | Eight current help topics with repository guides |
-| `/dashboard` | Legacy stream counts for a connected wallet, no fabricated analytics |
+| `/` | Workflow explanation and recorded USDC price-policy ALLOW/DENY evidence |
+| `/cre` | Redirects to `/` |
+| `/docs` and `/docs/:section` | Seven help topics, including the terminal-based CLI demo |
 
-Shared navigation, keyboard focus, safe-area padding, responsive layouts and evidence recovery are covered by the [UI review](../docs/UI_UX_REVIEW.md). Documentation content is in `src/lib/documentation.mjs`, rendered by `src/pages/Docs.jsx`.
+Former agent, stream and dashboard URLs show the normal not-found page. Both desktop and mobile navigation contain only Workflow and Docs. Documentation content is in `src/lib/documentation.mjs`, rendered by `src/pages/Docs.jsx`.
 
-## Configuration
-
-Only legacy wallet streams need these public settings in `vite-project/.env.local`:
-
-```dotenv
-VITE_CONTRACT_ADDRESS=<new-AgentPayStream-address>
-VITE_PAYMENT_TOKEN_ADDRESS=<new-18-decimal-MockUSD-address>
-```
-
-Restart Vite after changes. The chain is fixed to Sepolia. Old examples using `VITE_TARGET_CHAIN_ID=2810` are obsolete; those network overrides are not supported. No private key or service secret belongs in a `VITE_` variable.
-
-Circle USDC has six decimals and is used by the separate streaming CLI and strict-settlement reference. Browser/legacy SDK streams use 18-decimal tUSD. [Deployment](../DEPLOYMENT.md).
-
-## Evidence and drafts
+## Recorded evidence
 
 JSON is served from `public/evidence`. With authenticated CRE and Bun installed, refresh from the repository root:
 
@@ -45,14 +32,14 @@ npm run cre:capture
 npm run cre:capture -- --deny-budget
 ```
 
-The browser does not fetch live oracle prices or turn captures into payment authority. Agent setup uses local storage key `agentpay:guarded-agent-draft:v1` for non-secret configuration only; saving does not deploy/start an agent or modify CRE/onchain policy.
+The browser does not fetch live oracle prices, run an agent or turn captures into payment authority. Circle USDC has six decimals in the separate streaming CLI. See the [CLI guide](../docs/AI_AGENT_DEMO.md) for execution and the [workflow guide](../docs/WORKFLOW.md) for authority boundaries.
 
 ## Build and verify
 
 ```sh
 npm --prefix vite-project run lint
 npm run build:web
-npm --prefix vite-project run preview
+npm run docs:check
 ```
 
-Deploy `vite-project/dist` as a static SPA. Preserve the included `_redirects`/hosting fallback so nested app routes resolve to `index.html`. Tailwind and PostCSS configs are CJS. [Repository docs](../docs/README.md).
+Deploy `vite-project/dist` as a static SPA. Preserve the included hosting fallback so nested documentation routes resolve to `index.html`. [Repository docs](../docs/README.md).

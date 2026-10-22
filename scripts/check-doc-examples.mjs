@@ -45,22 +45,6 @@ for (const [key, page] of Object.entries(documentation)) {
       if (block.type === "code" && block.label === "TypeScript")
         snippets.push({ label: `frontend/docs/${key}`, code: block.text });
 }
-// Agent setup uses the same generator that the UI calls; test its actual text.
-const { guardedExample } = await import(
-  "../vite-project/src/lib/guarded-example.mjs"
-);
-snippets.push({
-  label: "frontend/agent generated example",
-  code: guardedExample(
-    {
-      guard: "0x0000000000000000000000000000000000000011",
-      settlement: "0x0000000000000000000000000000000000000012",
-      recipient: "0x0000000000000000000000000000000000000013",
-    },
-    10000n
-  ),
-});
-
 const virtualFiles = new Map();
 for (const [index, snippet] of snippets.entries()) {
   const ast = ts.createSourceFile(

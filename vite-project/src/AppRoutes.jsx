@@ -1,16 +1,7 @@
 import { Routes, Route, Navigate, Link } from 'react-router-dom';
 import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
 import CREWorkflow from './pages/CREWorkflow';
-import Streams from './pages/Streams';
-import AgentConsolePage from './pages/AgentConsolePage';
 import Docs from './pages/Docs';
-import { useWallet } from './context/WalletContext';
-
-function StreamScreen() {
-  const { walletAddress } = useWallet();
-  return <Streams key={walletAddress || 'disconnected'} />;
-}
 
 export default function AppRoutes() {
   return (
@@ -18,9 +9,6 @@ export default function AppRoutes() {
       <Route element={<Layout />}>
         <Route index element={<CREWorkflow />} />
         <Route path="cre" element={<Navigate to="/" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="streams" element={<StreamScreen />} />
-        <Route path="agent" element={<AgentConsolePage />} />
         <Route path="docs" element={<Docs />} />
         <Route path="docs/:section" element={<Docs />} />
         <Route

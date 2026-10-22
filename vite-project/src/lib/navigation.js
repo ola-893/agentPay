@@ -1,19 +1,7 @@
-import { Workflow, ArrowRightLeft, Bot, BookOpen } from 'lucide-react';
+import { Workflow, BookOpen } from 'lucide-react';
 
 export const navigation = [
-  { path: '/', icon: Workflow, label: 'CRE Workflow', shortLabel: 'Workflow' },
-  {
-    path: '/streams',
-    icon: ArrowRightLeft,
-    label: 'Streams',
-    shortLabel: 'Streams',
-  },
-  {
-    path: '/agent',
-    icon: Bot,
-    label: 'Agent setup',
-    shortLabel: 'Agent setup',
-  },
+  { path: '/', icon: Workflow, label: 'Workflow', shortLabel: 'Workflow' },
   { path: '/docs', icon: BookOpen, label: 'Docs', shortLabel: 'Docs' },
 ];
 export const isCurrentPage = (path, pathname) =>

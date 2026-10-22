@@ -4,9 +4,8 @@ export const documentationSections = [
   ["setup", "Run locally"],
   ["cre", "CRE workflow"],
   ["usdc", "USDC & policy"],
-  ["agent", "Agent setup"],
+  ["cli", "CLI demo"],
   ["integration", "SDK integration"],
-  ["streams", "Legacy streams"],
   ["troubleshooting", "Troubleshooting"],
 ];
 const p = (text) => ({ type: "paragraph", text });
@@ -63,12 +62,8 @@ export const documentation = {
               "Understand the streaming problem and CRE supervision, then inspect recorded price-safety ALLOW/DENY runs. No wallet required.",
             ],
             [
-              "Agent setup",
-              "Validate addresses, save a local draft, and copy a guarded SDK example. No wallet required.",
-            ],
-            [
-              "Streams",
-              "Manage a separate 18-decimal tUSD streaming deployment with a connected wallet.",
+              "Docs",
+              "Read the CRE supervision flow, reproduce the CLI demo, and inspect policy and trust boundaries.",
             ],
           ]
         ),
@@ -94,7 +89,7 @@ export const documentation = {
     related: [
       ["/docs/setup", "Run locally"],
       ["/docs/cre", "Understand CRE"],
-      ["/docs/agent", "Prepare an agent"],
+      ["/docs/cli", "Run the CLI demo"],
     ],
   },
   setup: {
@@ -109,7 +104,7 @@ export const documentation = {
         ),
         code("Terminal", "npm run install:all\nnpm run dev"),
         p(
-          "Node 22 is the verified major version. No wallet, contract deployment, Bun, CRE login, or private key is required to view existing evidence or use Agent setup."
+          "Node 22 is the verified major version. No wallet, contract deployment, Bun, CRE login, or private key is required to view existing evidence or read the docs."
         ),
       ]),
       section("2. Run CRE with live inputs", [
@@ -145,7 +140,7 @@ export const documentation = {
     ],
     related: [
       ["/docs/troubleshooting", "Resolve setup problems"],
-      ["/docs/streams", "Configure legacy streams"],
+      [repo + "docs/AI_AGENT_DEMO.md", "Run the CLI demo"],
     ],
   },
   cre: {
@@ -256,7 +251,7 @@ export const documentation = {
       ]),
     ],
     related: [
-      ["/docs/agent", "Run the AI streaming demo"],
+      ["/docs/cli", "Run the AI streaming demo"],
       ["/docs/usdc", "Read the USDC policy"],
       [
         repo + "docs/evidence/admission-fix/VERIFICATION.md",
@@ -331,29 +326,12 @@ export const documentation = {
       ],
     ],
   },
-  agent: {
-    title: "Prepare an agent integration draft.",
+  cli: {
+    title: "Run the AI CLI demo.",
     intro:
-      "Agent setup creates a browser-local configuration and a copyable SDK example. It does not operate a running agent.",
-    source: "docs/AGENT_SETUP.md",
+      "Run real AI tool calls and local CRE workflows from the terminal. The browser presents workflow evidence and documentation; execution stays in the CLI.",
+    source: "docs/AI_AGENT_DEMO.md",
     sections: [
-      section("Use Agent setup", [
-        list([
-          "Open Agent setup from the main or mobile navigation. No wallet is needed.",
-          "Enter a draft name, deployed guard and settlement addresses, recipient and a positive USDC amount with at most six decimals.",
-          "Valid values generate a TypeScript example with the exact bigint amount. Validation checks format, not whether these contracts are deployed or correctly configured.",
-          "Save local draft stores versioned JSON in this browser. Reload restores it. Reset removes the draft.",
-          "Copy the example into your own Node/TypeScript agent and supply its connected signer and a freshly authorized request ID.",
-        ]),
-      ]),
-      section("What saving changes", [
-        p(
-          "A draft does not change CRE configuration, onchain policy, a spending cap, API keys or workflow status. There is no live agent telemetry, emergency stop, automated deployment or payment submission on this page. No private key belongs in a browser field or VITE_ variable."
-        ),
-        p(
-          "Browser storage may be unavailable or cleared, and other code on the same origin can read it. Store only these non-secret configuration fields. Saving is optional; code can still be copied if storage is blocked."
-        ),
-      ]),
       section("Run the AI CLI demo", [
         p(
           "The separate CLI uses real Qwen or OpenAI tool calls and a USDC-configured escrow stream. Local CRE evaluates admission, healthy continuation and outage-triggered closure using HTTP observations and Sepolia state. Configure the model key, dedicated payer, recipient and AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env."
@@ -389,12 +367,11 @@ export const documentation = {
       ]),
       section("Strict SDK integration prerequisites", [
         p(
-          "The generated GuardedPaymentClient example uses a different authority path: configured strict consumers and an authenticated unexpired report for the exact intent. The current public guard is closed and this project does not deploy a workflow to Chainlink. The SDK checks onchain authorization before approval and settlement; local simulation output cannot unlock it."
+          "The GuardedPaymentClient SDK reference uses a different authority path: configured strict consumers and an authenticated unexpired report for the exact intent. The current public guard is closed and this project does not deploy a workflow to Chainlink. The SDK checks onchain authorization before approval and settlement; local simulation output cannot unlock it."
         ),
       ]),
     ],
     related: [
-      ["/agent", "Open Agent setup"],
       ["/docs/integration", "SDK integration"],
       [repo + "docs/AI_AGENT_DEMO.md", "AI purchasing CLI guide"],
       [repo + "docs/TOOLBUYER.md", "ToolBuyer mechanism and comparison"],
@@ -435,54 +412,8 @@ export const documentation = {
       ]),
     ],
     related: [
-      ["/docs/agent", "Configure a local draft"],
+      ["/docs/cli", "Run the streaming CLI"],
       [repo + "DEPLOYMENT.md", "Deploy the strict consumer"],
-    ],
-  },
-  streams: {
-    title: "Manage legacy tUSD streams.",
-    intro:
-      "This is the separate 18-decimal streaming path. Do not configure Circle USDC as its token.",
-    source: "docs/architecture/payment-streams.md",
-    sections: [
-      section("Deploy and configure", [
-        p(
-          "Use a dedicated Sepolia test wallet and the root .env.example. npm run deploy:sepolia deploys MockUSD and AgentPayStream. It does not deploy the CRE consumer or Circle USDC. Copy the printed addresses into vite-project/.env.local and restart Vite."
-        ),
-        code(
-          "vite-project/.env.local",
-          "VITE_CONTRACT_ADDRESS=<deployed-AgentPayStream>\nVITE_PAYMENT_TOKEN_ADDRESS=<deployed-18-decimal-MockUSD>"
-        ),
-        p(
-          "Without both addresses, Streams shows setup guidance. The chain is fixed to Ethereum Sepolia. Frontend configuration is public; never include a private key."
-        ),
-      ]),
-      section("Create a stream", [
-        list([
-          "Connect a browser wallet on Sepolia. Mint test tUSD using the configured MockUSD contract if needed.",
-          "Enter a nonzero recipient address, amount and whole-second duration. ENS resolution is not supported.",
-          "The default duration is 24 hours; presets and custom seconds use the same form state. Use balance copies the wallet’s fetched tUSD balance.",
-          "The per-second integer flow rate must be nonzero. Your wallet may request token approval and stream creation as separate confirmations.",
-          "Wait for confirmation before starting another transaction. Missing balances and RPC failures are shown explicitly.",
-        ]),
-      ]),
-      section("Withdraw or close", [
-        p(
-          "Incoming cards estimate claimable funds after subtracting previous withdrawals. At the stop time the entire unwithdrawn remainder becomes claimable, including integer rounding dust. The final amount is determined onchain. The recipient can still withdraw an ended stream while it remains active in contract storage."
-        ),
-        p(
-          "Either party can close an active stream. Accrued funds go to the recipient and unspent funds return to the sender. Closing requires wallet confirmation. Stream discovery covers the most recent 49000 blocks; use Withdraw by stream ID to check an older stream. Changing that ID clears a stale balance check."
-        ),
-      ]),
-      section("Wallet sessions", [
-        p(
-          "Switching account/network or disconnecting invalidates the app’s session; reconnect to refresh it. Disconnect wallet clears AgentPay’s local session, not the wallet extension’s site permissions. Revoke those separately in your wallet if needed."
-        ),
-      ]),
-    ],
-    related: [
-      ["/streams", "Open Streams"],
-      [repo + "DEPLOYMENT.md", "Deployment instructions"],
     ],
   },
   troubleshooting: {
@@ -500,28 +431,8 @@ export const documentation = {
               "Check the JSON exists in vite-project/public/evidence. Retry after restoring it, or capture both scenarios with CRE.",
             ],
             [
-              "Streams shows setup instructions",
-              "Set both legacy contract addresses in vite-project/.env.local and restart Vite.",
-            ],
-            [
-              "No browser wallet detected",
-              "Use a wallet-enabled browser. Workflow evidence and Agent setup remain available without it.",
-            ],
-            [
-              "Wallet request already open",
-              "Open the wallet and approve or reject the existing connection request.",
-            ],
-            [
-              "Wallet account or network changed",
-              "Reconnect on Ethereum Sepolia.",
-            ],
-            [
-              "Balance unavailable / streams could not refresh",
-              "Check RPC access, deployment addresses, token decimals and the configured stream token. Use Retry; failure is not a zero balance.",
-            ],
-            [
-              "Draft did not persist",
-              "Browser storage may be blocked or cleared. Copy the example or enable storage for this origin.",
+              "Old agent, streams or dashboard URL",
+              "Those browser pages were removed. Use Workflow or Docs from navigation; run payment demos from the CLI guide.",
             ],
           ]
         ),
@@ -559,7 +470,7 @@ export const documentation = {
       ]),
       section("Known verification limits", [
         p(
-          "The UI review verified responsive routes, schema validation, copy behavior, local draft persistence and evidence-error recovery. Live wallet signing, stream transactions and public deployment were not exercised in that pass because no wallet/deployments were configured. Repository contract/SDK tests cover their separate logic. The documentation audit compiles exact examples and checks transcript hashes, frontend copies and report fields; these checks do not execute a public payment. See the UI review and submission guide for evidence and limits."
+          "The browser is read-only: workflow evidence and documentation require no wallet or credentials. A browser page does not execute the CLI or prove a live payment. Repository tests and saved CLI/receipt evidence cover the separate payment paths; documentation checks validate links, exact SDK examples and evidence integrity without making a new public payment."
         ),
       ]),
     ],

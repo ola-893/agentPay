@@ -57,8 +57,6 @@ for (const file of files) {
 }
 const routes = new Set([
   '/',
-  '/agent',
-  '/streams',
   '/docs',
   ...documentationSections.map(([key]) => `/docs/${key}`),
 ]);

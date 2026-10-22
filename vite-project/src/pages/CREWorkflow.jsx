@@ -213,7 +213,7 @@ export default function CREWorkflow() {
             How CRE supervises streams <ArrowRight size={15} />
           </Link>
           <Link
-            to="/docs/agent"
+            to="/docs/cli"
             className="inline-flex min-h-11 items-center gap-2 text-sm text-blue-300"
           >
             Run the full CLI demo <ArrowRight size={15} />

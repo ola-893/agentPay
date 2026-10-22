@@ -9,10 +9,8 @@ npm run dev
 
 Open the Vite URL from the terminal.
 
-- **CRE Workflow (`/`):** switch Within budget / Over budget; inspect the requested USDC amount, cap, price observations and report status. Copy the selected npm command or open the raw JSON/transcript.
-- **Agent setup (`/agent`):** enter contract/recipient addresses and a USDC amount, save a local draft and copy an SDK example. This does not start an agent or change onchain policy.
-- **Streams (`/streams`):** shows setup guidance until legacy stream/token addresses and a wallet are available.
-- **Docs (`/docs`):** installation, workflow, USDC policy, agent setup, SDK, streams and troubleshooting in the app.
+- **Workflow (`/`):** read the N+1 problem and CRE supervision flow, switch Within budget / Over budget, inspect the saved USDC evidence and copy its reproduction command.
+- **Docs (`/docs`):** read setup, workflow, USDC policy, CLI demo, SDK reference and troubleshooting. The frontend has no wallet connection, agent console or stream management.
 
 Saved captures are historical, explicitly labeled simulations. The browser does not fetch live market prices or use a saved ALLOW as spend authority.
 
@@ -39,8 +37,13 @@ npm run cre:capture -- --deny-budget
 
 Prior captures are backed up before successful replacement. These commands do not broadcast. [Workflow](../WORKFLOW.md) and [recording guide](../RECORDING_READINESS.md).
 
-## Prepare a guarded USDC payment
+## Run the payment demo from the CLI
 
-[Agent setup](../AGENT_SETUP.md) generates an integration example with exact six-decimal raw units. A payment still requires real deployments, a connected Sepolia signer and a fresh authenticated report accepted by the production guard. Use [GuardedPaymentClient](../sdk/guarded-payment-client.md), not the legacy streaming SDK, for this path.
+Use the [AI CLI guide](../AI_AGENT_DEMO.md) to configure model credentials and the dedicated Sepolia wallet in ignored root `.env`. Preview without signing, then optionally fund a new 0.01 test-USDC stream:
 
-For tUSD streams instead, follow [stream setup](../architecture/payment-streams.md). Circle USDC is not supported in the legacy stream UI or SDK. Testnet tokens have no monetary value.
+```sh
+npm run --silent demo:agent
+npm run --silent demo:agent -- --pay
+```
+
+The paid run consumes test ETH for stream and audit-receipt transactions. The frontend does not execute these commands. The separate [strict SDK reference](../sdk/guarded-payment-client.md) requires authenticated onchain authorization; local CRE simulation cannot unlock that path. Testnet tokens have no monetary value.
