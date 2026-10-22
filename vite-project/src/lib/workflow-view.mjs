@@ -1,0 +1,234 @@
+import { formatTokenUnits } from "./token-units.mjs";
+
+export const shortAddress = (value) =>
+  value ? `${value.slice(0, 6)}…${value.slice(-4)}` : "—";
+export function formatUsdc(raw) {
+  return raw == null ? "—" : `${formatTokenUnits(raw, 6)} USDC`;
+}
+// Truncate rather than round a displayed balance above what the wallet holds.
+export function formatEth(raw) {
+  if (raw == null) return "—";
+  const digits = (BigInt(raw) / 100000000000000n).toString().padStart(5, "0");
+  return `${digits.slice(0, -4)}.${digits.slice(-4)} ETH`;
+}
+export function toRawUsdc(text) {
+  if (!/^(?:0|[1-9][0-9]*)(?:\.[0-9]{0,6})?$/.test(text))
+    throw new Error("Use up to 6 decimals.");
+  const [whole, fraction = ""] = text.split(".");
+  return (
+    BigInt(whole) * 1000000n +
+    BigInt(fraction.padEnd(6, "0"))
+  ).toString();
+}
+export function formatPrice(raw) {
+  if (raw == null) return "—";
+  const digits = (BigInt(raw) / 1000n).toString().padStart(6, "0");
+  return `${digits.slice(0, -5)}.${digits.slice(-5)}`;
+}
+export function percentOf(raw, total) {
+  if (raw == null || total == null || BigInt(total) <= 0n) return "0%";
+  const value = (BigInt(raw) * 10000n) / BigInt(total);
+  return `${formatTokenUnits(value > 10000n ? 10000n : value, 2)}%`;
+}
+export function eventNodes(event) {
+  if (
+    event.type === "cre.result" ||
+    (event.type === "step.start" && event.data.stage === "cre")
+  ) {
+    const target =
+      event.data.target ||
+      (event.data.command?.includes("spend-settings")
+        ? "spend"
+        : event.data.command?.includes("staging-settings")
+        ? "price"
+        : event.data.command?.includes("stream-settings")
+        ? "stream"
+        : null);
+    if (!target) return ["cre"];
+    return target === "price"
+      ? ["cre", "agent"]
+      : target === "spend"
+      ? ["cre", "wallet"]
+      : ["cre", "escrow", "service"];
+  }
+  if (event.type === "wallet.tx")
+    return event.data.kind === "approval" ? ["wallet"] : ["wallet", "escrow"];
+  if (["stream.opened", "stream.closed"].includes(event.type))
+    return ["wallet", "escrow", "service"];
+  if (["api.reuse", "fault"].includes(event.type)) return ["agent", "service"];
+  if (event.type === "audit.receipt") return ["wallet"];
+  if (event.type === "cleanup") return ["wallet", "escrow"];
+  return ["agent"];
+}
+// Presentation projection only. Decisions and amounts are copied from events;
+// missing observations remain unknown. This never evaluates a CRE policy.
+export function deriveDiagramState(events = []) {
+  const state = {
+    status: "idle",
+    decision: null,
+    target: null,
+    inputs: [],
+    active: [],
+    fundedRaw: null,
+    earnedRaw: null,
+    refundedRaw: null,
+    closed: false,
+    unverified: false,
+    successfulRequests: null,
+    failedRequests: null,
+    reuseTransactions: null,
+    service: "unknown",
+    faultStatus: null,
+    transaction: null,
+    transactions: [],
+    auditReceipts: [],
+    summary: null,
+    packet: null,
+    lastSeq: 0,
+  };
+  const transactions = new Map(),
+    receipts = new Map();
+  for (const event of events) {
+    const d = event.data;
+    state.status = "running";
+    state.lastSeq = event.seq;
+    state.active = eventNodes(event);
+    state.inputs = [];
+    state.packet = null;
+    if (event.type === "cre.result") {
+      state.decision = d.decision;
+      state.target = d.target;
+      state.inputs =
+        d.target === "price"
+          ? ["coinbase", "feed"]
+          : d.target === "stream"
+          ? ["health", "state"]
+          : ["state"];
+      if (d.target === "stream" && d.observations?.health)
+        state.service = d.observations.health.serviceAvailable
+          ? "healthy"
+          : "outage";
+    }
+    if (event.type === "wallet.tx") {
+      transactions.set(d.hash, d);
+      state.transaction = d;
+      state.packet = d;
+    }
+    if (event.type === "stream.opened") state.fundedRaw = d.fundedRaw;
+    if (event.type === "stream.closed") {
+      state.closed = true;
+      state.earnedRaw = d.earnedRaw;
+      state.refundedRaw = d.refundedRaw;
+    }
+    if (event.type === "api.reuse") {
+      state.successfulRequests = d.successfulRequests;
+      state.failedRequests = d.failedRequests;
+      state.reuseTransactions =
+        d.hostCheckedNoPaymentTransactions === true &&
+        d.walletNonceBefore === d.walletNonceAfter
+          ? 0
+          : null;
+    }
+    if (event.type === "fault") {
+      state.service = "outage";
+      state.faultStatus = d.httpStatus ?? null;
+    }
+    if (event.type === "audit.receipt") receipts.set(d.hash, d);
+    if (event.type === "run.end") {
+      state.status = d.status;
+      state.summary = d;
+      state.unverified = d.amountsVerified === false;
+      state.fundedRaw = state.unverified ? null : d.fundedRaw;
+      state.earnedRaw = state.unverified ? null : d.earnedRaw;
+      state.refundedRaw = state.unverified ? null : d.refundedRaw;
+      state.inputs = [];
+      state.active = [];
+    }
+  }
+  state.transactions = [...transactions.values()];
+  state.auditReceipts = [...receipts.values()];
+  return state;
+}
+export function timelinePresentation(event) {
+  const d = event.data;
+  if (event.type === "cre.result") {
+    const r = d.observations;
+    return {
+      title:
+        d.target === "price"
+          ? "Price safety"
+          : d.target === "spend"
+          ? "Spend review"
+          : r.config.phase === "admission"
+          ? "Stream admission"
+          : d.decision === "CLOSE"
+          ? "Outage checkpoint"
+          : "Health checkpoint",
+      chip: d.decision,
+      metric:
+        d.target === "price"
+          ? `${formatPrice(r.chainlinkPriceUsd8)} vs ${formatPrice(
+              r.externalPriceUsd8
+            )}`
+          : d.target === "spend"
+          ? `Risk ${r.decision.riskScore}`
+          : r.config.streamId !== "0"
+          ? `Stream #${r.config.streamId}`
+          : formatUsdc(r.config.amountRaw),
+    };
+  }
+  if (event.type === "wallet.tx")
+    return {
+      title: `Wallet ${d.kind}`,
+      chip: d.status === "confirmed" ? "Confirmed" : "Signed",
+      metric: shortAddress(d.hash),
+    };
+  if (event.type === "api.reuse")
+    return {
+      title: "Session reused",
+      chip: "API",
+      metric: `${d.successfulRequests} calls`,
+    };
+  if (event.type === "fault")
+    return {
+      title: "Injected outage",
+      chip: "Outage",
+      metric: String(d.httpStatus),
+    };
+  if (event.type === "stream.opened")
+    return {
+      title: "Escrow funded",
+      chip: "Onchain",
+      metric: formatUsdc(d.fundedRaw),
+    };
+  if (event.type === "stream.closed")
+    return {
+      title: "Stream closed",
+      chip: "CLOSE",
+      metric: formatUsdc(d.refundedRaw),
+    };
+  if (event.type === "audit.receipt")
+    return {
+      title: "Audit receipt",
+      chip: "Onchain",
+      metric: `${d.count} decisions`,
+    };
+  if (event.type === "cleanup")
+    return {
+      title: "Safety cleanup",
+      chip: d.status === "closed" ? "CLOSE" : "Attention",
+      metric: `Stream #${d.streamId}`,
+    };
+  if (event.type === "error")
+    return { title: "Run interrupted", chip: "ERROR", metric: d.code };
+  return {
+    title:
+      d.stage === "cre"
+        ? "CRE evaluation"
+        : d.stage === "request"
+        ? `${d.tier} request`
+        : "Agent planning",
+    chip: "",
+    metric: "",
+  };
+}
