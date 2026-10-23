@@ -72,6 +72,17 @@ function ControlCard({ c }) {
   const profile = c.profile;
   const recorded = c.mode === "recorded";
   const policy = c.policy;
+  const runnerStatus = c.agent
+    ? c.busy || (c.agent.busy && !c.run.summary)
+      ? "busy"
+      : "ready"
+    : "offline";
+  const runnerTitle =
+    runnerStatus === "ready"
+      ? "Local runner connected and ready"
+      : runnerStatus === "busy"
+      ? "Local runner is busy"
+      : "Local runner not connected; start npm run dev:live";
   const setField = (key, value) => c.setPolicy({ ...policy, [key]: value });
   const runDisabled = recorded
     ? !c.recording
@@ -142,6 +153,7 @@ function ControlCard({ c }) {
             key={mode}
             aria-pressed={c.mode === mode}
             disabled={c.busy}
+            title={mode === "live" ? runnerTitle : "Replay captured runs"}
             onClick={() => c.changeMode(mode)}
           >
             {mode === "recorded" ? (
@@ -149,10 +161,10 @@ function ControlCard({ c }) {
             ) : (
               <>
                 <span
-                  className={`wf-runner-dot ${c.agent ? "is-connected" : ""}`}
+                  className={`wf-runner-dot is-${runnerStatus}`}
                   aria-hidden="true"
                 />{" "}
-                Live
+                Live<span className="sr-only"> · Runner {runnerStatus}</span>
               </>
             )}
           </button>
@@ -161,23 +173,35 @@ function ControlCard({ c }) {
       {recorded ? (
         <>
           <div
-            className="wf-scenarios"
+            className="wf-scenarios wf-recorded-scenarios"
             role="group"
             aria-label="Recorded scenario"
           >
-            {c.manifest.map((item) => (
-              <button
-                type="button"
-                key={item.id}
-                title={item.label}
-                aria-pressed={c.selected === item.id}
-                disabled={c.playing}
-                onClick={() => c.setSelected(item.id)}
-              >
-                {scenarios[item.preset] ||
-                  (item.mode === "pay" ? "Stream" : "Preview")}
-              </button>
-            ))}
+            {[...c.manifest]
+              .sort((a, b) => {
+                const order = (item) =>
+                  item.mode === "pay"
+                    ? 0
+                    : item.preset === "tiny-cap"
+                    ? 2
+                    : item.preset === "stale-feed"
+                    ? 3
+                    : 1;
+                return order(a) - order(b);
+              })
+              .map((item) => (
+                <button
+                  type="button"
+                  key={item.id}
+                  title={item.label}
+                  aria-pressed={c.selected === item.id}
+                  disabled={c.playing}
+                  onClick={() => c.setSelected(item.id)}
+                >
+                  {scenarios[item.preset] ||
+                    (item.mode === "pay" ? "Funded run" : "Preview (no txs)")}
+                </button>
+              ))}
           </div>
           <p className="wf-capture-date">
             {c.recording
@@ -198,18 +222,36 @@ function ControlCard({ c }) {
             </h3>
             <dl>
               {[
-                ["Cap", formatUsdc(policy?.depositCapRaw)],
-                ["Feed age", policy ? `${policy.maxFeedAgeSeconds}s` : "—"],
-                ["Failures", policy?.maxFailedRequests ?? "—"],
+                ["Deposit cap", formatUsdc(policy?.depositCapRaw)],
                 [
-                  "Rate",
+                  "Max rate",
                   policy
-                    ? `${formatTokenUnits(policy.maxRateRawPerSecond, 6)}/s`
+                    ? `${formatTokenUnits(
+                        policy.maxRateRawPerSecond,
+                        6
+                      )} USDC/s`
                     : "—",
                 ],
+                [
+                  "Max feed age",
+                  policy
+                    ? policy.maxFeedAgeSeconds % 3600 === 0
+                      ? `${policy.maxFeedAgeSeconds / 3600} h`
+                      : `${policy.maxFeedAgeSeconds} s`
+                    : "—",
+                ],
+                ["Max failures", policy?.maxFailedRequests ?? "—"],
               ].map(([label, value]) => (
                 <div key={label}>
-                  <dt>{label}</dt>
+                  <dt
+                    title={
+                      label === "Max rate"
+                        ? "Policy upper bound, not the stream's quoted rate"
+                        : undefined
+                    }
+                  >
+                    {label}
+                  </dt>
                   <dd>{value}</dd>
                 </div>
               ))}
@@ -401,28 +443,17 @@ function ControlCard({ c }) {
           </form>
         </>
       )}
-      <button
-        type={recorded ? "button" : "submit"}
-        form={recorded ? undefined : "wf-live-policy"}
-        className="btn-primary wf-run-button"
-        disabled={runDisabled}
-        onClick={recorded ? () => c.start({ preventDefault() {} }) : undefined}
-      >
-        {c.playing ? <Pause size={15} /> : <Play size={15} />}{" "}
-        {recorded
-          ? c.playing
-            ? "Pause"
-            : c.run.summary
-            ? "Replay"
-            : c.run.events.length
-            ? "Resume"
-            : "Replay"
-          : c.busy
-          ? "Running…"
-          : c.pay
-          ? "Run Pay"
-          : "Run Preview"}
-      </button>
+      {!recorded && (
+        <button
+          type="submit"
+          form="wf-live-policy"
+          className="btn-primary wf-run-button"
+          disabled={runDisabled}
+        >
+          <Play size={15} />{" "}
+          {c.busy ? "Running…" : c.pay ? "Run Pay" : "Run Preview"}
+        </button>
+      )}
       {!recorded && (c.activeId || c.agent?.activeRunId) && (
         <button
           type="button"

@@ -1,0 +1,68 @@
+{
+  "checkedAt": "2026-10-23T08:30:03.500Z",
+  "method": "CSS source-palette contrast calculation, including composited decision badge backgrounds; not a browser computed-style audit",
+  "minimumRequiredRatio": 4.5,
+  "containerOpacityRemoved": true,
+  "checks": [
+    {
+      "label": "Inputs",
+      "foreground": "#cbd5e1",
+      "background": "#111827",
+      "ratio": 11.95
+    },
+    {
+      "label": "Node captions",
+      "foreground": "#94a3b8",
+      "background": "#111827",
+      "ratio": 6.92
+    },
+    {
+      "label": "Gauge captions",
+      "foreground": "#94a3b8",
+      "background": "#111827",
+      "ratio": 6.92
+    },
+    {
+      "label": "SVG labels",
+      "foreground": "#94a3b8",
+      "background": "#111827",
+      "ratio": 6.92
+    },
+    {
+      "label": "Fund once",
+      "foreground": "#e2e8f0",
+      "background": "#111827",
+      "ratio": 14.39
+    },
+    {
+      "label": "CRE title",
+      "foreground": "#93b4ff",
+      "background": "#111827",
+      "ratio": 8.63
+    },
+    {
+      "label": "Awaiting events",
+      "foreground": "#94a3b8",
+      "background": "#111827",
+      "ratio": 6.92
+    },
+    {
+      "label": ".wf-allow",
+      "foreground": "#6ee7b7",
+      "background": "#10b98115",
+      "ratio": 10.35
+    },
+    {
+      "label": ".wf-deny",
+      "foreground": "#fca5a5",
+      "background": "#ef444418",
+      "ratio": 8.63
+    },
+    {
+      "label": ".wf-warn",
+      "foreground": "#fcd34d",
+      "background": "#f59e0b15",
+      "ratio": 10.86
+    }
+  ]
+}

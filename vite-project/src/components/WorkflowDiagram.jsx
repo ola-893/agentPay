@@ -5,21 +5,24 @@ import {
   Database,
   Globe,
   LockKeyhole,
+  DollarSign,
+  Radio,
+  Activity,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { DecisionBadge } from "./WorkflowBits";
 import { formatUsdc, percentOf, shortAddress } from "../lib/workflow-view.mjs";
 const nodes = [
-  ["agent", "Agent", Bot],
-  ["wallet", "Wallet", Wallet],
-  ["escrow", "Escrow", Database],
-  ["service", "Paid service", Globe],
+  ["agent", "Agent", Bot, "Requests paid work"],
+  ["wallet", "Wallet", Wallet, "Signs approved calls"],
+  ["escrow", "Escrow", Database, "Accrues over time"],
+  ["service", "Paid service", Globe, "Serves authenticated requests"],
 ];
 const inputs = [
-  ["coinbase", "Coinbase"],
-  ["feed", "Chainlink USDC/USD"],
-  ["health", "Service health"],
-  ["state", "Stream state"],
+  ["coinbase", "Coinbase", DollarSign],
+  ["feed", "Chainlink USDC/USD", Radio],
+  ["health", "Service health", Activity],
+  ["state", "Stream state", Database],
 ];
 function Gauge({ state }) {
   const funded = state.fundedRaw != null && BigInt(state.fundedRaw) > 0n;
@@ -88,14 +91,21 @@ export default function WorkflowDiagram({
     highlight.length ? highlight.includes(id) : state.active.includes(id);
   const calls =
     state.successfulRequests == null
-      ? "Calls —"
+      ? idle
+        ? "0 calls"
+        : "Calls —"
       : `${state.successfulRequests} calls${
           state.reuseTransactions === 0 ? " · 0 txs" : ""
         }`;
-  const nodeBody = (id, label, Icon) => (
+  const nodeBody = (id, label, Icon, caption) => (
     <>
-      <Icon size={24} aria-hidden="true" />
-      <strong>{label}</strong>
+      <span className="wf-node-tile">
+        <Icon size={30} aria-hidden="true" />
+      </span>
+      <span className="wf-node-copy">
+        <strong>{label}</strong>
+        <span className="wf-node-caption">{caption}</span>
+      </span>
       {id === "escrow" && <Gauge state={state} />}
       {id === "service" && state.service === "outage" && (
         <>
@@ -135,18 +145,19 @@ export default function WorkflowDiagram({
       </p>
       <div className={`wf-canvas ${idle ? "wf-ghost" : ""}`}>
         <div className="wf-inputs">
-          {inputs.map(([id, label]) => (
+          {inputs.map(([id, label, Icon]) => (
             <span
               key={`${id}-${state.lastSeq}`}
               className={state.inputs.includes(id) ? "wf-input-pulse" : ""}
             >
+              <Icon size={13} aria-hidden="true" />
               {label}
             </span>
           ))}
         </div>
         <div className="wf-desktop-diagram">
           <svg
-            viewBox="0 0 800 400"
+            viewBox="0 0 800 480"
             preserveAspectRatio="none"
             aria-hidden="true"
             className="wf-connections"
@@ -191,25 +202,25 @@ export default function WorkflowDiagram({
             <text x="649" y="181">
               probes health
             </text>
-            <path d="M134,250 H244" className="wf-main-edge" />
-            <path d="M340,250 H450" className="wf-main-edge" />
-            <text x="397" y="238">
+            <path d="M160,272 H240" className="wf-main-edge" />
+            <path d="M360,272 H440" className="wf-main-edge" />
+            <text x="400" y="252" className="wf-fund-label">
               fund once
             </text>
-            <path d="M540,250 H650" className="wf-main-edge" />
-            <text x="595" y="238">
+            <path d="M560,272 H640" className="wf-main-edge" />
+            <text x="600" y="252">
               earns per second
             </text>
             <path
-              d="M100,302 C100,389 700,389 700,302"
+              d="M100,368 C100,470 700,470 700,418"
               className="wf-reuse-edge"
             />
             {state.closed && !state.unverified && (
               <>
-                <text x="375" y="326" className="wf-settlement-label">
+                <text x="375" y="402" className="wf-settlement-label">
                   ← {formatUsdc(state.refundedRaw)}
                 </text>
-                <text x="600" y="326" className="wf-settlement-label">
+                <text x="600" y="402" className="wf-settlement-label">
                   {formatUsdc(state.earnedRaw)} →
                 </text>
               </>
@@ -219,14 +230,14 @@ export default function WorkflowDiagram({
                 key={state.lastSeq}
                 r="4"
                 cx="300"
-                cy="250"
+                cy="272"
                 className={`wf-packet wf-packet-${state.packet.kind}`}
               />
             )}
           </svg>
           {hub}
           <div className="wf-nodes">
-            {nodes.map(([id, label, Icon]) => (
+            {nodes.map(([id, label, Icon, caption]) => (
               <button
                 type="button"
                 key={id}
@@ -238,14 +249,18 @@ export default function WorkflowDiagram({
                 onClick={() => onNode(id)}
                 aria-label={`Find ${label} events`}
               >
-                {nodeBody(id, label, Icon)}
+                {nodeBody(id, label, Icon, caption)}
               </button>
             ))}
           </div>
           <span
             key={state.successfulRequests}
             className="wf-call-count"
-            title="Successful calls reported by the CLI. Zero transactions is shown only when nonce evidence is present."
+            title={
+              idle
+                ? "No run started; the call counter is reset to zero"
+                : "Successful calls reported by the CLI. Zero transactions is shown only when nonce evidence is present."
+            }
           >
             {calls}
           </span>
@@ -264,8 +279,12 @@ export default function WorkflowDiagram({
         <div className="wf-mobile-stepper">
           {hub}
           <ol>
-            {nodes.map(([id, label, Icon]) => (
+            {nodes.map(([id, label, Icon, caption]) => (
               <li key={id}>
+                {id === "escrow" && <p className="wf-mobile-edge">fund once</p>}
+                {id === "service" && (
+                  <p className="wf-mobile-edge">earns per second</p>
+                )}
                 <button
                   type="button"
                   className={`wf-node ${active(id) ? "is-active" : ""} ${
@@ -275,7 +294,7 @@ export default function WorkflowDiagram({
                   }`}
                   onClick={() => onNode(id)}
                 >
-                  {nodeBody(id, label, Icon)}
+                  {nodeBody(id, label, Icon, caption)}
                 </button>
               </li>
             ))}
@@ -288,19 +307,19 @@ export default function WorkflowDiagram({
             </p>
           )}
         </div>
+        {idle && mode === "recorded" && (
+          <div className="wf-idle-action">
+            <button
+              type="button"
+              className="btn-primary"
+              disabled={replayDisabled}
+              onClick={onReplay}
+            >
+              Replay recorded run
+            </button>
+          </div>
+        )}
       </div>
-      {idle && mode === "recorded" && (
-        <div className="wf-idle-action">
-          <button
-            type="button"
-            className="btn-primary"
-            disabled={replayDisabled}
-            onClick={onReplay}
-          >
-            Replay recorded run
-          </button>
-        </div>
-      )}
       <div className="wf-trust">
         {[
           "CRE: local simulation",
