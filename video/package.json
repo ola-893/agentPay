@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "data": "node scripts/build-data.mjs && node scripts/write-script.mjs",
-    "build": "node scripts/build-film.mjs"
+    "data": "cd .. && node video/scripts/build-data.mjs && node video/scripts/write-script.mjs",
+    "build": "cd .. && node video/scripts/build-film.mjs"
   }
 }

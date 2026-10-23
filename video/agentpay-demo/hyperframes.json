@@ -9,22 +9,5 @@
   "media": {
     "autoProxy": true
   },
-  "registryItems": [
-    {
-      "name": "code-terminal-run",
-      "type": "hyperframes:component",
-      "target": "compositions/components/code-terminal-run.html"
-    },
-    {
-      "name": "caption-clip-wipe",
-      "type": "hyperframes:component",
-      "target": "compositions/components/caption-clip-wipe.html"
-    },
-    {
-      "name": "directional-wipe",
-      "type": "hyperframes:component",
-      "target": "compositions/components/directional-wipe.html"
-    }
-  ],
   "authoringSkill": "hyperframes"
 }

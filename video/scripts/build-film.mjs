@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import d from '../data.js';
 const root='video/agentpay-demo', v=d.display;
+fs.mkdirSync('video/out',{recursive:true});
 const timing=JSON.parse(fs.readFileSync('video/timing.json'));
 const script=JSON.parse(fs.readFileSync('video/chapters.json'));
 if(JSON.stringify(script.map(c=>c.sentences))!==JSON.stringify(timing.chapters.map(c=>c.sentences)))throw Error('Narration changed: regenerate audio and timing before building');

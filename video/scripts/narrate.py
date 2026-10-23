@@ -36,11 +36,14 @@ for ch in chapters:
     # User replacement WAVs are authoritative, with explicit timings required.
     if wav.exists() and not timing_path.exists():
         raise SystemExit(f'{wav.name}: supply sentence timing sidecar before using a replacement')
-    owned = timing_path.exists() and json.loads(timing_path.read_text()).get('voice') == voice
+    meta=json.loads(timing_path.read_text()) if timing_path.exists() else {}
+    owned=meta.get('voice')==voice and meta.get('wavSha256')==hashlib.sha256(wav.read_bytes()).hexdigest() if wav.exists() else False
+    if wav.exists() and meta.get('voice')==voice and not owned:
+        raise SystemExit(f'{wav.name} changed: supply new sentence timings and mark voice user; refusing overwrite')
     if not wav.exists() or owned:
         subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-y','-i',str(generated),'-af',f'atempo={tempo},loudnorm=I=-16:TP=-2:LRA=7','-ar','48000',str(wav)],check=True)
         segments=[{**s,'start':round(s['start']/tempo,4),'end':round(s['end']/tempo,4)} for s in segments]
-        timing_path.write_text(json.dumps({'voice':voice,'speed':speed,'tempo':tempo,'segments':segments},indent=2)+'\n')
+        timing_path.write_text(json.dumps({'voice':voice,'speed':speed,'tempo':tempo,'segments':segments,'wavSha256':hashlib.sha256(wav.read_bytes()).hexdigest()},indent=2)+'\n')
     else: segments=json.loads(timing_path.read_text())['segments']
     duration=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','default=nw=1:nk=1',str(wav)]))
     flac=assets/(ch['id']+'.flac')
