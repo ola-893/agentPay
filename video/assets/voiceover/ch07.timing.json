@@ -1,0 +1,27 @@
+{
+  "voice": "bm_george",
+  "speed": 1.0,
+  "tempo": 1.28,
+  "segments": [
+    {
+      "text": "Follow the documented prerequisites.",
+      "start": 0.1953,
+      "end": 2.062
+    },
+    {
+      "text": "Start with the read-only C R E scenarios, then the preview agent demo.",
+      "start": 2.2026,
+      "end": 6.1359
+    },
+    {
+      "text": "Use the funded command only with a prepared Sepolia wallet.",
+      "start": 6.2766,
+      "end": 9.5266
+    },
+    {
+      "text": "Inspect the linked transactions. Built with Chainlink C R E.",
+      "start": 9.6672,
+      "end": 12.9172
+    }
+  ]
+}

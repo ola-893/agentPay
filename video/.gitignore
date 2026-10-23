@@ -10,3 +10,5 @@ assets/*.mp4
 *.aiff
 agentpay-demo/.media/
 agentpay-demo/.hyperframes-manifest.json
+agentpay-demo/.thumbnails/
+agentpay-demo/.waveform-cache/

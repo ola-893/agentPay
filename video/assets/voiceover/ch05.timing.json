@@ -1,0 +1,27 @@
+{
+  "voice": "bm_george",
+  "speed": 1.0,
+  "tempo": 1.28,
+  "segments": [
+    {
+      "text": "The dashboard reads the same saved event stream used to build this video.",
+      "start": 0.1953,
+      "end": 4.0787
+    },
+    {
+      "text": "It displays decisions, request counters, transaction links, and the earnings and refund split.",
+      "start": 4.2193,
+      "end": 9.1359
+    },
+    {
+      "text": "The interface computes no policy decision.",
+      "start": 9.2766,
+      "end": 11.7599
+    },
+    {
+      "text": "A real browser recording belongs here. Capture access was unavailable, so this draft shows a labeled placeholder.",
+      "start": 11.9005,
+      "end": 18.1338
+    }
+  ]
+}
