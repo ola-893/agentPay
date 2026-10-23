@@ -1,0 +1,12 @@
+out/
+.venv/
+.cache/
+agentpay-demo/.hyperframes/
+agentpay-demo/outputs/
+agentpay-demo/assets/audio/
+agentpay-demo/assets/footage/
+assets/voiceover/*.wav
+assets/*.mp4
+*.aiff
+agentpay-demo/.media/
+agentpay-demo/.hyperframes-manifest.json

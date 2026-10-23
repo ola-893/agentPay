@@ -1,0 +1,9 @@
+{
+  "name": "agentpay-video-source",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "data": "node scripts/build-data.mjs && node scripts/write-script.mjs",
+    "build": "node scripts/build-film.mjs"
+  }
+}
