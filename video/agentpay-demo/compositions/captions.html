@@ -1,105 +1,43 @@
-<template><link rel="stylesheet" href="assets/style.css"><div id="root" data-composition-id="captions" data-duration="269.7667" style="background:transparent"><div id="caption-0" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>An agent making a thousand paid API calls should not need a thousand payment transactions.</span></div>
-<div id="caption-1" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>AgentPay combines a funded stream with Chainlink C R E supervision.</span></div>
-<div id="caption-2" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Paying separately for every request couples useful work to repeated blockchain transactions.</span></div>
-<div id="caption-3" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>A funded stream separates the request loop from the payment lifecycle.</span></div>
-<div id="caption-4" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The contract accrues earnings with time; it does not meter API calls.</span></div>
-<div id="caption-5" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>But that creates another problem: who decides when paying should start, continue, or stop?</span></div>
-<div id="caption-6" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>If a provider becomes unavailable while time keeps passing, funds can keep accruing.</span></div>
-<div id="caption-7" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The stream handles settlement. The workflow supplies a decision about whether the session should remain open.</span></div>
-<div id="caption-8" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Follow the agent, its wallet, the escrow, and the paid service.</span></div>
-<div id="caption-9" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The wallet funds escrow, then service requests reuse the active session.</span></div>
-<div id="caption-10" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>C R E connects a separate supervision loop to that payment lifecycle.</span></div>
-<div id="caption-11" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Coinbase supplies an external U S D C quote. Chainlink supplies the Sepolia U S D C dollar feed.</span></div>
-<div id="caption-12" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The supervisor also fetches service health and reads token balances and stream state on Sepolia.</span></div>
-<div id="caption-13" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Those observations produce OPEN, CONTINUE, CLOSE, or DENY.</span></div>
-<div id="caption-14" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The wallet C L I validates the local results before it signs.</span></div>
-<div id="caption-15" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>On the C R E network, a deployed workflow runs on a decentralized oracle network.</span></div>
-<div id="caption-16" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>This demonstration uses the local C L I simulator. It has no D O N authorization.</span></div>
-<div id="caption-17" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The H T T P capability fetches Coinbase. The E V M capability reads the Sepolia feed.</span></div>
-<div id="caption-18" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>This recording observed Coinbase at 1.00000000 dollars and Chainlink at 0.99990493 dollars.</span></div>
-<div id="caption-19" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Both the peg and source disagreement limits are 100 basis points.</span></div>
-<div id="caption-20" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The feed was 8273 seconds old against a limit of 86400 seconds.</span></div>
-<div id="caption-21" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Fresh inputs can change the decision.</span></div>
-<div id="caption-22" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Admission checks bind service health, the payment token, its decimals, balance, budget, and rate.</span></div>
-<div id="caption-23" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The deposit is 0.01 test U S D C, below a 0.1 cap.</span></div>
-<div id="caption-24" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The actual rate is 0.00001 U S D C per second, below the 0.0001 maximum.</span></div>
-<div id="caption-25" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>At checkpoints, the supervisor checks stream identity, accrued funds, availability, and failure counts.</span></div>
-<div id="caption-26" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The saved simulator log shows compilation, the external quote, the chain observation, and the resulting approval.</span></div>
-<div id="caption-27" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Now follow the recorded funded run. Waiting time is condensed.</span></div>
-<div id="caption-28" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The agent is explicitly prompted to try an in-budget session and an over-budget session.</span></div>
-<div id="caption-29" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>After approval, the wallet signs a token allowance and opens the funded stream.</span></div>
-<div id="caption-30" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The service records 10 successful requests, reusing the same stream.</span></div>
-<div id="caption-31" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>A healthy checkpoint returns CONTINUE. Requests reuse the stream.</span></div>
-<div id="caption-32" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The demo injects H T T P 503 responses and records 3 failures.</span></div>
-<div id="caption-33" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>C R E returns CLOSE. The wallet then signs cancellation; the contract settles elapsed earnings.</span></div>
-<div id="caption-34" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>0.01 test U S D C splits into 0.00096 earned and 0.00904 refunded.</span></div>
-<div id="caption-35" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>This card comes from saved R P C verification, not an explorer screenshot.</span></div>
-<div id="caption-36" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The premium quote is 0.2 against the 0.1 cap. DENY prevents that session opening.</span></div>
-<div id="caption-37" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The capture also contains 4 separate audit receipts. These are additional transactions.</span></div>
-<div id="caption-38" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>No premium payment is signed; an audit receipt still follows the block.</span></div>
-<div id="caption-39" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The dashboard reads the same saved event stream used to build this video.</span></div>
-<div id="caption-40" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>It displays decisions, request counters, transaction links, and the earnings and refund split.</span></div>
-<div id="caption-41" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The interface computes no policy decision.</span></div>
-<div id="caption-42" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>A real browser recording belongs here. Capture access was unavailable, so this draft shows a labeled placeholder.</span></div>
-<div id="caption-43" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Be precise about enforcement: local C R E simulation proposes a decision; the wallet C L I gates signing.</span></div>
-<div id="caption-44" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The stream contract does not verify C R E results. A different wallet client can bypass that gate.</span></div>
-<div id="caption-45" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Localhost health snapshots and per-run configurations are demonstration shortcuts, not independent proof of service quality.</span></div>
-<div id="caption-46" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>This uses valueless test U S D C, is not a full x four oh two implementation, and is unaudited.</span></div>
-<div id="caption-47" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>A production path needs a deployed workflow, a public health endpoint, trigger payloads, and authenticated reports.</span></div>
-<div id="caption-48" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>A forwarder and onchain consumer would move authorization into the contract path. That is future work for this stream demo.</span></div>
-<div id="caption-49" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Follow the documented prerequisites.</span></div>
-<div id="caption-50" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Start with the read-only C R E scenarios, then the preview agent demo.</span></div>
-<div id="caption-51" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Use the funded command only with a prepared Sepolia wallet.</span></div>
-<div id="caption-52" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Inspect the linked transactions. Built with Chainlink C R E.</span></div></div><script>const tl=gsap.timeline({paused:true});tl.set('#caption-0',{opacity:1},0.1953);tl.set('#caption-0',{opacity:0},5.2287);
-tl.set('#caption-1',{opacity:1},5.3693);tl.set('#caption-1',{opacity:0},9.4026);
-tl.set('#caption-2',{opacity:1},10.0953);tl.set('#caption-2',{opacity:0},14.8787);
-tl.set('#caption-3',{opacity:1},15.0193);tl.set('#caption-3',{opacity:0},18.5359);
-tl.set('#caption-4',{opacity:1},18.6766);tl.set('#caption-4',{opacity:0},22.7932);
-tl.set('#caption-5',{opacity:1},22.9338);tl.set('#caption-5',{opacity:0},27.5338);
-tl.set('#caption-6',{opacity:1},27.6745);tl.set('#caption-6',{opacity:0},32.0412);
-tl.set('#caption-7',{opacity:1},32.1818);tl.set('#caption-7',{opacity:0},37.5484);
-tl.set('#caption-8',{opacity:1},38.2620);tl.set('#caption-8',{opacity:0},41.3954);
-tl.set('#caption-9',{opacity:1},41.5360);tl.set('#caption-9',{opacity:0},45.4026);
-tl.set('#caption-10',{opacity:1},45.5433);tl.set('#caption-10',{opacity:0},49.4266);
-tl.set('#caption-11',{opacity:1},49.5672);tl.set('#caption-11',{opacity:0},55.7339);
-tl.set('#caption-12',{opacity:1},55.8745);tl.set('#caption-12',{opacity:0},61.4745);
-tl.set('#caption-13',{opacity:1},61.6151);tl.set('#caption-13',{opacity:0},65.0651);
-tl.set('#caption-14',{opacity:1},65.2058);tl.set('#caption-14',{opacity:0},68.8224);
-tl.set('#caption-15',{opacity:1},68.9630);tl.set('#caption-15',{opacity:0},73.7964);
-tl.set('#caption-16',{opacity:1},73.9370);tl.set('#caption-16',{opacity:0},79.6537);
-tl.set('#caption-17',{opacity:1},80.3620);tl.set('#caption-17',{opacity:0},86.1787);
-tl.set('#caption-18',{opacity:1},86.3193);tl.set('#caption-18',{opacity:0},97.7026);
-tl.set('#caption-19',{opacity:1},97.8433);tl.set('#caption-19',{opacity:0},101.6099);
-tl.set('#caption-20',{opacity:1},101.7505);tl.set('#caption-20',{opacity:0},108.2839);
-tl.set('#caption-21',{opacity:1},108.4245);tl.set('#caption-21',{opacity:0},110.5912);
-tl.set('#caption-22',{opacity:1},110.7318);tl.set('#caption-22',{opacity:0},115.7651);
-tl.set('#caption-23',{opacity:1},115.9058);tl.set('#caption-23',{opacity:0},120.4558);
-tl.set('#caption-24',{opacity:1},120.5964);tl.set('#caption-24',{opacity:0},127.8964);
-tl.set('#caption-25',{opacity:1},128.0370);tl.set('#caption-25',{opacity:0},133.4370);
-tl.set('#caption-26',{opacity:1},133.5776);tl.set('#caption-26',{opacity:0},139.6276);
-tl.set('#caption-27',{opacity:1},140.3286);tl.set('#caption-27',{opacity:0},143.9786);
-tl.set('#caption-28',{opacity:1},144.1192);tl.set('#caption-28',{opacity:0},148.9192);
-tl.set('#caption-29',{opacity:1},149.0599);tl.set('#caption-29',{opacity:0},153.2932);
-tl.set('#caption-30',{opacity:1},153.4338);tl.set('#caption-30',{opacity:0},157.3338);
-tl.set('#caption-31',{opacity:1},157.4745);tl.set('#caption-31',{opacity:0},161.1578);
-tl.set('#caption-32',{opacity:1},161.2984);tl.set('#caption-32',{opacity:0},166.4317);
-tl.set('#caption-33',{opacity:1},166.5724);tl.set('#caption-33',{opacity:0},171.9724);
-tl.set('#caption-34',{opacity:1},172.1130);tl.set('#caption-34',{opacity:0},180.4130);
-tl.set('#caption-35',{opacity:1},180.5536);tl.set('#caption-35',{opacity:0},184.6703);
-tl.set('#caption-36',{opacity:1},184.8109);tl.set('#caption-36',{opacity:0},189.9942);
-tl.set('#caption-37',{opacity:1},190.1349);tl.set('#caption-37',{opacity:0},194.9682);
-tl.set('#caption-38',{opacity:1},195.1088);tl.set('#caption-38',{opacity:0},198.8588);
-tl.set('#caption-39',{opacity:1},199.5620);tl.set('#caption-39',{opacity:0},203.4454);
-tl.set('#caption-40',{opacity:1},203.5860);tl.set('#caption-40',{opacity:0},208.5026);
-tl.set('#caption-41',{opacity:1},208.6433);tl.set('#caption-41',{opacity:0},211.1266);
-tl.set('#caption-42',{opacity:1},211.2672);tl.set('#caption-42',{opacity:0},217.5005);
-tl.set('#caption-43',{opacity:1},218.1953);tl.set('#caption-43',{opacity:0},224.6787);
-tl.set('#caption-44',{opacity:1},224.8193);tl.set('#caption-44',{opacity:0},230.3526);
-tl.set('#caption-45',{opacity:1},230.4932);tl.set('#caption-45',{opacity:0},237.3932);
-tl.set('#caption-46',{opacity:1},237.5338);tl.set('#caption-46',{opacity:0},243.2838);
-tl.set('#caption-47',{opacity:1},243.4245);tl.set('#caption-47',{opacity:0},249.3745);
-tl.set('#caption-48',{opacity:1},249.5151);tl.set('#caption-48',{opacity:0},255.8151);
-tl.set('#caption-49',{opacity:1},256.5286);tl.set('#caption-49',{opacity:0},258.3953);
-tl.set('#caption-50',{opacity:1},258.5359);tl.set('#caption-50',{opacity:0},262.4692);
-tl.set('#caption-51',{opacity:1},262.6099);tl.set('#caption-51',{opacity:0},265.8599);
-tl.set('#caption-52',{opacity:1},266.0005);tl.set('#caption-52',{opacity:0},269.2505);window.__timelines.captions=tl;</script></template>
+<template><link rel="stylesheet" href="assets/style.css"><div id="root" data-composition-id="captions" data-duration="105.5333" style="background:transparent"><div id="caption-0" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>An agent making a thousand paid API calls should not need a thousand payment transactions.</span></div>
+<div id="caption-1" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>AgentPay combines payment streams with Chainlink C R E to keep agents working within budget.</span></div>
+<div id="caption-2" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Fund one session, then reuse it across paid requests.</span></div>
+<div id="caption-3" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The stream accrues payment over time while the agent uses the service.</span></div>
+<div id="caption-4" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>C R E adds the intelligence: when to start, keep paying, or close.</span></div>
+<div id="caption-5" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Chainlink C R E brings external APIs and blockchain state into one workflow.</span></div>
+<div id="caption-6" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>It compares Coinbase and Chainlink U S D C prices, checks service health, and reads balances and stream state.</span></div>
+<div id="caption-7" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Budget and rate checks turn those observations into OPEN, CONTINUE, CLOSE, or DENY.</span></div>
+<div id="caption-8" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The wallet applies the decision before signing.</span></div>
+<div id="caption-9" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Here is the actual workflow source: an external H T T P fetch, followed by a Sepolia contract read.</span></div>
+<div id="caption-10" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The recorded simulator output shows the price observations and an ALLOW decision.</span></div>
+<div id="caption-11" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>This prompted demo tries a basic session and a premium request.</span></div>
+<div id="caption-12" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The wallet approves and opens the stream. Ten successful API requests reuse that session.</span></div>
+<div id="caption-13" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The healthy checkpoint returns CONTINUE.</span></div>
+<div id="caption-14" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Then we inject a provider outage. C R E returns CLOSE, and the wallet cancels the stream.</span></div>
+<div id="caption-15" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Cancellation pays accrued earnings to the provider and returns the unused deposit to the agent.</span></div>
+<div id="caption-16" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The transaction receipts and recipient balance increase verify the settlement.</span></div>
+<div id="caption-17" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The C L I also anchors decision records with onchain audit receipts.</span></div>
+<div id="caption-18" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Next, the premium request exceeds the spending cap.</span></div>
+<div id="caption-19" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>C R E returns DENY before a new session opens, keeping that proposed spend inside the configured policy.</span></div>
+<div id="caption-20" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>One funded stream. Reusable service access. Decisions informed by real observations.</span></div>
+<div id="caption-21" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>AgentPay: streaming payments, orchestrated with Chainlink C R E. Explore the code and run the demo.</span></div></div><script>const tl=gsap.timeline({paused:true});tl.set('#caption-0',{opacity:1},0.1953);tl.set('#caption-0',{opacity:0},5.2287);
+tl.set('#caption-1',{opacity:1},5.3693);tl.set('#caption-1',{opacity:0},10.6026);
+tl.set('#caption-2',{opacity:1},11.2953);tl.set('#caption-2',{opacity:0},14.2120);
+tl.set('#caption-3',{opacity:1},14.3526);tl.set('#caption-3',{opacity:0},17.9693);
+tl.set('#caption-4',{opacity:1},18.1099);tl.set('#caption-4',{opacity:0},22.1766);
+tl.set('#caption-5',{opacity:1},22.8953);tl.set('#caption-5',{opacity:0},27.6453);
+tl.set('#caption-6',{opacity:1},27.7859);tl.set('#caption-6',{opacity:0},33.8859);
+tl.set('#caption-7',{opacity:1},34.0266);tl.set('#caption-7',{opacity:0},38.6099);
+tl.set('#caption-8',{opacity:1},38.7505);tl.set('#caption-8',{opacity:0},41.1505);
+tl.set('#caption-9',{opacity:1},41.8620);tl.set('#caption-9',{opacity:0},47.5454);
+tl.set('#caption-10',{opacity:1},47.6860);tl.set('#caption-10',{opacity:0},52.0360);
+tl.set('#caption-11',{opacity:1},52.7286);tl.set('#caption-11',{opacity:0},56.2453);
+tl.set('#caption-12',{opacity:1},56.3859);tl.set('#caption-12',{opacity:0},61.6526);
+tl.set('#caption-13',{opacity:1},61.7932);tl.set('#caption-13',{opacity:0},64.0265);
+tl.set('#caption-14',{opacity:1},64.1671);tl.set('#caption-14',{opacity:0},69.2671);
+tl.set('#caption-15',{opacity:1},69.9620);tl.set('#caption-15',{opacity:0},75.1620);
+tl.set('#caption-16',{opacity:1},75.3026);tl.set('#caption-16',{opacity:0},79.3860);
+tl.set('#caption-17',{opacity:1},79.5266);tl.set('#caption-17',{opacity:0},83.7099);
+tl.set('#caption-18',{opacity:1},84.4286);tl.set('#caption-18',{opacity:0},87.3620);
+tl.set('#caption-19',{opacity:1},87.5026);tl.set('#caption-19',{opacity:0},93.7026);
+tl.set('#caption-20',{opacity:1},94.3953);tl.set('#caption-20',{opacity:0},99.4120);
+tl.set('#caption-21',{opacity:1},99.5526);tl.set('#caption-21',{opacity:0},105.0193);window.__timelines.captions=tl;</script></template>

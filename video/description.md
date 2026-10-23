@@ -1,16 +1,18 @@
-# AgentPay: funded streams supervised by Chainlink CRE (demo draft)
+# AgentPay — fund once, keep working | Chainlink CRE demo
 
-A narrated walkthrough of local CRE simulation, time-accruing escrow, a recorded
-Circle test-USDC stream on Ethereum Sepolia, outage-driven cancellation, and premium denial.
+Fund one session, reuse it across paid API requests, and let Chainlink CRE connect
+market observations, service health and onchain state to payment decisions.
+Watch the recorded stream open, continue, close on an injected outage, settle
+earnings and refund, then block an over-budget premium request.
 
-0:00 Hook
-0:09 The payment problem
-0:38 Architecture
-1:20 Inside CRE
-2:20 Recorded payment run
-3:19 Dashboard replay
-3:38 Trust boundary
-4:16 Reproduce it
+0:00 Fund once. Keep working.
+0:11 Streaming payments
+0:22 Why CRE
+0:41 Real workflow execution
+0:52 Watch the stream work
+1:09 Settlement you can verify
+1:24 Budget stays in control
+1:34 Build with AgentPay
 
 Repository: https://github.com/ola-893/agentPay
 Source and reproduction: https://github.com/ola-893/agentPay/tree/main/video
@@ -31,17 +33,10 @@ npm run --silent demo:agent
 npm run --silent demo:agent -- --pay
 ```
 
-Disclosures: CRE runs in the local CLI simulator, with no DON authentication.
-The wallet CLI validates decisions before signing; the stream contract does not
-verify CRE results, and another client can bypass that gate. Localhost health and
-per-run configuration are shortcuts. The prompted plan tries one in-budget and one
-over-budget session. The stream accrues by time, not by successful API-call count.
-This is valueless test USDC, not full x402, and an unaudited prototype. Extra audit
-transactions are distinct from stream lifecycle transactions; no gas-savings figure
-is claimed. Logs/stdout are labeled historical replays. RPC evidence is historical.
-The dashboard chapter is an explicit placeholder because real browser capture was
-blocked. Replace it and regenerate that chapter's final narration before submission.
-No live CLI footage was available. Narration is local synthetic speech.
+Demo context: recorded Sepolia run; CRE executes locally and the wallet CLI applies
+the signing policy. The agent is prompted to try basic and premium sessions.
+The stream accrues with time. Onchain audit receipts are separate transactions.
+Full architecture and execution evidence are linked above. Narration is synthetic.
 
 Music: “Dreams Become Real” — Kevin MacLeod (incompetech.com).
 Licensed under Creative Commons Attribution 4.0: https://creativecommons.org/licenses/by/4.0/

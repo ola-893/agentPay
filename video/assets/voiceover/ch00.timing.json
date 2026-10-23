@@ -9,10 +9,10 @@
       "end": 5.2287
     },
     {
-      "text": "AgentPay combines a funded stream with Chainlink C R E supervision.",
+      "text": "AgentPay combines payment streams with Chainlink C R E to keep agents working within budget.",
       "start": 5.3693,
-      "end": 9.4026
+      "end": 10.6026
     }
   ],
-  "wavSha256": "c80c1bac69a479e2c0883fb2c7e54373e59f1c2d8ee93d9d1a654c130bb0a91d"
+  "wavSha256": "b0d7a7b1c8284fe3616218f8076a79e675977130e03f9b300a30b8c9298392f6"
 }

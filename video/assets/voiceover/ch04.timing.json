@@ -4,65 +4,25 @@
   "tempo": 1.28,
   "segments": [
     {
-      "text": "Now follow the recorded funded run. Waiting time is condensed.",
+      "text": "This prompted demo tries a basic session and a premium request.",
       "start": 0.1953,
-      "end": 3.8453
+      "end": 3.712
     },
     {
-      "text": "The agent is explicitly prompted to try an in-budget session and an over-budget session.",
-      "start": 3.9859,
-      "end": 8.7859
+      "text": "The wallet approves and opens the stream. Ten successful API requests reuse that session.",
+      "start": 3.8526,
+      "end": 9.1193
     },
     {
-      "text": "After approval, the wallet signs a token allowance and opens the funded stream.",
-      "start": 8.9266,
-      "end": 13.1599
+      "text": "The healthy checkpoint returns CONTINUE.",
+      "start": 9.2599,
+      "end": 11.4932
     },
     {
-      "text": "The service records 10 successful requests, reusing the same stream.",
-      "start": 13.3005,
-      "end": 17.2005
-    },
-    {
-      "text": "A healthy checkpoint returns CONTINUE. Requests reuse the stream.",
-      "start": 17.3412,
-      "end": 21.0245
-    },
-    {
-      "text": "The demo injects H T T P 503 responses and records 3 failures.",
-      "start": 21.1651,
-      "end": 26.2984
-    },
-    {
-      "text": "C R E returns CLOSE. The wallet then signs cancellation; the contract settles elapsed earnings.",
-      "start": 26.4391,
-      "end": 31.8391
-    },
-    {
-      "text": "0.01 test U S D C splits into 0.00096 earned and 0.00904 refunded.",
-      "start": 31.9797,
-      "end": 40.2797
-    },
-    {
-      "text": "This card comes from saved R P C verification, not an explorer screenshot.",
-      "start": 40.4203,
-      "end": 44.537
-    },
-    {
-      "text": "The premium quote is 0.2 against the 0.1 cap. DENY prevents that session opening.",
-      "start": 44.6776,
-      "end": 49.8609
-    },
-    {
-      "text": "The capture also contains 4 separate audit receipts. These are additional transactions.",
-      "start": 50.0016,
-      "end": 54.8349
-    },
-    {
-      "text": "No premium payment is signed; an audit receipt still follows the block.",
-      "start": 54.9755,
-      "end": 58.7255
+      "text": "Then we inject a provider outage. C R E returns CLOSE, and the wallet cancels the stream.",
+      "start": 11.6338,
+      "end": 16.7338
     }
   ],
-  "wavSha256": "994601f7cf0f08bd4dd19f49f02420fd576a1bf2abfc81a9a507e7ef14df2268"
+  "wavSha256": "61920116359a584a83f4ba544dfc792899c6bf9cf55b03117334f0d948151b52"
 }

@@ -1,37 +1,22 @@
-# Review — AgentPay draft
+# Review — short product demo
 
-Selected the supplied one-session storyboard: illustrate the two loops, show the
-actual workflow source, then prove the funded run and explain the trust boundary.
-The result-first incident and decision-desk alternatives were not built.
+Latest user direction: 90–120 seconds, with AgentPay's strengths carrying the story.
+The new 284-word narration measures 105.5333 seconds. It replaces the 4:30 explainer.
 
-Measured narration: 269.7667 seconds, rounded to 8,094 encoded frames / 269.8 seconds at 30 fps. Caption windows come
-from individually synthesized sentence boundaries, with the same pitch-preserving
-tempo transform applied to audio and times. No guessed word-by-word highlighting.
+Focus: fund once and reuse the stream; CRE brings external observations and onchain
+state together; the recorded run continues while healthy, closes on an injected
+outage, settles earnings/refund, and blocks an over-budget premium session.
+The audit-receipt beat shows an additional existing strength without claiming that
+CRE itself signed or authenticated the receipt.
 
-Local validation: zero lint/runtime/layout/contrast/craft findings after repairs.
-The first pass found doubled font URLs and a diagram label collision. Increasing
-labels to the requested minimum also exposed a closing-credit/caption collision;
-the credit moved to the title. All repaired in source and checked again.
+Removed: the long limitations/future-work chapter, repeated test-token caveats,
+and the missing-dashboard-footage card. No browser recording is required by this cut.
+Execution context remains in neutral recorded/local-simulation/onchain labels.
 
-Reviewed chapter overview, phone sheet, seven five-frame seam strips, and full-size
-source/payment/trust frames. Seven seam direction and zero-overlap checks pass.
-Two speed-match warnings remain at code→run and trust→close (the gate samples
-fractional frame boundaries); both wrappers use mirrored power4, the same travel
-and duration, and the sampled cuts show no duplicate scene.
+Check: zero lint, runtime, layout, contrast or craft findings. Two initially rushed
+log/stdout passages were shortened or given more screen time. Reviewed all eight
+chapters on overview/phone sheets and seven five-frame seam strips. Code, log lines,
+counts, payout values, balance deltas and hashes remain source-derived.
 
-The intentionally static periods are marked data-hold: viewers need time to read
-code, receipts and captions. No decorative idle motion was added to satisfy a check.
-
-Weakest chapter: dashboard, which is explicitly a missing-footage placeholder.
-The browser policy rejected dashboard observation. No alternate capture mechanism
-was used. Replace it with a real 1920×1080 recording and update that chapter's final
-sentence before submitting. There is no live CLI video; terminal/log excerpts are
-labeled recorded replays.
-
-Limits: sampled visual review, not manual inspection of every encoded frame.
-AAC stereo is present; integrated loudness is -13.27 LUFS and true peak -1.82 dBTP.
-The file fully decoded without FFmpeg errors. Nobody here has listened to the mix.
-A human should audition pronunciation, pacing and music before publication.
-Saved RPC proof is historical, not a fresh chain query. No new transactions were sent.
-
-Source-only rebuild audit found a missing output-directory prerequisite. The builder now creates video/out automatically. Node 22 is required; this machine’s unrelated default runtime failed outside the repository, so the clean audit used the verified Node 22 binary.
+Visual review is sampled; human audio listening is still recommended. Local TTS and
+caption boundaries use the same measured sentence clips. No new payment was executed.

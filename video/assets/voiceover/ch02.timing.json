@@ -4,50 +4,25 @@
   "tempo": 1.28,
   "segments": [
     {
-      "text": "Follow the agent, its wallet, the escrow, and the paid service.",
+      "text": "Chainlink C R E brings external APIs and blockchain state into one workflow.",
       "start": 0.1953,
-      "end": 3.3287
+      "end": 4.9453
     },
     {
-      "text": "The wallet funds escrow, then service requests reuse the active session.",
-      "start": 3.4693,
-      "end": 7.3359
+      "text": "It compares Coinbase and Chainlink U S D C prices, checks service health, and reads balances and stream state.",
+      "start": 5.0859,
+      "end": 11.1859
     },
     {
-      "text": "C R E connects a separate supervision loop to that payment lifecycle.",
-      "start": 7.4766,
-      "end": 11.3599
+      "text": "Budget and rate checks turn those observations into OPEN, CONTINUE, CLOSE, or DENY.",
+      "start": 11.3266,
+      "end": 15.9099
     },
     {
-      "text": "Coinbase supplies an external U S D C quote. Chainlink supplies the Sepolia U S D C dollar feed.",
-      "start": 11.5005,
-      "end": 17.6672
-    },
-    {
-      "text": "The supervisor also fetches service health and reads token balances and stream state on Sepolia.",
-      "start": 17.8078,
-      "end": 23.4078
-    },
-    {
-      "text": "Those observations produce OPEN, CONTINUE, CLOSE, or DENY.",
-      "start": 23.5484,
-      "end": 26.9984
-    },
-    {
-      "text": "The wallet C L I validates the local results before it signs.",
-      "start": 27.1391,
-      "end": 30.7557
-    },
-    {
-      "text": "On the C R E network, a deployed workflow runs on a decentralized oracle network.",
-      "start": 30.8963,
-      "end": 35.7297
-    },
-    {
-      "text": "This demonstration uses the local C L I simulator. It has no D O N authorization.",
-      "start": 35.8703,
-      "end": 41.587
+      "text": "The wallet applies the decision before signing.",
+      "start": 16.0505,
+      "end": 18.4505
     }
   ],
-  "wavSha256": "deda8e886e5f743f07f7b3f9eb0b117fd8b30c14e4530c1e678e2ddd0d4b706e"
+  "wavSha256": "6562b0bb8061148e4663d24caf2f0339c09121362fd389922942353a5b077e55"
 }

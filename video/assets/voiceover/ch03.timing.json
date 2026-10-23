@@ -4,55 +4,15 @@
   "tempo": 1.28,
   "segments": [
     {
-      "text": "The H T T P capability fetches Coinbase. The E V M capability reads the Sepolia feed.",
+      "text": "Here is the actual workflow source: an external H T T P fetch, followed by a Sepolia contract read.",
       "start": 0.1953,
-      "end": 6.012
+      "end": 5.8787
     },
     {
-      "text": "This recording observed Coinbase at 1.00000000 dollars and Chainlink at 0.99990493 dollars.",
-      "start": 6.1526,
-      "end": 17.5359
-    },
-    {
-      "text": "Both the peg and source disagreement limits are 100 basis points.",
-      "start": 17.6766,
-      "end": 21.4432
-    },
-    {
-      "text": "The feed was 8273 seconds old against a limit of 86400 seconds.",
-      "start": 21.5838,
-      "end": 28.1172
-    },
-    {
-      "text": "Fresh inputs can change the decision.",
-      "start": 28.2578,
-      "end": 30.4245
-    },
-    {
-      "text": "Admission checks bind service health, the payment token, its decimals, balance, budget, and rate.",
-      "start": 30.5651,
-      "end": 35.5984
-    },
-    {
-      "text": "The deposit is 0.01 test U S D C, below a 0.1 cap.",
-      "start": 35.7391,
-      "end": 40.2891
-    },
-    {
-      "text": "The actual rate is 0.00001 U S D C per second, below the 0.0001 maximum.",
-      "start": 40.4297,
-      "end": 47.7297
-    },
-    {
-      "text": "At checkpoints, the supervisor checks stream identity, accrued funds, availability, and failure counts.",
-      "start": 47.8703,
-      "end": 53.2703
-    },
-    {
-      "text": "The saved simulator log shows compilation, the external quote, the chain observation, and the resulting approval.",
-      "start": 53.4109,
-      "end": 59.4609
+      "text": "The recorded simulator output shows the price observations and an ALLOW decision.",
+      "start": 6.0193,
+      "end": 10.3693
     }
   ],
-  "wavSha256": "a079746b2f275cfb5f77fb7455ffe24680189e451def512e640bb5c3f2297ead"
+  "wavSha256": "78b39cb8134f56ae8452703a57ad0b63e8314b77f72e1b1e73e5553fb8f95165"
 }

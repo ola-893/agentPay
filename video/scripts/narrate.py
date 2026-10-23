@@ -55,4 +55,4 @@ for ch in chapters:
     print(ch['id'],round(duration,2),'seconds',flush=True)
 (root/'timing.json').write_text(json.dumps({'duration':round(cursor,4),'fps':30,'chapters':results},indent=2)+'\n')
 print('TOTAL',round(cursor,2),flush=True)
-if cursor>300: raise SystemExit('Narration exceeds five minutes; shorten or regenerate at a faster local speech rate.')
+if not 90<=cursor<=120: raise SystemExit('Short demo narration must be between 90 and 120 seconds.')

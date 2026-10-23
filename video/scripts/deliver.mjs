@@ -4,10 +4,12 @@ import d from '../data.js';
 const timing=JSON.parse(fs.readFileSync('video/timing.json'));
 const time=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
 const chapters=timing.chapters.map(c=>`${time(c.start)} ${c.title}`).join('\n');
-const text=`# AgentPay: funded streams supervised by Chainlink CRE (demo draft)
+const text=`# AgentPay — fund once, keep working | Chainlink CRE demo
 
-A narrated walkthrough of local CRE simulation, time-accruing escrow, a recorded
-Circle test-USDC stream on Ethereum Sepolia, outage-driven cancellation, and premium denial.
+Fund one session, reuse it across paid API requests, and let Chainlink CRE connect
+market observations, service health and onchain state to payment decisions.
+Watch the recorded stream open, continue, close on an injected outage, settle
+earnings and refund, then block an over-budget premium request.
 
 ${chapters}
 
@@ -28,17 +30,10 @@ npm run --silent demo:agent
 npm run --silent demo:agent -- --pay
 \`\`\`
 
-Disclosures: CRE runs in the local CLI simulator, with no DON authentication.
-The wallet CLI validates decisions before signing; the stream contract does not
-verify CRE results, and another client can bypass that gate. Localhost health and
-per-run configuration are shortcuts. The prompted plan tries one in-budget and one
-over-budget session. The stream accrues by time, not by successful API-call count.
-This is valueless test USDC, not full x402, and an unaudited prototype. Extra audit
-transactions are distinct from stream lifecycle transactions; no gas-savings figure
-is claimed. Logs/stdout are labeled historical replays. RPC evidence is historical.
-The dashboard chapter is an explicit placeholder because real browser capture was
-blocked. Replace it and regenerate that chapter's final narration before submission.
-No live CLI footage was available. Narration is local synthetic speech.
+Demo context: recorded Sepolia run; CRE executes locally and the wallet CLI applies
+the signing policy. The agent is prompted to try basic and premium sessions.
+The stream accrues with time. Onchain audit receipts are separate transactions.
+Full architecture and execution evidence are linked above. Narration is synthetic.
 
 Music: “Dreams Become Real” — Kevin MacLeod (incompetech.com).
 Licensed under Creative Commons Attribution 4.0: https://creativecommons.org/licenses/by/4.0/
@@ -49,7 +44,7 @@ Built with Chainlink CRE.
 `;
 fs.writeFileSync('video/out/description.md',text);
 fs.writeFileSync('video/description.md',text);
-const times=[2,16,42,83,179,208,225,264];
+const times=timing.chapters.map(ch=>ch.start+ch.duration/2);
 fs.mkdirSync('video/out/frames',{recursive:true});
 for(const [i,t]of times.entries())execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-ss',String(t),'-i','video/out/agentpay-demo.mp4','-frames:v','1',`video/out/frames/ch${i}.png`]);
 execFileSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-i','video/out/frames/ch2.png','-frames:v','1','video/out/thumbnail.png']);

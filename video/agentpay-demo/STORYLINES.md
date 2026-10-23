@@ -11,3 +11,7 @@ Bold mechanical analogy, but risks obscuring the real implementation.
 
 The user supplied the storyboard and requested the finished file, so option 1 follows it
 without an extra selection stop. Opening: many request marks meet a single funded session.
+
+Revision: the user selected a 90–120 second strengths-led cut. The session remains
+the story carrier; limitations and future-work beats are removed, and the close is
+“Fund once. Keep working.” Proof beats replace the unavailable dashboard chapter.

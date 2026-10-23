@@ -4,25 +4,15 @@
   "tempo": 1.28,
   "segments": [
     {
-      "text": "Follow the documented prerequisites.",
+      "text": "One funded stream. Reusable service access. Decisions informed by real observations.",
       "start": 0.1953,
-      "end": 2.062
+      "end": 5.212
     },
     {
-      "text": "Start with the read-only C R E scenarios, then the preview agent demo.",
-      "start": 2.2026,
-      "end": 6.1359
-    },
-    {
-      "text": "Use the funded command only with a prepared Sepolia wallet.",
-      "start": 6.2766,
-      "end": 9.5266
-    },
-    {
-      "text": "Inspect the linked transactions. Built with Chainlink C R E.",
-      "start": 9.6672,
-      "end": 12.9172
+      "text": "AgentPay: streaming payments, orchestrated with Chainlink C R E. Explore the code and run the demo.",
+      "start": 5.3526,
+      "end": 10.8193
     }
   ],
-  "wavSha256": "94e150290049b3cb5e0b207fbbefd0f9886530361c43f2497f4a89e4e9ae18e4"
+  "wavSha256": "d1121c7a49c7cc4e5d91cbffd3bf5dbe5422187d78eb3e66203c31d668b24cf4"
 }

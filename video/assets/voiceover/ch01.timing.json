@@ -4,35 +4,20 @@
   "tempo": 1.28,
   "segments": [
     {
-      "text": "Paying separately for every request couples useful work to repeated blockchain transactions.",
+      "text": "Fund one session, then reuse it across paid requests.",
       "start": 0.1953,
-      "end": 4.9787
+      "end": 3.112
     },
     {
-      "text": "A funded stream separates the request loop from the payment lifecycle.",
-      "start": 5.1193,
-      "end": 8.6359
+      "text": "The stream accrues payment over time while the agent uses the service.",
+      "start": 3.2526,
+      "end": 6.8693
     },
     {
-      "text": "The contract accrues earnings with time; it does not meter API calls.",
-      "start": 8.7766,
-      "end": 12.8932
-    },
-    {
-      "text": "But that creates another problem: who decides when paying should start, continue, or stop?",
-      "start": 13.0338,
-      "end": 17.6338
-    },
-    {
-      "text": "If a provider becomes unavailable while time keeps passing, funds can keep accruing.",
-      "start": 17.7745,
-      "end": 22.1412
-    },
-    {
-      "text": "The stream handles settlement. The workflow supplies a decision about whether the session should remain open.",
-      "start": 22.2818,
-      "end": 27.6484
+      "text": "C R E adds the intelligence: when to start, keep paying, or close.",
+      "start": 7.0099,
+      "end": 11.0766
     }
   ],
-  "wavSha256": "5ee64827f127cab1a1be170bc9cd7b159036552f8f766b19a52ed04aa1d7474a"
+  "wavSha256": "12a307d04d99c83e28b61fc83e9e993f54f3d6a70ffb52002b7747db88aa25c4"
 }

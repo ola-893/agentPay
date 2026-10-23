@@ -153,12 +153,9 @@ Independent project integrating Chainlink technology. [Migration history](MIGRAT
 
 ## CRE explainer video
 
-The [video source and reproduction guide](video/README.md) builds a narrated 1080p
-explainer from the same recorded NDJSON as the dashboard. Run `npm run video:build`,
-then `npm run video:preview` or `npm run video:render`. The local MP4 is ignored by Git.
+The [short video and reproduction guide](video/README.md) shows fund-once streaming,
+CRE-informed payment decisions, ten reused API requests, verified settlement, and a
+budget block in under two minutes. Run `npm run video:build`, then
+`npm run video:preview` or `npm run video:render`. The local MP4 is ignored by Git.
 See the [verification record](video/VERIFICATION.md) and
 [chapter contact sheet](docs/evidence/video-contact-sheet.png).
-
-This is a **draft**: the real dashboard browser-recording chapter remains a labeled
-placeholder because capture was blocked. It describes local CRE simulation and
-wallet-side signing, with no DON authentication or CRE enforcement in the stream contract.

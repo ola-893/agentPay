@@ -25,4 +25,6 @@
   leftward cuts. No invented registry sample output is used in the film.
 
 No remote media requests happen while rendering. Raw browser recordings are ignored
-by Git. No live-cli.mp4 or dashboard.mp4 was available at the time of the draft.
+by Git. The short cut uses source code, recorded output and RPC-derived evidence. No live CLI or dashboard recording is presented.
+
+The normalized music-bed.mp3 is the canonical source bed for render parity across clean and cached builds; the original licensed MP3 remains available for re-editing.

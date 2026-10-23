@@ -4,35 +4,15 @@
   "tempo": 1.28,
   "segments": [
     {
-      "text": "Be precise about enforcement: local C R E simulation proposes a decision; the wallet C L I gates signing.",
+      "text": "Next, the premium request exceeds the spending cap.",
       "start": 0.1953,
-      "end": 6.6787
+      "end": 3.1287
     },
     {
-      "text": "The stream contract does not verify C R E results. A different wallet client can bypass that gate.",
-      "start": 6.8193,
-      "end": 12.3526
-    },
-    {
-      "text": "Localhost health snapshots and per-run configurations are demonstration shortcuts, not independent proof of service quality.",
-      "start": 12.4932,
-      "end": 19.3932
-    },
-    {
-      "text": "This uses valueless test U S D C, is not a full x four oh two implementation, and is unaudited.",
-      "start": 19.5338,
-      "end": 25.2838
-    },
-    {
-      "text": "A production path needs a deployed workflow, a public health endpoint, trigger payloads, and authenticated reports.",
-      "start": 25.4245,
-      "end": 31.3745
-    },
-    {
-      "text": "A forwarder and onchain consumer would move authorization into the contract path. That is future work for this stream demo.",
-      "start": 31.5151,
-      "end": 37.8151
+      "text": "C R E returns DENY before a new session opens, keeping that proposed spend inside the configured policy.",
+      "start": 3.2693,
+      "end": 9.4693
     }
   ],
-  "wavSha256": "6334b4531a05e329467a883be827c0af57a6b7558a717866bdd9c2058324a1f7"
+  "wavSha256": "58ad00a5b6cf7abf5c5730c8fb3f722ea265223d40baadc8be4633c0d83f2ffb"
 }
