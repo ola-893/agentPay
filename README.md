@@ -150,3 +150,15 @@ Current suites: **183 tests** — 32 contracts, 52 SDK, eight middleware, 31 CRE
 - Guarded payments use [Circle Sepolia USDC](https://developers.circle.com/stablecoins/usdc-contract-addresses), with six decimals and no monetary value. Get test USDC from the [Circle faucet](https://faucet.circle.com/). Legacy streams still use MockUSD (`tUSD`), an 18-decimal test fixture; do not configure USDC in the legacy streaming SDK.
 
 Independent project integrating Chainlink technology. [Migration history](MIGRATION.md) and archived `.kiro` specs preserve the original source names and import provenance.
+
+## CRE explainer video
+
+The [video source and reproduction guide](video/README.md) builds a narrated 1080p
+explainer from the same recorded NDJSON as the dashboard. Run `npm run video:build`,
+then `npm run video:preview` or `npm run video:render`. The local MP4 is ignored by Git.
+See the [verification record](video/VERIFICATION.md) and
+[chapter contact sheet](docs/evidence/video-contact-sheet.png).
+
+This is a **draft**: the real dashboard browser-recording chapter remains a labeled
+placeholder because capture was blocked. It describes local CRE simulation and
+wallet-side signing, with no DON authentication or CRE enforcement in the stream contract.

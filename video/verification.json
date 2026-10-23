@@ -1,0 +1,70 @@
+{
+  "renderCommand": "npx --yes hyperframes@0.8.186 render video/agentpay-demo --quality delivery --fps 30 --workers 4 --strict --skill hyperframes --output video/out/agentpay-demo.mp4",
+  "durationSeconds": 269.8,
+  "width": 1920,
+  "height": 1080,
+  "fps": 30,
+  "videoCodec": "h264",
+  "audioCodec": "aac",
+  "audioChannels": 2,
+  "frames": 8094,
+  "bytes": 17871427,
+  "mp4Sha256": "1645a73382587a81282b1b465522f0d6095159e8aea9ee57b74c807b3f8341a9",
+  "integratedLufs": -13.27,
+  "truePeakDbtp": -1.82,
+  "loudnessRangeLu": 1.2,
+  "fullDecodeExitCode": 0,
+  "chapters": [
+    {
+      "id": "ch00",
+      "title": "Hook",
+      "start": 0,
+      "duration": 9.9
+    },
+    {
+      "id": "ch01",
+      "title": "The payment problem",
+      "start": 9.9,
+      "duration": 28.166666666666668
+    },
+    {
+      "id": "ch02",
+      "title": "Architecture",
+      "start": 38.0667,
+      "duration": 42.1
+    },
+    {
+      "id": "ch03",
+      "title": "Inside CRE",
+      "start": 80.1667,
+      "duration": 59.96666666666667
+    },
+    {
+      "id": "ch04",
+      "title": "Recorded payment run",
+      "start": 140.1333,
+      "duration": 59.233333333333334
+    },
+    {
+      "id": "ch05",
+      "title": "Dashboard replay",
+      "start": 199.3667,
+      "duration": 18.633333333333333
+    },
+    {
+      "id": "ch06",
+      "title": "Trust boundary",
+      "start": 218,
+      "duration": 38.333333333333336
+    },
+    {
+      "id": "ch07",
+      "title": "Reproduce it",
+      "start": 256.3333,
+      "duration": 13.433333333333334
+    }
+  ],
+  "sourceOnlyBuild": "passed with Node 22",
+  "dashboardCapture": "blocked by browser policy; placeholder clearly labeled",
+  "humanAudioAudition": false
+}
