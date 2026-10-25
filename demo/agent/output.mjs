@@ -63,7 +63,7 @@ export function createAgentOutput({
   return {
     start({ settings, payer, recipient, balanceRaw }) {
       write("");
-      write(`  ${accent(bold("AgentPay"))}  ${muted("AI streaming demo")}`);
+      write(`  ${accent(bold("AgentPay"))}  ${muted("Deterministic CRE payment guardrails")}`);
       separator();
       field("Mode", pay ? "PAYMENT ENABLED" : "PREVIEW ONLY", warning);
       field(
@@ -77,7 +77,8 @@ export function createAgentOutput({
       field("Payer", payer);
       field("Balance", `${amount(balanceRaw)} test USDC`);
       field("Recipient", recipient);
-      field("CRE", "Local simulation supplies decisions; no DON authorization");
+      field("Roles", "Agent proposes work; CRE checks fixed payment rules");
+      field("CRE", "Deterministic guardrails / local simulation");
       field("Wallet", "CLI checks gate signing of createStream / cancelStream");
       field(
         "Contract",
@@ -94,7 +95,7 @@ export function createAgentOutput({
         "Agent",
         complete
           ? "Reviewing verified tool results..."
-          : "Choosing the next streaming session..."
+          : "Proposing the next service request..."
       );
     },
     response(data) {
@@ -111,7 +112,7 @@ export function createAgentOutput({
     },
     quote(quote) {
       field("Quote", `${amount(quote.amount)} USDC${dot}CRE cap 0.10 USDC`);
-      field("CRE", "Running local simulation with live price + chain data...");
+      field("CRE", "Checking deterministic rules against live price + chain data...");
     },
     decision(result, { prices = verbose } = {}) {
       field(
@@ -164,7 +165,7 @@ export function createAgentOutput({
       field("Rate", `${q.rateRawPerSecond} raw units / second`);
     },
     streamChecking(label) {
-      field("CRE", `Checking ${label} with real HTTP + Sepolia reads...`);
+      field("CRE", `Applying ${label} rules to HTTP + Sepolia observations...`);
     },
     creInvocation({ command, cwd, configPath, transcriptPath }) {
       field("Run from", `${cwd}/ (repository root relative)`);
@@ -277,7 +278,7 @@ export function createAgentOutput({
     creValidation({ capturedAt, configSha256, logSha256 }) {
       field(
         "Host check",
-        "Result validated against run config and policy re-evaluated"
+        "Result bound to run config; deterministic policy re-evaluated"
       );
       if (verbose) {
         field("Captured", capturedAt);

@@ -1,8 +1,12 @@
-# How CRE supervises an agent payment stream
+# Deterministic CRE guardrails for agent payment streams
+
+AI agents already reason about work and services. Payment authority needs a separate control layer: hallucinated instructions can waste funds by proposing unnecessary funding, continuing an unavailable service, or requesting an inappropriate lifecycle change. CRE evaluates explicit rules over validated observations; the CLI follows checked results in its managed session flow instead of treating model text as authorization.
+
+Given the same configuration and observations, the policy returns the same result. Deterministic evaluation does not make external data infallible: freshness, session binding, client/provider counter agreement, budget and rate bounds are part of the guardrail. These controls reduce avoidable loss rather than guarantee loss-free execution.
 
 AgentPay began with the N+1 payment problem: a naive paid API integration can require a blockchain transaction for every request. Prepaid escrow lets many authenticated requests share one time-based stream. That reduces per-request payment transactions, but does not decide whether the service deserves continued payment. A funded stream keeps accruing during an outage until a cancellation is mined.
 
-Local Chainlink CRE workflows add service and spend decisions to that payment model. They combine HTTP observations with Sepolia state and return deterministic policy results. The wallet-owning CLI validates those results and gates signing; the stream contract enforces escrow, accrual and payouts, not CRE approval. The workflow is simulated locally and is not deployed to a Chainlink DON.
+Local Chainlink CRE workflows add deterministic service and spend guardrails to that payment model. They combine HTTP observations with Sepolia state and return deterministic policy results. The wallet-owning CLI validates those results and gates signing; the stream contract enforces escrow, accrual and payouts, not CRE approval. The workflow is simulated locally and is not deployed to a Chainlink DON.
 
 ## From cheap request reuse to controlled spending
 

@@ -9,7 +9,7 @@ npm run dev
 
 Open the Vite URL from the terminal.
 
-- **Workflow (`/`):** read the N+1 problem and CRE supervision flow, switch Within budget / Over budget, inspect the saved USDC evidence and copy its reproduction command.
+- **Workflow (`/`):** explore the N+1 payment problem and deterministic CRE guardrails. Replay Funded run, Preview (no txs), Cap DENY or Stale DENY; inspect the policy observations and reproduction commands.
 - **Docs (`/docs`):** read setup, workflow, USDC policy, CLI demo, SDK reference and troubleshooting. The frontend has no wallet connection, separate agent console or stream management. Workflow embeds local-run controls and recorded replay.
 
 Saved captures are historical, explicitly labeled simulations. The browser does not fetch live market prices or use a saved ALLOW as spend authority.

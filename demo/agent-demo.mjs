@@ -36,13 +36,14 @@ import {
 } from "./agent/streams.mjs";
 const root = fileURLToPath(new URL("../", import.meta.url));
 const same = (a, b) => a.toLowerCase() === b.toLowerCase();
-const help = `AgentPay / CRE-supervised streaming demo
+const help = `AgentPay / Deterministic CRE payment guardrails
 
 Usage
   npm run --silent demo:agent -- [--pay] [--verbose] [--json] [--help]
   npm run --silent demo:agent -- --close-stream <id> [--json]
 
-Default: real AI + local CRE admission preview; no signing or token funding.
+The agent proposes. CRE checks fixed rules. The CLI executes eligible actions.
+Default: real AI + deterministic local CRE admission preview; no signing or funding.
 --pay      Deposit at most 0.01 Circle test USDC into a Sepolia stream.
            Reuse it for 10 requests, demonstrate CONTINUE, inject a demo outage,
            then cancel: earned funds go to the recipient and unused funds refund.
@@ -61,6 +62,9 @@ Qwen is selected when its key is present; AGENTPAY_AI_PROVIDER overrides this.
 Defaults: QWEN_MODEL=qwen3.5-plus, QWEN_REGION=singapore,
 OPENAI_MODEL=gpt-4.1-mini. Model calls may incur charges; no model/rules fallback.
 
+CRE uses deterministic rules for price, health, session, budget and rate checks.
+Model-generated text is not payment authorization. The CLI reuses validated sessions
+and follows checked lifecycle outcomes to reduce avoidable spending.
 CRE commands, observed inputs, policy limits and transcript paths are shown.
 Every business transaction requires dry-run, risk review, durable blob and receipt.
 Preview logs decisions locally without signing; --pay also spends audit gas.

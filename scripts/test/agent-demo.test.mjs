@@ -211,6 +211,9 @@ test("stream output shows recorded CRE observations and limits without claiming 
     output.streamEvidence(load(`stream-${name}`));
   const text = lines.join("\n").replace(/\s+/g, " ");
   for (const value of [
+    "Deterministic CRE payment guardrails",
+    "Agent proposes work; CRE checks fixed payment rules",
+    "Deterministic guardrails / local simulation",
     "CLI checks gate signing of createStream / cancelStream",
     "Contract does not verify CRE results; payer can call it directly",
     "$0.99990138 USDC/USD / finalized read",

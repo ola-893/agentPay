@@ -1,6 +1,6 @@
 # ToolBuyer: buy quality information before selecting a service
 
-ToolBuyer is an autonomous **evaluation-and-selection policy**, implemented inside a local CRE workflow. It pays for task-specific trial answers in a benchmark credit ledger, grades them, updates uncertain quality estimates and decides whether another trial is worth its cost. It then buys the selected provider's answers on held-out tasks. It does not add a marketplace or require an LLM to make the purchasing decision.
+ToolBuyer is a deterministic **evaluation-and-selection policy**, implemented inside a local CRE workflow. For the same task observations and configuration, its trial/selection rules produce the same result. It pays for task-specific trial answers in a benchmark credit ledger, grades them, updates uncertain quality estimates and decides whether another trial is worth its cost. It then buys the selected provider's answers on held-out tasks. It does not add a marketplace or require an LLM to make the purchasing decision.
 
 **Billing boundary:** these purchases debit synthetic benchmark credits, expressed in six-decimal USDC-style raw units. They do not transfer USDC, fund an escrow stream, sign a wallet transaction or charge a model API. The real USDC payment lifecycle remains [the separate streaming demo](AI_AGENT_DEMO.md). ToolBuyer's live Sepolia read establishes budget eligibility; it does not reserve or spend that balance, and the contract does not enforce this selection policy.
 

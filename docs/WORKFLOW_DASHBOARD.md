@@ -1,5 +1,7 @@
 # Workflow dashboard: local runs and recorded replay
 
+The dashboard visualizes deterministic payment guardrails: the agent proposes work, CRE evaluates fixed rules, and the CLI applies checked outcomes. It helps inspect how session reuse, continuation, closure and budget denial follow policy rather than free-form model text. The browser displays emitted results; it does not evaluate payment policy.
+
 Workflow (`/`) contains the CRE diagram, locally registered agent, bounded policy form, execution timeline and amount/transaction summary. Docs remains the only other navigation destination. Agent, stream-management and dashboard routes were not restored.
 
 The diagram has external-input chips feeding CRE above the Agent → Wallet → Escrow → Paid service row. Dashed CRE edges show signing gates, chain reads and health probes; the bottom arc shows session reuse. Its gauge changes only on emitted funding/closure/summary events. The browser copies decisions from events and never evaluates the policy. Monetary values are integer-safe observations, not a simulated earnings counter. Mobile uses a vertical stepper driven by the same presentation state.

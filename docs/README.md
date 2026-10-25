@@ -1,6 +1,8 @@
 # AgentPay documentation
 
-AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, supervised by local Chainlink CRE workflows. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend contains only Workflow and Docs, with a CRE diagram, recorded replay, local CLI execution controls and instructions. Testnet tokens have no monetary value.
+The agent proposes useful work; CRE checks fixed payment rules; the CLI applies the checked result. A model-generated instruction is not payment approval. The guardrails address avoidable loss from unchecked funding and continuation, while one validated session serves many requests. Start with [the guardrail architecture](architecture/README.md) or [the manual demo script](../demo/demo_script.md).
+
+AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, protected in the CLI by deterministic local Chainlink CRE guardrails. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend contains only Workflow and Docs, with a CRE diagram, recorded replay, local CLI execution controls and instructions. Testnet tokens have no monetary value.
 
 ## The problem, and what CRE adds
 

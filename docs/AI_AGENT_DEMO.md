@@ -1,4 +1,6 @@
-# AI agent with CRE-supervised payment streams
+# AI agent with deterministic CRE payment guardrails
+
+**The agent proposes. CRE checks the rules. The CLI executes eligible actions.** The model selects service requests; host-controlled quotes and deterministic guardrails govern funding and lifecycle checkpoints. The demo shows how a valid session is reused, an observed outage produces a policy-directed close, and an over-budget request is denied before funding. These are fixed-rule results, not LLM judgments.
 
 AgentPay keeps its original payment model: a sender funds an escrow stream, the recipient earns tokens with time, and many API requests reuse that stream. The AI CLI now uses **AgentPayStream**, rather than sending a token transfer for every purchase.
 

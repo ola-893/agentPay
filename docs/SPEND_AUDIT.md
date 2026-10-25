@@ -1,5 +1,7 @@
 # CRE spend review, local blobs and onchain receipts
 
+Spend review is a deterministic guardrail around proposed wallet actions. Model reasoning can suggest work, but it cannot substitute for a matching intent, successful transaction dry-run, configured bounds and the CLI’s pre-sign checks. Risk scores are computed by a versioned heuristic, not inferred by an LLM.
+
 AgentPay's streaming CLI now puts a spend-review step before every business transaction it signs: exact token approval, stream creation and cancellation, including recovery cancellation. CRE stays local. It calls an RPC simulation API, reads Circle Sepolia USDC state, applies hard rules and a transparent risk heuristic, and sends the complete decision to a durable local blob API. The wallet requires an ALLOW, a verified onchain inclusion receipt and a fresh successful simulation before signing.
 
 **Authority:** the CLI enforces this signing policy. A user holding the private key can bypass the CLI. AgentPayStream still enforces escrow accounting and payouts, not CRE approvals. AgentPayDecisionJournal anchors record hashes; it cannot authorize payments or prove a risk score is correct. These are local-operator receipts, not DON-authenticated reports. No CRE workflow is deployed to Chainlink's network.

@@ -15,9 +15,9 @@ const table = (headers, rows) => ({ type: "table", headers, rows });
 const section = (title, blocks) => ({ title, blocks });
 export const documentation = {
   overview: {
-    title: "Many API calls. One stream. Decisions you can inspect.",
+    title: "Agent intelligence. Deterministic payment guardrails.",
     intro:
-      "Streams address the cost of paying onchain for every request. Chainlink CRE addresses the next problem: deciding when an agent should fund a service, keep using it, or close the stream and recover unused escrow.",
+      "The agent already reasons about its task. Streams reduce payment transactions; Chainlink CRE checks fixed rules so hallucinated payment instructions do not become unchecked spending in the CLI.",
     source: "docs/README.md",
     sections: [
       section("Why AgentPay exists", [
@@ -29,12 +29,15 @@ export const documentation = {
         ),
       ]),
       section("What CRE adds to streaming", [
+        p(
+          "A model can propose a new payment when a usable session already exists, keep paying an unavailable service, or suggest closing a useful stream too early. AgentPay separates those proposals from payment authority: the agent proposes work, CRE checks explicit rules against observations, and the CLI executes eligible actions. Session reuse belongs to the CLI and provider; CRE checks the matching stream at lifecycle checkpoints."
+        ),
         table(
           ["Remaining problem", "CRE's role", "Result in the CLI"],
           [
             [
-              "A cheaper payment can still fund an unhealthy or over-budget service.",
-              "Combine HTTP health observations, USDC/USD checks and Sepolia token/balance reads with deposit and rate limits.",
+              "A model's payment request can exceed the budget or target an unhealthy service.",
+              "Apply fixed rules to HTTP health observations, USDC/USD checks and Sepolia token/balance reads, with deposit and rate limits.",
               "OPEN or DENY before funding; refresh expired decisions before signing.",
             ],
             [
@@ -50,7 +53,7 @@ export const documentation = {
           ]
         ),
         p(
-          "CRE supplies decisions in local simulation. The CLI enforces them before signing; AgentPayStream enforces escrow, time accrual and payouts. The contract does not verify CRE decisions, and the payer can bypass the CLI. Checkpoints are explicit CLI steps, not a continuously running network monitor. Availability observations do not establish answer quality."
+          "CRE produces deterministic policy results in local simulation. The CLI validates them before signing; AgentPayStream enforces escrow, time accrual and payouts. These guardrails reduce avoidable loss within this managed flow, rather than guarantee every payment is safe. The contract does not verify CRE results, and the payer can bypass the CLI. Checkpoints are explicit CLI steps. Availability observations do not establish answer quality."
         ),
       ]),
       section("Watch the workflow", [
@@ -82,7 +85,7 @@ export const documentation = {
             ],
             [
               "Docs",
-              "Read the CRE supervision flow, reproduce the CLI demo, and inspect policy and trust boundaries.",
+              "Understand the deterministic payment guardrails, reproduce the CLI demo, and inspect policy and trust boundaries.",
             ],
           ]
         ),
@@ -174,14 +177,14 @@ export const documentation = {
     ],
   },
   cre: {
-    title: "CRE decides when to fund, continue and close.",
+    title: "CRE checks fixed rules for the payment lifecycle.",
     intro:
-      "Escrow amortizes payments across many requests. CRE combines offchain observations with blockchain state to supervise that escrow and review wallet actions. The USDC price comparison is one input to this wider flow.",
+      "The LLM proposes service requests; CRE evaluates deterministic policy using external observations and blockchain state. The CLI validates the result before funding, continuing or closing its managed payment session. USDC price safety is one input to this guardrail.",
     source: "docs/WORKFLOW.md",
     sections: [
-      section("From payment efficiency to service control", [
+      section("From cheaper payments to guarded commitments", [
         p(
-          "Batching payments alone does not stop a time-based stream from accruing during an outage. The local CRE supervisor reads a frozen provider-health snapshot over HTTP, compares it with client-observed counters, and reads the payment token, balance and matching Sepolia stream at an explicit block. It checks the exact session, parties, deposit, duration and rate before returning a decision."
+          "Batching payments alone does not protect against a hallucinated payment instruction or stop accrual during an outage. The local CRE workflow reads a frozen provider-health snapshot over HTTP, compares client-observed counters, and reads the token, balance and matching Sepolia stream at an explicit block. Fixed rules check session identity, parties, deposit, duration and rate. The same configuration and observations produce the same policy result; no LLM judges whether the payment is eligible."
         ),
         table(
           ["Decision", "Observed condition", "What happens next"],
@@ -220,7 +223,7 @@ export const documentation = {
           "Every ALLOW, BLOCK or ERROR is saved as a content-addressed local blob. Before signing, a spend approval needs a confirmed Merkle inclusion receipt and a fresh successful simulation of the same transaction. Remaining policy decisions, including blocks, are anchored in batches. Receipts prove inclusion of operator-submitted hashes, not DON approval or the correctness of the underlying observation. Receipt transactions add gas, independently of request reuse."
         ),
       ]),
-      section("Run the full supervision demo", [
+      section("Run the deterministic guardrail demo", [
         code(
           "Terminal",
           "npm run --silent demo:agent\nnpm run --silent demo:agent -- --pay"
@@ -357,14 +360,14 @@ export const documentation = {
     ],
   },
   cli: {
-    title: "Run the AI CLI demo.",
+    title: "Run the agent with deterministic payment guardrails.",
     intro:
-      "Run real AI tool calls and local CRE workflows from the terminal. The browser presents workflow evidence and documentation; execution stays in the CLI.",
+      "Let the model propose service requests while fixed CRE rules guard the managed payment flow. Run actual AI tool calls and local CRE workflows from the terminal; the browser presents their evidence.",
     source: "docs/AI_AGENT_DEMO.md",
     sections: [
-      section("Run the AI CLI demo", [
+      section("Propose. Check. Execute.", [
         p(
-          "The separate CLI uses real Qwen or OpenAI tool calls and a USDC-configured escrow stream. Local CRE evaluates admission, healthy continuation and outage-triggered closure using HTTP observations and Sepolia state. Configure the model key, dedicated payer, recipient and AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env."
+          "Qwen or OpenAI proposes a tier and purpose; host-controlled quotes supply the payment parameters. Local CRE applies fixed admission, continuation and outage-closure rules to HTTP observations and Sepolia state. Model prose is not payment approval. Configure the model key, dedicated payer, recipient and AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env."
         ),
         code("sh", "npm run demo:agent\nnpm run demo:agent -- --pay"),
         p(

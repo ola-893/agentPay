@@ -1,7 +1,7 @@
 {
   "name": "agentpay",
   "version": "1.0.0",
-  "description": "AgentPay \u2014 agent payment policies orchestrated with Chainlink CRE",
+  "description": "AgentPay — deterministic payment guardrails for AI agents, built with Chainlink CRE",
   "main": "index.js",
   "scripts": {
     "test": "npm run test:contracts && npm run test:sdk && npm run test:server && npm run test:cre && npm run test:tooling",

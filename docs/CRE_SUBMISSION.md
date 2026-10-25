@@ -1,8 +1,10 @@
 # CRE bounty submission: AgentPay
 
+**Core contribution:** reusable streams reduce per-request payment transactions; deterministic CRE guardrails reduce avoidable spending caused by unchecked model-generated payment actions. The AI proposes service requests, CRE evaluates explicit price/health/session/budget/rate rules, and the CLI applies the checked outcome. CRE is the policy boundary around the agent’s financial commitments.
+
 AgentPay addresses the transaction-per-request payment problem with prepaid escrow streams. An AI agent funds one stream, makes many service requests without additional payment transactions, and cancels when finished or when service fails. The provider earns tokens with time; unused escrow returns to the sender on cancellation.
 
-CRE supervises that lifecycle. The workflow combines HTTP service observations with Ethereum Sepolia stream state and returns `OPEN`, `CONTINUE`, `CLOSE` or `DENY`. An initial CRE price workflow also compares live Coinbase USDC/USD with a finalized Chainlink USDC/USD feed. The agent wallet executes stream actions. This submission uses local CRE simulation, not a workflow deployed to Chainlink's network.
+CRE provides deterministic guardrails for that lifecycle. The workflow combines HTTP service observations with Ethereum Sepolia stream state and returns `OPEN`, `CONTINUE`, `CLOSE` or `DENY`. An initial CRE price workflow also compares live Coinbase USDC/USD with a finalized Chainlink USDC/USD feed. The agent wallet executes stream actions. This submission uses local CRE simulation, not a workflow deployed to Chainlink's network.
 
 ## Visual workflow and execution dashboard
 

@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import { DecisionBadge } from "./WorkflowBits";
 import { formatUsdc, percentOf, shortAddress } from "../lib/workflow-view.mjs";
 const nodes = [
-  ["agent", "Agent", Bot, "Requests paid work"],
+  ["agent", "Agent", Bot, "Proposes paid work"],
   ["wallet", "Wallet", Wallet, "Signs approved calls"],
   ["escrow", "Escrow", Database, "Accrues over time"],
   ["service", "Paid service", Globe, "Serves authenticated requests"],
@@ -120,7 +120,7 @@ export default function WorkflowDiagram({
       type="button"
       className={`wf-hub ${active("cre") ? "is-active" : ""}`}
       onClick={() => onNode("cre")}
-      aria-label="Find CRE decisions"
+      aria-label="Find deterministic CRE policy results"
     >
       <span>
         <Workflow size={18} aria-hidden="true" /> Chainlink CRE
@@ -128,14 +128,14 @@ export default function WorkflowDiagram({
       {state.decision ? (
         <DecisionBadge value={state.decision} />
       ) : (
-        <small>Awaiting events</small>
+        <small>Deterministic policy</small>
       )}
     </button>
   );
   return (
     <section
       className="wf-surface wf-diagram"
-      aria-label="CRE payment workflow"
+      aria-label="Deterministic CRE payment guardrails"
     >
       <p className="sr-only">
         Price feeds, service health and stream state feed CRE. The wallet CLI
@@ -322,7 +322,7 @@ export default function WorkflowDiagram({
       </div>
       <div className="wf-trust">
         {[
-          "CRE: local simulation",
+          "CRE: local, deterministic",
           "Wallet CLI gates signing",
           "Contract does not verify CRE",
         ].map((label) => (

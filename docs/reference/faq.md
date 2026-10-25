@@ -1,12 +1,16 @@
 # Frequently asked questions
 
+## Why use CRE when the agent already has an LLM?
+
+The LLM proposes useful work; CRE provides deterministic payment guardrails. A hallucinated instruction should not, by itself, authorize more funding or change a stream lifecycle. CRE evaluates fixed price, health, session, balance, budget and rate rules; the CLI validates and applies the result. The managed flow reuses a matching session, continues on healthy checkpoints and closes when policy requires it. This reduces avoidable waste while preserving an explicit operator recovery path. It does not guarantee zero loss or move CRE enforcement into the stream contract.
+
 ## What does AgentPay currently demonstrate?
 
 An AI agent funds a USDC escrow stream, reuses it for service requests, and uses local CRE HTTP/onchain checkpoints to continue or close it with earned-payment/refund verification. A secondary price gate compares Coinbase and finalized Chainlink USDC/USD. The browser shows separate historical price evidence. [Submission](../CRE_SUBMISSION.md).
 
 ## Is a wallet required?
 
-Not to view evidence, read Docs or prepare an Agent setup draft. Read-only authenticated CRE CLI simulation also needs no wallet key/funds. Deployment, report broadcast or token settlement require a deliberately configured dedicated Sepolia wallet.
+Not to view recorded evidence or read Docs. Read-only authenticated CRE CLI simulation also needs no wallet key/funds. Deployment, report broadcast or token settlement require a deliberately configured dedicated Sepolia wallet.
 
 ## Which token and decimals?
 

@@ -1,16 +1,12 @@
 # Legacy tUSD payment streams
 
-The streaming frontend and `AgentPaySDK` assume **18-decimal MockUSD/tUSD**, with no monetary value. The separate AI CLI now uses the same escrow contract with six-decimal Circle USDC and local CRE lifecycle supervision; see the [AI streaming guide](../AI_AGENT_DEMO.md). [Deploy and configure](../../DEPLOYMENT.md) before connecting a wallet.
+The legacy `AgentPaySDK` assumes **18-decimal MockUSD/tUSD**, with no monetary value. The current AI CLI uses the same escrow contract deployed separately for six-decimal Circle USDC, with deterministic CRE guardrails in the CLI; see the [AI streaming guide](../AI_AGENT_DEMO.md). [Deploy and configure](../../DEPLOYMENT.md) before signing. The frontend contains Workflow and Docs, rather than a stream-management page.
 
-## UI workflow
+## Legacy SDK workflow
 
-1. Set `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local` to your new AgentPayStream/MockUSD deployment. Restart Vite.
-2. Open Streams, connect a browser wallet on Ethereum Sepolia, and mint test tUSD if needed.
-3. Enter a nonzero Ethereum recipient address (no ENS resolution), positive amount and whole-second duration. Default: 24 hours. Presets and custom duration use the same state.
-4. Confirm approval if allowance is insufficient, then confirm stream creation. The app locks pending actions and shows wallet progress/errors.
-5. Incoming/outgoing lists support search, status filters, sorting and pagination. Discovery covers the last 49000 blocks, not all history.
+Configure the dedicated wallet, Sepolia RPC and legacy deployment using the [SDK guide](../sdk/agentpay-sdk.md). Supply a distinct recipient, a positive 18-decimal tUSD amount and a whole-second duration. `createStream` approves tokens as needed and funds escrow. Use contract reads for stream state and accrued balances. The current Workflow page visualizes the separate USDC CLI; it does not create or manage legacy streams.
 
-No balance is fabricated. Unavailable balances and failed stream queries show explicit errors rather than zero/empty success.
+The legacy SDK's model-assisted mode selection is separate from the deterministic CRE payment policy in the USDC CLI. Do not present the legacy model as the source of CRE results.
 
 ## Integer accounting
 
@@ -24,9 +20,9 @@ Reaching stop time does not itself set `isActive` false. Ended active streams ca
 
 ## Withdraw or close
 
-Incoming cards show estimated claimable amounts; the contract determines final amounts. Only the recipient can withdraw. **Withdraw by stream ID** reads the onchain balance and verifies the connected recipient; changing IDs clears the previous result. Use this for older streams absent from discovery.
+Use `getClaimableBalance(streamId)` to read accrued funds from the contract. Only the recipient can call `withdrawFromStream(streamId)`; the contract determines the final amount.
 
-Either party can close/cancel an active stream. Accrued funds go to the recipient, remaining funds to the sender. Confirmation uses a wallet transaction. Disconnecting or changing account/network invalidates the local app session; reconnect to refresh. Closing the confirmation dialog does not cancel a transaction already sent to the wallet/network.
+Either party can call `cancelStream(streamId)` on an active stream. Accrued funds go to the recipient, remaining funds to the sender. Withdrawal and cancellation are wallet-signed transactions; inspect their receipts before retrying after uncertain confirmation.
 
 ## Contract and SDK calls
 

@@ -1,6 +1,8 @@
 # AgentPay frontend
 
-React 19, Vite 7 and Tailwind. The frontend has two destinations: **Workflow** and **Docs**. Workflow explains how prepaid escrow addresses the N+1 payment problem and how local Chainlink CRE supervises the CLI, then displays recorded USDC price-policy evidence. Docs covers the workflow, CLI demo, policy and SDK reference.
+Product wording follows the execution boundary: the agent proposes work, CRE checks fixed rules, and the CLI applies the checked result. Explain guardrails against model-driven payment mistakes, not additional AI intelligence. Recorded results stay historical; no decision is computed by the browser.
+
+React 19, Vite 7 and Tailwind. The frontend has two destinations: **Workflow** and **Docs**. Workflow explains how prepaid escrow addresses the N+1 payment problem and how deterministic Chainlink CRE rules guard the CLI’s payment lifecycle, then displays recorded USDC price-policy evidence. Docs covers the workflow, CLI demo, policy and SDK reference.
 
 Workflow embeds a CRE flow diagram and agent execution dashboard. Recorded mode replays actual CLI events; Live local streams the same CLI through a loopback-only server. There is no browser wallet, draft editor, stream management or separate dashboard route. Payment keys and execution remain in the CLI/server on Ethereum Sepolia.
 

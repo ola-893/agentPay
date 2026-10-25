@@ -5,8 +5,8 @@ export default function CREWorkflow() {
     <div className="workflow-page">
       <div className="workflow-title">
         <div>
-          <h1>Fund once. Let CRE supervise the stream.</h1>
-          <p>Many paid requests. One stream. Every decision visible.</p>
+          <h1>Fund once. Guard agent spending.</h1>
+          <p>Deterministic CRE rules guard against hallucinated payment actions. The CLI enforces them.</p>
         </div>
         <a
           href="https://github.com/ola-893/agentPay/tree/main/cre/payment-guard"

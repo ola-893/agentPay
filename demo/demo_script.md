@@ -1,172 +1,58 @@
-# AgentPay Demo Script
+# AgentPay manual demo: deterministic payment guardrails
 
-**Title**: AgentPay - Real-Time tUSD Payment Streaming for AI Agents
-**Network**: Sepolia Testnet (Real Blockchain Transactions)
+**Core message:** the agent proposes work, CRE checks fixed payment rules, and the CLI executes eligible actions. The agent already supplies the intelligence. CRE supplies deterministic guardrails around the payment commitment.
 
----
+## Prepare
 
-## Prerequisites
+Use Node 22, installed dependencies, Bun and an authenticated CRE CLI. Configure the model, dedicated payer, recipient, USDC stream and audit journal using the [AI CLI guide](../docs/AI_AGENT_DEMO.md) and [spend-review guide](../docs/SPEND_AUDIT.md). The paid run needs Circle Sepolia USDC and Sepolia ETH for stream and audit transactions.
 
-1. **Environment Setup**: Ensure `.env` has:
-   ```
-   PRIVATE_KEY_1=your_private_key_here
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
-
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   cd sdk && npm install && cd ..
-   ```
-
-3. **Get Test tUSD Tokens**: The demo will auto-mint if balance is low, or use the frontend at `http://localhost:5173` to mint tokens.
-
----
-
-## Running the Demo
-
-### Step 1: Start the Provider (Terminal 1)
-
-```bash
-npx ts-node demo/provider.ts
+```sh
+npm run --silent demo:agent -- --help
+npm run --silent demo:agent
 ```
 
-**Expected Output**:
-```
-🔧 Provider Configuration:
-   AgentPayStream Contract: YOUR_AGENTPAY_STREAM_ADDRESS
-   tUSD Token: YOUR_TEST_TOKEN_ADDRESS
-   RPC URL: https://rpc.sepolia.org
+Dry-run before presenting: live price, feed freshness or service inputs can change a policy result. Preview makes real model and local CRE calls, saves decision blobs and signs no transaction. Use the Workflow page's recorded run if external inputs prevent a live demonstration.
 
-🚀 AgentPay Demo Provider running on http://localhost:3005
+For the visual dashboard in another terminal:
 
-📋 Available Endpoints:
-   GET /health          - Health check (free)
-   GET /api/info        - API info (free)
-   GET /api/premium     - Premium content (0.0001 tUSD/sec)
-   GET /api/ai-insight  - AI insights (0.001 tUSD/sec)
+```sh
+npm run dev:live
 ```
 
-The provider is now a "gatekeeper" that requires tUSD payment streams for premium content.
+Open `http://127.0.0.1:5317/`. Use **Recorded** for the existing funded replay. Local Preview is available without enabling browser payment controls. Do not start a second paid run in the browser while presenting the terminal run.
 
----
+## Present the problem and the guardrail
 
-### Step 2: Run the Consumer Agent (Terminal 2)
+“An agent making a thousand paid API requests should not need a thousand payment transactions. AgentPay funds one escrow stream and reuses that session across many requests. Earnings accrue with time, without a payment transaction for each call.
 
-```bash
-npx ts-node demo/consumer.ts
+“But efficient payments still need controls. A hallucinated payment instruction could create unnecessary funding or keep paying an unavailable service. We separate the agent's reasoning from payment authority. Chainlink CRE connects external service and price observations with blockchain state, then evaluates explicit rules. The CLI validates those results before signing.”
+
+Point to the diagram's external-input chips, CRE policy node, **fund once** edge and request-reuse loop. Explain that CRE is run through the local simulator in this demo.
+
+## Run the funded lifecycle
+
+```sh
+npm run --silent demo:agent -- --pay
 ```
 
-**What Happens (Real Blockchain)**:
+This creates a new stream with at most **0.01 USDC** escrow. Approval, funding, cancellation and audit receipts use Sepolia gas. Do not promise exact payout amounts or a fixed runtime; both depend on live execution.
 
-1. **Wallet Connection**: Agent connects to Sepolia with `PRIVATE_KEY_1`
-2. **Balance Check**: Verifies tUSD balance, mints if needed
-3. **x402 Flow**:
-   - Agent requests `/api/premium`
-   - Provider returns `402 Payment Required` with requirements
-   - SDK reads payment headers (rate, contract address, token)
-   - Gemini AI decides: stream vs direct payment
-   - SDK approves tUSD tokens on-chain
-   - SDK creates payment stream on-chain
-   - SDK retries request with stream ID
-   - Provider validates stream and returns content
-4. **Stream Reuse**: Subsequent requests reuse the same stream (no new transactions!)
+| Terminal evidence | What to explain |
+| --- | --- |
+| Real model tool request | “The agent proposes a service tier and purpose. It cannot rewrite the quote, recipient, deposit or policy.” |
+| Price observations and `OPEN` | “CRE reads HTTP observations and Sepolia state. Fixed price, health, budget, rate and identity checks admit this proposal.” |
+| Spend review and receipt | “The exact transaction is dry-run and checked, its decision is stored in a durable blob, and a receipt anchors its hash before the CLI signs.” |
+| Ten successful requests and `CONTINUE` | “The CLI and provider reuse the validated session. CRE checks the existing stream at a healthy checkpoint; requests do not each fund another payment.” |
+| Three injected HTTP 503 failures and `CLOSE` | “The observed failure threshold triggers the configured rule. The CLI cancels; this is a policy result rather than model judgment.” |
+| Earned/refunded totals and transaction link | “The contract pays time-accrued earnings and refunds unused escrow. These totals reconcile to the original deposit.” |
+| Premium request and `DENY` | “The proposed 0.2 USDC exceeds the 0.1-USDC cap. The CLI refuses funding regardless of the agent's request.” |
 
-**Expected Output**:
-```
-🚀 Starting AgentPay Demo Consumer (Real Blockchain Mode)...
+The requested stream earns **10 raw USDC/s** (0.00001 USDC/s); the configured maximum is **100 raw/s** (0.0001 USDC/s). USDC has six decimals: the basic deposit is `10000` raw. The cap is a per-proposal bound, not a guarantee about aggregate wallet spending.
 
-📡 Connecting to Sepolia testnet...
-✅ Agent Wallet: 0x...
+## Close with the contribution
 
---- Checking tUSD Balance ---
-💰 Current tUSD Balance: 100.0 tUSD
+“One funded session reduces payment transactions. Deterministic CRE guardrails reduce avoidable loss from unchecked agent payment instructions. We can inspect the observations, rules, decisions and resulting transactions.”
 
---- [Step 1] Making Request to http://localhost:3005/api/premium ---
-[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
-[AgentPaySDK] 🤖 Gemini Analysis: High request volume expected, streaming is more efficient
-[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
-[AgentPaySDK] Approving tUSD...
-[AgentPaySDK] Approved.
-[AgentPaySDK] Creating stream to YOUR_TEST_TOKEN_ADDRESS...
-[AgentPaySDK] Stream #X created. Retrying request...
-✅ REQUEST SUCCESS!
-📦 Response: { "success": true, "data": "🌟 This is PREMIUM content..." }
+Keep enforcement precise: the wallet-owning CLI applies local CRE results; AgentPayStream enforces escrow and payouts. The workflow is not deployed to a DON. Health checks run at explicit checkpoints; they do not prove answer quality or undo already-earned time. Explicit operator recovery can still close an owned stream. This is a Sepolia prototype using test tokens.
 
---- [Step 2] Subsequent Requests (Stream Reuse) ---
-✅ Request 1: Success (Stream reused - no new transaction!)
-✅ Request 2: Success (Stream reused - no new transaction!)
-✅ Request 3: Success (Stream reused - no new transaction!)
-
-📊 Efficiency Report:
-   Total Requests Made: 4
-   Blockchain Transactions: 1
-   ⚡ Transactions Saved: 3
-
-💰 Final tUSD Balance: 99.64 tUSD
-   Spent: 0.36 tUSD
-
-🎉 Demo Complete!
-```
-
----
-
-## Key Concepts Demonstrated
-
-### 1. x402 Protocol
-The provider returns HTTP 402 with payment requirements in headers:
-- `X-AgentPay-Mode: streaming`
-- `X-AgentPay-Rate: 0.0001` (tUSD per second)
-- `X-AgentPay-Contract: YOUR_AGENTPAY_STREAM_ADDRESS`
-- `X-Payment-Token: YOUR_TEST_TOKEN_ADDRESS`
-
-### 2. AI-Powered Payment Decisions
-The Gemini AI brain analyzes:
-- Expected request volume
-- Gas costs vs streaming costs
-- Decides optimal payment mode (stream vs direct)
-
-### 3. Stream Efficiency
-- **Problem**: Per-request payments = N transactions for N requests
-- **Solution**: One stream transaction serves unlimited requests
-- **Result**: Massive gas savings for high-frequency API access
-
-### 4. Real Blockchain Transactions
-All transactions are real and verifiable on Sepolia:
-- View on Etherscan: `https://sepolia.etherscan.io/address/YOUR_WALLET`
-- Contract: `https://sepolia.etherscan.io/address/YOUR_AGENTPAY_STREAM_ADDRESS`
-
----
-
-## Contract Addresses (Sepolia)
-
-| Contract | Address |
-|----------|---------|
-| AgentPayStream | `YOUR_AGENTPAY_STREAM_ADDRESS` |
-| MockUSD | `YOUR_TEST_TOKEN_ADDRESS` |
-
----
-
-## Troubleshooting
-
-**"PRIVATE_KEY_1 not found"**: Add your private key to `.env`
-
-**"Connection refused"**: Make sure provider is running first
-
-**"Insufficient tUSD balance"**: The demo auto-mints, or use the frontend to mint
-
-**"Transaction failed"**: Check you have Sepolia ETH for gas (get from faucet)
-
----
-
-## Frontend Dashboard
-
-For a visual experience, run the frontend:
-```bash
-cd vite-project && npm run dev
-```
-
-Then open `http://localhost:5173` to:
-- View live stream balances
-- Create/cancel streams manually
-- Monitor AI agent activity
+For legacy model-assisted tUSD integration, use the [AgentPaySDK reference](../docs/sdk/agentpay-sdk.md); it is separate from this CRE-guarded USDC demo.

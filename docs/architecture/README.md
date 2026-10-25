@@ -1,5 +1,13 @@
 # Architecture and trust boundaries
 
+## Separate reasoning from payment authority
+
+The AI proposes a service request. The host owns the quote and transaction parameters. Local CRE evaluates fixed rules over HTTP observations and onchain state. The CLI validates the result, checks expiry and transaction intent, then signs an eligible action. Reusing the signed active session is CLI/provider behavior; CRE checks the matching stream at lifecycle checkpoints. A CONTINUE result supports that reuse without a new funding decision on every call.
+
+This boundary is designed to reduce financial waste from hallucinated payment instructions. It is not an LLM policy verdict or a guarantee against every loss. Normal checkpoint handling follows deterministic rules; explicit operator recovery cancellation remains available. The stream contract enforces accounting, while the current guardrail is enforced by the CLI.
+
+## Payment lifecycle
+
 AgentPay's current AI demo supervises the original prepaid stream mechanism with local Chainlink CRE. The same AgentPayStream contract is deployed separately for six-decimal Circle USDC and legacy 18-decimal tUSD.
 
 ```mermaid
@@ -30,8 +38,8 @@ The contract is time-based, not per-request metering. It accrues until cancellat
 
 AgentPayGuard and AgentPaySettlement implement a different one-time settlement example. The guard authenticates forwarder/workflow identity and bounds destination, parties, expiry and replay. GuardedPaymentClient checks that authority before token approval and settlement. The existing public guard remains closed; the AI stream demo does not use these contracts. A simulation result cannot unlock them. [Reference](../contracts/guarded-settlement.md).
 
-## Retained tUSD UI and SDK
+## Retained legacy tUSD SDK
 
-The [legacy provider/SDK](x402-protocol.md) and browser Streams page still use 18-decimal tUSD and their original [stream lifecycle](payment-streams.md). That gateway checks stream state but lacks payer-bound session authentication; do not confuse it with the new CLI provider. Agent setup is a local strict-client draft, not live agent control.
+The [legacy provider/SDK](x402-protocol.md) still use 18-decimal tUSD and their original [stream lifecycle](payment-streams.md). That gateway checks stream state but lacks payer-bound session authentication; do not confuse it with the new CLI provider. Legacy setup examples are reference material; the current frontend exposes Workflow and Docs.
 
 Both tokens are valueless testnet assets. Rolling onchain budgets, independent service attestation, private execution and multichain settlement are outside this prototype. [Submission and evidence](../CRE_SUBMISSION.md).

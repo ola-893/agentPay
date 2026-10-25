@@ -10,7 +10,7 @@ export default function Layout() {
     const heading = document.querySelector("main h1")?.textContent;
     document.title = heading
       ? `${heading} · AgentPay`
-      : "AgentPay — Chainlink CRE payments";
+      : "AgentPay — Deterministic payment guardrails";
     if (previous.current !== pathname) {
       window.scrollTo({ top: 0, behavior: "instant" });
       document.getElementById("main-content")?.focus({ preventScroll: true });
