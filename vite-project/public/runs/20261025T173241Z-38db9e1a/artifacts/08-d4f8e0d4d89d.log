@@ -1,0 +1,30 @@
+Initializing...
+Loading settings...
+! Using default private key for chain write simulation. To use your own key, set CRE_ETH_PRIVATE_KEY in your .env file or system environment.
+Checking RPC connectivity...
+Compiling workflow...
+✓ Workflow compiled
+✓ Simulation limits enabled
+  HTTP: req=120kb resp=250kb timeout=10s | ConfHTTP: req=125kb resp=500kb timeout=1m30s | Consensus obs=25kb | ChainWrite evm_report=50kb evm_gas=10000000 solana_report=265b solana_cu=300000 | WASM binary=100mb compressed=20mb
+  Binary hash: f23fae8f53abb7a7fb3a8f41d0f457db4e3ebe171fa5218cee31ecbbcc67bc7b
+  Config hash: a30ca668c656553d1b3fc1e2d0bb661e9dacaabc927d6561efed00068a8cc33a
+2026-10-25T18:36:00Z [SIMULATION] Simulator Initialized
+
+2026-10-25T18:36:00Z [SIMULATION] Running trigger trigger=cron-trigger@1.0.0
+2026-10-25T18:36:01Z [USER LOG] Spend ALLOW: WITHIN_POLICY; risk=5; blob=0xc2729c1b66de81045bc12193af9276ef30e98176ed915a706b58fde7df18783c
+
+✓ Workflow Simulation Result:
+"{\"workflow\":\"agentpay-spend-review\",\"mode\":\"local-simulation\",\"record\":{\"schemaVersion\":1,\"type\":\"spend-review\",\"source\":\"local-cre-simulation\",\"donAuthenticated\":false,\"intentId\":\"0xd4f8e0d4d89d7c9f1ca80c6d9b37813c4165d3fa53b49b8a95554b67413d6cf9\",\"intentHash\":\"0x3c97c3817dda0702214e0f826739850194e0e88ce575aa0497af1847b117eda4\",\"intent\":{\"id\":\"0xd4f8e0d4d89d7c9f1ca80c6d9b37813c4165d3fa53b49b8a95554b67413d6cf9\",\"chainId\":11155111,\"payer\":\"0xe26468ae02368a75DBDBea58F367B7313942ad26\",\"transaction\":{\"to\":\"0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09\",\"data\":\"0xdae6934f0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000e26468ae02368a75dbdbea58f367b7313942ad260000000000000000000000009950d8950bf80722860f2b6a9e120893a0fe79f7000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000003e89a4704ee1a61a3d5e74ff22300bb4c4720abbefd6a0f893239f8eb314e2c8a8be10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd73300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ade3f1452001c01da080621ba891ada92cbf242ecbf820d9d0d3d27852240395035070800000000000000000000000000000000000000000000000000000000000001a0000000000000000000000000000000000000000000000000000000000000028000000000000000000000000000000000000000000000000000000000000000a17b2273657373696f6e4964223a22307865313066383136396334653330643539376335616564333566336532316136346238653332333636333735383836383038383432336139303935376464373333222c2271756f74654964223a22307862336466383030323731616130343063323964376236353064643336626434636136386134613265643965663462383135393333316563323735333463313462227d0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000417dc81f157c0dc297c60fcd418dffa1c3e402769c183203477411e976cd4e4ad93f1f9799ea3708b8fb2a8ef2fe9627ceb0ae84f364e147c0e61a233fa0d27f9d1b00000000000000000000000000000000000000000000000000000000000000\",\"value\":\"0\"},\"createdAt\":1792949742,\"expiresAt\":1792950042,\"policy\":{\"token\":\"0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238\",\"streamAddress\":\"0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09\",\"recipients\":[\"0x9950D8950BF80722860f2B6a9e120893a0fE79f7\"],\"maxAmountRaw\":\"10000\",\"maxRiskScore\":49,\"qualityRiskScore\":0,\"maxDurationSeconds\":3600}},\"observedBlock\":11992384,\"blockHash\":\"0xd175d02382b7ad001d57a70f829cc48fec85bc9aa0577f144a4eee0c038d7c0c\",\"simulation\":{\"intentHash\":\"0x3c97c3817dda0702214e0f826739850194e0e88ce575aa0497af1847b117eda4\",\"blockNumber\":11992384,\"blockHash\":\"0xd175d02382b7ad001d57a70f829cc48fec85bc9aa0577f144a4eee0c038d7c0c\",\"status\":\"success\",\"returnData\":\"0x\",\"gasEstimate\":\"2318516\",\"errorCode\":null},\"chain\":{\"tokenDecimals\":6,\"balanceRaw\":\"39889272\"},\"evaluatedAt\":1792949761,\"decision\":{\"action\":\"ALLOW\",\"reason\":\"WITHIN_POLICY\",\"riskScore\":5,\"operation\":\"createStreamWithPermit\"},\"policyVersion\":\"spend-risk-v1\",\"expiresAt\":1792950042},\"stored\":{\"intentId\":\"0xd4f8e0d4d89d7c9f1ca80c6d9b37813c4165d3fa53b49b8a95554b67413d6cf9\",\"blobHash\":\"0xc2729c1b66de81045bc12193af9276ef30e98176ed915a706b58fde7df18783c\"}}"
+
+2026-10-25T18:36:01Z [SIMULATION] Execution finished signal received
+2026-10-25T18:36:01Z [SIMULATION] Skipping WorkflowEngineV2
+
+╭──────────────────────────────────────────────────────╮
+│ Simulation complete! Ready to deploy your workflow?  │
+│                                                      │
+│ Run cre account access to request deployment access. │
+╰──────────────────────────────────────────────────────╯
+
+⚠️  Update available! You’re running 1.37.0, but 1.39.0 is the latest.
+Run `cre update` or visit https://github.com/smartcontractkit/cre-cli/releases to upgrade.
+
