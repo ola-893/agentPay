@@ -9,15 +9,15 @@
       "end": 3.112
     },
     {
-      "text": "The stream accrues payment over time while the agent uses the service.",
+      "text": "The agent already has intelligence, but hallucinated payment instructions can waste money.",
       "start": 3.2526,
-      "end": 6.8693
+      "end": 7.9526
     },
     {
-      "text": "C R E adds the intelligence: when to start, keep paying, or close.",
-      "start": 7.0099,
-      "end": 11.0766
+      "text": "C R E checks fixed rules before the C L I funds, continues, or closes a session.",
+      "start": 8.0932,
+      "end": 13.0932
     }
   ],
-  "wavSha256": "12a307d04d99c83e28b61fc83e9e993f54f3d6a70ffb52002b7747db88aa25c4"
+  "wavSha256": "e4527a8f8f59fd2c59713fb7cecd9886b5dc091123587e7c6e8988f4d8b316dc"
 }

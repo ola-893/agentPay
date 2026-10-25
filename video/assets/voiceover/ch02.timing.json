@@ -14,15 +14,15 @@
       "end": 11.1859
     },
     {
-      "text": "Budget and rate checks turn those observations into OPEN, CONTINUE, CLOSE, or DENY.",
+      "text": "Fixed budget, rate and session checks produce OPEN, CONTINUE, CLOSE, or DENY.",
       "start": 11.3266,
-      "end": 15.9099
+      "end": 15.6599
     },
     {
-      "text": "The wallet applies the decision before signing.",
-      "start": 16.0505,
-      "end": 18.4505
+      "text": "The agent proposes. C R E checks. The C L I executes eligible actions.",
+      "start": 15.8005,
+      "end": 20.5838
     }
   ],
-  "wavSha256": "6562b0bb8061148e4663d24caf2f0339c09121362fd389922942353a5b077e55"
+  "wavSha256": "57ed74807a0d93bf576088ec490f53985d1dcd41e9738dee582f17e7ae4b7650"
 }

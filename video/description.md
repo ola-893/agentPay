@@ -1,18 +1,20 @@
 # AgentPay — fund once, keep working | Chainlink CRE demo
 
-Fund one session, reuse it across paid API requests, and let Chainlink CRE connect
-market observations, service health and onchain state to payment decisions.
+The agent proposes work. Chainlink CRE checks fixed payment rules. The CLI executes
+eligible actions. Fund one session and reuse it across paid API requests, with
+deterministic guardrails against avoidable loss from hallucinated payment instructions.
+CRE connects market observations, service health and onchain state to those rules.
 Watch the recorded stream open, continue, close on an injected outage, settle
 earnings and refund, then block an over-budget premium request.
 
 0:00 Fund once. Keep working.
 0:11 Streaming payments
-0:22 Why CRE
-0:41 Real workflow execution
-0:52 Watch the stream work
-1:09 Settlement you can verify
-1:24 Budget stays in control
-1:34 Build with AgentPay
+0:24 Why CRE
+0:45 Real workflow execution
+0:56 Watch the stream work
+1:14 Settlement you can verify
+1:28 Budget stays in control
+1:38 Build with AgentPay
 
 Repository: https://github.com/ola-893/agentPay
 Source and reproduction: https://github.com/ola-893/agentPay/tree/main/video

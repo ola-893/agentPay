@@ -23,11 +23,11 @@ const views={};
 views.ch00=[[0,`<div class="hook"><h1>Many paid API calls</h1><div class="requestmarks">${Array.from({length:18},()=>'<i></i>').join('')}</div><div class="hook-arrow">↓</div><h2>One funded session</h2><div class="subtitle">AgentPay × Chainlink CRE</div></div>`]];
 views.ch01=[
  [0,title('Fund once. Keep working.')+pathDiagram(false)],
- [2,title('Keep payment aligned with service')+`<div class="outcomes large">${tag('OPEN','green')}${tag('CONTINUE','green')}${tag('CLOSE','amber')}</div>`]
+ [2,title('Fixed rules guard agent spending')+`<div class="outcomes large">${tag('OPEN','green')}${tag('CONTINUE','green')}${tag('CLOSE','amber')}</div>`]
 ];
 views.ch02=[
  [0,title('CRE connects the whole picture')+`<div class="inputs">${['Coinbase quote','Chainlink USDC/USD','Service health','Sepolia stream state'].map(s=>tag(s)).join('')}</div><div class="hub">${icon('cre')}<b>Chainlink CRE</b><small>Orchestration</small></div><div class="outcomes">${tag('OPEN','green')}${tag('CONTINUE','green')}${tag('CLOSE','amber')}${tag('DENY','red')}</div>`],
- [3,title('Observe → decide → sign')+pathDiagram(true)+`<div class="decision-pill">${icon('cre')}<b>CRE workflow</b></div>`]
+ [3,title('Propose → check → execute')+pathDiagram(true)+`<div class="decision-pill">${icon('cre')}<b>CRE guardrails</b></div>`]
 ];
 views.ch03=[
  [0,title('Real workflow. Real observations.')+`<div class="source-label">${d.snippets.http.file}:${d.snippets.http.line+1}</div><div class="codepanel compact">${E(d.snippets.http.code.split('\n')[1])}</div><div class="source-label">${d.snippets.chain.file}:${d.snippets.chain.line+1}</div><div class="codepanel compact">${E(d.snippets.chain.code.split('\n').slice(1,5).join('\n'))}</div>`],

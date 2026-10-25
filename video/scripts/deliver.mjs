@@ -6,8 +6,10 @@ const time=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
 const chapters=timing.chapters.map(c=>`${time(c.start)} ${c.title}`).join('\n');
 const text=`# AgentPay — fund once, keep working | Chainlink CRE demo
 
-Fund one session, reuse it across paid API requests, and let Chainlink CRE connect
-market observations, service health and onchain state to payment decisions.
+The agent proposes work. Chainlink CRE checks fixed payment rules. The CLI executes
+eligible actions. Fund one session and reuse it across paid API requests, with
+deterministic guardrails against avoidable loss from hallucinated payment instructions.
+CRE connects market observations, service health and onchain state to those rules.
 Watch the recorded stream open, continue, close on an injected outage, settle
 earnings and refund, then block an over-budget premium request.
 

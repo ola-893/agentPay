@@ -1,8 +1,10 @@
 # AgentPay short demo
 
-A 90–120 second video focused on fund-once streaming, CRE observations, request
-reuse, outage-driven closure, verified settlement, and budget control. The current
-narration is about 1:46. Every recorded number and transaction comes from the same
+A 90–120 second video focused on fund-once streaming and deterministic CRE payment
+guardrails: fixed-rule admission, request reuse, outage-driven closure, verified
+settlement and budget control. The agent supplies reasoning; CRE evaluates rules;
+the CLI applies checked results. The current narration is about 1:50.
+Every recorded number and transaction comes from the same
 NDJSON as the dashboard. See claims.md for the evidence mapping.
 
 From the repository root, with Node 22+ and FFmpeg:

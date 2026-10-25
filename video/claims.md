@@ -9,7 +9,7 @@ illustration; the recorded demonstration contains ten successful calls.
 | --- | --- | --- |
 | Fund once | Many paid calls reuse a funded session | AgentPayStream.sol, demo/agent-demo.mjs; hypothetical hook from project brief |
 | Streaming payments | Agent, wallet, escrow and paid-service loop | Stream contract time-based accrual and CLI session integration |
-| Why CRE | APIs + chain reads inform OPEN / CONTINUE / CLOSE / DENY | cre/payment-guard/main.ts, stream-main.ts, stream-policy.ts; recorded cre.result events |
+| Why CRE | Fixed rules over API observations + chain reads produce OPEN / CONTINUE / CLOSE / DENY | cre/payment-guard/main.ts, stream-main.ts, stream-policy.ts; recorded cre.result events |
 | Real workflow | Source snippets and saved CLI output | Build-time exact source extraction; artifacts/02-cre-price.log |
 | Recorded run | Approval/open, ten successes, healthy checkpoint, injected outage, cancel | NDJSON wallet.tx, api.reuse, fault and cre.result events |
 | Settlement | Earned/refund split, recipient increase, four audit receipts | NDJSON seq 37/44 and audit.receipt events; docs/evidence/workflow-dashboard/rpc-verification.json |
@@ -22,3 +22,9 @@ the stream contract provides escrow accounting and settlement. Decision audit
 receipts are separate transactions. This cut makes no DON execution, onchain CRE
 verification, gas-savings, full x402, or unprompted-strategy claim. The basic and
 premium trials are identified as prompted. No current prices are implied by replay.
+
+The guardrail claim is scoped to the managed CLI: the model proposes a service tier
+and purpose, the host owns financial parameters and reuse, CRE evaluates fixed
+rules, and the CLI validates the result before signing. This reduces avoidable
+spending; it is not added AI intelligence, a continuous monitor, an aggregate
+wallet budget, or a guarantee against every loss. Explicit recovery closure remains.

@@ -1,12 +1,12 @@
-<template><link rel="stylesheet" href="assets/style.css"><div id="root" data-composition-id="captions" data-duration="105.5333" style="background:transparent"><div id="caption-0" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>An agent making a thousand paid API calls should not need a thousand payment transactions.</span></div>
-<div id="caption-1" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>AgentPay combines payment streams with Chainlink C R E to keep agents working within budget.</span></div>
+<template><link rel="stylesheet" href="assets/style.css"><div id="root" data-composition-id="captions" data-duration="109.8667" style="background:transparent"><div id="caption-0" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>An agent making a thousand paid API calls should not need a thousand payment transactions.</span></div>
+<div id="caption-1" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>AgentPay pairs reusable streams with deterministic payment guardrails from Chainlink C R E.</span></div>
 <div id="caption-2" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Fund one session, then reuse it across paid requests.</span></div>
-<div id="caption-3" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The stream accrues payment over time while the agent uses the service.</span></div>
-<div id="caption-4" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>C R E adds the intelligence: when to start, keep paying, or close.</span></div>
+<div id="caption-3" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The agent already has intelligence, but hallucinated payment instructions can waste money.</span></div>
+<div id="caption-4" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>C R E checks fixed rules before the C L I funds, continues, or closes a session.</span></div>
 <div id="caption-5" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Chainlink C R E brings external APIs and blockchain state into one workflow.</span></div>
 <div id="caption-6" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>It compares Coinbase and Chainlink U S D C prices, checks service health, and reads balances and stream state.</span></div>
-<div id="caption-7" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Budget and rate checks turn those observations into OPEN, CONTINUE, CLOSE, or DENY.</span></div>
-<div id="caption-8" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The wallet applies the decision before signing.</span></div>
+<div id="caption-7" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Fixed budget, rate and session checks produce OPEN, CONTINUE, CLOSE, or DENY.</span></div>
+<div id="caption-8" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The agent proposes. C R E checks. The C L I executes eligible actions.</span></div>
 <div id="caption-9" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Here is the actual workflow source: an external H T T P fetch, followed by a Sepolia contract read.</span></div>
 <div id="caption-10" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The recorded simulator output shows the price observations and an ALLOW decision.</span></div>
 <div id="caption-11" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>This prompted demo tries a basic session and a premium request.</span></div>
@@ -18,26 +18,26 @@
 <div id="caption-17" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>The C L I also anchors decision records with onchain audit receipts.</span></div>
 <div id="caption-18" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>Next, the premium request exceeds the spending cap.</span></div>
 <div id="caption-19" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>C R E returns DENY before a new session opens, keeping that proposed spend inside the configured policy.</span></div>
-<div id="caption-20" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>One funded stream. Reusable service access. Decisions informed by real observations.</span></div>
-<div id="caption-21" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>AgentPay: streaming payments, orchestrated with Chainlink C R E. Explore the code and run the demo.</span></div></div><script>const tl=gsap.timeline({paused:true});tl.set('#caption-0',{opacity:1},0.1953);tl.set('#caption-0',{opacity:0},5.2287);
-tl.set('#caption-1',{opacity:1},5.3693);tl.set('#caption-1',{opacity:0},10.6026);
-tl.set('#caption-2',{opacity:1},11.2953);tl.set('#caption-2',{opacity:0},14.2120);
-tl.set('#caption-3',{opacity:1},14.3526);tl.set('#caption-3',{opacity:0},17.9693);
-tl.set('#caption-4',{opacity:1},18.1099);tl.set('#caption-4',{opacity:0},22.1766);
-tl.set('#caption-5',{opacity:1},22.8953);tl.set('#caption-5',{opacity:0},27.6453);
-tl.set('#caption-6',{opacity:1},27.7859);tl.set('#caption-6',{opacity:0},33.8859);
-tl.set('#caption-7',{opacity:1},34.0266);tl.set('#caption-7',{opacity:0},38.6099);
-tl.set('#caption-8',{opacity:1},38.7505);tl.set('#caption-8',{opacity:0},41.1505);
-tl.set('#caption-9',{opacity:1},41.8620);tl.set('#caption-9',{opacity:0},47.5454);
-tl.set('#caption-10',{opacity:1},47.6860);tl.set('#caption-10',{opacity:0},52.0360);
-tl.set('#caption-11',{opacity:1},52.7286);tl.set('#caption-11',{opacity:0},56.2453);
-tl.set('#caption-12',{opacity:1},56.3859);tl.set('#caption-12',{opacity:0},61.6526);
-tl.set('#caption-13',{opacity:1},61.7932);tl.set('#caption-13',{opacity:0},64.0265);
-tl.set('#caption-14',{opacity:1},64.1671);tl.set('#caption-14',{opacity:0},69.2671);
-tl.set('#caption-15',{opacity:1},69.9620);tl.set('#caption-15',{opacity:0},75.1620);
-tl.set('#caption-16',{opacity:1},75.3026);tl.set('#caption-16',{opacity:0},79.3860);
-tl.set('#caption-17',{opacity:1},79.5266);tl.set('#caption-17',{opacity:0},83.7099);
-tl.set('#caption-18',{opacity:1},84.4286);tl.set('#caption-18',{opacity:0},87.3620);
-tl.set('#caption-19',{opacity:1},87.5026);tl.set('#caption-19',{opacity:0},93.7026);
-tl.set('#caption-20',{opacity:1},94.3953);tl.set('#caption-20',{opacity:0},99.4120);
-tl.set('#caption-21',{opacity:1},99.5526);tl.set('#caption-21',{opacity:0},105.0193);window.__timelines.captions=tl;</script></template>
+<div id="caption-20" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>One funded stream. Reusable service access. Deterministic guardrails against avoidable spending.</span></div>
+<div id="caption-21" class="caption" style="opacity:0" data-layout-allow-caption-zone><span>AgentPay: payment guardrails, built with Chainlink C R E. Explore the code and run the demo.</span></div></div><script>const tl=gsap.timeline({paused:true});tl.set('#caption-0',{opacity:1},0.1953);tl.set('#caption-0',{opacity:0},5.2287);
+tl.set('#caption-1',{opacity:1},5.3693);tl.set('#caption-1',{opacity:0},10.7359);
+tl.set('#caption-2',{opacity:1},11.4286);tl.set('#caption-2',{opacity:0},14.3453);
+tl.set('#caption-3',{opacity:1},14.4859);tl.set('#caption-3',{opacity:0},19.1859);
+tl.set('#caption-4',{opacity:1},19.3265);tl.set('#caption-4',{opacity:0},24.3265);
+tl.set('#caption-5',{opacity:1},25.0286);tl.set('#caption-5',{opacity:0},29.7786);
+tl.set('#caption-6',{opacity:1},29.9192);tl.set('#caption-6',{opacity:0},36.0192);
+tl.set('#caption-7',{opacity:1},36.1599);tl.set('#caption-7',{opacity:0},40.4932);
+tl.set('#caption-8',{opacity:1},40.6338);tl.set('#caption-8',{opacity:0},45.4171);
+tl.set('#caption-9',{opacity:1},46.1286);tl.set('#caption-9',{opacity:0},51.8120);
+tl.set('#caption-10',{opacity:1},51.9526);tl.set('#caption-10',{opacity:0},56.3026);
+tl.set('#caption-11',{opacity:1},56.9953);tl.set('#caption-11',{opacity:0},60.5120);
+tl.set('#caption-12',{opacity:1},60.6526);tl.set('#caption-12',{opacity:0},65.9193);
+tl.set('#caption-13',{opacity:1},66.0599);tl.set('#caption-13',{opacity:0},68.2932);
+tl.set('#caption-14',{opacity:1},68.4338);tl.set('#caption-14',{opacity:0},73.5338);
+tl.set('#caption-15',{opacity:1},74.2286);tl.set('#caption-15',{opacity:0},79.4286);
+tl.set('#caption-16',{opacity:1},79.5692);tl.set('#caption-16',{opacity:0},83.6526);
+tl.set('#caption-17',{opacity:1},83.7932);tl.set('#caption-17',{opacity:0},87.9765);
+tl.set('#caption-18',{opacity:1},88.6953);tl.set('#caption-18',{opacity:0},91.6287);
+tl.set('#caption-19',{opacity:1},91.7693);tl.set('#caption-19',{opacity:0},97.9693);
+tl.set('#caption-20',{opacity:1},98.6620);tl.set('#caption-20',{opacity:0},104.1620);
+tl.set('#caption-21',{opacity:1},104.3026);tl.set('#caption-21',{opacity:0},109.3526);window.__timelines.captions=tl;</script></template>

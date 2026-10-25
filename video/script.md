@@ -1,18 +1,18 @@
 # AgentPay — short demo narration
 
-284 words. Target 90–120 seconds.
+292 words. Target 90–120 seconds.
 
 ## ch00 — Fund once. Keep working.
 
-An agent making a thousand paid API calls should not need a thousand payment transactions. AgentPay combines payment streams with Chainlink C R E to keep agents working within budget.
+An agent making a thousand paid API calls should not need a thousand payment transactions. AgentPay pairs reusable streams with deterministic payment guardrails from Chainlink C R E.
 
 ## ch01 — Streaming payments
 
-Fund one session, then reuse it across paid requests. The stream accrues payment over time while the agent uses the service. C R E adds the intelligence: when to start, keep paying, or close.
+Fund one session, then reuse it across paid requests. The agent already has intelligence, but hallucinated payment instructions can waste money. C R E checks fixed rules before the C L I funds, continues, or closes a session.
 
 ## ch02 — Why CRE
 
-Chainlink C R E brings external APIs and blockchain state into one workflow. It compares Coinbase and Chainlink U S D C prices, checks service health, and reads balances and stream state. Budget and rate checks turn those observations into OPEN, CONTINUE, CLOSE, or DENY. The wallet applies the decision before signing.
+Chainlink C R E brings external APIs and blockchain state into one workflow. It compares Coinbase and Chainlink U S D C prices, checks service health, and reads balances and stream state. Fixed budget, rate and session checks produce OPEN, CONTINUE, CLOSE, or DENY. The agent proposes. C R E checks. The C L I executes eligible actions.
 
 ## ch03 — Real workflow execution
 
@@ -32,4 +32,4 @@ Next, the premium request exceeds the spending cap. C R E returns DENY before a 
 
 ## ch07 — Build with AgentPay
 
-One funded stream. Reusable service access. Decisions informed by real observations. AgentPay: streaming payments, orchestrated with Chainlink C R E. Explore the code and run the demo.
+One funded stream. Reusable service access. Deterministic guardrails against avoidable spending. AgentPay: payment guardrails, built with Chainlink C R E. Explore the code and run the demo.

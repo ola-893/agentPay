@@ -1,5 +1,7 @@
 {
   "ok": true,
+  "strict": false,
+  "browserSkipped": false,
   "lint": {
     "ok": true,
     "errorCount": 0,
@@ -21,45 +23,54 @@
     "warningCount": 0,
     "infoCount": 0,
     "findings": [],
-    "duration": 105.5333,
+    "duration": 109.8667,
     "samples": [
-      1.702,
-      5.106,
-      8.511,
-      11.915,
-      15.319,
-      18.724,
-      22.128,
-      25.532,
-      28.937,
-      32.341,
-      35.745,
-      39.149,
-      42.554,
-      45.958,
-      49.362,
-      52.767,
-      56.171,
-      59.575,
-      62.98,
-      66.384,
-      69.788,
-      73.192,
-      76.597,
-      80.001,
-      83.405,
-      86.81,
-      90.214,
-      93.618,
-      97.023,
-      100.427,
-      103.831
+      1.772,
+      5.316,
+      8.86,
+      12.404,
+      15.948,
+      19.492,
+      23.037,
+      26.581,
+      30.125,
+      33.669,
+      37.213,
+      40.757,
+      44.301,
+      47.845,
+      51.389,
+      54.933,
+      58.477,
+      62.022,
+      65.566,
+      69.11,
+      72.654,
+      76.198,
+      79.742,
+      83.286,
+      86.83,
+      90.374,
+      93.918,
+      97.462,
+      101.006,
+      104.551,
+      108.095
     ],
     "transitionSamples": [],
     "transitionSamplesDropped": 0,
     "tolerance": 2,
     "totalIssueCount": 0,
     "truncated": false
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
   },
   "contrast": {
     "ok": true,
@@ -69,14 +80,14 @@
     "findings": [],
     "enabled": true,
     "samples": [
-      1.702,
-      25.532,
-      52.767,
-      76.597,
-      103.831
+      1.772,
+      26.581,
+      54.933,
+      79.742,
+      108.095
     ],
-    "checked": 43,
-    "passed": 43
+    "checked": 46,
+    "passed": 46
   },
   "craft": {
     "ok": true,
@@ -85,7 +96,28 @@
     "infoCount": 0,
     "findings": [],
     "enabled": true,
-    "step": 0.17600000000000193,
-    "samples": 600
+    "step": 0.18300000000000693,
+    "samples": 599
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available"
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  },
+  "saved": {
+    "id": "d7deb620-66fa-43fc-90b1-51136dfbbb47",
+    "revision": "c092d1ab-432c-4427-8abe-0666e3d02bcd",
+    "report": "/Users/deonorla/Documents/ChatGPT/agentpay/video/agentpay-demo/.hyperframes/artifacts/checks/d7deb620-66fa-43fc-90b1-51136dfbbb47.json",
+    "attribution": "recorded-revision"
+  },
+  "_meta": {
+    "version": "0.8.188",
+    "latestVersion": "0.8.197",
+    "updateAvailable": true
   }
 }

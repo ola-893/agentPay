@@ -1,9 +1,10 @@
 # Review — short product demo
 
 Latest user direction: 90–120 seconds, with AgentPay's strengths carrying the story.
-The new 284-word narration measures 105.5333 seconds. It replaces the 4:30 explainer.
+The new 292-word narration measures 109.8667 seconds. It replaces the 4:30 explainer.
 
-Focus: fund once and reuse the stream; CRE brings external observations and onchain
+Focus: fund once and reuse the stream; deterministic CRE rules guard financial
+commitments against unchecked model instructions. CRE brings observations and onchain
 state together; the recorded run continues while healthy, closes on an injected
 outage, settles earnings/refund, and blocks an over-budget premium session.
 The audit-receipt beat shows an additional existing strength without claiming that

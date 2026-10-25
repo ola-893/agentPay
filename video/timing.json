@@ -1,5 +1,5 @@
 {
-  "duration": 105.5333,
+  "duration": 109.8667,
   "fps": 30,
   "chapters": [
     {
@@ -7,10 +7,10 @@
       "title": "Fund once. Keep working.",
       "sentences": [
         "An agent making a thousand paid API calls should not need a thousand payment transactions.",
-        "AgentPay combines payment streams with Chainlink C R E to keep agents working within budget."
+        "AgentPay pairs reusable streams with deterministic payment guardrails from Chainlink C R E."
       ],
       "start": 0,
-      "duration": 11.1,
+      "duration": 11.233333333333333,
       "segments": [
         {
           "text": "An agent making a thousand paid API calls should not need a thousand payment transactions.",
@@ -18,9 +18,9 @@
           "end": 5.2287
         },
         {
-          "text": "AgentPay combines payment streams with Chainlink C R E to keep agents working within budget.",
+          "text": "AgentPay pairs reusable streams with deterministic payment guardrails from Chainlink C R E.",
           "start": 5.3693,
-          "end": 10.6026
+          "end": 10.7359
         }
       ],
       "voice": "bm_george",
@@ -32,11 +32,11 @@
       "title": "Streaming payments",
       "sentences": [
         "Fund one session, then reuse it across paid requests.",
-        "The stream accrues payment over time while the agent uses the service.",
-        "C R E adds the intelligence: when to start, keep paying, or close."
+        "The agent already has intelligence, but hallucinated payment instructions can waste money.",
+        "C R E checks fixed rules before the C L I funds, continues, or closes a session."
       ],
-      "start": 11.1,
-      "duration": 11.6,
+      "start": 11.2333,
+      "duration": 13.6,
       "segments": [
         {
           "text": "Fund one session, then reuse it across paid requests.",
@@ -44,14 +44,14 @@
           "end": 3.112
         },
         {
-          "text": "The stream accrues payment over time while the agent uses the service.",
+          "text": "The agent already has intelligence, but hallucinated payment instructions can waste money.",
           "start": 3.2526,
-          "end": 6.8693
+          "end": 7.9526
         },
         {
-          "text": "C R E adds the intelligence: when to start, keep paying, or close.",
-          "start": 7.0099,
-          "end": 11.0766
+          "text": "C R E checks fixed rules before the C L I funds, continues, or closes a session.",
+          "start": 8.0932,
+          "end": 13.0932
         }
       ],
       "voice": "bm_george",
@@ -64,11 +64,11 @@
       "sentences": [
         "Chainlink C R E brings external APIs and blockchain state into one workflow.",
         "It compares Coinbase and Chainlink U S D C prices, checks service health, and reads balances and stream state.",
-        "Budget and rate checks turn those observations into OPEN, CONTINUE, CLOSE, or DENY.",
-        "The wallet applies the decision before signing."
+        "Fixed budget, rate and session checks produce OPEN, CONTINUE, CLOSE, or DENY.",
+        "The agent proposes. C R E checks. The C L I executes eligible actions."
       ],
-      "start": 22.7,
-      "duration": 18.966666666666665,
+      "start": 24.8333,
+      "duration": 21.1,
       "segments": [
         {
           "text": "Chainlink C R E brings external APIs and blockchain state into one workflow.",
@@ -81,14 +81,14 @@
           "end": 11.1859
         },
         {
-          "text": "Budget and rate checks turn those observations into OPEN, CONTINUE, CLOSE, or DENY.",
+          "text": "Fixed budget, rate and session checks produce OPEN, CONTINUE, CLOSE, or DENY.",
           "start": 11.3266,
-          "end": 15.9099
+          "end": 15.6599
         },
         {
-          "text": "The wallet applies the decision before signing.",
-          "start": 16.0505,
-          "end": 18.4505
+          "text": "The agent proposes. C R E checks. The C L I executes eligible actions.",
+          "start": 15.8005,
+          "end": 20.5838
         }
       ],
       "voice": "bm_george",
@@ -102,7 +102,7 @@
         "Here is the actual workflow source: an external H T T P fetch, followed by a Sepolia contract read.",
         "The recorded simulator output shows the price observations and an ALLOW decision."
       ],
-      "start": 41.6667,
+      "start": 45.9333,
       "duration": 10.866666666666667,
       "segments": [
         {
@@ -129,7 +129,7 @@
         "The healthy checkpoint returns CONTINUE.",
         "Then we inject a provider outage. C R E returns CLOSE, and the wallet cancels the stream."
       ],
-      "start": 52.5333,
+      "start": 56.8,
       "duration": 17.233333333333334,
       "segments": [
         {
@@ -165,7 +165,7 @@
         "The transaction receipts and recipient balance increase verify the settlement.",
         "The C L I also anchors decision records with onchain audit receipts."
       ],
-      "start": 69.7667,
+      "start": 74.0333,
       "duration": 14.466666666666667,
       "segments": [
         {
@@ -195,7 +195,7 @@
         "Next, the premium request exceeds the spending cap.",
         "C R E returns DENY before a new session opens, keeping that proposed spend inside the configured policy."
       ],
-      "start": 84.2333,
+      "start": 88.5,
       "duration": 9.966666666666667,
       "segments": [
         {
@@ -217,21 +217,21 @@
       "id": "ch07",
       "title": "Build with AgentPay",
       "sentences": [
-        "One funded stream. Reusable service access. Decisions informed by real observations.",
-        "AgentPay: streaming payments, orchestrated with Chainlink C R E. Explore the code and run the demo."
+        "One funded stream. Reusable service access. Deterministic guardrails against avoidable spending.",
+        "AgentPay: payment guardrails, built with Chainlink C R E. Explore the code and run the demo."
       ],
-      "start": 94.2,
-      "duration": 11.333333333333334,
+      "start": 98.4667,
+      "duration": 11.4,
       "segments": [
         {
-          "text": "One funded stream. Reusable service access. Decisions informed by real observations.",
+          "text": "One funded stream. Reusable service access. Deterministic guardrails against avoidable spending.",
           "start": 0.1953,
-          "end": 5.212
+          "end": 5.6953
         },
         {
-          "text": "AgentPay: streaming payments, orchestrated with Chainlink C R E. Explore the code and run the demo.",
-          "start": 5.3526,
-          "end": 10.8193
+          "text": "AgentPay: payment guardrails, built with Chainlink C R E. Explore the code and run the demo.",
+          "start": 5.8359,
+          "end": 10.8859
         }
       ],
       "voice": "bm_george",

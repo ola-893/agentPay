@@ -1,6 +1,6 @@
 # Short-demo verification
 
-The current cut targets 90–120 seconds. Measured narration: 105.5333 s; 284 words,
+The current cut targets 90–120 seconds. Measured narration: 109.8667 s; 292 words,
 22 independently timed caption sentences. The verifier enforces the requested range.
 
 Reproduce from the repository root with Node 22+ and FFmpeg:
@@ -16,9 +16,12 @@ node video/scripts/deliver.mjs
 HyperFrames 0.8.186 checks passed with zero lint, runtime, layout, contrast or craft
 findings. All eight chapters were inspected on overview and phone sheets, with
 five frames around every chapter transition. Seven seam direction and single-scene
-visibility checks passed; two fractional-boundary speed warnings remain in
+visibility checks passed; four fractional-boundary speed warnings remain in
 verification-seams.json. Code, log excerpts and payment values are source-derived.
 The contact sheet and thumbnail are extracted from the encoded MP4.
+
+The narration now identifies CRE as deterministic payment guardrails, separate from
+the agent’s reasoning. Source, captions and encoded audio agree.
 
 The video no longer contains a dashboard placeholder, long limitations chapter,
 future-work section, or repeated test-token qualification. It retains neutral

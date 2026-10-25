@@ -9,10 +9,10 @@
       "end": 5.2287
     },
     {
-      "text": "AgentPay combines payment streams with Chainlink C R E to keep agents working within budget.",
+      "text": "AgentPay pairs reusable streams with deterministic payment guardrails from Chainlink C R E.",
       "start": 5.3693,
-      "end": 10.6026
+      "end": 10.7359
     }
   ],
-  "wavSha256": "b0d7a7b1c8284fe3616218f8076a79e675977130e03f9b300a30b8c9298392f6"
+  "wavSha256": "1d0d08acb018a434eece36d6b1cb359f60604350818c359da0dd8e89af32c4a7"
 }

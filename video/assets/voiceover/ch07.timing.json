@@ -4,15 +4,15 @@
   "tempo": 1.28,
   "segments": [
     {
-      "text": "One funded stream. Reusable service access. Decisions informed by real observations.",
+      "text": "One funded stream. Reusable service access. Deterministic guardrails against avoidable spending.",
       "start": 0.1953,
-      "end": 5.212
+      "end": 5.6953
     },
     {
-      "text": "AgentPay: streaming payments, orchestrated with Chainlink C R E. Explore the code and run the demo.",
-      "start": 5.3526,
-      "end": 10.8193
+      "text": "AgentPay: payment guardrails, built with Chainlink C R E. Explore the code and run the demo.",
+      "start": 5.8359,
+      "end": 10.8859
     }
   ],
-  "wavSha256": "d1121c7a49c7cc4e5d91cbffd3bf5dbe5422187d78eb3e66203c31d668b24cf4"
+  "wavSha256": "9994b9741916987eb5bf546cca0b9995f317a4dbb4eb7f071e584fdc7e6cb575"
 }

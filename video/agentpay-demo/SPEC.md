@@ -1,6 +1,6 @@
-GOAL: Show that AgentPay combines reusable streaming payments with CRE-informed payment decisions.
+GOAL: Show that AgentPay combines reusable streaming payments with deterministic CRE payment guardrails.
 OUTPUT: HyperFrames, 1920 x 1080, 30 fps, H.264/AAC.
-TIME: 90–120 seconds; measured narration currently 105.5333 seconds, 284 words.
+TIME: 90–120 seconds; measured narration currently 109.8667 seconds, 292 words.
 LOOK: Existing dashboard palette and local Inter; >=36 px body, >=28 px code; 96 px margins. Green open/continue, amber outage/close, red budget block.
 STORY: Hook → fund once → CRE inputs and wallet → actual source/log → ten calls and outage → earned/refund proof and audit → premium DENY → AgentPay and repo.
 MOTION: Reuse the causal diagram and mirrored leftward cuts. Each view follows its narration sentence. No idle loops.
