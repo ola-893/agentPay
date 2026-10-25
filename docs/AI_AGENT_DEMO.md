@@ -25,7 +25,7 @@ AGENTPAY_USDC_STREAM_ADDRESS=0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09
 SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 ```
 
-The [verified USDC stream deployment](deployment/usdc-stream.json) points at Circle's six-decimal Ethereum Sepolia USDC. The existing tUSD stream deployment cannot be substituted: its token was fixed in its constructor. The CLI verifies the audited stream runtime and Circle token binding before use. The legacy AgentPaySDK still uses 18-decimal tUSD. Stream management is no longer a frontend route; Workflow shows this USDC journey through the [local/recorded dashboard](WORKFLOW_DASHBOARD.md).
+The [verified USDC stream deployment](deployment/guarded-usdc-stream.json) points at Circle's six-decimal Ethereum Sepolia USDC. The existing tUSD stream deployment cannot be substituted: its token was fixed in its constructor. The CLI verifies the audited stream runtime and Circle token binding before use. The legacy AgentPaySDK still uses 18-decimal tUSD. Stream management is no longer a frontend route; Workflow shows this USDC journey through the [local/recorded dashboard](WORKFLOW_DASHBOARD.md).
 
 For OpenAI, set `AGENTPAY_AI_PROVIDER=openai`, `OPENAI_API_KEY` and optionally `OPENAI_MODEL` (default `gpt-4.1-mini`). `OPEN_AI_KEY` is an alias. Qwen defaults to Singapore; `QWEN_REGION` also accepts `virginia` and `beijing`. Optional `QWEN_BASE_URL` must be an official Model Studio HTTPS endpoint ending `/compatible-mode/v1`. Without an explicit provider, a Qwen key selects Qwen, otherwise OpenAI. No provider or heuristic fallback occurs.
 

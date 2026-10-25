@@ -45,20 +45,20 @@ Copy `.env.example` to ignored `.env` when deploying or running a server that ne
 | `QWEN_API_KEY`, `QWEN_MODEL`, `QWEN_REGION`, `QWEN_BASE_URL` | AI CLI Qwen credentials, model and regional endpoint; defaults `qwen3.5-plus` / `singapore` |
 | `OPENAI_API_KEY` (`OPEN_AI_KEY` alias), `OPENAI_MODEL` | Alternative AI CLI provider; default model `gpt-4.1-mini` |
 | `PRIVATE_KEY_1` (`PRIVATE_KEY` fallback) | AI CLI dedicated Sepolia payer; also used by the legacy consumer |
-| `AGENTPAY_USDC_STREAM_ADDRESS` | AI CLI AgentPayStream instance configured for Circle USDC; separate from tUSD UI/SDK |
+| `AGENTPAY_USDC_STREAM_ADDRESS` | Current AgentPayGuardedStream: `0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09`; Circle USDC, separate from legacy tUSD SDK |
 | `AGENTPAY_AGENT_RECIPIENT` (`CRE_PAYMENT_RECIPIENT_ADDRESS` alias) | AI CLI USDC recipient, different from payer and token |
 | `CRE_BIN` | Override simulator CLI executable path |
 
 The legacy `demo/consumer.ts` additionally reads `PRIVATE_KEY_1`. It can mint and create streams; run it only deliberately with a funded dedicated test wallet and configured legacy provider. Do not use it as a read-only health check.
 
-## Frontend legacy stream settings
+## Legacy stream settings (not the current frontend)
 
 ```dotenv
 VITE_CONTRACT_ADDRESS=<deployed-AgentPayStream-address>
 VITE_PAYMENT_TOKEN_ADDRESS=<deployed-18-decimal-MockUSD-address>
 ```
 
-Restart Vite after changes. Both addresses must be nonzero valid EVM addresses. This enables stream setup, not guarded settlement. Never place a private key in a `VITE_` variable: frontend environment values are public.
+These settings belong to the removed legacy browser flow. The current Workflow page uses the registered local profile or the selected historical capture; configure its guarded escrow with root `AGENTPAY_USDC_STREAM_ADDRESS`, not these legacy variables. Never place a private key in a `VITE_` variable: frontend environment values are public.
 
 ## SDK configuration
 

@@ -11,6 +11,8 @@ import {
 } from "ethers";
 import cli from "../scripts/lib/cli.cjs";
 import { createAuditor } from "./audit/controller.mjs";
+import { createRequire } from "node:module";
+const streamDeployment = createRequire(import.meta.url)("../docs/deployment/guarded-usdc-stream.json");
 const root = fileURLToPath(new URL("../", import.meta.url));
 await cli.cliMain(
   "demo:spend-review",
@@ -65,7 +67,7 @@ AGENTPAY_AUDIT_DIR selects local storage. No USDC transfer or DON deployment.`,
         path.join(root, ".local/audit", wallet.address.toLowerCase());
       const streamAddress =
           process.env.AGENTPAY_USDC_STREAM_ADDRESS ||
-          "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+          streamDeployment.address,
         recipient =
           process.env.AGENTPAY_AGENT_RECIPIENT ||
           "0x9950D8950BF80722860f2B6a9e120893a0fE79f7";

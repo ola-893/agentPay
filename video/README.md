@@ -7,6 +7,8 @@ the CLI applies checked results. The current narration is about 1:50.
 Every recorded number and transaction comes from the same
 NDJSON as the dashboard. See claims.md for the evidence mapping.
 
+Current live CLI escrow: [`0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09`](https://sepolia.etherscan.io/address/0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09). [Guarded setup](../docs/GUARDED_STREAMS.md). The video replays the earlier recorded run; its contract address and receipts remain historical.
+
 From the repository root, with Node 22+ and FFmpeg:
 
 ```sh

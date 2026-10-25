@@ -42,7 +42,7 @@ Follow the [AI streaming demo guide](AI_AGENT_DEMO.md) for credentials, public s
 8. CRE returns `CLOSE`; the wallet cancels the stream. Contract events and balance snapshots establish time-accrued payment and unused-deposit refund.
 9. Premium admission requests a `200000` deposit (0.2) against a `100000` cap (0.1) and is denied without signing.
 
-The [USDC stream deployment record](deployment/usdc-stream.json) verifies the public contract runtime, token binding and deployment receipt. [Circle USDC units and feed rationale](USDC_SEPOLIA.md).
+The [USDC stream deployment record](deployment/guarded-usdc-stream.json) verifies the public contract runtime, token binding and deployment receipt. [Circle USDC units and feed rationale](USDC_SEPOLIA.md).
 
 The CLI reports actual approval/open/close transactions separately. Reused API calls and CRE read-only checkpoints do not create payment transactions. No fixed dollar gas price or universal 98% savings is claimed; token approval and any recipient withdrawals must be counted when comparing costs.
 

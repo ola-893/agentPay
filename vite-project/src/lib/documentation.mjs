@@ -309,6 +309,7 @@ export const documentation = {
           ["Setting", "Value"],
           [
             ["Chain ID", "11155111"],
+            ["AgentPayGuardedStream (current escrow)", "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09"],
             ["Circle USDC", "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"],
             ["USDC decimals", "6"],
             [
@@ -325,6 +326,10 @@ export const documentation = {
         p(
           "The source-verification snapshot records the official Circle and Chainlink directory entries checked on 17 October 2026. The workflow also validates the pair description and token decimals onchain."
         ),
+      ]),
+      section("Configure the current escrow", [
+        code("Root .env (public address)", "AGENTPAY_USDC_STREAM_ADDRESS=0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09"),
+        p("Current paid agent runs require this guarded escrow and its separate local policy signer. Older recorded runs retain their original contract addresses. The strict AgentPayGuard/Settlement and legacy tUSD contracts are separate paths."),
       ]),
       section("Exact integer scales", [
         p(
@@ -353,6 +358,8 @@ export const documentation = {
         "Circle contract addresses",
       ],
       ["https://faucet.circle.com/", "Circle test USDC faucet"],
+      ["https://sepolia.etherscan.io/address/0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09", "Current guarded escrow on Sepolia"],
+      [repo + "docs/deployment/guarded-usdc-stream.json", "Verified guarded deployment"],
       [
         "https://docs.chain.link/data-feeds/price-feeds/addresses",
         "Chainlink feed addresses",

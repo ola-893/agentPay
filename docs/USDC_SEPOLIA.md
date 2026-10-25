@@ -1,6 +1,6 @@
 # Circle USDC on Ethereum Sepolia
 
-The CRE guarded path uses **Circle’s Sepolia USDC**, not MockUSD. The legacy stream UI and streaming SDK remain a separate 18-decimal tUSD demo. Do not configure USDC as `VITE_PAYMENT_TOKEN_ADDRESS` or use it with the legacy stream SDK. The frontend stream creation path checks token decimals before approval.
+The CRE guarded path uses **Circle’s Sepolia USDC**, not MockUSD. The legacy streaming SDK remains a separate 18-decimal tUSD demo. Do not configure USDC as `VITE_PAYMENT_TOKEN_ADDRESS` or use it with the legacy stream SDK. The current frontend does not create streams directly.
 
 ## Verified deployments
 
@@ -46,7 +46,7 @@ await client.pay(requestId, recipient,
 
 The sample max age matches the feed’s published 24-hour heartbeat. It is a deliberate testnet demonstration setting, not a promise of immediate depeg detection or suitable production risk controls. A stricter maximum age will intentionally halt payments between feed updates; review data cadence and risk requirements before any deployment. No threshold is changed by the capture runners to obtain ALLOW.
 
-The workflow is an orchestration policy for agent payments. The existing gateway uses project-specific HTTP 402 headers; this change does **not** implement the current x402 transport or facilitator protocol. USDC is confined to guarded settlement. The optional mock-forwarder write receiver remains record-only, cannot settle tokens and does not authenticate workflow identity. The strict consumer retains its identity checks. This remains an unaudited prototype.
+The workflow is an orchestration policy for agent payments. The existing gateway uses project-specific HTTP 402 headers; this change does **not** implement the current x402 transport or facilitator protocol. USDC is used by the policy-signed streaming CLI and the separate strict-settlement reference. The optional mock-forwarder write receiver remains record-only, cannot settle tokens and does not authenticate workflow identity. The strict consumer retains its identity checks. This remains an unaudited prototype.
 
 ## Reproduce evidence
 
@@ -60,4 +60,6 @@ The two CLI scenarios use live Coinbase and finalized Sepolia reads. Only succes
 
 ## USDC stream demo
 
-The AI CLI now uses a separate AgentPayStream instance configured for Circle Sepolia USDC. A 0.01-USDC deposit (`10000` raw) over 1000 seconds accrues `10` raw units per second. Many API calls reuse the funded stream; cancellation pays earned funds and refunds unearned escrow. The contract uses raw integers, while the existing browser stream UI and legacy SDK still explicitly require 18-decimal tUSD. Do not point those old interfaces at the USDC deployment. [Current CLI guide](AI_AGENT_DEMO.md) and [deployment record](deployment/usdc-stream.json).
+The AI CLI uses **AgentPayGuardedStream** at [0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09](https://sepolia.etherscan.io/address/0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09), configured for Circle Sepolia USDC. Set `AGENTPAY_USDC_STREAM_ADDRESS=0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09`. A 0.01-USDC deposit (`10000` raw) over 1000 seconds accrues `10` raw units per second. Many API calls reuse the funded stream; cancellation pays earned funds and refunds unused escrow. Agent funding/closure requires an exact, short-lived signature from the separate local policy process.
+
+[Current CLI guide](AI_AGENT_DEMO.md) · [Current deployment record](deployment/guarded-usdc-stream.json) · [Policy signatures and recovery](GUARDED_STREAMS.md). The [earlier unguarded USDC record](deployment/usdc-stream.json) remains historical. Legacy 18-decimal tUSD SDK calls are incompatible with the guarded deployment.

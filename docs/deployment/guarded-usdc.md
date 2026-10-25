@@ -15,6 +15,8 @@ The [deployment record](sepolia-guard.json) retains successful creation/binding 
 
 The unused live workflow target, publishing configuration, public-chain test helper and deployment/resume instructions have been removed. The local `staging-settings` target and original successful ALLOW/DENY captures remain. The dedicated recipient wallet key stays only in ignored local storage; it is not required for simulation and must not be published.
 
+For the current streaming demo, use [AgentPayGuardedStream at `0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09`](../GUARDED_STREAMS.md), with [its deployment record](guarded-usdc-stream.json). The AgentPayGuard/Settlement addresses above are a separate strict-settlement reference; they are not replacements for the streaming escrow.
+
 ## Supported verification
 
 ```sh

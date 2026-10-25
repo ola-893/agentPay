@@ -78,6 +78,24 @@ for (const [key, label] of documentationSections) {
       );
   }
 }
+// Current setup references must follow the verified guarded deployment. Historical
+// receipts/captures and separate legacy deployment records retain their addresses.
+const currentDeployment = JSON.parse(await readFile(path.join(root, 'docs/deployment/guarded-usdc-stream.json'), 'utf8'));
+for (const [file, address] of [
+  ['cre/payment-guard/config.stream.json', (value) => value.streamAddress],
+  ['cre/payment-guard/config.spend.json', (value) => value.intent.policy.streamAddress],
+  ['demo/agents/treasury-research.json', (value) => value.escrow],
+]) {
+  const value = JSON.parse(await readFile(path.join(root, file), 'utf8'));
+  if (address(value).toLowerCase() !== currentDeployment.address.toLowerCase())
+    issues.push(`${file}: current escrow differs from the guarded deployment record`);
+}
+for (const file of ['.env.example', 'README.md', 'DEPLOYMENT.md', 'docs/AI_AGENT_DEMO.md', 'docs/USDC_SEPOLIA.md']) {
+  if (!(await readFile(path.join(root, file), 'utf8')).includes(currentDeployment.address))
+    issues.push(`${file}: missing current guarded escrow address`);
+}
+if (!JSON.stringify(documentation.usdc).includes(currentDeployment.address))
+  issues.push('Frontend USDC docs: missing current guarded escrow address');
 if (issues.length) {
   console.error(issues.join('\n'));
   process.exitCode = 1;

@@ -10,7 +10,9 @@ AgentPay escrows a session's token deposit and accrues the provider's earnings p
 
 The AI CLI uses Circle's six-decimal Sepolia USDC. An initial CRE price check compares Coinbase and the finalized Chainlink USDC/USD feed. The service supervisor then ties stream funding and continuation to observed service availability and budget. Workflow deployment to Chainlink's network is outside scope.
 
-**Current guarded path:** [Local policy signatures enforced onchain](docs/GUARDED_STREAMS.md) · [Sepolia deployment](docs/deployment/guarded-usdc-stream.json) · [Verified signed OPEN/CLOSE and recipient payment](docs/evidence/guarded-stream/rpc-verification.json). CRE stays local; the contract authenticates the operator policy signer, not a DON.
+**Current guarded escrow:** [`0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09`](https://sepolia.etherscan.io/address/0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09).
+
+**Guarded setup:** [Local policy signatures enforced onchain](docs/GUARDED_STREAMS.md) · [Sepolia deployment](docs/deployment/guarded-usdc-stream.json) · [Verified signed OPEN/CLOSE and recipient payment](docs/evidence/guarded-stream/rpc-verification.json). CRE stays local; the contract authenticates the operator policy signer, not a DON.
 
 **Earlier legacy stream demo:** [CRE/agent transcript](docs/evidence/stream-demo/run.log) · [escrow, earnings and refund evidence](docs/evidence/stream-demo/rpc-verification.json).
 
@@ -88,7 +90,7 @@ No wallet key or testnet funds are needed for the read-only scenarios. CRE servi
 
 ## Run the AI purchasing agent
 
-The CLI uses actual Qwen/OpenAI tool calls and real local CRE executions. Configure the funded model key, dedicated Sepolia payer, recipient and [verified USDC stream deployment](docs/deployment/usdc-stream.json) using the [AI streaming guide](docs/AI_AGENT_DEMO.md), then preview:
+The CLI uses actual Qwen/OpenAI tool calls and real local CRE executions. Configure the funded model key, dedicated Sepolia payer, recipient and [verified USDC stream deployment](docs/deployment/guarded-usdc-stream.json) using the [AI streaming guide](docs/AI_AGENT_DEMO.md), then preview:
 
 ```sh
 npm run --silent demo:agent

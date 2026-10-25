@@ -2,17 +2,21 @@
 
 The supported chain is Ethereum Sepolia (`11155111`). Use a dedicated test wallet, test ETH for gas, and ignored `.env`; never commit a key or use a `VITE_` variable for credentials. The project is unaudited and testnet tokens have no monetary value.
 
+## Current guarded USDC escrow
+
+Use **AgentPayGuardedStream** at [0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09](https://sepolia.etherscan.io/address/0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09) for current paid agent runs. Set `AGENTPAY_USDC_STREAM_ADDRESS=0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09` in ignored root `.env`. The [deployment record](guarded-usdc-stream.json) verifies Circle USDC, runtime and distinct agent/policy/recovery authorities. [Setup and recovery](../GUARDED_STREAMS.md).
+
 ## Guard and settlement contract record
 
 The [contract record](guarded-usdc.md) retains the connected public Sepolia guard and settlement addresses. These contracts remain closed with a zero workflow ID. The project uses local CRE simulation; workflow deployment to Chainlink's network and the public DON-authorized USDC payment test are outside scope. Neither deployment approval nor USDC funding is needed for read-only CLI simulation. [USDC addresses and units](../USDC_SEPOLIA.md).
 
-The AI streaming CLI now has a separate [Circle USDC stream deployment](usdc-stream.json). Its [guide](../AI_AGENT_DEMO.md) documents real escrow, reuse and refund verification. The records below retain the original tUSD/browser and strict-contract contexts.
+The AI streaming CLI now has the [guarded Circle USDC deployment](guarded-usdc-stream.json). Its [guide](../AI_AGENT_DEMO.md) documents real escrow, reuse and refund verification. The records below retain the original tUSD/browser and strict-contract contexts.
 
 ## Legacy stream path
 
 ### Confirmed project deployment
 
-The current contracts were deployed on Ethereum Sepolia on October 19, 2026:
+The legacy tUSD contracts were deployed on Ethereum Sepolia on October 19, 2026:
 
 | Contract | Address |
 | --- | --- |
@@ -29,14 +33,14 @@ This establishes deployment and read-only setup checks. Explorer source verifica
 
 1. Copy root `.env.example` to `.env`, set `SEPOLIA_RPC_URL` and dedicated `PRIVATE_KEY`.
 2. Run `npm run deploy:sepolia` from the repository root. The script deploys MockUSD and AgentPayStream and prints their addresses.
-3. Save those actual addresses to `vite-project/.env.local`:
+3. Save those actual addresses to the legacy provider settings in root `.env`:
 
 ```dotenv
-VITE_CONTRACT_ADDRESS=<deployed-AgentPayStream>
-VITE_PAYMENT_TOKEN_ADDRESS=<deployed-18-decimal-MockUSD>
+AGENTPAY_STREAM_ADDRESS=<deployed-AgentPayStream>
+PAYMENT_TOKEN_ADDRESS=<deployed-18-decimal-MockUSD>
 ```
 
-4. Restart Vite, open Streams, connect on Sepolia and mint test tUSD if needed.
+4. Configure `PAYMENT_RECIPIENT_ADDRESS` and use the legacy SDK/provider guide. The frontend no longer has a Streams route.
 5. Test a small stream, recipient withdrawal and closure with your dedicated wallets. Document real deployment addresses/transactions before sharing claims.
 
 For the legacy provider, set `AGENTPAY_STREAM_ADDRESS`, `PAYMENT_TOKEN_ADDRESS` and `PAYMENT_RECIPIENT_ADDRESS` in root `.env`. The TypeScript provider launched with `npm run demo:provider` reads those settings and listens on port 3005. [Middleware contract](../architecture/x402-protocol.md).
