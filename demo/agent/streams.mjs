@@ -1,4 +1,6 @@
 import http from "node:http";
+import { readFile } from "node:fs/promises";
+import { GUARDED_ABI, guardedInterface } from "../policy/permit.mjs";
 import { createRequire } from "node:module";
 const deployment = createRequire(import.meta.url)(
   "../../docs/deployment/usdc-stream.json"
@@ -17,6 +19,7 @@ import { USDC, CHAIN_ID, TIERS, snapshotWallet } from "./payments.mjs";
 export { USDC, CHAIN_ID, TIERS, snapshotWallet };
 export const DURATION = 1000;
 export const STREAM_ABI = [
+  ...GUARDED_ABI,
   "function paymentToken() view returns(address)",
   "function createStream(address,uint256,uint256,string)",
   "function streams(uint256) view returns(address sender,address recipient,uint256 totalAmount,uint256 flowRate,uint256 startTime,uint256 stopTime,uint256 amountWithdrawn,bool isActive,string metadata)",
@@ -86,10 +89,12 @@ export async function verifyStreamDeployment(provider, address) {
   if ((await provider.getNetwork()).chainId !== CHAIN_ID)
     throw new cli.CliError("WRONG_NETWORK", "Use Ethereum Sepolia.");
   const code = await provider.getCode(address);
-  if (code === "0x" || keccak256(code) !== deployment.runtimeCodeHash)
+  let guardedHash;
+  try { guardedHash = JSON.parse(await readFile(new URL("../../artifacts/contracts/AgentPayGuardedStream.sol/AgentPayGuardedStream.json", import.meta.url), "utf8")).deployedBytecode; } catch {}
+  if (code === "0x" || ![deployment.runtimeCodeHash, ...(guardedHash ? [keccak256(guardedHash)] : [])].includes(keccak256(code)))
     throw new cli.CliError(
       "DEPLOYMENT",
-      "Stream runtime does not match the audited AgentPayStream bytecode."
+      "Stream runtime does not match the compiled legacy or guarded escrow bytecode."
     );
   const stream = new Contract(address, STREAM_ABI, provider),
     token = new Contract(USDC, TOKEN_ABI, provider);
@@ -102,6 +107,13 @@ export async function verifyStreamDeployment(provider, address) {
       "Stream must use Circle Sepolia USDC with six decimals. Legacy tUSD deployment cannot be reused."
     );
   return stream;
+}
+export async function isGuardedStream(provider, address) {
+  const code = await provider.getCode(address);
+  try {
+    const artifact = JSON.parse(await readFile(new URL("../../artifacts/contracts/AgentPayGuardedStream.sol/AgentPayGuardedStream.json", import.meta.url), "utf8"));
+    return keccak256(code) === keccak256(artifact.deployedBytecode);
+  } catch { return false; }
 }
 export async function readStream(provider, address, id, blockTag = "latest") {
   const s = await new Contract(address, STREAM_ABI, provider).streams(id, {
@@ -330,6 +342,7 @@ export async function openStream({
   persist,
   additionalGate = () => {},
   refreshAdmission,
+  authorizePolicy,
   audit,
 }) {
   const gate = () => {
@@ -381,6 +394,8 @@ export async function openStream({
   };
   await prepare();
   await verifyStreamDeployment(provider, q.streamAddress);
+  const guarded = await isGuardedStream(provider, q.streamAddress);
+  if (guarded && !authorizePolicy) throw new cli.CliError("POLICY_SIGNATURE_REQUIRED", "Guarded funding requires the separate local policy signer.");
   const before = await snapshotWallet(provider, q.agent, q.recipient),
     token = new Contract(USDC, TOKEN_ABI, provider),
     transactions = [];
@@ -407,6 +422,9 @@ export async function openStream({
         })
       ).record
     );
+  await prepare();
+  const approval = guarded ? await authorizePolicy(config.requestId) : null;
+  if (approval) await persist("policy-open", approval);
   const opened = await sendStreamTransaction({
     provider,
     wallet,
@@ -417,7 +435,7 @@ export async function openStream({
     audit,
     transaction: {
       to: q.streamAddress,
-      data: iface.encodeFunctionData("createStream", [
+      data: guarded ? guardedInterface.encodeFunctionData("createStreamWithPermit", [approval.permit, metadata(q), approval.signature]) : iface.encodeFunctionData("createStream", [
         q.recipient,
         q.durationSeconds,
         q.amountRaw,
@@ -474,6 +492,7 @@ export async function closeStream({
   streamAddress,
   streamId,
   persist,
+  policyApproval,
   audit,
 }) {
   await verifyStreamDeployment(provider, streamAddress);
@@ -490,6 +509,9 @@ export async function closeStream({
     wallet.address,
     beforeState.recipient
   );
+  const guarded = await isGuardedStream(provider, streamAddress);
+  if (guarded && !policyApproval) throw new cli.CliError("POLICY_SIGNATURE_REQUIRED", "Guarded closure requires a CLOSE approval. Operator recovery: npm run recover:guarded-stream -- --stream-id " + streamId);
+  if (policyApproval) await persist("policy-close", policyApproval);
   const closed = await sendStreamTransaction({
     provider,
     wallet,
@@ -498,7 +520,7 @@ export async function closeStream({
     audit,
     transaction: {
       to: streamAddress,
-      data: iface.encodeFunctionData("cancelStream", [streamId]),
+      data: guarded ? guardedInterface.encodeFunctionData("cancelStreamWithPermit", [policyApproval.permit, policyApproval.signature]) : iface.encodeFunctionData("cancelStream", [streamId]),
     },
   });
   const events = closed.receipt.logs

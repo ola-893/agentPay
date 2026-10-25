@@ -25,7 +25,7 @@ Open `http://127.0.0.1:5317/`. Use **Recorded** for the existing funded replay. 
 
 “An agent making a thousand paid API requests should not need a thousand payment transactions. AgentPay funds one escrow stream and reuses that session across many requests. Earnings accrue with time, without a payment transaction for each call.
 
-“But efficient payments still need controls. A hallucinated payment instruction could create unnecessary funding or keep paying an unavailable service. We separate the agent's reasoning from payment authority. Chainlink CRE connects external service and price observations with blockchain state, then evaluates explicit rules. The CLI validates those results before signing.”
+“But efficient payments still need controls. A hallucinated payment instruction could create unnecessary funding or keep paying an unavailable service. We separate the agent's reasoning from payment authority. Chainlink CRE connects external service and price observations with blockchain state, then evaluates explicit rules. A separate policy process signs eligible lifecycle actions. The guarded contract verifies those signatures before the agent can fund or close escrow.”
 
 Point to the diagram's external-input chips, CRE policy node, **fund once** edge and request-reuse loop. Explain that CRE is run through the local simulator in this demo.
 
@@ -53,6 +53,6 @@ The requested stream earns **10 raw USDC/s** (0.00001 USDC/s); the configured ma
 
 “One funded session reduces payment transactions. Deterministic CRE guardrails reduce avoidable loss from unchecked agent payment instructions. We can inspect the observations, rules, decisions and resulting transactions.”
 
-Keep enforcement precise: the wallet-owning CLI applies local CRE results; AgentPayStream enforces escrow and payouts. The workflow is not deployed to a DON. Health checks run at explicit checkpoints; they do not prove answer quality or undo already-earned time. Explicit operator recovery can still close an owned stream. This is a Sepolia prototype using test tokens.
+Keep enforcement precise: the policy process runs local CRE; AgentPayGuardedStream verifies its signed OPEN/CLOSE approvals and enforces escrow payouts. Older recorded runs use CLI-only checks. The workflow is not deployed to a DON. Health checks run at explicit checkpoints; they do not prove answer quality or undo already-earned time. Explicit operator recovery can still close an owned stream. This is a Sepolia prototype using test tokens.
 
 For legacy model-assisted tUSD integration, use the [AgentPaySDK reference](../docs/sdk/agentpay-sdk.md); it is separate from this CRE-guarded USDC demo.

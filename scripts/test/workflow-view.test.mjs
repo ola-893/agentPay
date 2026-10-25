@@ -20,7 +20,7 @@ async function capture(item) {
     .split("\n")
     .map(JSON.parse);
 }
-const pay = await capture(index.runs.find((x) => x.mode === "pay"));
+const pay = await capture(index.runs.find((x) => x.id === "20261022T112249Z-556c7ea3"));
 test("diagram starts empty, shows actual escrow funding mid-run, and settles from the recorded events", () => {
   const idle = deriveDiagramState([]);
   assert.equal(idle.status, "idle");
@@ -158,4 +158,16 @@ test("every recorded timeline title stays compact and nodes point back to source
       if (event.type === "cre.result")
         assert.equal(row.chip, event.data.decision);
     }
+});
+
+test("guarded recorded run carries its own enforcement marker and observed payout amounts", async () => {
+  const events = await capture(index.runs.find(x => x.id === "20261025T173241Z-38db9e1a"));
+  const current = deriveDiagramState(events);
+  assert.equal(current.contractPolicySignatures, true);
+  assert.equal(deriveDiagramState(pay).contractPolicySignatures, false);
+  assert.equal(current.fundedRaw, "10000");
+  assert.equal(current.earnedRaw, "1320");
+  assert.equal(current.refundedRaw, "8680");
+  assert.equal(current.closed, true);
+  assert.equal(current.successfulRequests, 10);
 });

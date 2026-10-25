@@ -13,6 +13,7 @@ import {
   formatUnits,
 } from "ethers";
 import cli from "../scripts/lib/cli.cjs";
+import { startPolicyClient } from "./policy/client.mjs";
 import { modelSettings, callModel, runAgent } from "./agent/model.mjs";
 import { runCreIntent, runStreamCheck } from "./agent/cre.mjs";
 import { assertLocalApproval } from "./agent/payments.mjs";
@@ -25,6 +26,7 @@ import {
   CHAIN_ID,
   TIERS,
   verifyStreamDeployment,
+  isGuardedStream,
   startStreamService,
   validateStreamQuote,
   openStream,
@@ -48,7 +50,7 @@ Default: real AI + deterministic local CRE admission preview; no signing or fund
            Reuse it for 10 requests, demonstrate CONTINUE, inject a demo outage,
            then cancel: earned funds go to the recipient and unused funds refund.
            A new paid run can fund another stream and uses test ETH for gas.
---close-stream <id>  Recover an owned USDC stream; no AI call. CRE audit required.
+--close-stream <id>  Legacy stream recovery. Guarded recovery uses recover:guarded-stream.
 --verbose  Add response IDs, CRE evidence hashes and unverified model text.
 --json     One result envelope on stdout; plain progress on stderr.
 --help     No credentials, API calls, network or transactions.
@@ -69,7 +71,7 @@ CRE commands, observed inputs, policy limits and transcript paths are shown.
 Every business transaction requires dry-run, risk review, durable blob and receipt.
 Preview logs decisions locally without signing; --pay also spends audit gas.
 CRE stays local. CLI checks gate wallet signing; the contract enforces escrow
-accounting, not CRE approvals. No DON or strict-guard authorization, nor full
+accounting. Guarded streams also verify local policy signatures; no DON authorization or full
 x402. Stream earnings accrue until the
 cancellation transaction is mined. No automatic repeat funding on uncertainty.
 --profile <file>  Registered local profile with bounded existing policy fields.
@@ -157,7 +159,7 @@ await cli.cliMain(
       openedId,
       closeAttempted = false,
       cleanup;
-    let auditor;
+    let auditor, policyClient, guarded = false;
     const id =
       new Date().toISOString().slice(0, 19).replace(/[-:]/g, "") +
       "Z-" +
@@ -203,6 +205,9 @@ await cli.cliMain(
     try {
       const streamAddress = process.env.AGENTPAY_USDC_STREAM_ADDRESS;
       await verifyStreamDeployment(provider, streamAddress);
+      guarded = await isGuardedStream(provider, streamAddress);
+      if (flags.pay && !guarded) throw new cli.CliError("GUARDED_DEPLOYMENT_REQUIRED", "Paid agent runs require AgentPayGuardedStream. Deploy with npm run deploy:guarded-stream; legacy recovery remains available.");
+      if (guarded && flags["close-stream"]) throw new cli.CliError("OPERATOR_RECOVERY_REQUIRED", "Guarded recovery uses the separate operator key: npm run recover:guarded-stream -- --stream-id " + flags["close-stream"], 2);
       let journalDeployment;
       try {
         journalDeployment = JSON.parse(
@@ -317,12 +322,14 @@ await cli.cliMain(
         streamAddress,
         sessionId,
       });
+      if (guarded) policyClient = await startPolicyClient({root,directory,policy,streamAddress,serviceOrigin:service.url,onInvocation:invocation=>output.creInvocation(invocation)});
       output.start({
         settings,
         payer: wallet.address,
         recipient,
         balanceRaw: initial.agentBalanceRaw,
         ethBalanceRaw: (await provider.getBalance(wallet.address)).toString(),
+        guarded,
       });
       started = true;
       output.streamContract(streamAddress);
@@ -351,7 +358,7 @@ await cli.cliMain(
           maxFailedRequests: policy.maxFailedRequests,
         };
         output.streamChecking(label);
-        const evidence = await runStreamCheck({
+        const evidence = policyClient ? await policyClient.stream({config,label}) : await runStreamCheck({
           config,
           root,
           directory,
@@ -415,7 +422,7 @@ await cli.cliMain(
           };
           checkPrice = async (label = "price") => {
             output.streamChecking("USDC price safety");
-            const price = await runCreIntent({
+            const price = policyClient ? await policyClient.price({config,label}) : await runCreIntent({
               config,
               root,
               directory,
@@ -518,6 +525,7 @@ await cli.cliMain(
             };
           },
           audit: auditor,
+          authorizePolicy: policyClient ? requestId => policyClient.permit(requestId) : undefined,
         });
         output.streamOpened(funded);
         const signature = await wallet.signMessage(
@@ -624,6 +632,7 @@ await cli.cliMain(
           streamAddress,
           streamId: funded.streamId,
           persist,
+          policyApproval: policyClient ? await policyClient.permit(outage.config.requestId) : undefined,
           audit: auditor,
         });
         output.streamClosed(settled);
@@ -722,6 +731,7 @@ await cli.cliMain(
         ...agent,
         donAuthenticated: false,
         strictGuardUsed: false,
+        contractPolicySignatures: guarded,
         evidenceDirectory: path.relative(root, directory),
       };
       await auditor.flush();
@@ -789,7 +799,7 @@ await cli.cliMain(
           emit("cleanup", { status: "closed", streamId: openedId });
         } catch (closeError) {
           console.error(
-            `Cleanup needs attention: stream #${openedId}. Inspect close.json, then use --close-stream ${openedId}.`
+            `Cleanup needs attention: stream #${openedId}. Inspect close.json, then use ${guarded ? "npm run recover:guarded-stream -- --stream-id" : "--close-stream"} ${openedId}.`
           );
           emit("cleanup", { status: "needs-attention", streamId: openedId });
           cleanup = {
@@ -839,6 +849,7 @@ await cli.cliMain(
         });
       throw error;
     } finally {
+      policyClient?.close();
       await appendFile(
         path.join(directory, "events.jsonl"),
         cli.redact(events.map((e) => JSON.stringify(e)).join("\n")) + "\n"

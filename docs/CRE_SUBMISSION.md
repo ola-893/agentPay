@@ -1,5 +1,7 @@
 # CRE bounty submission: AgentPay
 
+**Current guarded deployment:** [AgentPayGuardedStream](GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
+
 **Core contribution:** reusable streams reduce per-request payment transactions; deterministic CRE guardrails reduce avoidable spending caused by unchecked model-generated payment actions. The AI proposes service requests, CRE evaluates explicit price/health/session/budget/rate rules, and the CLI applies the checked outcome. CRE is the policy boundary around the agent’s financial commitments.
 
 AgentPay addresses the transaction-per-request payment problem with prepaid escrow streams. An AI agent funds one stream, makes many service requests without additional payment transactions, and cancels when finished or when service fails. The provider earns tokens with time; unused escrow returns to the sender on cancellation.

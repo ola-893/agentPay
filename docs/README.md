@@ -1,5 +1,7 @@
 # AgentPay documentation
 
+**Current guarded deployment:** [AgentPayGuardedStream](GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
+
 The agent proposes useful work; CRE checks fixed payment rules; the CLI applies the checked result. A model-generated instruction is not payment approval. The guardrails address avoidable loss from unchecked funding and continuation, while one validated session serves many requests. Start with [the guardrail architecture](architecture/README.md) or [the manual demo script](../demo/demo_script.md).
 
 AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, protected in the CLI by deterministic local Chainlink CRE guardrails. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend contains only Workflow and Docs, with a CRE diagram, recorded replay, local CLI execution controls and instructions. Testnet tokens have no monetary value.
@@ -16,7 +18,7 @@ Streaming amortizes payment transactions. It also creates a control problem: ear
 | Continuing to pay through an observed outage | Provider/client counters and the matching onchain stream at explicit checkpoints | `CONTINUE`, or `CLOSE` followed by wallet cancellation and earned/refund reconciliation |
 | Signing a bad spend or losing its explanation | RPC dry-run, exact intent, raw units, recipient, caps and a risk heuristic | Require a spend ALLOW, durable blob and confirmed onchain inclusion before signing; retain blocks/errors and anchor remaining decisions in batches |
 
-CRE stays local. The CLI enforces signing policy; the contract enforces escrow accounting, and a payer can bypass the CLI. Checkpoints are explicit demo steps, not continuous monitoring. Health observations do not establish answer quality. The separate [ToolBuyer benchmark](TOOLBUYER.md) explores paid quality trials with synthetic providers and benchmark credits; it is not a quality guarantee for the USDC demo.
+CRE stays local. The CLI enforces its spend-review policy; the guarded contract additionally requires signed lifecycle approvals. A payer cannot bypass that contract gate with an unsigned create/cancel call. Earlier legacy contracts remain callable without CRE. Checkpoints are explicit demo steps, not continuous monitoring. Health observations do not establish answer quality. The separate [ToolBuyer benchmark](TOOLBUYER.md) explores paid quality trials with synthetic providers and benchmark credits; it is not a quality guarantee for the USDC demo.
 
 Opening, approval when needed, cancellation and audit receipts still cost gas. This prototype neither promises fixed net savings nor implements the full x402 protocol. [How CRE supervises a stream](WORKFLOW.md) · [Verified full lifecycle and receipts](evidence/admission-fix/VERIFICATION.md).
 

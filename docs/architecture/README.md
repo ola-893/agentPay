@@ -1,10 +1,12 @@
 # Architecture and trust boundaries
 
+**Current guarded deployment:** [AgentPayGuardedStream](../GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
+
 ## Separate reasoning from payment authority
 
 The AI proposes a service request. The host owns the quote and transaction parameters. Local CRE evaluates fixed rules over HTTP observations and onchain state. The CLI validates the result, checks expiry and transaction intent, then signs an eligible action. Reusing the signed active session is CLI/provider behavior; CRE checks the matching stream at lifecycle checkpoints. A CONTINUE result supports that reuse without a new funding decision on every call.
 
-This boundary is designed to reduce financial waste from hallucinated payment instructions. It is not an LLM policy verdict or a guarantee against every loss. Normal checkpoint handling follows deterministic rules; explicit operator recovery cancellation remains available. The stream contract enforces accounting, while the current guardrail is enforced by the CLI.
+This boundary is designed to reduce financial waste from hallucinated payment instructions. It is not an LLM policy verdict or a guarantee against every loss. Normal checkpoint handling follows deterministic rules; explicit operator recovery cancellation remains available. The guarded stream verifies local policy signatures in addition to accounting. The earlier stream path described below enforced CRE policy only in the CLI.
 
 ## Payment lifecycle
 

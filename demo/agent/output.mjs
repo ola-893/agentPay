@@ -61,7 +61,7 @@ export function createAgentOutput({
   };
   let requestCount = 0;
   return {
-    start({ settings, payer, recipient, balanceRaw }) {
+    start({ settings, payer, recipient, balanceRaw, guarded = false }) {
       write("");
       write(`  ${accent(bold("AgentPay"))}  ${muted("Deterministic CRE payment guardrails")}`);
       separator();
@@ -79,14 +79,14 @@ export function createAgentOutput({
       field("Recipient", recipient);
       field("Roles", "Agent proposes work; CRE checks fixed payment rules");
       field("CRE", "Deterministic guardrails / local simulation");
-      field("Wallet", "CLI checks gate signing of createStream / cancelStream");
+      field("Wallet", guarded ? "Agent submits signed OPEN/CLOSE; contract verifies policy permits" : "CLI checks gate signing of createStream / cancelStream");
       field(
         "Contract",
         "Enforces escrow, time accrual and cancellation payouts"
       );
       field(
         "Trust",
-        "Contract does not verify CRE results; payer can call it directly"
+        guarded ? "Contract verifies separate local policy signatures for OPEN/CLOSE" : "Contract does not verify CRE results; payer can call it directly"
       );
       write("");
     },

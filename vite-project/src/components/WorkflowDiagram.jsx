@@ -324,7 +324,7 @@ export default function WorkflowDiagram({
         {[
           "CRE: local, deterministic",
           "Wallet CLI gates signing",
-          "Contract does not verify CRE",
+          state.contractPolicySignatures ? "Contract verifies local policy signatures" : "Recorded contract: CLI policy checks",
         ].map((label) => (
           <Link key={label} to="/docs/cre" title="Read the trust boundaries">
             <LockKeyhole size={11} aria-hidden="true" />

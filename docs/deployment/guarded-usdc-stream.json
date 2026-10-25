@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "chainId": 11155111,
+  "address": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+  "policySigner": "0x117048651fBd5b5F99071EA67e3fe3fd5b72FE91",
+  "recoveryOwner": "0x42B46B0E0af48AB5C714Ba2724B2272B4CBF5FA7",
+  "trust": "local-policy-signature",
+  "creWorkflowDeployed": false,
+  "transactionHash": "0x3a89bae39160a5f0db827132b400ef493db55a558f6a26d43f453a05a1bc7395",
+  "blockNumber": 11992359,
+  "status": 1,
+  "runtimeCodeHash": "0x7cc9c4db78b3912ac63d2ee667c1f82e2cd57b8908d42d2580beb7202f2065e6",
+  "verifiedAt": "2026-10-25T17:30:55.697Z",
+  "maxDepositRaw": "10000",
+  "maxRateRawPerSecond": "100"
+}

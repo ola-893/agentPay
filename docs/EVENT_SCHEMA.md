@@ -25,3 +25,8 @@ The local server streams the same events using SSE IDs equal to `seq`; reconnect
 The NDJSON fallback intentionally preserves the existing human formatter instead of refactoring the complete runner. Both are driven by the same host-validated evidence at their emission points; no console parsing or synthetic events are used for recorded runs. Changes to the profile affect only existing policy fields. The fixed service quote remains 0.01 USDC / 1000 seconds, with a premium attempt and injected outage; this UI adds no planner behavior or configurable provider marketplace.
 
 The capture command runs the new emitter, requires the expected outcome and copies only referenced public CRE configs/transcripts. `public/runs/index.json` records the SHA-256 of the byte-identical event stream. The browser verifies it before replay. `npm run docs:check` checks these hashes, original CRE result/transcript equality and accounting. Neither an event nor a saved report is DON authorization.
+
+The optional boolean `run.start.contractPolicySignatures` identifies the guarded
+local-policy-signature path. Absence means the older CLI-only path; it must not be
+inferred from a successful CRE result. This is backward-compatible with version 1
+captures and does not assert DON authentication.

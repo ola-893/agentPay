@@ -39,7 +39,9 @@
     "video:data": "node video/scripts/build-data.mjs && node video/scripts/write-script.mjs",
     "video:build": "node video/scripts/build-film.mjs",
     "video:preview": "cd video/agentpay-demo && npx --yes hyperframes@0.8.186 preview --background",
-    "video:render": "cd video/agentpay-demo && npx --yes hyperframes@0.8.186 render --quality delivery --fps 30 --output ../out/agentpay-demo.mp4"
+    "video:render": "cd video/agentpay-demo && npx --yes hyperframes@0.8.186 render --quality delivery --fps 30 --output ../out/agentpay-demo.mp4",
+    "deploy:guarded-stream": "node scripts/deploy-guarded-stream.mjs",
+    "recover:guarded-stream": "node scripts/recover-guarded-stream.mjs"
   },
   "keywords": [],
   "author": "",

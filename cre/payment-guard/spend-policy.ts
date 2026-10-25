@@ -75,6 +75,9 @@ export const simulationSchema = z
   })
   .strict();
 const ABI = parseAbi([
+  "struct Permit { uint8 action; address agent; address recipient; uint256 amount; uint256 duration; bytes32 metadataHash; bytes32 sessionId; uint256 streamId; uint256 nonce; uint64 deadline; bytes32 decisionHash; }",
+  "function createStreamWithPermit(Permit permit,string metadata,bytes signature)",
+  "function cancelStreamWithPermit(Permit permit,bytes signature)",
   "function approve(address spender,uint256 amount) returns(bool)",
   "function transfer(address recipient,uint256 amount) returns(bool)",
   "function createStream(address recipient,uint256 duration,uint256 amount,string metadata)",
@@ -127,14 +130,24 @@ export function evaluate(
   } catch {
     return finish("BLOCK", "UNSUPPORTED_CALLDATA", 100);
   }
-  const operation = decoded.functionName,
-    args = decoded.args as readonly any[];
+  const operation = decoded.functionName;
+  let args = decoded.args as readonly any[];
+  const opening = operation === "createStream" || operation === "createStreamWithPermit";
+  const closing = operation === "cancelStream" || operation === "cancelStreamWithPermit";
+  if (operation === "createStreamWithPermit" || operation === "cancelStreamWithPermit") {
+    const permit = args[0];
+    if (!same(permit.agent, i.payer) || permit.action !== (opening ? 1 : 2) || Number(permit.deadline) <= now)
+      return finish("BLOCK", "INVALID_POLICY_PERMIT", 100, operation);
+    if (opening && keccak256(toBytes(args[1])) !== permit.metadataHash)
+      return finish("BLOCK", "INVALID_POLICY_PERMIT", 100, operation);
+    args = opening ? [permit.recipient, permit.duration, permit.amount, args[1]] : [permit.streamId];
+  }
   let amount = 0n;
   if (operation === "approve") {
     if (!same(i.transaction.to, p.token) || !same(args[0], p.streamAddress))
       return finish("BLOCK", "SPENDER_NOT_ALLOWED", 100, operation);
     amount = args[1];
-  } else if (operation === "transfer" || operation === "createStream") {
+  } else if (operation === "transfer" || opening) {
     if (
       !same(
         i.transaction.to,
@@ -146,7 +159,7 @@ export function evaluate(
     amount = operation === "transfer" ? args[1] : args[2];
     if (amount <= 0n) return finish("BLOCK", "ZERO_AMOUNT", 100, operation);
     if (
-      operation === "createStream" &&
+      opening &&
       (args[1] <= 0n ||
         args[1] > BigInt(p.maxDurationSeconds) ||
         amount / args[1] === 0n)
@@ -168,14 +181,14 @@ export function evaluate(
   )
     return finish("BLOCK", "TOKEN_RETURN_NOT_TRUE", 100, operation);
   const utilization =
-    operation === "cancelStream" || amount === 0n
+    closing || amount === 0n
       ? 0
       : amount * 100n > BigInt(chain.balanceRaw) * 10n
       ? 20
       : 0;
   const riskScore = Math.min(
     100,
-    5 + utilization + (operation === "cancelStream" ? 0 : p.qualityRiskScore)
+    5 + utilization + (closing ? 0 : p.qualityRiskScore)
   );
   return finish(
     riskScore > p.maxRiskScore ? "BLOCK" : "ALLOW",

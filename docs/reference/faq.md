@@ -1,8 +1,10 @@
 # Frequently asked questions
 
+**Current guarded deployment:** [AgentPayGuardedStream](../GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
+
 ## Why use CRE when the agent already has an LLM?
 
-The LLM proposes useful work; CRE provides deterministic payment guardrails. A hallucinated instruction should not, by itself, authorize more funding or change a stream lifecycle. CRE evaluates fixed price, health, session, balance, budget and rate rules; the CLI validates and applies the result. The managed flow reuses a matching session, continues on healthy checkpoints and closes when policy requires it. This reduces avoidable waste while preserving an explicit operator recovery path. It does not guarantee zero loss or move CRE enforcement into the stream contract.
+The LLM proposes useful work; CRE provides deterministic payment guardrails. A hallucinated instruction should not, by itself, authorize more funding or change a stream lifecycle. CRE evaluates fixed price, health, session, balance, budget and rate rules; the CLI validates and applies the result. The managed flow reuses a matching session, continues on healthy checkpoints and closes when policy requires it. This reduces avoidable waste while preserving an explicit operator recovery path. The guarded contract now verifies the separate local policy signature; this authenticates the signer rather than proving CRE execution, and does not guarantee zero loss.
 
 ## What does AgentPay currently demonstrate?
 

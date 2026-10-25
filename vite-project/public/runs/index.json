@@ -2,6 +2,37 @@
   "schemaVersion": 1,
   "runs": [
     {
+      "id": "20261025T173241Z-38db9e1a",
+      "label": "Funded stream lifecycle",
+      "mode": "pay",
+      "preset": null,
+      "capturedAt": "2026-10-25T17:42:07.955Z",
+      "file": "20261025T173241Z-38db9e1a/events.ndjson",
+      "sha256": "cf58b7a1ae5170f48bb4030d4ff34e3a6e181d154f7dc9eb922ba6b16f2d2cb7",
+      "artifacts": {
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/cre-price.config.json": "artifacts/01-cre-price.config.json",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/cre-price.log": "artifacts/02-cre-price.log",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-open.config.json": "artifacts/03-stream-open.config.json",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-open.log": "artifacts/04-stream-open.log",
+        ".local/sr/064d8aef0d6e.json": "artifacts/05-064d8aef0d6e.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/064d8aef0d6e.log": "artifacts/06-064d8aef0d6e.log",
+        ".local/sr/d4f8e0d4d89d.json": "artifacts/07-d4f8e0d4d89d.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/d4f8e0d4d89d.log": "artifacts/08-d4f8e0d4d89d.log",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/cre-renew-1.config.json": "artifacts/09-cre-renew-1.config.json",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/cre-renew-1.log": "artifacts/10-cre-renew-1.log",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-renew-1.config.json": "artifacts/11-stream-renew-1.config.json",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-renew-1.log": "artifacts/12-stream-renew-1.log",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-healthy.config.json": "artifacts/13-stream-healthy.config.json",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-healthy.log": "artifacts/14-stream-healthy.log",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-outage.config.json": "artifacts/15-stream-outage.config.json",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-outage.log": "artifacts/16-stream-outage.log",
+        ".local/sr/ebefab553aa4.json": "artifacts/17-ebefab553aa4.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/ebefab553aa4.log": "artifacts/18-ebefab553aa4.log",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-deny.config.json": "artifacts/19-stream-deny.config.json",
+        ".local/agent-demo/runs/20261025T173241Z-38db9e1a/policy/stream-deny.log": "artifacts/20-stream-deny.log"
+      }
+    },
+    {
       "id": "20261022T113645Z-8920114f",
       "label": "Stale feed denial",
       "mode": "preview",

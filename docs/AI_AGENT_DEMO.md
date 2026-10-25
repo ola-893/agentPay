@@ -1,10 +1,12 @@
 # AI agent with deterministic CRE payment guardrails
 
+**Current guarded deployment:** [AgentPayGuardedStream](GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
+
 **The agent proposes. CRE checks the rules. The CLI executes eligible actions.** The model selects service requests; host-controlled quotes and deterministic guardrails govern funding and lifecycle checkpoints. The demo shows how a valid session is reused, an observed outage produces a policy-directed close, and an over-budget request is denied before funding. These are fixed-rule results, not LLM judgments.
 
 AgentPay keeps its original payment model: a sender funds an escrow stream, the recipient earns tokens with time, and many API requests reuse that stream. The AI CLI now uses **AgentPayStream**, rather than sending a token transfer for every purchase.
 
-A local CRE workflow combines real HTTP service observations with Sepolia wallet and stream reads to return `OPEN`, `CONTINUE`, `CLOSE` or `DENY`. The CLI validates those results before the sender's wallet signs stream transactions. **AgentPayStream enforces escrow accounting, time accrual, withdrawal permissions and cancellation payouts; it does not verify CRE results.** A payer can call the contract directly without this CLI or a CRE approval. CRE is not deployed to Chainlink's network, and simulation output is not DON-authenticated authority.
+A local CRE workflow returns `OPEN`, `CONTINUE`, `CLOSE` or `DENY` from HTTP observations and Sepolia state. For guarded streams, a separate policy process executes and validates CRE, then signs eligible OPEN/CLOSE permits. The contract verifies the signature and exact intent before escrow funding or closure. It does not re-execute CRE or authenticate a DON. Older AgentPayStream deployments remain unguarded; paid agent runs now require the guarded contract.
 
 **Verified October 20, 2026:** real Qwen calls and local CRE executions opened Sepolia stream #1, reused it for ten successful requests, continued on healthy observations, and closed after three injected failures. A 0.01-USDC deposit produced **0.0006 USDC earned + 0.0094 USDC refunded**. [Original transcript](evidence/stream-demo/run.log) · [Structured result](evidence/stream-demo/result.json) · [Independent RPC verification](evidence/stream-demo/rpc-verification.json) · [Verification record](evidence/stream-demo/VERIFICATION.md).
 
@@ -19,7 +21,7 @@ QWEN_MODEL=qwen3.5-plus
 QWEN_REGION=singapore
 PRIVATE_KEY_1=<dedicated-Sepolia-test-wallet-key>
 AGENTPAY_AGENT_RECIPIENT=<different-recipient-address>
-AGENTPAY_USDC_STREAM_ADDRESS=0x5199d1dcaB9496d37677DAD8F53481DCc511d585
+AGENTPAY_USDC_STREAM_ADDRESS=0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09
 SEPOLIA_RPC_URL=https://ethereum-sepolia-rpc.publicnode.com
 ```
 

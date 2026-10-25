@@ -4,15 +4,17 @@
 
 AgentPay began with the N+1 payment problem: hundreds of paid API requests should reuse one funded session instead of requiring a payment transaction for every call. HTTP 402 and x402 inspired the prepaid stream. But cheaper payments still need guardrails: an agent can hallucinate a payment action, propose duplicate funding, keep paying an unavailable service, or suggest closing a useful session too early.
 
-The agent already supplies the reasoning. Chainlink CRE evaluates explicit payment rules against service observations and blockchain state; the CLI applies those checked results to its managed payment flow. This separation reduces avoidable financial loss from model-driven payment mistakes. **The agent proposes. CRE checks the rules. The CLI executes eligible actions.**
+The agent already supplies the reasoning. A separate policy process runs local Chainlink CRE to evaluate explicit payment rules against service observations and blockchain state. It signs eligible OPEN/CLOSE actions; AgentPayGuardedStream verifies those signatures when the agent submits a transaction. This separation reduces avoidable financial loss from model-driven payment mistakes. **The agent proposes. CRE checks the rules. The CLI executes eligible actions.**
 
 AgentPay escrows a session's token deposit and accrues the provider's earnings per second. Many API requests reuse one stream. A local Chainlink CRE workflow applies deterministic policy to service observations and Sepolia stream state to return `OPEN`, `CONTINUE`, `CLOSE` or `DENY`; the agent wallet creates or cancels the stream, paying earned funds and refunding unused escrow.
 
 The AI CLI uses Circle's six-decimal Sepolia USDC. An initial CRE price check compares Coinbase and the finalized Chainlink USDC/USD feed. The service supervisor then ties stream funding and continuation to observed service availability and budget. Workflow deployment to Chainlink's network is outside scope.
 
-**Verified stream demo:** [CRE/agent transcript](docs/evidence/stream-demo/run.log) · [escrow, earnings and refund evidence](docs/evidence/stream-demo/rpc-verification.json).
+**Current guarded path:** [Local policy signatures enforced onchain](docs/GUARDED_STREAMS.md) · [Sepolia deployment](docs/deployment/guarded-usdc-stream.json) · [Verified signed OPEN/CLOSE and recipient payment](docs/evidence/guarded-stream/rpc-verification.json). CRE stays local; the contract authenticates the operator policy signer, not a DON.
 
-[AI streaming demo](docs/AI_AGENT_DEMO.md) · [Documentation](docs/README.md) · [Submission guide](docs/CRE_SUBMISSION.md) · [Supervisor source](cre/payment-guard/stream-main.ts) · [Stream contract](contracts/AgentPayStream.sol)
+**Earlier legacy stream demo:** [CRE/agent transcript](docs/evidence/stream-demo/run.log) · [escrow, earnings and refund evidence](docs/evidence/stream-demo/rpc-verification.json).
+
+[AI streaming demo](docs/AI_AGENT_DEMO.md) · [Documentation](docs/README.md) · [Submission guide](docs/CRE_SUBMISSION.md) · [Supervisor source](cre/payment-guard/stream-main.ts) · [Guarded stream contract](contracts/AgentPayGuardedStream.sol)
 
 ```mermaid
 flowchart TD
@@ -25,7 +27,7 @@ flowchart TD
   F --> G[Accrued earnings to provider; unused funds to sender]
 ```
 
-The contract holds the deposit upfront; it does not send a transaction every second. The recipient can withdraw accrued funds, and either party can cancel. Cancellation pays unwithdrawn earnings and refunds the remainder. Expiry makes all remaining funds claimable but does not automatically close or refund a stream. The CLI's provider authenticates the payer's signed session as well as checking onchain state.
+The guarded contract holds the deposit upfront; it does not send a transaction every second. The recipient can withdraw accrued funds. The agent needs a policy-signed CLOSE to cancel; a separate operator recovery owner can close without CRE. Cancellation pays unwithdrawn earnings and refunds the remainder. Expiry makes all remaining funds claimable but does not automatically close or refund a stream. The CLI's provider authenticates the payer's signed session as well as checking onchain state.
 
 ## Run locally
 
@@ -102,7 +104,7 @@ The paid demo reuses one stream for ten successful API requests, observes CRE `C
 
 The CLI displays the exact CRE command, HTTP observations, Sepolia read block, policy limits and transcript paths. [Inspect the recorded CRE work](docs/CRE_SUBMISSION.md#inspect-the-cre-work).
 
-The CLI gates wallet signing on local CRE results. **The stream contract enforces escrow accounting and payouts, not CRE approval**; a payer can call it directly. No DON authentication or closed AgentPayGuard/AgentPaySettlement contract is used. This is an AgentPay HTTP 402 streaming protocol, not full x402. The dashboard delegates live execution to the CLI on the same computer; recorded replay and SDK reference material do not authorize payments.
+The CLI gates wallet signing on local CRE results. **AgentPayGuardedStream independently requires a separate local policy signature for OPEN/CLOSE**, bound to exact intent, nonce and expiry. Older AgentPayStream captures demonstrate CLI-only enforcement. No DON authentication or closed AgentPayGuard/AgentPaySettlement contract is used. This is an AgentPay HTTP 402 streaming protocol, not full x402. The dashboard delegates live execution to the CLI on the same computer; recorded replay and SDK reference material do not authorize payments.
 
 ## Spend reviews and decision receipts
 

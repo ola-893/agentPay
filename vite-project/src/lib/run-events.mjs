@@ -58,6 +58,7 @@ export function validateEvent(e) {
       !object(d.balances))
   )
     throw new Error("Invalid run start.");
+  if(e.type === "run.start" && e.data.contractPolicySignatures !== undefined && typeof e.data.contractPolicySignatures !== "boolean") throw new Error("Invalid contract enforcement marker.");
   if (
     e.type === "cre.result" &&
     (!["price", "stream", "spend"].includes(d.target) ||

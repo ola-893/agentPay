@@ -64,7 +64,7 @@ test(
           await provider.getNetwork();
           break;
         } catch (error) {
-          if (attempt > 80 || child.exitCode !== null) throw error;
+          if (attempt > 200 || child.exitCode !== null) throw error;
           await new Promise((r) => setTimeout(r, 50));
         }
       }

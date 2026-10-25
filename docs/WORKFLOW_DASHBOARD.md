@@ -1,5 +1,7 @@
 # Workflow dashboard: local runs and recorded replay
 
+**Current guarded deployment:** [AgentPayGuardedStream](GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
+
 The dashboard visualizes deterministic payment guardrails: the agent proposes work, CRE evaluates fixed rules, and the CLI applies checked outcomes. It helps inspect how session reuse, continuation, closure and budget denial follow policy rather than free-form model text. The browser displays emitted results; it does not evaluate payment policy.
 
 Workflow (`/`) contains the CRE diagram, locally registered agent, bounded policy form, execution timeline and amount/transaction summary. Docs remains the only other navigation destination. Agent, stream-management and dashboard routes were not restored.

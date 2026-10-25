@@ -48,6 +48,7 @@ export function eventOutput(output, emit, profile) {
           emit("run.start", {
             mode: output.payMode || "preview",
             profile,
+            contractPolicySignatures: Boolean(value.guarded),
             planner: `${value.settings.provider} / ${value.settings.model}`,
             payer: value.payer,
             recipient: value.recipient,

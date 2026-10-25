@@ -67,6 +67,7 @@ export function eventNodes(event) {
 export function deriveDiagramState(events = []) {
   const state = {
     status: "idle",
+    contractPolicySignatures: false,
     decision: null,
     target: null,
     inputs: [],
@@ -92,6 +93,7 @@ export function deriveDiagramState(events = []) {
     receipts = new Map();
   for (const event of events) {
     const d = event.data;
+    if (event.type === "run.start") state.contractPolicySignatures = d.contractPolicySignatures === true;
     state.status = "running";
     state.lastSeq = event.seq;
     state.active = eventNodes(event);
