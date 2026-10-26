@@ -1,7 +1,5 @@
 # Deterministic CRE guardrails for agent payment streams
 
-**Current guarded deployment:** [AgentPayGuardedStream](GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
-
 AI agents already reason about work and services. Payment authority needs a separate control layer: hallucinated instructions can waste funds by proposing unnecessary funding, continuing an unavailable service, or requesting an inappropriate lifecycle change. CRE evaluates explicit rules over validated observations; the CLI follows checked results in its managed session flow instead of treating model text as authorization.
 
 Given the same configuration and observations, the policy returns the same result. Deterministic evaluation does not make external data infallible: freshness, session binding, client/provider counter agreement, budget and rate bounds are part of the guardrail. These controls reduce avoidable loss rather than guarantee loss-free execution.
@@ -24,6 +22,8 @@ Checkpoints are explicit CLI steps, not an always-running monitor. Local service
 Run preview or the funded journey using the [AI CLI guide](AI_AGENT_DEMO.md). The [Workflow dashboard](WORKFLOW_DASHBOARD.md) diagrams this lifecycle and replays actual captured runs. In local development it can launch the same CLI through a loopback server and display its events; the CLI performs the model, CRE, supervision and signing work.
 
 ## Standalone USDC price-safety workflow
+
+For the current onchain gate and recovery use [guarded streams](GUARDED_STREAMS.md); the standalone report below is a separate reference.
 
 The remaining reference describes the standalone USDC price/report workflow used as the initial asset-safety gate in the streaming demo. Its ALLOW/DENY captures are the recorded evidence displayed on the frontend.
 

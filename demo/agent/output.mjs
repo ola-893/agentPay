@@ -451,7 +451,7 @@ export function createAgentOutput({
       field("Evidence", directory);
       field(
         "",
-        "Inspect open.json and close.json before retrying; --close-stream <id> recovers an owned stream."
+        "Inspect transaction hashes before retrying. Guarded recovery: npm run recover:guarded-stream -- --stream-id <id>. Legacy: --close-stream <id>."
       );
       write("");
     },

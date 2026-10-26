@@ -1,6 +1,6 @@
 # Legacy tUSD payment streams
 
-The legacy `AgentPaySDK` assumes **18-decimal MockUSD/tUSD**, with no monetary value. The current AI CLI uses the same escrow contract deployed separately for six-decimal Circle USDC, with deterministic CRE guardrails in the CLI; see the [AI streaming guide](../AI_AGENT_DEMO.md). [Deploy and configure](../../DEPLOYMENT.md) before signing. The frontend contains Workflow and Docs, rather than a stream-management page.
+The legacy `AgentPaySDK` assumes **18-decimal MockUSD/tUSD**, with no monetary value. The current AI CLI uses AgentPayGuardedStream for six-decimal Circle USDC, with local CRE checks and contract-verified policy signatures; see the [AI streaming guide](../AI_AGENT_DEMO.md). [Deploy and configure](../../DEPLOYMENT.md) before signing. The frontend contains Workflow and Docs, rather than a stream-management page.
 
 ## Legacy SDK workflow
 

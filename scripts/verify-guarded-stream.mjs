@@ -45,6 +45,6 @@ try{
  const forged=await agent.signTypedData(domain(11155111,deployment.address),PERMIT_TYPES,p);
  await rejects('agent fabricates policy approval',()=>contract.createStreamWithPermit.staticCall(p,'hallucinated',forged),'Invalid policy signer');
  const evidence={schemaVersion:1,verifiedAt:new Date().toISOString(),runId,address:deployment.address,chainId:11155111,trust:'local-policy-signature',creWorkflowDeployed:false,receipts,rejected,streamId:result.purchases.basic.streamId,closed:true,successfulRequests:result.purchases.basic.client.successfulRequests,earnedRaw:earned.toString(),refundedRaw:refunded.toString(),recipientBeforeRaw:before.toString(),recipientAfterRaw:after.toString(),recipientDeltaRaw:(after-before).toString()};
- await mkdir(path.join(root,'docs/evidence/guarded-stream'),{recursive:true});await writeFile(path.join(root,'docs/evidence/guarded-stream/rpc-verification.json'),JSON.stringify(evidence,null,2)+'\n');
+ await mkdir(path.join(dir,'verification'),{recursive:true});await writeFile(path.join(dir,'verification/rpc-verification.json'),JSON.stringify(evidence,null,2)+'\n');
  console.log(JSON.stringify(evidence,null,2));
 }finally{provider.destroy();}

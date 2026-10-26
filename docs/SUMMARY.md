@@ -8,11 +8,13 @@
 * [Installation](getting-started/installation.md)
 * [Quick start](getting-started/quick-start.md)
 * [Configuration](getting-started/configuration.md)
-* [Agent setup](AGENT_SETUP.md)
+* [Current CLI setup](AI_AGENT_DEMO.md)
+* [Historical removed agent setup](AGENT_SETUP.md)
 
 ## CRE and USDC
 
 * [Workflow and reasons](WORKFLOW.md)
+* [Guarded stream signatures and recovery](GUARDED_STREAMS.md)
 * [Sepolia USDC policy and sources](USDC_SEPOLIA.md)
 * [Bounty submission and evidence](CRE_SUBMISSION.md)
 * [Recording and optional mock write](RECORDING_READINESS.md)
@@ -27,7 +29,7 @@
 
 * [Contract overview](contracts/README.md)
 * [Strict consumer and settlement](contracts/guarded-settlement.md)
-* [AgentPayStream](contracts/agentpaystream.md)
+* [Legacy AgentPayStream](contracts/agentpaystream.md)
 * [MockUSD fixture](contracts/mock-usd.md)
 * [Events and errors](contracts/events-errors.md)
 
@@ -44,4 +46,5 @@
 * [Sepolia](deployment/sepolia.md)
 * [FAQ](reference/faq.md)
 * [Troubleshooting](reference/troubleshooting.md)
-* [UI review and verification limits](UI_UX_REVIEW.md)
+* [Reliability audit and verification limits](RELIABILITY_AUDIT.md)
+* [Historical UI review](UI_UX_REVIEW.md)

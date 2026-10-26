@@ -1,7 +1,5 @@
 # Frequently asked questions
 
-**Current guarded deployment:** [AgentPayGuardedStream](../GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
-
 ## Why use CRE when the agent already has an LLM?
 
 The LLM proposes useful work; CRE provides deterministic payment guardrails. A hallucinated instruction should not, by itself, authorize more funding or change a stream lifecycle. CRE evaluates fixed price, health, session, balance, budget and rate rules; the CLI validates and applies the result. The managed flow reuses a matching session, continues on healthy checkpoints and closes when policy requires it. This reduces avoidable waste while preserving an explicit operator recovery path. The guarded contract now verifies the separate local policy signature; this authenticates the signer rather than proving CRE execution, and does not guarantee zero loss.
@@ -16,7 +14,7 @@ Not to view recorded evidence or read Docs. Read-only authenticated CRE CLI simu
 
 ## Which token and decimals?
 
-AI streaming CLI and guarded reference: Circle Sepolia USDC, **6 decimals** (`0.01 = 10000`). Legacy streams: MockUSD/tUSD, **18 decimals**. Both are valueless testnet tokens. The retained browser stream UI and legacy AgentPaySDK still require tUSD. [USDC policy](../USDC_SEPOLIA.md).
+AI streaming CLI and guarded reference: Circle Sepolia USDC, **6 decimals** (`0.01 = 10000`). Legacy streams: MockUSD/tUSD, **18 decimals**. Both are valueless testnet tokens. Legacy AgentPaySDK requires tUSD; the browser no longer manages streams. [USDC policy](../USDC_SEPOLIA.md).
 
 ## Why USDC/USD, and can two matching depegged prices pass?
 
@@ -24,15 +22,15 @@ The price check follows the payment asset. Each source must be within 1% of $1 a
 
 ## Does saved ALLOW authorize payment?
 
-No. Saved captures are historical evidence, never spend credentials. The streaming CLI uses fresh local CRE decisions as wallet-side policy; the wallet signs escrow funding or cancellation. The separate strict settlement reference requires an authenticated report accepted by its onchain guard and is not used by the streaming CLI. [Guarded client](../sdk/guarded-payment-client.md).
+No. Saved captures are historical evidence, never spend credentials. The guarded flow uses fresh signer-owned CRE results to issue short-lived EIP-712 permits. The contract authenticates the separate local policy signer and exact intent. Old captures are not new permits. The separate strict settlement reference requires an authenticated report accepted by its onchain guard and is not used by the streaming CLI. [Guarded client](../sdk/guarded-payment-client.md).
 
-## Does Agent setup run or pause an agent?
+## Does the browser run or pause an agent?
 
-No. It validates a non-secret local draft, stores it in this browser and generates SDK code. Saving does not change contract state or CRE limits. [Agent setup](../AGENT_SETUP.md).
+Recorded mode only replays evidence. Live local asks the loopback server to run the actual CLI with a bounded profile; it does not expose wallet keys to the browser. Agent setup and standalone Streams routes were removed. [Dashboard](../WORKFLOW_DASHBOARD.md).
 
 ## Is the project deployed or audited?
 
-A USDC-configured AgentPayStream is deployed on Sepolia, and the AI demo has verified real funding, request reuse, cancellation, earned payout and unused-funds refund. CRE stays local; no workflow is deployed to a DON. This is an unaudited prototype. [Deployment](../../DEPLOYMENT.md) and [AI guide](../AI_AGENT_DEMO.md).
+AgentPayGuardedStream is deployed on Sepolia, and the AI demo has verified real funding, request reuse, cancellation, earned payout and unused-funds refund. CRE stays local; no workflow is deployed to a DON. This is an unaudited prototype. [Deployment](../../DEPLOYMENT.md) and [AI guide](../AI_AGENT_DEMO.md).
 
 ## Does this implement x402?
 
@@ -40,7 +38,7 @@ The legacy gateway/SDK use AgentPay-specific HTTP 402 headers and streaming heur
 
 ## What happens when a stream ends?
 
-At stop time the recipient can claim the entire unwithdrawn remainder, including rounding dust. `isActive` remains true until cancellation/closure; the gateway separately denies service after stop time. Either party may close an active stream to pay accrued funds/refund unspent funds. [Streams](../architecture/payment-streams.md).
+At stop time the recipient can claim the entire unwithdrawn remainder, including rounding dust. `isActive` remains true until cancellation/closure; the gateway separately denies service after stop time. For guarded escrow, agent closure needs a policy-signed CLOSE; the separate recovery owner may override without CRE. Only legacy AgentPayStream lets either party cancel directly. [Streams](../architecture/payment-streams.md).
 
 ## Are there global daily limits or emergency controls?
 
@@ -48,4 +46,4 @@ CRE has a per-request cap. The legacy SDK's spend monitor and pause are instance
 
 ## Where should I debug an error?
 
-Use [troubleshooting](troubleshooting.md). Live market inputs can change the expected CLI outcome; do not weaken thresholds to capture ALLOW. Missing frontend contract configuration is resolved through setup, not by repeatedly connecting a wallet.
+Use [troubleshooting](troubleshooting.md). Live market inputs can change the expected CLI outcome; do not weaken thresholds to capture ALLOW. A CRE authentication failure after funding requires operator attention: use the separate guarded recovery command if normal CLOSE is unavailable. [Observed retest](../evidence/guarded-retest/VERIFICATION.md).

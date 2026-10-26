@@ -291,7 +291,8 @@ test(
     } finally {
       server.closeAllConnections();
       await new Promise((resolve) => server.close(resolve));
-      await rm(directory, { recursive: true, force: true });
+      // A just-closed local request can finish its final file write on macOS.
+      await rm(directory, { recursive: true, force: true, maxRetries: 4, retryDelay: 50 });
     }
   }
 );

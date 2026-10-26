@@ -6,14 +6,9 @@
 | --- | --- |
 | Evidence unavailable / missing / unreadable | Restore both `vite-project/public/evidence/cre-*.json` captures or rerun `cre:capture` for each scenario, then Retry. The viewer validates current USDC schema/scale. |
 | Loading times out | Check the local/static server and network, then Retry. Do not replace an error with a fabricated result. |
-| Streams shows setup guidance | Set valid nonzero `VITE_CONTRACT_ADDRESS` and `VITE_PAYMENT_TOKEN_ADDRESS` in `vite-project/.env.local`, then restart Vite. Use 18-decimal MockUSD here. |
-| Browser wallet not detected | Open the app in a wallet-enabled browser. Workflow evidence, Docs and Agent setup require no wallet. |
-| Connection request already pending | Open your wallet and finish or reject its existing request. |
-| Request cancelled | Reconnect/retry only when ready; rejection is not a successful transaction. |
-| Account/network changed | Reconnect on Ethereum Sepolia to refresh the active app session. |
-| Balance unavailable / refresh failed | Check RPC, deployment addresses, token decimals and `stream.paymentToken()` binding. An RPC failure is not a zero balance or empty success. |
-| Streams missing older records | UI discovery covers the latest 49000 blocks. Use a known stream ID to check/withdraw from an older stream. |
-| Draft not restored | Browser storage may be blocked or cleared. Save again or copy the SDK example without persistence. |
+| Old `/streams` or `/agent` link | Those routes were removed. Use Workflow/Docs and the current CLI guide. |
+| Live local unavailable | Use `npm run dev:live`, configured registered credentials, matching profile and operator policy key. Hosted builds only replay. |
+| Balance unavailable / refresh failed | Check RPC, guarded escrow address, token decimals and registered parties. RPC failure is not a zero balance. |
 | Nested route fails on hosting | Preserve the included SPA fallback so `/docs/cre` and other routes load `index.html`. |
 
 ## CRE
@@ -57,8 +52,11 @@ Then rerun `npm run cre:dry-run`. The [before/after evidence](../evidence/networ
 | Qwen 401 or model access error | Match `QWEN_REGION` / optional official `QWEN_BASE_URL` to the key's issuing region and workspace; check model access and billing. |
 | OpenAI `credit_balance_exhausted` | Add API credits or use a funded key. ChatGPT access and a successful model metadata lookup do not establish API generation credit. |
 | CRE denied basic | Inspect the original transcript, live prices and feed age. Do not loosen policy to force an approval. |
-| Payment confirmation uncertain | Inspect this run's `approval.json`, `open.json` and `close.json` before another paid run. A new `--pay` can fund another stream. Use `--close-stream <id>` to recover an owned active stream after checking its receipts. |
-| Strict SDK says unauthorized | The AI CLI uses a separate local wallet gate. Its simulation cannot authorize the closed public strict guard. |
+| Payment confirmation uncertain | Inspect this run's `approval.json`, `open.json` and `close.json` before another paid run. A new `--pay` can fund another stream. For guarded escrow use `npm run recover:guarded-stream -- --stream-id <id>` with its separate owner key/ETH. `--close-stream` is legacy-only. |
+| CRE authentication fails after funding | No fresh policy permit can be issued. Inspect the active stream and use separate operator recovery; do not invent CLOSE, retry funding or loosen policy. [Actual failure/recovery](../evidence/guarded-retest/VERIFICATION.md). |
+| `POLICY_SIGNATURE_REQUIRED` / `OPERATOR_RECOVERY_REQUIRED` | The agent cannot cancel guarded escrow without approval. Use the operator recovery key, never the agent key. |
+| `EXISTING_DEPLOYMENT` | The helper refuses the committed deployment record. It is not an independent-checkout bootstrap; inspect [operator limitations](../GUARDED_STREAMS.md#deploy-and-run). |
+| Strict SDK says unauthorized | The AI CLI uses local policy signatures on its separate guarded escrow. Its simulation cannot authorize the closed public strict guard. |
 
 Provider failures do not trigger a rules-based agent or automatic provider fallback. Model summaries are untrusted prose; use the host-verified status, raw units and receipt as evidence.
 
@@ -74,4 +72,4 @@ For stream withdrawal, use the recipient wallet, a positive whole-number stream 
 
 The legacy gateway deliberately rejects `X-AgentPay-Tx-Hash`. It does not recognize arbitrary transaction hashes or automatically map guarded settlement receipts to API access. [Provider protocol](../architecture/x402-protocol.md).
 
-The prototype is unaudited. [UI verification limits](../UI_UX_REVIEW.md) distinguish tested responsive/data behavior from unexecuted live browser-wallet transactions. [FAQ](faq.md).
+The prototype is unaudited. [Historical UI verification](../UI_UX_REVIEW.md) and [current reliability limits](../RELIABILITY_AUDIT.md) distinguish tested responsive/data behavior from unexecuted live browser-wallet transactions. [FAQ](faq.md).

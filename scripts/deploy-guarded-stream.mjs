@@ -19,6 +19,8 @@ Deploy the separate locally signed policy escrow on Ethereum Sepolia.
 Creates independent policy/recovery keys in ignored .local/policy with mode 0600.
 Requires compiled contracts, payer key, recipient and Sepolia ETH. Updates the local
 stream address and registered profile after verifying the deployment. CRE stays local.
+Refuses existing committed/pending deployment records; no overwrite flag. This
+checkout is configured for an existing operator, not automatic new-wallet onboarding.
 Never exposes authority keys. Exit: 0 verified; 1 failed; 2 configuration.`,async()=>{
  dotenv.config({path:path.join(root,'.env'),quiet:true});
  const provider=new JsonRpcProvider(process.env.SEPOLIA_RPC_URL||'https://ethereum-sepolia-rpc.publicnode.com',undefined,{batchMaxCount:1,cacheTimeout:-1});

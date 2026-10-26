@@ -1,0 +1,18 @@
+
+> agentpay@1.0.0 docs:check
+> node scripts/check-docs.mjs && node scripts/check-doc-examples.mjs && node scripts/check-doc-evidence.mjs && bun run scripts/check-toolbuyer-evidence.mjs && bun run scripts/check-spend-evidence.mjs && node scripts/check-run-captures.mjs && node scripts/check-guarded-proof.mjs && node video/scripts/build-data.mjs --check && node scripts/check-video-source.mjs
+
+Documentation check passed: 55 Markdown guides and 7 frontend topics; local links, repository sources and related routes resolve.
+Typechecked 9 exact documentation/UI fragments against SDK and ethers types. External prerequisites are declared; examples were not executed.
+Verified allow: transcript/result/hash/config/public copy/report tuple; historical capture 2026-10-16T23:19:49.863Z.
+Verified deny-budget: transcript/result/hash/config/public copy/report tuple; historical capture 2026-10-16T23:19:58.293Z.
+Verified historical AI demo: exact CRE transcripts/configs, model response records, payment/balance and denial consistency.
+Verified historical stream demo: CRE lifecycle transcripts/policy, escrow, request reuse, closure and refund consistency.
+Evidence integrity only; no new signature verification, live CRE execution or public receipt was established by <workspace>/scripts/check-doc-evidence.mjs.
+Verified ToolBuyer historical CRE transcripts/config hashes, decision traces, held-out grading, trial/service ledgers and five-seed offline totals. No new CRE, chain read or payment was performed.
+Verified historical spend blobs, original CRE transcript/config hashes, decisions, all Merkle proofs, stale-feed BLOCK and saved public receipt consistency. No fresh CRE run or RPC verification performed.
+Verified 5 recorded CLI event streams, 25 original CRE results/transcripts, hashes and summary accounting. Historical evidence only; no new CLI or chain calls.
+Verified saved guarded permit signatures, evidence commitments, exact intent, consumed-nonce record and payout accounting. Historical evidence only; no live RPC or CRE.
+Verified saved failed-retest hashes, OPEN signature, incomplete status and separately recorded operator recovery. No fresh RPC check.
+Verified guarded video hash, signed permits, exact source snippets, payout and generated data. No network or media rendering.
+Verified committed narration/timings/captions and source/audio hashes against the last measured video render. No new render performed.

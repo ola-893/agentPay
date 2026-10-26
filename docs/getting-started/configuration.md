@@ -10,7 +10,7 @@ All supported workflows here target **Ethereum Sepolia, chain ID 11155111**. The
 | `cre/project.yaml` | CRE simulator's Sepolia RPC; separate from root `.env` |
 | `.env` (ignored) | Hardhat, server and operator credentials/settings |
 | `vite-project/.env.local` (ignored) | Public legacy stream and 18-decimal token addresses |
-| Browser storage | Agent setup draft only; does not configure any deployed workflow |
+| Browser storage | Dashboard presentation/preferences only; never a policy credential |
 
 ## CRE sample
 

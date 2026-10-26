@@ -1,0 +1,11 @@
+{
+  "failedAt": "2026-10-25T18:26:30.323Z",
+  "code": "POLICY_SIGNER",
+  "message": "Stream demo failed; inspect evidence.",
+  "streamId": "2",
+  "closeAttempted": true,
+  "cleanup": {
+    "failed": true,
+    "message": "Guarded closure requires a CLOSE approval. Operator recovery: npm run recover:guarded-stream -- --stream-id 2"
+  }
+}

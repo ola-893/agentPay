@@ -53,7 +53,7 @@ export const documentation = {
           ]
         ),
         p(
-          "CRE produces deterministic policy results in local simulation. The CLI validates results and a separate policy process signs OPEN/CLOSE approvals. AgentPayGuardedStream verifies their signatures, exact intent, nonce and expiry alongside escrow accounting. These guardrails reduce avoidable loss within this managed flow, rather than guarantee every payment is safe. The contract trusts the local policy signer rather than a DON. Earlier recorded runs use an unguarded contract with CLI-only policy enforcement. Checkpoints are explicit CLI steps. Availability observations do not establish answer quality."
+          "CRE produces deterministic policy results in local simulation. The CLI validates results and a separate policy process signs OPEN/CLOSE approvals. AgentPayGuardedStream verifies their signatures, exact intent, nonce and expiry alongside escrow accounting. These guardrails reduce avoidable loss within this managed flow, rather than guarantee every payment is safe. The contract trusts the local policy signer rather than a DON. The October 25 funded recording uses this guarded contract; older captures identify CLI-only enforcement. Checkpoints are explicit CLI steps. Availability observations do not establish answer quality."
         ),
       ]),
       section("Watch the workflow", [
@@ -69,7 +69,7 @@ export const documentation = {
           "The agent is registered locally by a profile file, not an onchain registry. Live local needs npm run dev:live, ignored root .env settings and an authenticated CRE CLI; wallet keys stay on the server. Hosted Live setup never contacts your localhost. Recorded labels carry their actual capture date, and balances are run-start observations, not current balances."
         ),
         p(
-          "CRE stays local. Current guarded streams require policy signatures for OPEN/CLOSE. Earlier recorded runs use AgentPayStream with CLI-only policy checks; neither path authenticates a DON. Many authenticated API calls reuse a stream; health checks happen at explicit CLI checkpoints, not continuously. Local health endpoints and per-run configs are simulation shortcuts. A close only refunds unearned funds; detection and mining latency still accrue earnings."
+          "CRE stays local. Current guarded streams require policy signatures for OPEN/CLOSE. The October 25 funded recording has policy-signature enforcement; October 22 captures use CLI-only checks. Neither authenticates a DON. Many authenticated API calls reuse a stream; health checks happen at explicit CLI checkpoints, not continuously. Local health endpoints and per-run configs are simulation shortcuts. A close only refunds unearned funds; detection and mining latency still accrue earnings."
         ),
         p(
           "The one-line transaction count includes lifecycle and observed audit receipts, with the split in its tooltip. Receipts prove inclusion of operator-submitted hashes, not observation truth. An old capture without nonce evidence shows call counts without a fabricated zero-transactions badge. The gauge is not an animated earnings estimate. Reduced-motion replay applies state instantly. This is an unaudited Sepolia prototype, not full x402; test USDC has no monetary value."
@@ -102,7 +102,7 @@ export const documentation = {
         list([
           "Ethereum Sepolia only; testnet USDC and tUSD have no monetary value.",
           "CRE stays local. The AI CLI has verified Sepolia stream funding, ten-request reuse, closure/refund and audit receipt evidence. The Workflow dashboard can trigger this CLI through the local server or replay captured events; the hosted page never contacts a visitor’s localhost.",
-          "The CLI uses local CRE decisions. Current paid runs require a guarded escrow that verifies a separate local policy signature for funding and closure. Earlier legacy captures show CLI-only enforcement.",
+          "The CLI uses local CRE decisions. Current paid runs require a guarded escrow that verifies a separate local policy signature for funding and closure. Older legacy captures show CLI-only enforcement; current funded replay uses the guarded path.",
           "The legacy gateway uses AgentPay-specific HTTP 402 headers. It does not implement the full current x402 transport/facilitator protocol.",
           "This is an unaudited prototype.",
         ]),
@@ -134,7 +134,7 @@ export const documentation = {
       section("Run the dashboard locally", [
         code("Terminal", "npm run install:cre\ncre login\nnpm run dev:live"),
         p(
-          "Configure the existing AI CLI prerequisites in ignored root .env first. The combined command binds Vite on 127.0.0.1:5317 and the run server on 127.0.0.1:5318. Stop an older Vite process on port 5317 first. Choose Live local and Run Preview. Tiny cap sets 9999 raw against the fixed 10000 request; Stale feed sets a 60-second age limit and depends on observed feed age."
+          "Configure the registered operator’s CLI credentials and separate local policy-key file first; a clean checkout can replay without those keys. The combined command binds Vite on 127.0.0.1:5317 and the run server on 127.0.0.1:5318. Stop an older Vite process on port 5317 first. Choose Live local and Run Preview. Tiny cap sets 9999 raw against the fixed 10000 request; Stale feed sets a 60-second age limit and depends on observed feed age."
         ),
         p(
           "Pay is disabled unless the server starts with PAY_ENABLED=1, the wallet has at least 0.01 test USDC and 0.001 Sepolia ETH, and the user selects Pay and confirms the new run. The CLI independently limits escrow to 0.01 USDC. Stream and audit transactions use gas. The form exposes six existing bounded policy fields; the quote, parties and model are not user inputs."
@@ -179,7 +179,7 @@ export const documentation = {
   cre: {
     title: "CRE checks fixed rules for the payment lifecycle.",
     intro:
-      "The LLM proposes service requests; CRE evaluates deterministic policy using external observations and blockchain state. The CLI validates the result before funding, continuing or closing its managed payment session. USDC price safety is one input to this guardrail.",
+      "The LLM proposes service requests; a separate policy process runs local CRE against external observations and chain state. It signs OPEN/CLOSE permits; the escrow verifies them. CONTINUE stays a local checkpoint. USDC price safety is one input to this guardrail.",
     source: "docs/WORKFLOW.md",
     sections: [
       section("From cheaper payments to guarded commitments", [
@@ -374,11 +374,11 @@ export const documentation = {
     sections: [
       section("Propose. Check. Execute.", [
         p(
-          "Qwen or OpenAI proposes a tier and purpose; host-controlled quotes supply the payment parameters. Local CRE applies fixed admission, continuation and outage-closure rules to HTTP observations and Sepolia state. Model prose is not payment approval. Configure the model key, dedicated payer, recipient and guarded AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env. Deployment creates separate policy/recovery keys in ignored operator files; they are never passed to the agent process."
+          "Qwen or OpenAI proposes a tier and purpose; host-controlled quotes supply the payment parameters. Local CRE applies fixed admission, continuation and outage-closure rules to HTTP observations and Sepolia state. Model prose is not payment approval. Configure the model key, registered payer/recipient and guarded AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env. Deployment creates separate policy/recovery keys in ignored operator files; they are never passed to the agent process."
         ),
         code("sh", "npm run demo:agent\nnpm run demo:agent -- --pay"),
         p(
-          "Preview evaluates OPEN and DENY without signing. With --pay, basic deposits 0.01 USDC over 1000 seconds, ten successful API requests reuse the stream, and an injected outage produces CRE CLOSE. The wallet cancels, paying time-accrued earnings and refunding unused funds. Premium proposes 0.2 against a 0.1 deposit cap and is denied. Each paid run is a new stream and spends test ETH gas. Output shows each CRE command, HTTP observations, Sepolia block, policy limits and transcript path. Use recover:guarded-stream -- --stream-id <id> for operator recovery (the full npm command is in the guarded-stream guide); --close-stream <id> is legacy recovery, --verbose for model details and evidence hashes, and --json for structured output. The CLI gates signing and the guarded contract independently requires local policy signatures for OPEN/CLOSE. The separate recovery owner can close without CRE; the agent cannot use that key. Historical recorded runs use the earlier unguarded contract. No CRE network deployment, DON authentication, AgentPaySettlement or full x402 is used."
+          "Preview evaluates OPEN and DENY without signing. With --pay, basic deposits 0.01 USDC over 1000 seconds, ten successful API requests reuse the stream, and an injected outage produces CRE CLOSE. The wallet cancels, paying time-accrued earnings and refunding unused funds. Premium proposes 0.2 against a 0.1 deposit cap and is denied. Each paid run is a new stream and spends test ETH gas. Output shows each CRE command, HTTP observations, Sepolia block, policy limits and transcript path. Use npm run recover:guarded-stream -- --stream-id <id> for operator recovery; --close-stream <id> is legacy recovery, --verbose for model details and evidence hashes, and --json for structured output. The CLI gates signing and the guarded contract independently requires local policy signatures for OPEN/CLOSE. The separate recovery owner can close without CRE; the agent cannot use that key. Older recordings use the earlier unguarded contract; the October 25 funded replay shows policy-signature enforcement. No CRE network deployment, DON authentication, AgentPaySettlement or full x402 is used."
         ),
       ]),
       section("Spend reviews and audit receipts", [
@@ -405,6 +405,10 @@ export const documentation = {
           "Providers are synthetic and purchases debit benchmark credits, not USDC. Default mode makes real CRE HTTP and Sepolia budget reads; offline mode uses neither CRE nor the chain. No model API key or signing is required. The recorded selector beats cheapest/showcase but loses to the always-strong baseline. This browser page does not run the benchmark or show live results."
         ),
       ]),
+      section("Recorded success and recovery", [
+        p("The October 25 guarded recording served ten calls, consumed signed OPEN/CLOSE permits and paid 0.00132 USDC with 0.00868 refunded. A later retest failed CRE authentication after five calls; the separate operator recovered stream #2, paying 0.00216 and refunding 0.00784 USDC. These are dated observations, not future expected payouts or a promise that CRE is currently available."),
+        p("The guarded contract protects its escrow actions, not unrelated transfers from the agent wallet. A local policy signature authenticates the trusted operator signer; it does not prove DON execution or external-data truth. Policy and recovery keys share the trusted local host. New-wallet deployment onboarding is not automated: the helper refuses the committed deployment record."),
+      ]),
       section("Strict SDK integration prerequisites", [
         p(
           "The GuardedPaymentClient SDK reference uses a different authority path: configured strict consumers and an authenticated unexpired report for the exact intent. The current public guard is closed and this project does not deploy a workflow to Chainlink. The SDK checks onchain authorization before approval and settlement; local simulation output cannot unlock it."
@@ -415,6 +419,7 @@ export const documentation = {
       ["/docs/integration", "SDK integration"],
       [repo + "docs/AI_AGENT_DEMO.md", "AI purchasing CLI guide"],
       [repo + "docs/GUARDED_STREAMS.md", "Onchain local policy signatures"],
+      [repo + "docs/evidence/guarded-retest/VERIFICATION.md", "Authentication failure and operator recovery"],
       [repo + "docs/TOOLBUYER.md", "ToolBuyer mechanism and comparison"],
       [repo + "docs/SPEND_AUDIT.md", "Spend audit and receipt evidence"],
     ],

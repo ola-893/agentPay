@@ -1,5 +1,7 @@
 # CLI contract audit
 
+**Historical audit of October 19, 2026.** Its command inventory, counts, routes and verification limits describe that revision, not current setup. Use [the current reliability audit](RELIABILITY_AUDIT.md), [CLI guide](AI_AGENT_DEMO.md) and [guarded deployment](GUARDED_STREAMS.md) for current behavior.
+
 Scope recorded before implementation changes, 19 October 2026, baseline `396d0c0`. The interface is a set of npm scripts, not an installed `agentpay` executable. No guarded payment, agent-registration, stream-withdrawal or stream-cancellation CLI command exists. Those journeys currently require SDK/contract calls or the frontend; this audit will not invent commands to fill the gap.
 
 ## Baseline behavior-to-evidence matrix

@@ -1,8 +1,8 @@
 # AgentPay frontend
 
-Product wording follows the execution boundary: the agent proposes work, CRE checks fixed rules, and the CLI applies the checked result. Explain guardrails against model-driven payment mistakes, not additional AI intelligence. Recorded results stay historical; no decision is computed by the browser.
+Product wording follows the execution boundary: the agent proposes work, CRE checks fixed rules, a separate policy process signs eligible OPEN/CLOSE actions, and the guarded contract verifies them. Explain guardrails against model-driven payment mistakes, not additional AI intelligence. Recorded results stay historical; no decision is computed by the browser.
 
-React 19, Vite 7 and Tailwind. The frontend has two destinations: **Workflow** and **Docs**. Workflow explains how prepaid escrow addresses the N+1 payment problem and how deterministic Chainlink CRE rules guard the CLI’s payment lifecycle, then displays recorded USDC price-policy evidence. Docs covers the workflow, CLI demo, policy and SDK reference.
+React 19, Vite 7 and Tailwind. The frontend has two destinations: **Workflow** and **Docs**. Workflow explains how prepaid escrow addresses the N+1 payment problem and how deterministic Chainlink CRE rules guard the CLI’s payment lifecycle, then displays captured CLI lifecycle evidence. Docs covers the workflow, CLI demo, policy and SDK reference.
 
 Workflow embeds a CRE flow diagram and agent execution dashboard. Recorded mode replays actual CLI events; Live local streams the same CLI through a loopback-only server. There is no browser wallet, draft editor, stream management or separate dashboard route. Payment keys and execution remain in the CLI/server on Ethereum Sepolia.
 
@@ -15,7 +15,7 @@ npm --prefix vite-project install
 npm run dev
 ```
 
-Open the URL Vite prints. Recorded mode needs no wallet, credentials, deployment or frontend environment variables. Use `npm run dev:live` with configured CLI prerequisites to enable Live local. Pay requires server `PAY_ENABLED=1` and explicit UI confirmation.
+Open the URL Vite prints. Recorded mode needs no wallet, credentials, deployment or frontend environment variables. Use `npm run dev:live` with configured CLI prerequisites to enable Live local. Pay requires server `PAY_ENABLED=1`, explicit UI confirmation and the registered operator’s separate policy key. A new wallet cannot use the checked-in escrow.
 
 | Route | Behavior |
 | --- | --- |
@@ -27,7 +27,7 @@ Former agent, stream and dashboard URLs show the normal not-found page. Both des
 
 ## Recorded evidence
 
-JSON is served from `public/evidence`. With authenticated CRE and Bun installed, refresh from the repository root:
+Workflow replays CLI event captures from `public/runs`; standalone price/report evidence remains under `public/evidence`. Refreshing the latter does not replace a funded dashboard recording. With authenticated CRE and Bun installed, refresh from the repository root:
 
 ```sh
 npm run cre:capture

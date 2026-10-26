@@ -13,7 +13,7 @@ npm run install:all
 npm run dev
 ```
 
-Cloning requires GitHub access if the repository is private. Open the Vite URL printed in your terminal. Viewing saved workflow evidence and using Agent setup need no wallet, private key, CRE authentication or deployed contracts.
+Cloning requires GitHub access if the repository is private. Open the Vite URL printed in your terminal. Viewing recorded workflow evidence and reading Docs need no wallet, private key, CRE authentication or deployed contracts.
 
 `install:all` installs root, SDK, server and frontend dependencies. To install only the frontend, use `npm --prefix vite-project install` and `npm run dev`.
 
@@ -54,7 +54,10 @@ npm run build:web
 
 `docs:check` also compiles the exact documented TypeScript fragments with their declared external inputs and an async-function wrapper, and compares historical transcripts, hashes, frontend copies and ABI report fields. It does not execute payment examples or establish production signature verification.
 
-The current suite has **174 tests**: 32 contract, 52 SDK, 8 gateway, 31 CRE policy and 51 evidence/CLI/tooling checks. Tests and CI do not call the authenticated CRE simulator; successful live executions are separately recorded under `docs/evidence`. SDK/gateway and CLI tests open localhost servers (including temporary Hardhat RPCs), so the environment must permit local listeners.
+`npm test` covers contracts, SDK, gateway, CRE policy and CLI/evidence tooling.
+Use its actual output for current counts. Tests and CI do not call the authenticated
+CRE simulator; saved live runs and public receipts are separate evidence. SDK,
+gateway and CLI tests start local HTTP/RPC listeners, which the host must permit.
 
 Build output: `sdk/dist` and `vite-project/dist`. Static frontend hosting needs a fallback to `index.html` for application routes. [Frontend README](../../vite-project/README.md).
 

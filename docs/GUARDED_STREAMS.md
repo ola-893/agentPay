@@ -40,28 +40,40 @@ policy signer; the contract does not re-execute CRE or the RPC risk review.
 
 ## Deploy and run
 
-Use Node 22, compiled contracts, existing CLI credentials, an authenticated CRE
-CLI and a dedicated funded Sepolia agent wallet. Keep the root `.env` ignored.
+A clean checkout can replay the recorded dashboard without any keys. Live preview
+and paid mode require the registered agent credentials and the operator's separate
+policy key; an arbitrary new wallet cannot use the checked-in escrow.
+
+For an authorized existing operator, install dependencies, compile absent artifacts,
+configure ignored `.env`, restore the matching private operator files, then run:
 
 ```sh
 npx hardhat compile
-npm run --silent deploy:guarded-stream
 npm run --silent demo:agent
 npm run --silent demo:agent -- --pay
 ```
 
-Deployment creates separate 0600 policy/recovery key files in ignored
-`.local/policy/`. It verifies runtime, Circle USDC and all three authorities,
-then updates the local stream address and registered profile. Back up those
-files privately. A pending deployment hash prevents automatic redeployment after
-uncertain confirmation. A recorded guarded deployment also blocks redeployment;
-inspect its receipts rather than repeatedly running the command.
+The checked-in contract is `0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09`. Inspect its public parties
+in [the deployment record](deployment/guarded-usdc-stream.json). The policy key must
+match `policySigner` and its file must be mode 0600. Never share these keys.
 
-Paid agent runs require the guarded contract; they do not fall back to an
-unguarded deployment. The CLI still dry-runs and risk-checks the exact signed
-calldata, stores decision blobs and requires audit receipts before signing.
-The contract independently verifies the lifecycle permit. It does not enforce
-that the CLI performed its separate audit-review steps.
+`npm run deploy:guarded-stream` is an operator helper, **not a fresh-checkout bootstrap**:
+it refuses the existing committed deployment record. It also refuses a pending
+local deployment record. Preparing an independent deployment requires preserving
+those original records and reviewing the helper, deployment destination and new
+profile/authority configuration. No supported overwrite flag or automatic migration
+is implemented. Do not delete records or retry a pending deployment to bypass this.
+The command's successful original deployment is recorded; independent developer
+onboarding to a new deployment has not been verified.
+
+The helper creates separate 0600 policy/recovery files in ignored `.local/policy/`,
+verifies runtime, Circle USDC and authorities, and updates local environment/escrow.
+Back up those files privately. The profile's other public parties and the audit
+journal must also match the intended operator; copying an address is insufficient.
+
+Paid runs require guarded escrow and do not fall back to legacy. The CLI audits
+exact calldata and requires receipt inclusion before signing. The contract checks
+the lifecycle permit; it does not itself enforce the CLI's separate audit steps.
 
 ## Operator recovery
 
@@ -106,10 +118,10 @@ node scripts/verify-guarded-stream.mjs 20261025T173241Z-38db9e1a
 Run from the repository root with the original local run artifacts and configured
 payer/RPC. The verifier signs only an intentionally invalid typed approval for an
 `eth_call` rejection test; it never broadcasts a transaction. Recorded amounts are
-time-dependent observations, not expected amounts for a future run. Recovery-owner
-closure was verified on a disposable local chain, not broadcast on Sepolia.
+time-dependent observations, not expected amounts for a future run. Recovery-owner closure was also exercised publicly for the later authentication
+failure; [retest and recovery evidence](evidence/guarded-retest/VERIFICATION.md).
 
-Earlier legacy [funded dashboard captures](../vite-project/public/runs/index.json) use
+Earlier October 22 [funded dashboard captures](../vite-project/public/runs/index.json) use
 the legacy AgentPayStream and remain historical evidence of CLI enforcement.
 They are not evidence of this new signature gate. Strict AgentPayGuard/Settlement
 and its DON-authenticated report path remain separate.

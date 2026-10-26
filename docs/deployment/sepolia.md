@@ -25,7 +25,7 @@ The legacy tUSD contracts were deployed on Ethereum Sepolia on October 19, 2026:
 
 The [public deployment record](sepolia-stream.json) includes successful creation receipts, block numbers, runtime code hashes and the source commit. Both onchain runtimes exactly matched the compiled artifacts; `paymentToken()` matched the deployed MockUSD address. `npm run --silent demo:check -- --json` passed against this deployment. The deployer received 1,000,000 test tUSD from the token constructor and retained 0.029648452 Sepolia ETH after deployment.
 
-The local root `.env` and frontend `.env.local` are configured with these addresses. The CLI demo uses the dedicated deployment wallet as both payer and recipient for self-stream testing; set `PAYMENT_RECIPIENT_ADDRESS` to a separate wallet when testing recipient access. Local credentials remain ignored by Git. A fresh checkout must configure its own wallet and the public addresses below.
+At that earlier verification the local legacy settings used these addresses. Current `demo:agent` uses a different guarded USDC escrow with distinct payer and recipient; for legacy self-stream testing only, set `PAYMENT_RECIPIENT_ADDRESS` to a separate wallet when testing recipient access. Local credentials remain ignored by Git. A fresh checkout must configure its own wallet and the public addresses below.
 
 This establishes deployment and read-only setup checks. Explorer source verification, stream creation/withdrawal and browser-wallet transactions were not performed. It does not deploy a CRE guard, settlement contract, workflow or report receiver; the guarded Circle USDC path remains separate.
 
@@ -45,4 +45,4 @@ PAYMENT_TOKEN_ADDRESS=<deployed-18-decimal-MockUSD>
 
 For the legacy provider, set `AGENTPAY_STREAM_ADDRESS`, `PAYMENT_TOKEN_ADDRESS` and `PAYMENT_RECIPIENT_ADDRESS` in root `.env`. The TypeScript provider launched with `npm run demo:provider` reads those settings and listens on port 3005. [Middleware contract](../architecture/x402-protocol.md).
 
-No live deployment, explorer verification or successful browser-wallet transaction is implied by these steps. Current saved evidence is [read-only CRE simulation](../CRE_SUBMISSION.md). For an isolated record-only write instead, use the distinct [mock-forwarder procedure](../RECORDING_READINESS.md).
+No live deployment, explorer verification or successful browser-wallet transaction is implied by these steps. Current evidence also includes the [signed guarded stream lifecycle](../evidence/guarded-stream/VERIFICATION.md). For an isolated record-only write instead, use the distinct [mock-forwarder procedure](../RECORDING_READINESS.md).

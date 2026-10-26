@@ -4,7 +4,7 @@
 
 ## Prepare
 
-Use Node 22, installed dependencies, Bun and an authenticated CRE CLI. Configure the model, dedicated payer, recipient, USDC stream and audit journal using the [AI CLI guide](../docs/AI_AGENT_DEMO.md) and [spend-review guide](../docs/SPEND_AUDIT.md). The paid run needs Circle Sepolia USDC and Sepolia ETH for stream and audit transactions.
+Use Node 22, installed dependencies, Bun and an authenticated CRE CLI, plus the registered operator’s separate policy key. A public checkout can replay the recording without those keys. Configure the model, dedicated payer, recipient, USDC stream and audit journal using the [AI CLI guide](../docs/AI_AGENT_DEMO.md) and [spend-review guide](../docs/SPEND_AUDIT.md). The paid run needs Circle Sepolia USDC and Sepolia ETH for stream and audit transactions.
 
 ```sh
 npm run --silent demo:agent -- --help
@@ -39,11 +39,11 @@ This creates a new stream with at most **0.01 USDC** escrow. Approval, funding, 
 
 | Terminal evidence | What to explain |
 | --- | --- |
-| Real model tool request | “The agent proposes a service tier and purpose. It cannot rewrite the quote, recipient, deposit or policy.” |
+| Real model tool request | “The agent proposes a service tier and purpose. It cannot rewrite the quote, recipient, deposit or policy. A separate policy process signs eligible lifecycle actions; the contract verifies their exact intent.” |
 | Price observations and `OPEN` | “CRE reads HTTP observations and Sepolia state. Fixed price, health, budget, rate and identity checks admit this proposal.” |
 | Spend review and receipt | “The exact transaction is dry-run and checked, its decision is stored in a durable blob, and a receipt anchors its hash before the CLI signs.” |
 | Ten successful requests and `CONTINUE` | “The CLI and provider reuse the validated session. CRE checks the existing stream at a healthy checkpoint; requests do not each fund another payment.” |
-| Three injected HTTP 503 failures and `CLOSE` | “The observed failure threshold triggers the configured rule. The CLI cancels; this is a policy result rather than model judgment.” |
+| Three injected HTTP 503 failures and `CLOSE` | “The observed failure threshold triggers the configured rule. The policy process signs CLOSE and the guarded contract verifies it; this is a policy result rather than model judgment.” |
 | Earned/refunded totals and transaction link | “The contract pays time-accrued earnings and refunds unused escrow. These totals reconcile to the original deposit.” |
 | Premium request and `DENY` | “The proposed 0.2 USDC exceeds the 0.1-USDC cap. The CLI refuses funding regardless of the agent's request.” |
 

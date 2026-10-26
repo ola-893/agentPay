@@ -1,5 +1,7 @@
 # Documentation correctness audit
 
+**Historical audit of October 17, 2026.** Its command inventory, counts, routes and verification limits describe that revision, not current setup. Use [the current reliability audit](RELIABILITY_AUDIT.md), [CLI guide](AI_AGENT_DEMO.md) and [guarded deployment](GUARDED_STREAMS.md) for current behavior.
+
 Scope: the three existing journeys, audited from source at `c1709ef` on 17 October 2026. No product feature or public deployment is part of this audit. This matrix was written before changing the guides; verification results below will distinguish observations from remaining operator steps.
 
 ## Claim-to-evidence matrix

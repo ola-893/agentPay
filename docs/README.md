@@ -1,10 +1,8 @@
 # AgentPay documentation
 
-**Current guarded deployment:** [AgentPayGuardedStream](GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
-
 The agent proposes useful work; CRE checks fixed payment rules; the CLI applies the checked result. A model-generated instruction is not payment approval. The guardrails address avoidable loss from unchecked funding and continuation, while one validated session serves many requests. Start with [the guardrail architecture](architecture/README.md) or [the manual demo script](../demo/demo_script.md).
 
-AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, protected in the CLI by deterministic local Chainlink CRE guardrails. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend contains only Workflow and Docs, with a CRE diagram, recorded replay, local CLI execution controls and instructions. Testnet tokens have no monetary value.
+AgentPay uses prepaid **Circle USDC streams on Ethereum Sepolia**, protected by deterministic local CRE checks and contract-verified local policy signatures. Many service requests reuse one funded stream; cancellation pays accrued earnings and refunds unused escrow. The AI CLI runs this lifecycle. The frontend contains only Workflow and Docs, with a CRE diagram, recorded replay, local CLI execution controls and instructions. Testnet tokens have no monetary value.
 
 ## The problem, and what CRE adds
 
@@ -20,7 +18,7 @@ Streaming amortizes payment transactions. It also creates a control problem: ear
 
 CRE stays local. The CLI enforces its spend-review policy; the guarded contract additionally requires signed lifecycle approvals. A payer cannot bypass that contract gate with an unsigned create/cancel call. Earlier legacy contracts remain callable without CRE. Checkpoints are explicit demo steps, not continuous monitoring. Health observations do not establish answer quality. The separate [ToolBuyer benchmark](TOOLBUYER.md) explores paid quality trials with synthetic providers and benchmark credits; it is not a quality guarantee for the USDC demo.
 
-Opening, approval when needed, cancellation and audit receipts still cost gas. This prototype neither promises fixed net savings nor implements the full x402 protocol. [How CRE supervises a stream](WORKFLOW.md) · [Verified full lifecycle and receipts](evidence/admission-fix/VERIFICATION.md).
+Opening, approval when needed, cancellation and audit receipts still cost gas. This prototype neither promises fixed net savings nor implements the full x402 protocol. [How CRE supervises a stream](WORKFLOW.md) · [Verified guarded lifecycle and receipts](evidence/guarded-stream/VERIFICATION.md).
 
 ## Start here
 
@@ -35,6 +33,8 @@ Opening, approval when needed, cancellation and audit receipts still cost gas. T
 | Verify USDC address, feed and peg policy | [Sepolia USDC](USDC_SEPOLIA.md) |
 | Dry-run spends, apply risk gates and verify blob receipts | [Spend audit](SPEND_AUDIT.md) |
 | Compare paid quality trials and provider selection | [ToolBuyer](TOOLBUYER.md) |
+| Inspect guarded contract authority and operator recovery | [Guarded streams](GUARDED_STREAMS.md) |
+| Review documentation correctness and drift checks | [Reliability audit](RELIABILITY_AUDIT.md) |
 | Run a real Qwen/OpenAI purchasing agent | [AI agent CLI](AI_AGENT_DEMO.md) |
 | Settle an authenticated report | [GuardedPaymentClient](sdk/guarded-payment-client.md) |
 | Deploy the consumer or legacy streams | [Deployment](../DEPLOYMENT.md) |
@@ -47,7 +47,7 @@ Opening, approval when needed, cancellation and audit receipts still cost gas. T
 
 | Path | Asset and contract | Authority and interface |
 | --- | --- | --- |
-| AI streaming CLI | Circle Sepolia USDC, 6 decimals; USDC-configured AgentPayStream | Local CRE returns OPEN/CONTINUE/CLOSE/DENY; wallet funds or cancels; signed session reuses stream |
+| AI streaming CLI | Circle Sepolia USDC, 6 decimals; AgentPayGuardedStream | Local CRE → separate policy signer → contract-verified OPEN/CLOSE; CONTINUE and request reuse remain local |
 | Legacy SDK streams | MockUSD/tUSD, 18 decimals; separate AgentPayStream | Legacy AgentPaySDK; no browser stream management |
 | Strict settlement reference | Circle USDC; AgentPayGuard + AgentPaySettlement | Requires authenticated onchain report; public guard remains closed and this is not the streaming CLI |
 

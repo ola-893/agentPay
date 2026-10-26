@@ -21,11 +21,13 @@ The AI CLI uses Circle's six-decimal Sepolia USDC. An initial CRE price check co
 ```mermaid
 flowchart TD
   A[Agent encounters HTTP 402] --> B[CRE: price safety + stream admission]
-  B --> C[Wallet approves and funds escrow stream]
+  B --> P[Separate policy signer approves exact OPEN]
+  P --> C[Agent submits; escrow verifies and funds]
   C --> D[Many API requests reuse one authenticated stream]
   D --> E[CRE: HTTP service observations + Sepolia stream reads]
   E -->|CONTINUE| D
-  E -->|CLOSE| F[Wallet cancels stream]
+  E -->|CLOSE| S[Separate policy signer approves exact CLOSE]
+  S --> F[Agent submits; escrow verifies and cancels]
   F --> G[Accrued earnings to provider; unused funds to sender]
 ```
 
@@ -141,9 +143,9 @@ npm run build:web
 npm --prefix vite-project run lint
 ```
 
-Current suites: **183 tests** — 32 contracts, 52 SDK, eight middleware, 31 CRE policy, 60 evidence/CLI/tooling and presentation checks. CI runs these checks without CRE credentials, including temporary local RPC deployments; these are separate from live CLI simulation evidence.
+`npm test` runs the contract, SDK, gateway, CRE policy and CLI/tooling suites. Counts come from test output; current authority and public-run evidence are mapped in the [reliability audit](docs/RELIABILITY_AUDIT.md). CI uses local fixtures, not authenticated live CRE.
 
-`docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Correctness audit and verification limits](docs/DOCUMENTATION_AUDIT.md).
+`docs:check` verifies local links, compiles documented SDK/UI fragments, and compares original transcript hashes, frontend copies and ABI report fields. [Current reliability audit and limits](docs/RELIABILITY_AUDIT.md).
 
 ## Current scope
 

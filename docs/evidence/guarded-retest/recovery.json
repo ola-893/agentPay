@@ -1,0 +1,8 @@
+{
+  "streamId": "2",
+  "operatorRecovery": true,
+  "transactionHash": "0x8eaa05f81c57d1d4a80b3789074d24b79eb87ede6cac7155ae654a0d4d48895d",
+  "earnedRaw": "2160",
+  "refundedRaw": "7840",
+  "closed": true
+}

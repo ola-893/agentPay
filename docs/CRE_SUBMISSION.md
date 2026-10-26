@@ -1,7 +1,5 @@
 # CRE bounty submission: AgentPay
 
-**Current guarded deployment:** [AgentPayGuardedStream](GUARDED_STREAMS.md) requires a separate local policy signature for agent funding and closure. The policy process runs CRE itself; the agent cannot sign its own approval. The contract verifies exact intent, nonce and expiry, and blocks duplicate active funding. A separate operator key provides recovery. CRE remains local; this is not DON authentication. Earlier captured runs below use the legacy stream and demonstrate CLI-only enforcement.
-
 **Core contribution:** reusable streams reduce per-request payment transactions; deterministic CRE guardrails reduce avoidable spending caused by unchecked model-generated payment actions. The AI proposes service requests, CRE evaluates explicit price/health/session/budget/rate rules, and the CLI applies the checked outcome. CRE is the policy boundary around the agent’s financial commitments.
 
 AgentPay addresses the transaction-per-request payment problem with prepaid escrow streams. An AI agent funds one stream, makes many service requests without additional payment transactions, and cancels when finished or when service fails. The provider earns tokens with time; unused escrow returns to the sender on cancellation.
@@ -23,30 +21,44 @@ Configure CLI prerequisites first and authenticate CRE; choose Live local and Pr
 | Requirement | Implementation |
 | --- | --- |
 | CRE orchestration inside the project | [Stream supervisor](../cre/payment-guard/stream-main.ts): HTTP observations + EVM reads → bounded lifecycle decision |
-| At least one blockchain | Ethereum Sepolia; actual Circle USDC and AgentPayStream state |
+| At least one blockchain | Ethereum Sepolia; actual Circle USDC and AgentPayGuardedStream state |
 | External API/system | HTTP provider-health snapshots outside the workflow; initial public Coinbase USDC/USD API plus Chainlink feed checks |
 | Successful simulation or deployment | Real CLI simulations for admission, healthy continuation, outage closure and premium denial; no CRE network deployment required |
 | Workflow used by the application | [AI CLI](../demo/agent-demo.mjs) consumes each decision and signs stream operations; API requests reuse its authenticated stream session |
 
-## Demonstrate the original payment model
+## Demonstrate the guarded payment model
 
 Follow the [AI streaming demo guide](AI_AGENT_DEMO.md) for credentials, public stream address and exact commands. Preview performs admission checks only. The funded demo:
 
 1. A real Qwen/OpenAI model requests both research tiers.
 2. CRE checks USDC price safety and basic stream admission.
-3. The wallet approves as needed and deposits `10000` raw USDC (0.01) into AgentPayStream over 1000 seconds, earning `10` raw units per second.
+3. The policy process signs OPEN; the CLI audits the exact transaction; the guarded contract verifies the permit as the wallet deposits `10000` raw USDC (0.01) into AgentPayGuardedStream over 1000 seconds, earning `10` raw units per second.
 4. Five API calls reuse that stream without a new payment transaction.
 5. CRE fetches provider observations, corroborates client counters, reads the matching stream at an explicit Sepolia block and returns `CONTINUE`.
 6. Five more requests reuse the same stream.
 7. The demonstration explicitly injects a provider outage; three real requests return labeled HTTP 503 responses.
-8. CRE returns `CLOSE`; the wallet cancels the stream. Contract events and balance snapshots establish time-accrued payment and unused-deposit refund.
+8. CRE returns `CLOSE`; the separate policy process signs CLOSE and the guarded contract verifies it as the wallet cancels the stream. Contract events and balance snapshots establish time-accrued payment and unused-deposit refund.
 9. Premium admission requests a `200000` deposit (0.2) against a `100000` cap (0.1) and is denied without signing.
 
 The [USDC stream deployment record](deployment/guarded-usdc-stream.json) verifies the public contract runtime, token binding and deployment receipt. [Circle USDC units and feed rationale](USDC_SEPOLIA.md).
 
 The CLI reports actual approval/open/close transactions separately. Reused API calls and CRE read-only checkpoints do not create payment transactions. No fixed dollar gas price or universal 98% savings is claimed; token approval and any recipient withdrawals must be counted when comparing costs.
 
-## Verified Sepolia stream run
+## Verified guarded stream run — current path
+
+On October 25, guarded stream #1 served ten requests, returned CONTINUE, then
+closed on the injected outage. The contract consumed separately signed OPEN/CLOSE
+nonces 0 and 1. Cancellation paid **0.00132 USDC** and refunded **0.00868 USDC**.
+[Original events and all CRE transcripts](../vite-project/public/runs/20261025T173241Z-38db9e1a/events.ndjson) ·
+[Signature, receipt and balance verification](evidence/guarded-stream/VERIFICATION.md).
+Unsigned and agent-forged approvals were independently checked to revert.
+
+A later retest failed CRE authentication after five requests; operator recovery
+closed stream #2. [Failure and public recovery evidence](evidence/guarded-retest/VERIFICATION.md).
+That failed retest is not presented as a successful lifecycle or current CRE availability.
+The video uses the complete guarded run, with its capture date.
+
+## Earlier unguarded Sepolia stream run
 
 On October 20, 2026, Qwen and the local CRE CLI completed all four lifecycle decisions. Stream #1 escrowed 0.01 USDC, served ten successful requests with no per-request payment transactions, and closed after three explicitly injected HTTP 503 failures. Cancellation paid 0.0006 USDC in accrued earnings and refunded 0.0094 USDC. Approval, creation and cancellation were three actual transactions; no fixed gas-saving percentage is inferred.
 
@@ -56,7 +68,7 @@ On October 20, 2026, Qwen and the local CRE CLI completed all four lifecycle dec
 
 ## Inspect the CRE work
 
-The [price workflow](../cre/payment-guard/main.ts) uses CRE `HTTPClient` for Coinbase and `EVMClient.callContract` for finalized feed/token reads. The [stream workflow](../cre/payment-guard/stream-main.ts) uses `HTTPClient` for frozen service-health snapshots and `EVMClient.callContract` for token, wallet and stream reads at the configured block. Its [policy](../cre/payment-guard/stream-policy.ts) combines those observations into lifecycle decisions. The CLI invokes both through `cre workflow simulate`; it parses the results, binds them to the exact configuration and re-evaluates policy before using them. Neither workflow writes to a contract in this demo.
+The [price workflow](../cre/payment-guard/main.ts) uses CRE `HTTPClient` for Coinbase and `EVMClient.callContract` for finalized feed/token reads. The [stream workflow](../cre/payment-guard/stream-main.ts) uses `HTTPClient` for frozen service-health snapshots and `EVMClient.callContract` for token, wallet and stream reads at the configured block. Its [policy](../cre/payment-guard/stream-policy.ts) combines those observations into lifecycle decisions. The CLI invokes both through `cre workflow simulate`; it parses the results, binds them to the exact configuration and re-evaluates policy before using them. The local workflows return results; a separate policy process signs eligible OPEN/CLOSE approvals and AgentPayGuardedStream verifies them when the agent submits the transaction. Neither signature is a DON report.
 
 These are original captures from the October 20 funded run, not fresh executions or reusable authorization:
 
@@ -74,7 +86,7 @@ Run a fresh admission preview with `npm run --silent demo:agent`. Only `--pay` f
 
 ## Trust and verification limits
 
-- The CLI validates local CRE results and gates wallet signing. AgentPayStream enforces escrow accounting, time accrual, recipient withdrawals and cancellation payouts. It has no CRE-result check: a payer can bypass the CLI and call it directly. A simulation is not DON consensus or onchain CRE authorization. AgentPayGuard and AgentPaySettlement remain closed/unused by this path.
+- The CLI applies its audit gates; AgentPayGuardedStream verifies a separate local policy signature for OPEN/CLOSE and enforces escrow accounting. The contract does not prove CRE execution or external observation truth. Legacy AgentPayStream recordings demonstrate CLI-only checks. The escrow gate does not constrain unrelated EOA transfers. Strict AgentPayGuard/Settlement remain separate and unused.
 - Service counters come from a co-located demo provider and client. Comparing them detects discrepancies but is not independent proof of service quality. The outage is injected, not a claimed real incident.
 - Earnings accrue until cancellation is mined; outage detection cannot reverse already-earned amounts. Cancellation pays accrued earnings and refunds unused escrow in one contract transaction.
 - Stream/wallet reads use an explicit recent block. The host waits two confirmations for writes; those writes are not claimed finalized. The separate Chainlink price-feed read is finalized.
@@ -84,7 +96,7 @@ Run a fresh admission preview with `npm run --silent demo:agent`. Only `--pay` f
 
 ## Tests and evidence
 
-The repository suite has 174 tests: 32 contracts, 52 SDK, eight gateway, 31 CRE policy and 51 CLI/tooling. New policy tests cover stream decisions and bound observations; signed local-chain tests verify escrow, payer authentication, reuse without per-request transactions, cancellation and exact refund reconciliation.
+The repository suite covers contracts, SDK, gateway, CRE policy and CLI/tooling; use current test output for counts. New policy tests cover stream decisions and bound observations; signed local-chain tests verify escrow, payer authentication, reuse without per-request transactions, cancellation and exact refund reconciliation.
 
 Historical standalone price captures remain at [ALLOW](evidence/cre-allow.log) / [DENY](evidence/cre-deny-budget.log). Historical direct-transfer AI evidence in `evidence/agent-demo/` documents the earlier implementation and must not be presented as streaming/refund evidence. Fresh streaming runs write exact configs, original CLI transcripts, hashes, model response records, transaction journals and accounting under `.local/agent-demo/runs/`.
 

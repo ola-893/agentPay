@@ -57,8 +57,10 @@ Default: real AI + deterministic local CRE admission preview; no signing or fund
 
 Set QWEN_API_KEY or OPENAI_API_KEY (OPEN_AI_KEY alias accepted), PRIVATE_KEY_1
 or PRIVATE_KEY, AGENTPAY_AGENT_RECIPIENT (CRE_PAYMENT_RECIPIENT_ADDRESS alias),
-and AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env. Recovery needs only wallet
-and stream settings plus CRE and an audit-receipt contract. Compile contracts
+and AGENTPAY_USDC_STREAM_ADDRESS in ignored root .env. Current guarded runs also
+need the matching ignored operator policy-key file; a new wallet cannot use the
+registered deployment. Legacy recovery needs CRE/audit; guarded recovery uses
+the separate recover:guarded-stream operator command without CRE. Compile contracts
 with npx hardhat compile. Requires CRE CLI, Bun and network access.
 Qwen is selected when its key is present; AGENTPAY_AI_PROVIDER overrides this.
 Defaults: QWEN_MODEL=qwen3.5-plus, QWEN_REGION=singapore,

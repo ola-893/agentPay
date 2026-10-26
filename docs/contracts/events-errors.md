@@ -17,7 +17,23 @@ The simulation receiver event is not authenticated production authorization. An 
 
 Common strict errors include `Only forwarder`, `Invalid metadata`, `Wrong workflow`, `Wrong destination`, `Report replay`, `Invalid expiry`, `Only settlement` and `Payment not authorized`. Fix the origin, deployed binding, exact intent or fresh request/report; do not disable strict validation. `Token transfer failed` reverts settlement and consumption atomically. [Guard source](../../contracts/AgentPayGuard.sol).
 
-## Stream events
+## Current guarded stream events and errors
+
+AgentPayGuardedStream emits the StreamCreated, Withdrawn and StreamCancelled
+accounting events below, plus:
+
+```solidity
+event PolicyApprovalConsumed(uint256 indexed nonce, uint8 action, uint256 indexed streamId, bytes32 decisionHash);
+event RecoveryClosed(uint256 indexed streamId, address indexed owner);
+```
+
+Unsigned create/cancel fails with `Policy approval required`. Other guarded checks
+include `Only agent`, `Invalid nonce`, `Invalid expiry`, `Invalid policy signer`,
+`Active stream exists`, `Session already funded`, `Stream intent mismatch`,
+`Deposit cap` and `Only recovery owner`. These are distinct from the legacy
+prefixed errors below. [Guarded source](../../contracts/AgentPayGuardedStream.sol).
+
+## Legacy stream events
 
 ```solidity
 event StreamCreated(uint256 indexed streamId, address indexed sender, address indexed recipient,
@@ -42,4 +58,4 @@ event StreamCancelled(uint256 indexed streamId, address sender, address recipien
 
 The exact errors have an `AgentPayStream: ` prefix. Token transfer can also revert with its own message. The source's zero-rate wording says “Increase amount or duration”; reducing duration is the useful direction for a fixed raw amount.
 
-When querying events, use bounded RPC ranges and the actual deployed address. The current UI scans the last 49000 blocks, filters payment parties and reads current stream state; it is not a full-history indexer. [Stream source](../../contracts/AgentPayStream.sol).
+When querying events, use bounded RPC ranges and the actual deployed address. The current dashboard displays recorded or CLI-emitted events; it does not discover wallet streams. Legacy 49000-block browser discovery is no longer a current route. [Stream source](../../contracts/AgentPayStream.sol).

@@ -1,5 +1,7 @@
 # UI and UX review — 17 October 2026
 
+**Historical audit of the earlier frontend implementation.** Its command inventory, counts, routes and verification limits describe that revision, not current setup. Use [the current reliability audit](RELIABILITY_AUDIT.md), [CLI guide](AI_AGENT_DEMO.md) and [guarded deployment](GUARDED_STREAMS.md) for current behavior.
+
 The frontend now leads with recorded CRE USDC decisions and uses the same navigation across the workflow, streams, agent setup and documentation.
 
 ## Fixed

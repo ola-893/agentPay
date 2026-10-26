@@ -1,0 +1,47 @@
+{
+  "auditDate": "2026-10-26",
+  "environment": "Configured workspace; Node 22, Bun and existing dependencies",
+  "checks": [
+    {
+      "command": "npm test",
+      "result": "44 contract, 52 SDK, 8 gateway and 32 CRE tests passed; initial tooling failed on temporary-directory ENOTEMPTY cleanup"
+    },
+    {
+      "command": "node --test --test-concurrency=1 scripts/test/*.test.mjs",
+      "result": "65 passed"
+    },
+    {
+      "command": "npm run test:tooling",
+      "result": "65 passed, 0 failed, with normal parallel execution after bounded cleanup retry"
+    },
+    {
+      "command": "npm run docs:check",
+      "result": "passed; links, exact SDK snippets, source evidence, signatures, accounting and video source hashes"
+    },
+    {
+      "command": "npm --prefix vite-project run lint",
+      "result": "passed"
+    },
+    {
+      "command": "npm run build:web",
+      "result": "passed"
+    },
+    {
+      "command": "HyperFrames check, render and MP4 decode",
+      "result": "passed; measured record is video/verification.json; frame contact sheet is docs/evidence/video-contact-sheet.png"
+    }
+  ],
+  "passedTestsAcrossSuites": 201,
+  "limits": [
+    "No fresh-machine onboarding or clean dependency install",
+    "No new CRE/model call, deployment or payment",
+    "Fresh RPC receipt retrieval failed DNS; saved original evidence was checked offline",
+    "Product-page visual QA was not repeated; the video composition was reviewed separately"
+  ],
+  "logSha256": {
+    "initial-tests.txt": "ae282268ec41bdab2dec7aa1a934eb50f05a633bc24cf848d33003a0999ebcc5",
+    "final-tooling.txt": "a1bb89169a813ac07108f1fdcdf68bec5075dc845dcdc9ec81785e36398e8bc8",
+    "docs-check.txt": "16c97bc46f1ac9518d3b7b0320e49033710290d0e913440476b6440874a2d72d",
+    "frontend-build.txt": "835b5a371eca542a853b5bf72a882f23f8e24ab696858291ef75b438eacbb92a"
+  }
+}
