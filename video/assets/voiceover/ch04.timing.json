@@ -9,20 +9,20 @@
       "end": 3.712
     },
     {
-      "text": "The wallet approves and opens the stream. Ten successful API requests reuse that session.",
+      "text": "A signed OPEN funds the stream. Ten successful API requests reuse that session.",
       "start": 3.8526,
-      "end": 9.1193
+      "end": 8.8693
     },
     {
       "text": "The healthy checkpoint returns CONTINUE.",
-      "start": 9.2599,
-      "end": 11.4932
+      "start": 9.0099,
+      "end": 11.2432
     },
     {
-      "text": "Then we inject a provider outage. C R E returns CLOSE, and the wallet cancels the stream.",
-      "start": 11.6338,
-      "end": 16.7338
+      "text": "Then we inject an outage. C R E returns CLOSE. The contract accepts the signed closure.",
+      "start": 11.3838,
+      "end": 16.4505
     }
   ],
-  "wavSha256": "61920116359a584a83f4ba544dfc792899c6bf9cf55b03117334f0d948151b52"
+  "wavSha256": "c59938547953bcae20c56fcba14b717c24963ef1af65fbbfbbf18be75a5a9dd2"
 }

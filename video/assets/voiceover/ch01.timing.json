@@ -14,10 +14,10 @@
       "end": 7.9526
     },
     {
-      "text": "C R E checks fixed rules before the C L I funds, continues, or closes a session.",
+      "text": "Deterministic C R E rules guard the payment commitment, while the session stays reusable.",
       "start": 8.0932,
-      "end": 13.0932
+      "end": 12.8432
     }
   ],
-  "wavSha256": "e4527a8f8f59fd2c59713fb7cecd9886b5dc091123587e7c6e8988f4d8b316dc"
+  "wavSha256": "fd0108d07349f9e2c69118ed29246a8e3e9e6d38420331c2f804ad154e1b6b7d"
 }

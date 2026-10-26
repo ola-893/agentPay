@@ -9,10 +9,10 @@
       "end": 5.8787
     },
     {
-      "text": "The recorded simulator output shows the price observations and an ALLOW decision.",
+      "text": "The contract checks the separate signer, exact intent, nonce and expiry. Unsigned and agent-forged approvals revert.",
       "start": 6.0193,
-      "end": 10.3693
+      "end": 12.6859
     }
   ],
-  "wavSha256": "78b39cb8134f56ae8452703a57ad0b63e8314b77f72e1b1e73e5553fb8f95165"
+  "wavSha256": "7f04b6cda91c7d749b5d5deabf81c2514ffc89cf506307524ed27f6ca2896a81"
 }

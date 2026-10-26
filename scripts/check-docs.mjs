@@ -20,7 +20,7 @@ async function markdownFiles(directory) {
   return (
     await Promise.all(
       entries
-        .filter((e) => e.name !== 'evidence')
+        .filter((e) => !['evidence','node_modules','.venv','.cache','.hyperframes','out','assets','.git'].includes(e.name))
         .map(async (entry) => {
           const target = path.join(directory, entry.name);
           return entry.isDirectory()
@@ -36,6 +36,8 @@ const files = [
   path.join(root, 'README.md'),
   path.join(root, 'DEPLOYMENT.md'),
   path.join(root, 'vite-project/README.md'),
+  path.join(root, 'demo/demo_script.md'),
+  ...(await markdownFiles(path.join(root, 'video'))),
   ...(await markdownFiles(path.join(root, 'docs'))),
 ];
 for (const file of files) {

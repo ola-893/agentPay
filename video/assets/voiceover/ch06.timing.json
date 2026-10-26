@@ -9,10 +9,10 @@
       "end": 3.1287
     },
     {
-      "text": "C R E returns DENY before a new session opens, keeping that proposed spend inside the configured policy.",
+      "text": "C R E returns DENY. No funding approval is issued, and the premium session stays closed.",
       "start": 3.2693,
-      "end": 9.4693
+      "end": 8.6693
     }
   ],
-  "wavSha256": "58ad00a5b6cf7abf5c5730c8fb3f722ea265223d40baadc8be4633c0d83f2ffb"
+  "wavSha256": "83d0953d9f4611e2a8f578c288a6124fa871e79647643f2b10d8cb856be935f6"
 }

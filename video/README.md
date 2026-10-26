@@ -1,18 +1,21 @@
-# AgentPay short demo
+# AgentPay guarded-stream demo
 
-A 90–120 second video focused on fund-once streaming and deterministic CRE payment
-guardrails: fixed-rule admission, request reuse, outage-driven closure, verified
-settlement and budget control. The agent supplies reasoning; CRE evaluates rules;
-the CLI applies checked results. The current narration is about 1:50.
-Every recorded number and transaction comes from the same
-NDJSON as the dashboard. See claims.md for the evidence mapping.
+A 90–120 second evidence-based film: fund once, reuse service access, run local CRE
+rules, sign eligible OPEN/CLOSE approvals with a separate policy key, and verify
+them in the guarded contract. The narration, captions, code, addresses and receipts
+use the successful October 25 guarded capture. [Claim map](claims.md).
 
-Current live CLI escrow: [`0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09`](https://sepolia.etherscan.io/address/0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09). [Guarded setup](../docs/GUARDED_STREAMS.md). The video replays the earlier recorded run; its contract address and receipts remain historical.
+Current escrow: [`0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09`](https://sepolia.etherscan.io/address/0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09).
+[Operator setup and limits](../docs/GUARDED_STREAMS.md). The later authentication
+failure and operator recovery are [documented separately](../docs/evidence/guarded-retest/VERIFICATION.md).
+The film replays a completed run; it is not a live service-availability claim.
 
-From the repository root, with Node 22+ and FFmpeg:
+## Reproduce the committed film
+
+With Node 22 and FFmpeg, run from the repository root:
 
 ```sh
-npm run video:data
+node video/scripts/build-data.mjs --check
 npm run video:build
 npm run video:preview
 npm run video:render
@@ -20,26 +23,33 @@ node video/scripts/verify.mjs
 node video/scripts/deliver.mjs
 ```
 
-The project pins HyperFrames 0.8.186. Output is video/out/agentpay-demo.mp4, with
-an SRT, thumbnail and description. Renders are ignored by Git; local fonts, source
-narration and licensed music are committed. Ordinary builds need no API credentials,
-wallet or chain access. First use of the CLI may install its pinned package/browser.
+The project pins HyperFrames 0.8.186. MP4, SRT, thumbnail and description are under
+`video/out/`; binary renders are ignored by Git. Source FLAC narration, fonts,
+licensed music and caption timings are committed. Ordinary builds need no model
+key, wallet or chain access. First CLI use may download the pinned package/browser.
 
-The short cut uses diagrams, actual source snippets, recorded CLI output and RPC
-settlement evidence. It has no dashboard placeholder and needs no browser footage.
-Recorded Sepolia execution and local CRE simulation remain identified in neutral labels.
+## Change the narration or evidence
 
-Replace narration using video/assets/voiceover/chNN.wav and the corresponding
-chNN.timing.json sentence sidecar (voice: "user"). Regenerate timing.json and build.
-Generated files are protected against unintentional overwrite by WAV hashes.
-
-To regenerate the local voice:
+`npm run video:data` regenerates evidence data and chapter text. Changing sentences
+requires regenerating voice and timing **before** building; the builder refuses
+text/timing mismatches. The new source must pass the signed-evidence/data checks.
+For the existing cached local voice:
 
 ```sh
-python3 -m venv video/.venv
-video/.venv/bin/pip install kokoro-onnx==0.4.7 soundfile==0.14.0
+npm run video:data
 video/.venv/bin/python video/scripts/narrate.py
+npm run video:build
 ```
 
-Kokoro models must exist under ~/.cache/hyperframes/tts or KOKORO_CACHE.
-See ASSETS.md for required music credit and font/animation licenses.
+If local voice dependencies are absent, create `video/.venv`, install
+`kokoro-onnx==0.4.7 soundfile==0.14.0`, and provide the Kokoro model/voice files under
+`~/.cache/hyperframes/tts` (or `KOKORO_CACHE`). This is an optional voice-regeneration
+step, not a requirement for rendering committed source audio. No paid voice API is used.
+
+User replacement WAVs require matching `chNN.timing.json` sidecars marked
+`voice: "user"`. The generator protects modified files against overwriting.
+`npm run docs:check` checks public evidence, generated data, narration/caption
+agreement and the last render's source manifest; it does not rerender video or
+prove the current availability of CRE. See [verification](VERIFICATION.md) and
+[asset licenses](ASSETS.md). Visual QA uses authored-video frames, not a fabricated
+product recording.

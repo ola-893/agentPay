@@ -12,9 +12,9 @@ not a separate reserved stage. Actual footage keeps its source typography.
 
 A single left-to-right session path carries the explanation. Service requests return
 along a separate arc; CRE inputs join from above. The wallet sits explicitly between
-the decision and escrow signing. No direct CRE-to-contract authorization arrow.
+the decision and escrow signing. A separate local policy signer sits between CRE results and the contract gate; no DON-authenticated report is implied.
 
 Persistent evidence labels: Illustration, Recorded, CRE: local simulation, Onchain.
-RPC-derived evidence uses its own label. The missing dashboard shot says Recording required.
+RPC-derived evidence uses its own label. The cut has no dashboard-footage placeholder.
 No particle decoration, neon, floating idle loops, invented terminal output, gas figures,
 or D O N execution imagery presented as observed.

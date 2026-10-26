@@ -1,10 +1,70 @@
 {
   "source": {
-    "run": "vite-project/public/runs/20261022T112249Z-556c7ea3",
-    "sha256": "9841484515a3e387c1b1fdceca1fd35952e3b9e73874dec8549f6309c19ed5c0",
-    "runId": "20261022T112249Z-556c7ea3",
-    "log": "vite-project/public/runs/20261022T112249Z-556c7ea3/artifacts/02-cre-price.log",
-    "rpc": "docs/evidence/workflow-dashboard/rpc-verification.json"
+    "run": "vite-project/public/runs/20261025T173241Z-38db9e1a",
+    "sha256": "cf58b7a1ae5170f48bb4030d4ff34e3a6e181d154f7dc9eb922ba6b16f2d2cb7",
+    "runId": "20261025T173241Z-38db9e1a",
+    "log": "vite-project/public/runs/20261025T173241Z-38db9e1a/artifacts/02-cre-price.log",
+    "rpc": "docs/evidence/guarded-stream/rpc-verification.json"
+  },
+  "deployment": {
+    "schemaVersion": 1,
+    "chainId": 11155111,
+    "address": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+    "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "tokenDecimals": 6,
+    "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+    "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+    "policySigner": "0x117048651fBd5b5F99071EA67e3fe3fd5b72FE91",
+    "recoveryOwner": "0x42B46B0E0af48AB5C714Ba2724B2272B4CBF5FA7",
+    "trust": "local-policy-signature",
+    "creWorkflowDeployed": false,
+    "transactionHash": "0x3a89bae39160a5f0db827132b400ef493db55a558f6a26d43f453a05a1bc7395",
+    "blockNumber": 11992359,
+    "status": 1,
+    "runtimeCodeHash": "0x7cc9c4db78b3912ac63d2ee667c1f82e2cd57b8908d42d2580beb7202f2065e6",
+    "verifiedAt": "2026-10-25T17:30:55.697Z",
+    "maxDepositRaw": "10000",
+    "maxRateRawPerSecond": "100"
+  },
+  "permits": {
+    "open": {
+      "permit": {
+        "action": 1,
+        "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+        "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+        "amount": "10000",
+        "duration": 1000,
+        "metadataHash": "0x9a4704ee1a61a3d5e74ff22300bb4c4720abbefd6a0f893239f8eb314e2c8a8b",
+        "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+        "streamId": "0",
+        "nonce": "0",
+        "deadline": 1792950036,
+        "decisionHash": "0x52001c01da080621ba891ada92cbf242ecbf820d9d0d3d278522403950350708"
+      },
+      "signature": "0x7dc81f157c0dc297c60fcd418dffa1c3e402769c183203477411e976cd4e4ad93f1f9799ea3708b8fb2a8ef2fe9627ceb0ae84f364e147c0e61a233fa0d27f9d1b",
+      "policySigner": "0x117048651fBd5b5F99071EA67e3fe3fd5b72FE91",
+      "trust": "local-policy-signature",
+      "decision": "OPEN"
+    },
+    "close": {
+      "permit": {
+        "action": 2,
+        "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+        "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+        "amount": "10000",
+        "duration": 1000,
+        "metadataHash": "0x9a4704ee1a61a3d5e74ff22300bb4c4720abbefd6a0f893239f8eb314e2c8a8b",
+        "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+        "streamId": "1",
+        "nonce": "1",
+        "deadline": 1792950252,
+        "decisionHash": "0xb4b24da2d630f0728167c772ef6f6adb49a99ec23cf6be34c0671bc020607b2f"
+      },
+      "signature": "0x7dd5ac78b5c7419d1bc5370ed02a03f058e178d8ae5b8b779b9240d6f455bba56569370d02dda4473bc887548660735403f139308b43e82f5b2640eac9dddac81c",
+      "policySigner": "0x117048651fBd5b5F99071EA67e3fe3fd5b72FE91",
+      "trust": "local-policy-signature",
+      "decision": "CLOSE"
+    }
   },
   "profile": {
     "id": "treasury-research",
@@ -13,7 +73,7 @@
     "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
     "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
     "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
-    "escrow": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
+    "escrow": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
     "chainId": 11155111,
     "quote": {
       "amountRaw": "10000",
@@ -45,7 +105,7 @@
     "feedAddress": "0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E",
     "marketApiUrl": "https://api.coinbase.com/v2/prices/USDC-USD/spot",
     "request": {
-      "requestId": "0x38400122b61c96449bd15a27814ecd2d28cc8d2dfb45f0961cc6372777b8e2a6",
+      "requestId": "0xb3df800271aa040c29d7b650dd36bd4ca68a4a2ed9ef4b8159331ec27534c14b",
       "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
       "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
       "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
@@ -55,11 +115,11 @@
     "receiverAddress": "0x0000000000000000000000000000000000000000",
     "approved": true,
     "reason": "WITHIN_POLICY",
-    "observedAt": 1792668185,
-    "validUntil": 1792668485,
-    "feedUpdatedAt": 1792659912,
-    "feedRoundId": "18446744073709553232",
-    "chainlinkPriceUsd8": "99990493",
+    "observedAt": 1792949591,
+    "validUntil": 1792949891,
+    "feedUpdatedAt": 1792919172,
+    "feedRoundId": "18446744073709553235",
+    "chainlinkPriceUsd8": "99984576",
     "externalPriceUsd8": "100000000",
     "maxDeviationBps": 100,
     "maxFeedAgeSeconds": 86400,
@@ -67,7 +127,7 @@
     "published": false,
     "reportWriteSucceeded": false,
     "reportTransactionHash": null,
-    "encodedReport": "0x0000000000000000000000000000000000000000000000000000000000aa36a7000000000000000000000000000000000000000000000000000000000000000038400122b61c96449bd15a27814ecd2d28cc8d2dfb45f0961cc6372777b8e2a6000000000000000000000000e26468ae02368a75dbdbea58f367b7313942ad260000000000000000000000009950d8950bf80722860f2b6a9e120893a0fe79f70000000000000000000000001c7d4b196cb0c7b01d743fbc6116a902379c72380000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000006ad9f3450000000000000000000000000000000000000000000000000000000000000001"
+    "encodedReport": "0x0000000000000000000000000000000000000000000000000000000000aa36a70000000000000000000000000000000000000000000000000000000000000000b3df800271aa040c29d7b650dd36bd4ca68a4a2ed9ef4b8159331ec27534c14b000000000000000000000000e26468ae02368a75dbdbea58f367b7313942ad260000000000000000000000009950d8950bf80722860f2b6a9e120893a0fe79f70000000000000000000000001c7d4b196cb0c7b01d743fbc6116a902379c72380000000000000000000000000000000000000000000000000000000000002710000000000000000000000000000000000000000000000000000000006ade3e830000000000000000000000000000000000000000000000000000000000000001"
   },
   "open": {
     "schemaVersion": 1,
@@ -77,10 +137,10 @@
       "chainId": 11155111,
       "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "tokenDecimals": 6,
-      "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
-      "requestId": "0x4923ba5d377c30010dc42c4b36b80de70e1c3381f4783b079b2729847076b961",
-      "quoteId": "0x38400122b61c96449bd15a27814ecd2d28cc8d2dfb45f0961cc6372777b8e2a6",
-      "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
+      "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+      "requestId": "0x2d86e506dcdfda1f45f8c9886802efbc66d714b56a41ff8c70aa993e51b4e71c",
+      "quoteId": "0xb3df800271aa040c29d7b650dd36bd4ca68a4a2ed9ef4b8159331ec27534c14b",
+      "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
       "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
       "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
       "amountRaw": "10000",
@@ -89,11 +149,11 @@
       "maxRateRawPerSecond": "100",
       "phase": "admission",
       "streamId": "0",
-      "observationBlock": 11969219,
-      "healthUrl": "http://127.0.0.1:55162/health/a26f1c21ceed471c90b8e982cefc42a485147a6950d204ca5b2f406da233d01b",
+      "observationBlock": 11992372,
+      "healthUrl": "http://127.0.0.1:49445/health/29f2f9e7196aaad1a60e6b497dfededfc9ab1dbbf01c981deba1fcda8a9d2905",
       "expectedHealth": {
-        "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
-        "observationId": "0xa26f1c21ceed471c90b8e982cefc42a485147a6950d204ca5b2f406da233d01b",
+        "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+        "observationId": "0x29f2f9e7196aaad1a60e6b497dfededfc9ab1dbbf01c981deba1fcda8a9d2905",
         "serviceAvailable": true,
         "successfulRequests": 0,
         "failedRequests": 0
@@ -105,8 +165,8 @@
       "maxFailedRequests": 3
     },
     "health": {
-      "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
-      "observationId": "0xa26f1c21ceed471c90b8e982cefc42a485147a6950d204ca5b2f406da233d01b",
+      "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+      "observationId": "0x29f2f9e7196aaad1a60e6b497dfededfc9ab1dbbf01c981deba1fcda8a9d2905",
       "serviceAvailable": true,
       "successfulRequests": 0,
       "failedRequests": 0
@@ -114,12 +174,12 @@
     "onchain": {
       "paymentToken": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "tokenDecimals": 6,
-      "agentBalanceRaw": "39967360",
+      "agentBalanceRaw": "39889272",
       "stream": null
     },
     "action": "OPEN",
     "reason": "HEALTHY_WITHIN_BUDGET",
-    "observedAt": 1792668194,
+    "observedAt": 1792949641,
     "donAuthenticated": false
   },
   "healthy": {
@@ -130,10 +190,10 @@
       "chainId": 11155111,
       "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "tokenDecimals": 6,
-      "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
-      "requestId": "0x98ba32db48a26b44fb9791630110d6dca8fb898ef9df54e644ecc9facb169233",
-      "quoteId": "0x38400122b61c96449bd15a27814ecd2d28cc8d2dfb45f0961cc6372777b8e2a6",
-      "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
+      "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+      "requestId": "0xe8fb92dfce4f06609aa39adafccf167b6fd32003c8f98e57b61a5324750de3ca",
+      "quoteId": "0xb3df800271aa040c29d7b650dd36bd4ca68a4a2ed9ef4b8159331ec27534c14b",
+      "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
       "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
       "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
       "amountRaw": "10000",
@@ -141,12 +201,12 @@
       "durationSeconds": 1000,
       "maxRateRawPerSecond": "100",
       "phase": "checkpoint",
-      "streamId": "5",
-      "observationBlock": 11969235,
-      "healthUrl": "http://127.0.0.1:55162/health/3e3af4bf2292888e5f39da4451f8e295f9e711f89ab08db188ce70f57c65e36f",
+      "streamId": "1",
+      "observationBlock": 11992399,
+      "healthUrl": "http://127.0.0.1:49445/health/438415ddc12d5ac2a8be3519fd36c8fa4ed074ed764fd8a54b7979bd45330822",
       "expectedHealth": {
-        "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
-        "observationId": "0x3e3af4bf2292888e5f39da4451f8e295f9e711f89ab08db188ce70f57c65e36f",
+        "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+        "observationId": "0x438415ddc12d5ac2a8be3519fd36c8fa4ed074ed764fd8a54b7979bd45330822",
         "serviceAvailable": true,
         "successfulRequests": 5,
         "failedRequests": 0
@@ -158,8 +218,8 @@
       "maxFailedRequests": 3
     },
     "health": {
-      "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
-      "observationId": "0x3e3af4bf2292888e5f39da4451f8e295f9e711f89ab08db188ce70f57c65e36f",
+      "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+      "observationId": "0x438415ddc12d5ac2a8be3519fd36c8fa4ed074ed764fd8a54b7979bd45330822",
       "serviceAvailable": true,
       "successfulRequests": 5,
       "failedRequests": 0
@@ -167,23 +227,23 @@
     "onchain": {
       "paymentToken": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "tokenDecimals": 6,
-      "agentBalanceRaw": "39957360",
+      "agentBalanceRaw": "39879272",
       "stream": {
         "sender": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
         "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
         "totalAmount": "10000",
         "flowRate": "10",
-        "startTime": "1792668360",
-        "stopTime": "1792669360",
+        "startTime": "1792949904",
+        "stopTime": "1792950904",
         "amountWithdrawn": "0",
         "isActive": true,
-        "metadata": "{\"sessionId\":\"0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b\",\"quoteId\":\"0x38400122b61c96449bd15a27814ecd2d28cc8d2dfb45f0961cc6372777b8e2a6\"}",
+        "metadata": "{\"sessionId\":\"0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733\",\"quoteId\":\"0xb3df800271aa040c29d7b650dd36bd4ca68a4a2ed9ef4b8159331ec27534c14b\"}",
         "claimableRaw": "120"
       }
     },
     "action": "CONTINUE",
     "reason": "SERVICE_HEALTHY",
-    "observedAt": 1792668385,
+    "observedAt": 1792949940,
     "donAuthenticated": false
   },
   "outage": {
@@ -194,10 +254,10 @@
       "chainId": 11155111,
       "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "tokenDecimals": 6,
-      "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
-      "requestId": "0x4125947226a673b30437dbc7daf77e8a2385d45a1699031024cda076098ed319",
-      "quoteId": "0x38400122b61c96449bd15a27814ecd2d28cc8d2dfb45f0961cc6372777b8e2a6",
-      "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
+      "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+      "requestId": "0xd9464f467f1ab2e89d27d833b9f9afe1b5e5fe8d64e05e0c256b8daf1ecead6f",
+      "quoteId": "0xb3df800271aa040c29d7b650dd36bd4ca68a4a2ed9ef4b8159331ec27534c14b",
+      "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
       "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
       "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
       "amountRaw": "10000",
@@ -205,12 +265,12 @@
       "durationSeconds": 1000,
       "maxRateRawPerSecond": "100",
       "phase": "checkpoint",
-      "streamId": "5",
-      "observationBlock": 11969236,
-      "healthUrl": "http://127.0.0.1:55162/health/0fd0859a18784dea4bf948c5435c07b159a4b2f41cae291fdca25ceb4286792a",
+      "streamId": "1",
+      "observationBlock": 11992401,
+      "healthUrl": "http://127.0.0.1:49445/health/9affdc9e79c2430b3b6b435f157bb99fc4c33465a88b2ff83be85f9bb0f23f67",
       "expectedHealth": {
-        "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
-        "observationId": "0x0fd0859a18784dea4bf948c5435c07b159a4b2f41cae291fdca25ceb4286792a",
+        "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+        "observationId": "0x9affdc9e79c2430b3b6b435f157bb99fc4c33465a88b2ff83be85f9bb0f23f67",
         "serviceAvailable": false,
         "successfulRequests": 10,
         "failedRequests": 3
@@ -222,8 +282,8 @@
       "maxFailedRequests": 3
     },
     "health": {
-      "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
-      "observationId": "0x0fd0859a18784dea4bf948c5435c07b159a4b2f41cae291fdca25ceb4286792a",
+      "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+      "observationId": "0x9affdc9e79c2430b3b6b435f157bb99fc4c33465a88b2ff83be85f9bb0f23f67",
       "serviceAvailable": false,
       "successfulRequests": 10,
       "failedRequests": 3
@@ -231,23 +291,23 @@
     "onchain": {
       "paymentToken": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "tokenDecimals": 6,
-      "agentBalanceRaw": "39957360",
+      "agentBalanceRaw": "39879272",
       "stream": {
         "sender": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
         "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
         "totalAmount": "10000",
         "flowRate": "10",
-        "startTime": "1792668360",
-        "stopTime": "1792669360",
+        "startTime": "1792949904",
+        "stopTime": "1792950904",
         "amountWithdrawn": "0",
         "isActive": true,
-        "metadata": "{\"sessionId\":\"0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b\",\"quoteId\":\"0x38400122b61c96449bd15a27814ecd2d28cc8d2dfb45f0961cc6372777b8e2a6\"}",
-        "claimableRaw": "240"
+        "metadata": "{\"sessionId\":\"0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733\",\"quoteId\":\"0xb3df800271aa040c29d7b650dd36bd4ca68a4a2ed9ef4b8159331ec27534c14b\"}",
+        "claimableRaw": "360"
       }
     },
     "action": "CLOSE",
     "reason": "SERVICE_UNAVAILABLE",
-    "observedAt": 1792668395,
+    "observedAt": 1792949954,
     "donAuthenticated": false
   },
   "deny": {
@@ -258,10 +318,10 @@
       "chainId": 11155111,
       "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "tokenDecimals": 6,
-      "streamAddress": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
-      "requestId": "0x327b7a572caf60c46ecb0ef7a9156505919f6d468a2dffd3b788f6422788d4bd",
-      "quoteId": "0xb94fa0c8654cbd81e8d6587a38403a48a3c039996d3d9a5c52c5ae15612163c1",
-      "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
+      "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+      "requestId": "0x29ecc864addcf11afda144c2f42399a6efc50992f66732dc0aad1f3b7914bcaf",
+      "quoteId": "0x8ba4dbb1744004350f30d2f7f1cf7b4645fe42ae93a0b6a438cb70e4131891fe",
+      "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
       "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
       "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
       "amountRaw": "200000",
@@ -270,11 +330,11 @@
       "maxRateRawPerSecond": "100",
       "phase": "admission",
       "streamId": "0",
-      "observationBlock": 11969243,
-      "healthUrl": "http://127.0.0.1:55162/health/b2d83b53c6aa6bd3c8efb88b0bc1bfa5ffb2a7d56b8f0b8526aad9057090786e",
+      "observationBlock": 11992410,
+      "healthUrl": "http://127.0.0.1:49445/health/a62493c01f13a759bd03ed2d94b794952863bda96e726711fec58dc71413bb79",
       "expectedHealth": {
-        "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
-        "observationId": "0xb2d83b53c6aa6bd3c8efb88b0bc1bfa5ffb2a7d56b8f0b8526aad9057090786e",
+        "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+        "observationId": "0xa62493c01f13a759bd03ed2d94b794952863bda96e726711fec58dc71413bb79",
         "serviceAvailable": false,
         "successfulRequests": 10,
         "failedRequests": 3
@@ -286,8 +346,8 @@
       "maxFailedRequests": 3
     },
     "health": {
-      "sessionId": "0x6297b2ea37c905042b9401417503adc4049af9a14be212f1848bff865d3d1b1b",
-      "observationId": "0xb2d83b53c6aa6bd3c8efb88b0bc1bfa5ffb2a7d56b8f0b8526aad9057090786e",
+      "sessionId": "0xe10f8169c4e30d597c5aed35f3e21a64b8e323663758868088423a90957dd733",
+      "observationId": "0xa62493c01f13a759bd03ed2d94b794952863bda96e726711fec58dc71413bb79",
       "serviceAvailable": false,
       "successfulRequests": 10,
       "failedRequests": 3
@@ -295,138 +355,118 @@
     "onchain": {
       "paymentToken": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
       "tokenDecimals": 6,
-      "agentBalanceRaw": "39966400",
+      "agentBalanceRaw": "39887952",
       "stream": null
     },
     "action": "DENY",
     "reason": "AMOUNT_EXCEEDS_POLICY",
-    "observedAt": 1792668482,
+    "observedAt": 1792950068,
     "donAuthenticated": false
   },
   "end": {
     "status": "completed",
     "fundedRaw": "10000",
-    "earnedRaw": "960",
-    "refundedRaw": "9040",
+    "earnedRaw": "1320",
+    "refundedRaw": "8680",
     "balances": {
       "before": {
-        "agentBalanceRaw": "39967360",
-        "recipientBalanceRaw": "32640",
-        "nonce": 34
+        "agentBalanceRaw": "39889272",
+        "recipientBalanceRaw": "33600",
+        "nonce": 61
       },
       "after": {
-        "agentBalanceRaw": "39966400",
-        "recipientBalanceRaw": "33600",
-        "nonce": 40
+        "agentBalanceRaw": "39887952",
+        "recipientBalanceRaw": "34920",
+        "nonce": 67
       }
     },
     "transactions": [
       {
         "kind": "approval",
-        "hash": "0x4074848a94944027cc389b66fda70d24cbcf37709c199997892bb8d2d421a9a6"
+        "hash": "0xa61792bcacaa63bcd1db2f0b9f456c6c31f61226257df3b0fc6a39604d1e61a5"
       },
       {
         "kind": "open",
-        "hash": "0x6881a00c7ee5779e80561d6f41ad507d4f7323ef1eac67106b71be1f74336597"
+        "hash": "0x08b99ddbe6ddab388dae565832a944d00a8ff688895d4397dbe6414ef7c0db52"
       },
       {
         "kind": "close",
-        "hash": "0xcd74107ae1d786175a90d548c79c0fc50d60499d94aa2e0f1c0a3245caedb484"
+        "hash": "0x390a9ad36d17f242e8a8a50fbad23ca03859a13e85fac797c2890df1cd7d721d"
       }
     ],
     "donAuthenticated": false
   },
   "rpc": {
-    "checkedAt": "2026-10-22T11:54:29.230Z",
-    "rpc": "https://ethereum-sepolia-rpc.publicnode.com",
+    "schemaVersion": 1,
+    "verifiedAt": "2026-10-25T17:44:44.912Z",
+    "runId": "20261025T173241Z-38db9e1a",
+    "address": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
     "chainId": 11155111,
-    "runId": "20261022T112249Z-556c7ea3",
-    "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
-    "escrow": "0x5199d1dcaB9496d37677DAD8F53481DCc511d585",
-    "streamId": "5",
-    "active": false,
-    "fundedRaw": "10000",
-    "earnedRaw": "960",
-    "refundedRaw": "9040",
-    "balances": {
-      "payer": {
-        "beforeRaw": "39967360",
-        "fundedRaw": "39957360",
-        "afterRaw": "39966400"
-      },
-      "recipient": {
-        "beforeRaw": "32640",
-        "fundedRaw": "32640",
-        "afterRaw": "33600"
-      },
-      "escrow": {
-        "beforeRaw": "0",
-        "fundedRaw": "10000",
-        "afterRaw": "0"
-      }
-    },
-    "transactions": [
-      {
-        "kind": "approval",
-        "hash": "0x4074848a94944027cc389b66fda70d24cbcf37709c199997892bb8d2d421a9a6",
-        "status": 1,
-        "blockNumber": 11969227
-      },
+    "trust": "local-policy-signature",
+    "creWorkflowDeployed": false,
+    "receipts": [
       {
         "kind": "open",
-        "hash": "0x6881a00c7ee5779e80561d6f41ad507d4f7323ef1eac67106b71be1f74336597",
-        "status": 1,
-        "blockNumber": 11969234
+        "transactionHash": "0x08b99ddbe6ddab388dae565832a944d00a8ff688895d4397dbe6414ef7c0db52",
+        "blockNumber": 11992398,
+        "policyNonce": "0",
+        "decisionHash": "0x52001c01da080621ba891ada92cbf242ecbf820d9d0d3d278522403950350708",
+        "signatureVerified": true
       },
       {
         "kind": "close",
-        "hash": "0xcd74107ae1d786175a90d548c79c0fc50d60499d94aa2e0f1c0a3245caedb484",
-        "status": 1,
-        "blockNumber": 11969242
+        "transactionHash": "0x390a9ad36d17f242e8a8a50fbad23ca03859a13e85fac797c2890df1cd7d721d",
+        "blockNumber": 11992409,
+        "policyNonce": "1",
+        "decisionHash": "0xb4b24da2d630f0728167c772ef6f6adb49a99ec23cf6be34c0671bc020607b2f",
+        "signatureVerified": true
       }
     ],
-    "auditReceipts": [
+    "rejected": [
       {
-        "hash": "0x6c42028aec13b817ae6f045ba9d74c6ce9eb2276498eb05414f7cc1144fd8530",
-        "status": 1,
-        "blockNumber": 11969223
+        "case": "unsigned funding",
+        "reason": "Policy approval required"
       },
       {
-        "hash": "0x68fdc295b9c362edad2c9ad632aa29bc80df626f2470664ba0792c4b59334e62",
-        "status": 1,
-        "blockNumber": 11969230
+        "case": "unsigned closure",
+        "reason": "Policy approval required"
       },
       {
-        "hash": "0xf11a10d90d0ad37267c16fc2fb301e6470c673861536af89b4195afbe88e57b0",
-        "status": 1,
-        "blockNumber": 11969239
+        "case": "agent invokes owner recovery",
+        "reason": "Only recovery owner"
       },
       {
-        "hash": "0x30ab29d9d400218eaf2fe5f4615d6039056d485181a0fb3aa9369001f20392df",
-        "status": 1,
-        "blockNumber": 11969246
+        "case": "agent fabricates policy approval",
+        "reason": "Invalid policy signer"
       }
     ],
-    "limits": "Read-only independent receipt, token binding and block-balance check. No new signing, DON authentication, or proof of external observation truth."
+    "streamId": "1",
+    "closed": true,
+    "successfulRequests": 10,
+    "earnedRaw": "1320",
+    "refundedRaw": "8680",
+    "recipientBeforeRaw": "33600",
+    "recipientAfterRaw": "34920",
+    "recipientDeltaRaw": "1320"
   },
   "display": {
     "funded": "0.01",
-    "earned": "0.00096",
-    "refund": "0.00904",
+    "earned": "0.00132",
+    "refund": "0.00868",
     "cap": "0.1",
     "premium": "0.2",
     "rate": "0.00001",
     "maxRate": "0.0001",
     "calls": 10,
     "failures": 3,
-    "feedAge": 8273,
+    "feedAge": 30419,
     "feedLimit": 86400,
     "coinbase": "1.00000000",
-    "chainlink": "0.99990493",
+    "chainlink": "0.99984576",
     "pegBps": 100,
     "sourceBps": 100,
     "httpStatus": 503,
-    "streamId": "5",
+    "streamId": "1",
     "auditCount": 4
   },
   "snippets": {
@@ -447,37 +487,43 @@
       "line": 112,
       "code": "  const rate = BigInt(c.amountRaw) / BigInt(c.durationSeconds);\n  if (BigInt(c.amountRaw) > BigInt(c.spendingCapRaw))\n    return reject(\"AMOUNT_EXCEEDS_POLICY\");\n  if (rate === 0n || rate > BigInt(c.maxRateRawPerSecond))\n    return reject(\"RATE_EXCEEDS_POLICY\");\n  if (\n    JSON.stringify(health) !== JSON.stringify(c.expectedHealth) ||",
       "highlight": 1
+    },
+    "signature": {
+      "file": "contracts/AgentPayGuardedStream.sol",
+      "line": 90,
+      "code": "        require(ecrecover(permitDigest(p), v, r, s) == policySigner, \"Invalid policy signer\");\n        nextNonce++;",
+      "highlight": 0
     }
   },
   "transcript": [
     "Compiling workflow...",
     "✓ Workflow compiled",
-    "2026-10-22T12:23:04Z [USER LOG] External USDC/USD quote (8 decimals): 100000000",
-    "2026-10-22T12:23:05Z [USER LOG] Chainlink Sepolia USDC/USD: 99990493; updatedAt=1792659912; round=18446744073709553232; payment token decimals=6",
-    "2026-10-22T12:23:05Z [USER LOG] Payment guard: ALLOW (WITHIN_POLICY)"
+    "2026-10-25T18:33:10Z [USER LOG] External USDC/USD quote (8 decimals): 100000000",
+    "2026-10-25T18:33:11Z [USER LOG] Chainlink Sepolia USDC/USD: 99984576; updatedAt=1792919172; round=18446744073709553235; payment token decimals=6",
+    "2026-10-25T18:33:11Z [USER LOG] Payment guard: ALLOW (WITHIN_POLICY)"
   ],
   "stdout": [
-    "{\"schemaVersion\":1,\"runId\":\"20261022T112249Z-556c7ea3\",\"seq\":24,\"at\":\"2026-10-22T11:26:16.793Z\",\"type\":\"api.reuse\",\"data\":{\"successfulRequests\":5,\"failedRequests\":0,\"streamId\":\"5\"}}",
-    "{\"schemaVersion\":1,\"runId\":\"20261022T112249Z-556c7ea3\",\"seq\":27,\"at\":\"2026-10-22T11:26:26.820Z\",\"type\":\"api.reuse\",\"data\":{\"successfulRequests\":10,\"failedRequests\":0,\"streamId\":\"5\"}}",
-    "{\"schemaVersion\":1,\"runId\":\"20261022T112249Z-556c7ea3\",\"seq\":28,\"at\":\"2026-10-22T11:26:26.821Z\",\"type\":\"fault\",\"data\":{\"label\":\"Injected provider outage\",\"httpStatus\":503}}",
-    "{\"schemaVersion\":1,\"runId\":\"20261022T112249Z-556c7ea3\",\"seq\":29,\"at\":\"2026-10-22T11:26:27.650Z\",\"type\":\"api.reuse\",\"data\":{\"successfulRequests\":10,\"failedRequests\":3,\"streamId\":\"5\"}}",
-    "{\"schemaVersion\":1,\"runId\":\"20261022T112249Z-556c7ea3\",\"seq\":37,\"at\":\"2026-10-22T11:27:50.218Z\",\"type\":\"stream.closed\",\"data\":{\"streamId\":\"5\",\"earnedRaw\":\"960\",\"refundedRaw\":\"9040\"}}"
+    "{\"schemaVersion\":1,\"runId\":\"20261025T173241Z-38db9e1a\",\"seq\":24,\"at\":\"2026-10-25T17:38:45.515Z\",\"type\":\"api.reuse\",\"data\":{\"successfulRequests\":5,\"failedRequests\":0,\"streamId\":\"1\",\"walletNonceBefore\":65,\"walletNonceAfter\":65,\"hostCheckedNoPaymentTransactions\":true}}",
+    "{\"schemaVersion\":1,\"runId\":\"20261025T173241Z-38db9e1a\",\"seq\":27,\"at\":\"2026-10-25T17:39:03.283Z\",\"type\":\"api.reuse\",\"data\":{\"successfulRequests\":10,\"failedRequests\":0,\"streamId\":\"1\",\"walletNonceBefore\":65,\"walletNonceAfter\":65,\"hostCheckedNoPaymentTransactions\":true}}",
+    "{\"schemaVersion\":1,\"runId\":\"20261025T173241Z-38db9e1a\",\"seq\":28,\"at\":\"2026-10-25T17:39:03.285Z\",\"type\":\"fault\",\"data\":{\"label\":\"Injected provider outage\",\"httpStatus\":503}}",
+    "{\"schemaVersion\":1,\"runId\":\"20261025T173241Z-38db9e1a\",\"seq\":29,\"at\":\"2026-10-25T17:39:04.351Z\",\"type\":\"api.reuse\",\"data\":{\"successfulRequests\":10,\"failedRequests\":3,\"streamId\":\"1\",\"walletNonceBefore\":65,\"walletNonceAfter\":65,\"hostCheckedNoPaymentTransactions\":true}}",
+    "{\"schemaVersion\":1,\"runId\":\"20261025T173241Z-38db9e1a\",\"seq\":37,\"at\":\"2026-10-25T17:40:53.384Z\",\"type\":\"stream.closed\",\"data\":{\"streamId\":\"1\",\"earnedRaw\":\"1320\",\"refundedRaw\":\"8680\"}}"
   ],
   "transactions": [
     {
       "kind": "approval",
-      "hash": "0x4074848a94944027cc389b66fda70d24cbcf37709c199997892bb8d2d421a9a6",
-      "url": "https://sepolia.etherscan.io/tx/0x4074848a94944027cc389b66fda70d24cbcf37709c199997892bb8d2d421a9a6"
+      "hash": "0xa61792bcacaa63bcd1db2f0b9f456c6c31f61226257df3b0fc6a39604d1e61a5",
+      "url": "https://sepolia.etherscan.io/tx/0xa61792bcacaa63bcd1db2f0b9f456c6c31f61226257df3b0fc6a39604d1e61a5"
     },
     {
       "kind": "open",
-      "hash": "0x6881a00c7ee5779e80561d6f41ad507d4f7323ef1eac67106b71be1f74336597",
-      "url": "https://sepolia.etherscan.io/tx/0x6881a00c7ee5779e80561d6f41ad507d4f7323ef1eac67106b71be1f74336597"
+      "hash": "0x08b99ddbe6ddab388dae565832a944d00a8ff688895d4397dbe6414ef7c0db52",
+      "url": "https://sepolia.etherscan.io/tx/0x08b99ddbe6ddab388dae565832a944d00a8ff688895d4397dbe6414ef7c0db52"
     },
     {
       "kind": "close",
-      "hash": "0xcd74107ae1d786175a90d548c79c0fc50d60499d94aa2e0f1c0a3245caedb484",
-      "url": "https://sepolia.etherscan.io/tx/0xcd74107ae1d786175a90d548c79c0fc50d60499d94aa2e0f1c0a3245caedb484"
+      "hash": "0x390a9ad36d17f242e8a8a50fbad23ca03859a13e85fac797c2890df1cd7d721d",
+      "url": "https://sepolia.etherscan.io/tx/0x390a9ad36d17f242e8a8a50fbad23ca03859a13e85fac797c2890df1cd7d721d"
     }
   ]
 }

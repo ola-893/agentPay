@@ -1,18 +1,18 @@
 {
   "renderCommand": "npx --yes hyperframes@0.8.186 render video/agentpay-demo --quality delivery --fps 30 --workers 4 --strict --skill hyperframes --output video/out/agentpay-demo.mp4",
-  "durationSeconds": 109.866667,
+  "durationSeconds": 112.533333,
   "width": 1920,
   "height": 1080,
   "fps": 30,
   "videoCodec": "h264",
   "audioCodec": "aac",
   "audioChannels": 2,
-  "frames": 3296,
-  "bytes": 7878054,
-  "mp4Sha256": "67d04b187c5b6c7f058681718432606381c92efe5d00507af329c95c50af15b8",
-  "integratedLufs": -13.29,
-  "truePeakDbtp": -1.91,
-  "loudnessRangeLu": 1.5,
+  "frames": 3376,
+  "bytes": 8154217,
+  "mp4Sha256": "5da8d7edfe7df2bd4e8fe4e4f73e5034de7506c2f4094f2898add137fa7ad93e",
+  "integratedLufs": -13.3,
+  "truePeakDbtp": -1.92,
+  "loudnessRangeLu": 1.4,
   "fullDecodeExitCode": 0,
   "chapters": [
     {
@@ -25,46 +25,90 @@
       "id": "ch01",
       "title": "Streaming payments",
       "start": 11.2333,
-      "duration": 13.6
+      "duration": 13.366666666666667
     },
     {
       "id": "ch02",
       "title": "Why CRE",
-      "start": 24.8333,
-      "duration": 21.1
+      "start": 24.6,
+      "duration": 22.866666666666667
     },
     {
       "id": "ch03",
       "title": "Real workflow execution",
-      "start": 45.9333,
-      "duration": 10.866666666666667
+      "start": 47.4667,
+      "duration": 13.2
     },
     {
       "id": "ch04",
       "title": "Watch the stream work",
-      "start": 56.8,
-      "duration": 17.233333333333334
+      "start": 60.6667,
+      "duration": 16.966666666666665
     },
     {
       "id": "ch05",
       "title": "Settlement you can verify",
-      "start": 74.0333,
-      "duration": 14.466666666666667
+      "start": 77.6333,
+      "duration": 14.333333333333334
     },
     {
       "id": "ch06",
       "title": "Budget stays in control",
-      "start": 88.5,
-      "duration": 9.966666666666667
+      "start": 91.9667,
+      "duration": 9.166666666666666
     },
     {
       "id": "ch07",
       "title": "Build with AgentPay",
-      "start": 98.4667,
+      "start": 101.1333,
       "duration": 11.4
     }
   ],
-  "narrationWords": 292,
+  "narrationWords": 291,
   "captionSentences": 22,
-  "format": "90\u2013120 second product demo"
+  "format": "90\u2013120 second product demo",
+  "sourceRunId": "20261025T173241Z-38db9e1a",
+  "contractAuthority": "local-policy-signature",
+  "sourceManifest": {
+    "video/agentpay-demo/assets/data.json": "223e4e4547b0c9d645c177d23931e2895b6b9819c3b7dc09578d9b434368f024",
+    "video/agentpay-demo/assets/style.css": "943d4aa785c0e24eefe36902da27400015083ce44d8d7e20ab2faba15096a80e",
+    "video/agentpay-demo/compositions/captions.html": "a266c0a03f046c3998ee7f09c7f495e943c26568827b349d439f0c03feda7227",
+    "video/agentpay-demo/compositions/ch00.html": "96ebc76ad8638cdac8f4eb8a56d376edd52380bb8846ca6605b39b757bfe6a89",
+    "video/agentpay-demo/compositions/ch01.html": "a552a947ec74ad1b26edc8f7958ea9ff5d66f3f4d59fdf3d3ffd52b3a3976e3c",
+    "video/agentpay-demo/compositions/ch02.html": "d838af38589517b101d4d924c1b0e7b7ee71211a68167288ffbe34894336e6cf",
+    "video/agentpay-demo/compositions/ch03.html": "475f26bce52fd78fe5a49ba7d4a1c01d8cd298c8301bd239a67610754be79ffa",
+    "video/agentpay-demo/compositions/ch04.html": "d8d06abf0f4167fd956845b70e9164960a269ff8416efaf3cf041048118435a7",
+    "video/agentpay-demo/compositions/ch05.html": "649b90f2737f8bc863cb21a7fcdb2d5d1c2134dc79fbf421e3df278d5c8ef3ba",
+    "video/agentpay-demo/compositions/ch06.html": "78bb9fae3846f17de4d8953ce137146fdba8a7eca0e1159a38e18780fd160ea4",
+    "video/agentpay-demo/compositions/ch07.html": "ad265e131bb191eb6132e985ef3a10c9469d3b4bfce844545c98bda381e8fdd3",
+    "video/agentpay-demo/index.html": "936fe320d715a0a3f639be61bbd0c234dbc21bb05eecdaef667e6542696c6645",
+    "video/assets/voiceover/ch00.flac": "d6b6b24054d04b93d1db5418ed5f75d5dcc94282028c79d3c577fc3b422905d3",
+    "video/assets/voiceover/ch00.timing.json": "a3a325e6ad67c33f24494d6ae155b30fb2a86f2de931bc4ff48567b1d465239a",
+    "video/assets/voiceover/ch01.flac": "148beef1d673af7b180399cca280e48b4eeaab6d8f16d534c189202c000de47c",
+    "video/assets/voiceover/ch01.timing.json": "1d5f3d1b36911aa1d25c76860c53a0fa362d971d528d504940c1b1bc4c668db3",
+    "video/assets/voiceover/ch02.flac": "d0de08dce91f2230cda02e6b8aa2f84c0d7eca1001495722dbc5ef67fa82d530",
+    "video/assets/voiceover/ch02.timing.json": "e1dc1dcd43e83d25428c5dc0e9df89ca60ee41a47a4b986eea07644329ccd53f",
+    "video/assets/voiceover/ch03.flac": "c824c57c90ba2d047f02a22754cac7a7d2c1ad20120c78ecc946f3faf97bbbab",
+    "video/assets/voiceover/ch03.timing.json": "03c57480dd9f65cd24f2e7b33c29af60c4bc24138638a0beb7f440a5df71f88d",
+    "video/assets/voiceover/ch04.flac": "0b4a23bfd3ed3085cd05fd32ac7b796a2b36dbfebb4218226608a379bdc4c42d",
+    "video/assets/voiceover/ch04.timing.json": "9b414aa5654980730ee06010def07795a2b2a26a4dc63c720cd6969560858f79",
+    "video/assets/voiceover/ch05.flac": "00961cc3c1507d199d0e6add192afa24b4773a4a0e5999656b83addbcc821df2",
+    "video/assets/voiceover/ch05.timing.json": "df31fc5a9c462e7349458d22ad1bcc3ab6d81a8b88261c4553659fac503a079c",
+    "video/assets/voiceover/ch06.flac": "fc2bf35f4bda17b5e9d1492f0b8a5561d08a266d433c9b652b2551497620d2d4",
+    "video/assets/voiceover/ch06.timing.json": "17c9d2bf893f97000e19575d66e53578aff41557c8518a6e9e4073a7fa750c61",
+    "video/assets/voiceover/ch07.flac": "72f9a90ab3aafc83c3f4295ab6dd7fc4e35e81eff521fffcfe3f5faed31a9f77",
+    "video/assets/voiceover/ch07.timing.json": "c9179e17d2c36fceac278d77704542fa4f15b7491ddf66c9c65845fd84e93c55",
+    "video/chapters.json": "84390a1c06866b839eb772cde2915f52b3c5773896ff37eb550ba3c97d62c340",
+    "video/claims.md": "19998bbd058764a70d88c73ce67cdeefd4e3854b8b2d55d44ef7141456c597a4",
+    "video/data.js": "bf364b39eab887ff560d00eb23d8b675b545b8cb9fc4eba8bc523c4cdffc0722",
+    "video/description.md": "dbb991b50b53646d2ed4a6410328bce36e3725367567bddd339416153c5e8a2e",
+    "video/script.md": "0828f5c44c6a220c5c4f532d467c92ccfd67f0e6257edbd10dda3c0f5ab5348b",
+    "video/scripts/build-data.mjs": "91476e13da768fd3ccfcb219f680650abcd3e1bea8ef2f19b30a766e1070bae2",
+    "video/scripts/build-film.mjs": "6e071c5fcd0af443af1ddf043749de521f9f9db7eb2a87e2bb1a0179a2a710aa",
+    "video/scripts/deliver.mjs": "e4b1aae9a333b457ab106ecb29e749c2ab5f294e2af04213e358d5fe0bc31c20",
+    "video/scripts/narrate.py": "ca771c7e3f9f27b37320f7a3c75a8dd8f0e11e87a00740310767185fb70dd914",
+    "video/scripts/verify.mjs": "2d3410b008af3e65232d8f3bb37f86f83157e795714f0c793c934d836e0b2506",
+    "video/scripts/write-script.mjs": "0184a0e1ea34ca1108e8f9762765c8c27f10ce5362980671e2abe04825208a88",
+    "video/timing.json": "91d4e7dd705d53d47c2b2da7693de7114e9d8ff854f65b3edba0e253825f57e7"
+  }
 }

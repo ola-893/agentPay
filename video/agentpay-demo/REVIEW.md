@@ -1,23 +1,21 @@
-# Review — short product demo
+# Review — guarded evidence revision
 
-Latest user direction: 90–120 seconds, with AgentPay's strengths carrying the story.
-The new 292-word narration measures 109.8667 seconds. It replaces the 4:30 explainer.
+112.5333 seconds; 291 words; 22 sentence-timed captions. Current proof is the
+successful October 25 guarded run. Source narration and encoded audio now explain
+local deterministic CRE rules, a separate policy signer and contract-verified
+OPEN/CLOSE, while keeping the fund-once/reuse story.
 
-Focus: fund once and reuse the stream; deterministic CRE rules guard financial
-commitments against unchecked model instructions. CRE brings observations and onchain
-state together; the recorded run continues while healthy, closes on an injected
-outage, settles earnings/refund, and blocks an over-budget premium session.
-The audit-receipt beat shows an additional existing strength without claiming that
-CRE itself signed or authenticated the receipt.
+All eight chapters were inspected on the overview/phone sheets, including full
+contract source and rejection labels. Seven transition strips were inspected.
+The JSON excerpt is an exact recorded data field with a truthful excerpt label;
+shortening it removed the only reading-time warning. Final HyperFrames check has
+zero runtime, layout, contrast or craft findings. Seven seam direction/visibility
+checks pass; three fractional-boundary speed-match warnings remain with the
+existing cuts. No new visual effects or browser-footage placeholders were added.
 
-Removed: the long limitations/future-work chapter, repeated test-token caveats,
-and the missing-dashboard-footage card. No browser recording is required by this cut.
-Execution context remains in neutral recorded/local-simulation/onchain labels.
-
-Check: zero lint, runtime, layout, contrast or craft findings. Two initially rushed
-log/stdout passages were shortened or given more screen time. Reviewed all eight
-chapters on overview/phone sheets and seven five-frame seam strips. Code, log lines,
-counts, payout values, balance deltas and hashes remain source-derived.
-
-Visual review is sampled; human audio listening is still recommended. Local TTS and
-caption boundaries use the same measured sentence clips. No new payment was executed.
+Final encoded frames confirm stream #1, ten calls, current guarded address,
+0.00132 USDC earned + 0.00868 refunded, recipient delta and actual receipt hashes.
+No stale CLI-only contract receipt is used to illustrate signature enforcement.
+The original complete recording and later interrupted retest remain distinct.
+No DON or whole-wallet guarantee is claimed. Narration remains synthetic local
+Kokoro; human pronunciation review remains useful. No new transaction was needed.

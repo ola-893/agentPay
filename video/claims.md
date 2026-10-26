@@ -1,30 +1,30 @@
-# Short-demo claim → evidence map
+# Guarded demo claim-to-evidence map
 
-All run figures, addresses and transaction hashes are generated from
-vite-project/public/runs/20261022T112249Z-556c7ea3/events.ndjson by build-data.mjs.
-The generated data.js records its SHA-256. The thousand-call hook is the motivating
-illustration; the recorded demonstration contains ten successful calls.
+The film uses `vite-project/public/runs/20261025T173241Z-38db9e1a/events.ndjson`,
+the successful October 25 guarded run. Its SHA-256 is checked against the capture
+index. `build-data.mjs` verifies the public permits, signed evidence commitments,
+consumed-approval records, payout conservation and current escrow before generating
+numbers or copying exact source snippets. The thousand-call hook is illustrative;
+the recorded demonstration contains ten successful calls.
 
-| Chapter | What viewers see | Raw source |
+| Chapter | Claim / visible proof | Raw source |
 | --- | --- | --- |
-| Fund once | Many paid calls reuse a funded session | AgentPayStream.sol, demo/agent-demo.mjs; hypothetical hook from project brief |
-| Streaming payments | Agent, wallet, escrow and paid-service loop | Stream contract time-based accrual and CLI session integration |
-| Why CRE | Fixed rules over API observations + chain reads produce OPEN / CONTINUE / CLOSE / DENY | cre/payment-guard/main.ts, stream-main.ts, stream-policy.ts; recorded cre.result events |
-| Real workflow | Source snippets and saved CLI output | Build-time exact source extraction; artifacts/02-cre-price.log |
-| Recorded run | Approval/open, ten successes, healthy checkpoint, injected outage, cancel | NDJSON wallet.tx, api.reuse, fault and cre.result events |
-| Settlement | Earned/refund split, recipient increase, four audit receipts | NDJSON seq 37/44 and audit.receipt events; docs/evidence/workflow-dashboard/rpc-verification.json |
-| Budget control | 0.2 premium quote vs 0.1 USDC deposit cap, DENY | NDJSON seq 41; admission policy AMOUNT_EXCEEDS_POLICY branch |
-| Build with AgentPay | Repository and exact reproduction commands | Root README.md string checks at build |
+| Fund once | Many calls reuse one funded session; no per-call payment transaction | Guarded escrow accrual; captured api.reuse nonce observations |
+| Streaming payments | Agent proposals need deterministic financial guardrails | Host-owned quote parameters; stream-policy.ts; policy worker |
+| Why CRE | HTTP + chain observations feed fixed OPEN/CONTINUE/CLOSE/DENY rules | main.ts, stream-main.ts, stream-policy.ts; original CRE transcripts |
+| Real workflow | Actual HTTP/EVM source, policy-signature check, unsigned/forged rejection | Exact build-time snippets; AgentPayGuardedStream._consume; saved independent negative RPC calls |
+| Recorded run | Signed OPEN, ten calls, healthy CONTINUE, injected outage, signed CLOSE | Actual wallet.tx, api.reuse, fault and cre.result events |
+| Settlement | 10000 funded = 1320 earned + 8680 refunded raw USDC; recipient delta 1320; four audit transactions | guarded-stream/rpc-verification.json; consumed OPEN nonce 0 / CLOSE nonce 1; captured audit.receipt events |
+| Budget | 0.2-USDC premium proposal vs 0.1 policy cap, DENY before new funding | Captured premium admission and AMOUNT_EXCEEDS_POLICY rule |
+| Build | Repository and existing commands | README command checks in builder |
 
-Execution context stays precise in neutral labels: recorded Sepolia run, CRE local
-simulation, onchain wallet transactions. The wallet CLI applies signing policy;
-the stream contract provides escrow accounting and settlement. Decision audit
-receipts are separate transactions. This cut makes no DON execution, onchain CRE
-verification, gas-savings, full x402, or unprompted-strategy claim. The basic and
-premium trials are identified as prompted. No current prices are implied by replay.
+Policy permits authenticate the separate local operator signer, not DON execution
+or external observation truth. The agent cannot forge approval for this escrow;
+its EOA can still transfer elsewhere. Same-host key custody is trusted. CONTINUE is
+local; no onchain write is required for each request. Receipt transactions are
+separate from token approval/open/close. The basic/premium trials and outage are
+explicitly prompted/injected. No gas-saving percentage or full x402 is claimed.
 
-The guardrail claim is scoped to the managed CLI: the model proposes a service tier
-and purpose, the host owns financial parameters and reuse, CRE evaluates fixed
-rules, and the CLI validates the result before signing. This reduces avoidable
-spending; it is not added AI intelligence, a continuous monitor, an aggregate
-wallet budget, or a guarantee against every loss. Explicit recovery closure remains.
+A later October 25 run failed CRE authentication after five calls and required
+operator recovery. It is preserved in `docs/evidence/guarded-retest`, not substituted
+into the complete recording. Neither recording promises current service availability.

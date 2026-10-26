@@ -9,15 +9,15 @@
       "end": 5.3953
     },
     {
-      "text": "The transaction receipts and recipient balance increase verify the settlement.",
+      "text": "Receipts verify both consumed approvals and the recipient balance increase.",
       "start": 5.5359,
-      "end": 9.6193
+      "end": 9.4859
     },
     {
       "text": "The C L I also anchors decision records with onchain audit receipts.",
-      "start": 9.7599,
-      "end": 13.9432
+      "start": 9.6266,
+      "end": 13.8099
     }
   ],
-  "wavSha256": "6478164f1b50ee41dd28951da20de36f1084d0091b10c4e2c75c31211f8cc148"
+  "wavSha256": "2d098fffa82573066b1b418f784de56e99ba03ff7f8d46b96e6970e95136e00b"
 }

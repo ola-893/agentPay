@@ -19,10 +19,10 @@
       "end": 15.6599
     },
     {
-      "text": "The agent proposes. C R E checks. The C L I executes eligible actions.",
+      "text": "A separate policy signer approves eligible actions. The contract verifies that signature before funding or closure.",
       "start": 15.8005,
-      "end": 20.5838
+      "end": 22.3672
     }
   ],
-  "wavSha256": "57ed74807a0d93bf576088ec490f53985d1dcd41e9738dee582f17e7ae4b7650"
+  "wavSha256": "3d89fe6befe60b800d119c0239d7cd2c1d9b07a06e399eac346f3d3fe71dcc52"
 }

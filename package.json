@@ -29,7 +29,7 @@
     "test:tooling": "npm run build:sdk && node --test scripts/test/*.test.mjs",
     "deploy:cre-demo": "npx hardhat run scripts/deploy-cre-demo.js --network sepolia-demo",
     "cre:simulate:write": "node scripts/simulate-cre-write.mjs",
-    "docs:check": "node scripts/check-docs.mjs && node scripts/check-doc-examples.mjs && node scripts/check-doc-evidence.mjs && bun run scripts/check-toolbuyer-evidence.mjs && bun run scripts/check-spend-evidence.mjs && node scripts/check-run-captures.mjs",
+    "docs:check": "node scripts/check-docs.mjs && node scripts/check-doc-examples.mjs && node scripts/check-doc-evidence.mjs && bun run scripts/check-toolbuyer-evidence.mjs && bun run scripts/check-spend-evidence.mjs && node scripts/check-run-captures.mjs && node scripts/check-guarded-proof.mjs && node video/scripts/build-data.mjs --check && node scripts/check-video-source.mjs",
     "deploy:usdc-stream": "node scripts/deploy-usdc-stream.mjs",
     "demo:toolbuyer": "bun run demo/toolbuyer.mjs",
     "deploy:decision-journal": "node scripts/deploy-decision-journal.mjs",

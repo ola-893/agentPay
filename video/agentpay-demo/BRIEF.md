@@ -1,13 +1,12 @@
-# AgentPay — 90–120 second product demo
+# AgentPay guarded demo — 90–120 seconds
 
-Latest direction: lead with product strengths. Target about 1:45. Show fund-once
-streaming, request reuse, CRE orchestration, an actual stream lifecycle, verified
-settlement and a budget block. Keep the current visual palette and local assets.
+Lead with reusable payments and deterministic guardrails. Use the successful
+October 25 signed-escrow recording: real CRE HTTP/EVM observations, separate local
+policy signer, contract checks, request reuse, outage closure, verified settlement
+and budget DENY. The later failed retest is in the docs, not edited into success.
 
-Remove the long trust-boundary discussion, repeated test-token caveats, future-work
-section and missing-dashboard-footage placeholder. A neutral local-simulation badge
-and recorded/onchain labels keep execution context precise without interrupting the story.
-
-All numbers, code, logs and receipts still come from recorded implementation evidence.
-No gas-savings figures, DON execution, contract enforcement of CRE, or spontaneous
-agent strategy are invented. Render and push the shorter version without another stop.
+Keep the existing palette, eight-chapter structure, local voice and music. Show
+policy-signature enforcement accurately; do not imply DON authentication, whole-
+wallet restrictions, automatic monitoring, full x402 or zero gas. Keep context in
+neutral recorded/local/onchain labels and the linked description. Render the
+completed revision and retain the requested 90–120-second length.

@@ -6,8 +6,8 @@ const time=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
 const chapters=timing.chapters.map(c=>`${time(c.start)} ${c.title}`).join('\n');
 const text=`# AgentPay — fund once, keep working | Chainlink CRE demo
 
-The agent proposes work. Chainlink CRE checks fixed payment rules. The CLI executes
-eligible actions. Fund one session and reuse it across paid API requests, with
+The agent proposes work. Chainlink CRE checks fixed payment rules. A separate policy signer approves eligible OPEN/CLOSE actions, and the escrow
+contract verifies them before the agent can fund or close a stream. Fund one session and reuse it across paid API requests, with
 deterministic guardrails against avoidable loss from hallucinated payment instructions.
 CRE connects market observations, service health and onchain state to those rules.
 Watch the recorded stream open, continue, close on an injected outage, settle
@@ -33,8 +33,17 @@ npm run --silent demo:agent -- --pay
 \`\`\`
 
 Demo context: recorded Sepolia run; CRE executes locally and the wallet CLI applies
-the signing policy. The agent is prompted to try basic and premium sessions.
+its audit checks. A separate local policy process runs CRE and signs exact permits;
+AgentPayGuardedStream verifies the registered signer, intent, nonce and expiry.
+This authenticates an operator policy key, not Chainlink DON execution.
+Current escrow: ${d.deployment.address}.
+The agent is prompted to try basic and premium sessions.
 The stream accrues with time. Onchain audit receipts are separate transactions.
+The successful recording is dated October 25, 2026. A later retest failed CRE
+authentication and required operator recovery; see https://github.com/ola-893/agentPay/blob/main/docs/evidence/guarded-retest/VERIFICATION.md.
+The gate protects this escrow, not arbitrary transfers from the agent EOA.
+Live runs need registered agent credentials and the separate operator policy key;
+a clean checkout can replay the recording without keys.
 Full architecture and execution evidence are linked above. Narration is synthetic.
 
 Music: “Dreams Become Real” — Kevin MacLeod (incompetech.com).

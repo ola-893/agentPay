@@ -33,71 +33,7 @@
   },
   {
     "id": "ch01→ch02",
-    "cut": 24.8333,
-    "type": "cut",
-    "rows": [
-      {
-        "check": "ledger",
-        "status": "PASS",
-        "detail": "x- both sides"
-      },
-      {
-        "check": "exit-vector",
-        "status": "PASS",
-        "detail": "-801 px/s x-"
-      },
-      {
-        "check": "entry-vector",
-        "status": "PASS",
-        "detail": "-2471 px/s x-"
-      },
-      {
-        "check": "speed-match",
-        "status": "WARN",
-        "detail": "entry/exit velocity ratio 3.08 (want ~1)"
-      },
-      {
-        "check": "zero-overlap",
-        "status": "PASS",
-        "detail": "one side visible per frame"
-      }
-    ]
-  },
-  {
-    "id": "ch02→ch03",
-    "cut": 45.9333,
-    "type": "cut",
-    "rows": [
-      {
-        "check": "ledger",
-        "status": "PASS",
-        "detail": "x- both sides"
-      },
-      {
-        "check": "exit-vector",
-        "status": "PASS",
-        "detail": "-801 px/s x-"
-      },
-      {
-        "check": "entry-vector",
-        "status": "PASS",
-        "detail": "-2471 px/s x-"
-      },
-      {
-        "check": "speed-match",
-        "status": "WARN",
-        "detail": "entry/exit velocity ratio 3.08 (want ~1)"
-      },
-      {
-        "check": "zero-overlap",
-        "status": "PASS",
-        "detail": "one side visible per frame"
-      }
-    ]
-  },
-  {
-    "id": "ch03→ch04",
-    "cut": 56.8,
+    "cut": 24.6,
     "type": "cut",
     "rows": [
       {
@@ -128,8 +64,72 @@
     ]
   },
   {
+    "id": "ch02→ch03",
+    "cut": 47.4667,
+    "type": "cut",
+    "rows": [
+      {
+        "check": "ledger",
+        "status": "PASS",
+        "detail": "x- both sides"
+      },
+      {
+        "check": "exit-vector",
+        "status": "PASS",
+        "detail": "-1462 px/s x-"
+      },
+      {
+        "check": "entry-vector",
+        "status": "PASS",
+        "detail": "-1464 px/s x-"
+      },
+      {
+        "check": "speed-match",
+        "status": "PASS",
+        "detail": "ratio 1.00"
+      },
+      {
+        "check": "zero-overlap",
+        "status": "PASS",
+        "detail": "one side visible per frame"
+      }
+    ]
+  },
+  {
+    "id": "ch03→ch04",
+    "cut": 60.6667,
+    "type": "cut",
+    "rows": [
+      {
+        "check": "ledger",
+        "status": "PASS",
+        "detail": "x- both sides"
+      },
+      {
+        "check": "exit-vector",
+        "status": "PASS",
+        "detail": "-1462 px/s x-"
+      },
+      {
+        "check": "entry-vector",
+        "status": "PASS",
+        "detail": "-1464 px/s x-"
+      },
+      {
+        "check": "speed-match",
+        "status": "PASS",
+        "detail": "ratio 1.00"
+      },
+      {
+        "check": "zero-overlap",
+        "status": "PASS",
+        "detail": "one side visible per frame"
+      }
+    ]
+  },
+  {
     "id": "ch04→ch05",
-    "cut": 74.0333,
+    "cut": 77.6333,
     "type": "cut",
     "rows": [
       {
@@ -161,39 +161,7 @@
   },
   {
     "id": "ch05→ch06",
-    "cut": 88.5,
-    "type": "cut",
-    "rows": [
-      {
-        "check": "ledger",
-        "status": "PASS",
-        "detail": "x- both sides"
-      },
-      {
-        "check": "exit-vector",
-        "status": "PASS",
-        "detail": "-1463 px/s x-"
-      },
-      {
-        "check": "entry-vector",
-        "status": "PASS",
-        "detail": "-1463 px/s x-"
-      },
-      {
-        "check": "speed-match",
-        "status": "PASS",
-        "detail": "ratio 1.00"
-      },
-      {
-        "check": "zero-overlap",
-        "status": "PASS",
-        "detail": "one side visible per frame"
-      }
-    ]
-  },
-  {
-    "id": "ch06→ch07",
-    "cut": 98.4667,
+    "cut": 91.9667,
     "type": "cut",
     "rows": [
       {
@@ -215,6 +183,38 @@
         "check": "speed-match",
         "status": "PASS",
         "detail": "ratio 1.00"
+      },
+      {
+        "check": "zero-overlap",
+        "status": "PASS",
+        "detail": "one side visible per frame"
+      }
+    ]
+  },
+  {
+    "id": "ch06→ch07",
+    "cut": 101.1333,
+    "type": "cut",
+    "rows": [
+      {
+        "check": "ledger",
+        "status": "PASS",
+        "detail": "x- both sides"
+      },
+      {
+        "check": "exit-vector",
+        "status": "PASS",
+        "detail": "-801 px/s x-"
+      },
+      {
+        "check": "entry-vector",
+        "status": "PASS",
+        "detail": "-2471 px/s x-"
+      },
+      {
+        "check": "speed-match",
+        "status": "WARN",
+        "detail": "entry/exit velocity ratio 3.08 (want ~1)"
       },
       {
         "check": "zero-overlap",

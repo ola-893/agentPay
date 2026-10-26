@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import d from '../data.js';
 const timing=JSON.parse(fs.readFileSync('video/timing.json'));
+execFileSync(process.execPath,['video/scripts/build-data.mjs','--check'],{stdio:'inherit'});
 assert(timing.duration>=90&&timing.duration<=120);
 assert.equal(createHash('sha256').update(fs.readFileSync(`${d.source.run}/events.ndjson`)).digest('hex'),d.source.sha256);
 assert.equal(BigInt(d.end.fundedRaw),BigInt(d.end.earnedRaw)+BigInt(d.end.refundedRaw));
