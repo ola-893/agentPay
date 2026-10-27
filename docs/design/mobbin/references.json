@@ -1,0 +1,113 @@
+{
+  "researchedOn": "2026-10-27",
+  "source": "Mobbin public web Explore previews",
+  "access": "Signed out; individual public screens inspected visually and through displayed titles/descriptions. Full flow playback and authenticated interaction were not tested.",
+  "scope": "Design research only. No frontend, contract, server, policy or schema change.",
+  "images": "One downloaded publicly displayed source image; seven browser crops. Some crops include Mobbin\u2019s See similar overlay, which is not part of the referenced product.",
+  "references": [
+    {
+      "id": "midday-dashboard",
+      "app": "Midday",
+      "screen": "Dashboard Overview",
+      "url": "https://mobbin.com/explore/screens/fa47d11e-0857-4ddc-a515-c837358b7c68",
+      "image": "midday-dashboard.jpg",
+      "phase": "Current UI",
+      "journey": "Understand the money",
+      "observed": "A leading monetary total and chart sit above secondary spending and invoice summaries.",
+      "apply": "Give funded, earned and refunded USDC clear visual priority beside the workflow. Display observed amounts with their source run.",
+      "boundary": "A revenue chart is a layout reference; it does not establish AgentPay savings or a live vault balance.",
+      "imageSha256": "facaf0211c29effb9f28d595d3372ae35b146f9c22a5d3cfd444a4bb7622ee41"
+    },
+    {
+      "id": "databricks-query-history",
+      "app": "Databricks",
+      "screen": "Query History",
+      "url": "https://mobbin.com/explore/screens/cb7c032f-1b57-4dda-aa57-f458724d6a86",
+      "image": "databricks-query-history.jpg",
+      "phase": "Current UI",
+      "journey": "Inspect a workflow run",
+      "observed": "A dense execution table pairs status icons with start time, duration, source and filters.",
+      "apply": "Use compact decision rows for action, reason, time, run and execution status. Keep BLOCK and ERROR outcomes discoverable.",
+      "boundary": "These are query-history screenshots, not observed CRE step playback. A proposed AgentPay row-to-evidence interaction is our adaptation.",
+      "imageSha256": "8e16d6827adc008d9d06ef82bc9fc60c0c56a5ee528e7728f4114dc11ae6e244"
+    },
+    {
+      "id": "front-detail-drawer",
+      "app": "Front",
+      "screen": "Contact Details Panel",
+      "url": "https://mobbin.com/explore/screens/932fa317-d73d-40fb-b5f6-2db0214bbe38",
+      "image": "front-detail-drawer.jpg",
+      "phase": "Current UI",
+      "journey": "Understand a decision",
+      "observed": "A selected list row stays visible beside a right-side details drawer.",
+      "apply": "Keep the diagram or decision list in context while showing the selected rule, observed input, bound, decision, permit and receipt evidence.",
+      "boundary": "The reference contains contact data. Financial fields and decision explanations would come from AgentPay evidence, not from the reference product.",
+      "imageSha256": "aa97746506235f97551be2315a8f0d817aa597f76d6ca4a67d318ab0ccf88081"
+    },
+    {
+      "id": "better-stack-incidents",
+      "app": "Better Stack",
+      "screen": "Incident Dashboard",
+      "url": "https://mobbin.com/explore/screens/1e6425c6-9e2f-43b7-a041-cc6ac778be50",
+      "image": "better-stack-incidents.jpg",
+      "phase": "Current UI",
+      "journey": "Respond to service failure",
+      "observed": "An incident list exposes service, start time and assignment, with explicit status and setup progress.",
+      "apply": "Distinguish service unavailable, CRE unavailable, closure requested, transaction pending and stream closed. Show the last observation time.",
+      "boundary": "An unavailable provider does not mean accrual already stopped. Continuous monitoring and automatic recovery are not implemented.",
+      "imageSha256": "a1b5d88f8bfff7ada9ad7d1379478689f384f7e4802707774662c987c640f368"
+    },
+    {
+      "id": "midday-transactions",
+      "app": "Midday",
+      "screen": "Transaction Table",
+      "url": "https://mobbin.com/explore/screens/fa593f08-3e9a-4341-8f56-a407d32b573f",
+      "image": "midday-transactions.jpg",
+      "phase": "Current UI",
+      "journey": "Trace payment and audit activity",
+      "observed": "A searchable transaction table separates date, description, amount, category, account and status.",
+      "apply": "Separate stream funding, recipient earnings, refunds and receipt gas. Link transaction hashes to their actual operations. Keep blocked decisions visible without inventing payment transactions.",
+      "boundary": "A confirmed audit receipt anchors a record; it is not a completed payment. This is not a request to add an accounting product.",
+      "imageSha256": "c47c0a87035ecd295f10e353e11449a40fa01fd8858674a573224c943536a08e"
+    },
+    {
+      "id": "v0-usage",
+      "app": "v0",
+      "screen": "Billing and Usage Settings",
+      "url": "https://mobbin.com/explore/screens/109c6bf3-1d25-49f3-98d0-a167f76deaf8",
+      "image": "v0-usage.jpg",
+      "phase": "Current UI",
+      "journey": "Read limits without ambiguity",
+      "observed": "Plan, credit balance, recharge setting, payment method and invoices are grouped into separate cards.",
+      "apply": "Separate available funds, workflow limits and contract limits, with asset units and reset scope. In the current deployment, the contract deposit cap is 0.01 USDC while the registered workflow cap is 0.1 USDC.",
+      "boundary": "The source is billing presentation, not a verified spending-policy editor. AgentPay has no rolling daily onchain budget yet.",
+      "imageSha256": "75135149c335c5d6b354cf23a465c86644ec0a75caad09ef71500832e3a2baa7"
+    },
+    {
+      "id": "front-setup-guide",
+      "app": "Front",
+      "screen": "Setup Guide Modal",
+      "url": "https://mobbin.com/explore/screens/34f46cbf-4653-4101-8658-83a9a7217efc",
+      "image": "front-setup-guide.jpg",
+      "phase": "Future architecture",
+      "journey": "Prepare a live agent integration",
+      "observed": "A setup guide groups tasks into a checklist with a progress indicator and a completed item.",
+      "apply": "Use explicit prerequisites for registered agent, matching policy authority, USDC, gas, CRE authentication and recovery readiness. Keep credential-free replay available separately.",
+      "boundary": "A new operator cannot currently provision a fresh deployment through a complete supported onboarding flow. No setup UI was implemented in this research pass.",
+      "imageSha256": "45a25f8e325abbe6de9544fd760fb099aaf0d381dbd51dd77fb5a882af12a379"
+    },
+    {
+      "id": "midday-accounts",
+      "app": "Midday",
+      "screen": "Accounts List",
+      "url": "https://mobbin.com/explore/screens/8653d2d1-4618-463a-8c5b-713f60457af2",
+      "image": "midday-accounts.webp",
+      "phase": "Future architecture",
+      "journey": "Manage per-agent vaults",
+      "observed": "Connected bank accounts are grouped by institution, with individual account rows, balances and an add-account action.",
+      "apply": "After guarded vaults exist, group an agent identity with its vault address, USDC balance, committed funds, allowed services and authority status.",
+      "boundary": "AgentPay currently has one agent-bound stream escrow, not automatically provisioned per-agent vaults. The source does not demonstrate crypto funding or vault custody.",
+      "imageSha256": "d946ceec336442899d75663de1318095ced0b5ed42bda0452860d1cea34a5b7a"
+    }
+  ]
+}

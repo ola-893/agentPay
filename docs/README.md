@@ -35,6 +35,7 @@ Opening, approval when needed, cancellation and audit receipts still cost gas. T
 | Compare paid quality trials and provider selection | [ToolBuyer](TOOLBUYER.md) |
 | Inspect guarded contract authority and operator recovery | [Guarded streams](GUARDED_STREAMS.md) |
 | Review documentation correctness and drift checks | [Reliability audit](RELIABILITY_AUDIT.md) |
+| Review UI references and proposed adaptations (design research only) | [Mobbin reference board](design/mobbin/README.md) |
 | Run a real Qwen/OpenAI purchasing agent | [AI agent CLI](AI_AGENT_DEMO.md) |
 | Settle an authenticated report | [GuardedPaymentClient](sdk/guarded-payment-client.md) |
 | Deploy the consumer or legacy streams | [Deployment](../DEPLOYMENT.md) |
