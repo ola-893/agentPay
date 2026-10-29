@@ -11,6 +11,10 @@ import {
   percentOf,
   eventNodes,
   timelinePresentation,
+  workflowStatus,
+  recordingChoices,
+  recordingScenario,
+  recordingLabel,
 } from "../../vite-project/src/lib/workflow-view.mjs";
 const directory = new URL("../../vite-project/public/runs/", import.meta.url);
 const index = JSON.parse(await readFile(new URL("index.json", directory)));
@@ -170,4 +174,56 @@ test("guarded recorded run carries its own enforcement marker and observed payou
   assert.equal(current.refundedRaw, "8680");
   assert.equal(current.closed, true);
   assert.equal(current.successfulRequests, 10);
+});
+
+test('shutdown progress, confirmed settlement and unresolved transactions remain separate facts', () => {
+  const e=(type,data)=>({type,data,seq:1});
+  const hash='0x'+'8'.repeat(64);
+  const interrupted=[e('stream.opened',{streamId:'3',fundedRaw:'10000'}),e('error',{code:'INTERRUPTED'}),e('cleanup',{status:'attempting',streamId:'3'})];
+  assert.equal(workflowStatus(deriveDiagramState(interrupted)).title,'Requesting shutdown approval');
+  const decision=e('cre.result',{target:'stream',decision:'CLOSE',reason:'CLIENT_SHUTDOWN',observations:{config:{phase:'shutdown',streamId:'3'},health:{serviceAvailable:true}}});
+  assert.equal(timelinePresentation(decision).title,'Shutdown check');
+  assert.equal(workflowStatus(deriveDiagramState([...interrupted,decision])).title,'Shutdown check passed');
+  const mismatched={...decision,data:{...decision.data,reason:'STREAM_INTENT_MISMATCH'}};
+  assert.equal(deriveDiagramState([...interrupted,mismatched]).shutdownApproved,false);
+  const pending=e('wallet.tx',{kind:'close',hash,status:'submitting'});
+  const closing=deriveDiagramState([...interrupted,decision,pending]);
+  assert.equal(workflowStatus(closing).title,'Closing stream');
+  assert.equal(closing.closed,false);
+  assert.equal(closing.earnedRaw,null);
+  const failed=e('run.end',{status:'failed',amountsVerified:false,fundedRaw:'10000',earnedRaw:null,refundedRaw:null,cleanup:'inspect-receipts'});
+  const unknown=deriveDiagramState([...interrupted,pending,e('cleanup',{status:'needs-attention',streamId:'3'}),failed]);
+  assert.equal(workflowStatus(unknown).title,'Confirmation unresolved');
+  assert.equal(workflowStatus(unknown).hash,hash);
+  assert.equal(unknown.closed,false);
+  assert.equal(unknown.refundedRaw,null);
+  const confirmed=e('wallet.tx',{kind:'close',hash,status:'confirmed'});
+  assert.equal(workflowStatus(deriveDiagramState([...interrupted,pending,confirmed])).title,'Close confirmed · checking settlement');
+  const settled=deriveDiagramState([...interrupted,pending,confirmed,e('stream.closed',{streamId:'3',earnedRaw:'2040',refundedRaw:'7960'}),e('cleanup',{status:'closed',streamId:'3'}),failed]);
+  assert.equal(settled.status,'failed');
+  assert.equal(workflowStatus(settled).title,'Run interrupted · stream closed');
+  assert.equal(settled.closed,true);
+  assert.equal(settled.unverified,false);
+  assert.equal(settled.earnedRaw,'2040');
+  assert.equal(settled.refundedRaw,'7960');
+  assert.equal(settled.transactions.length,1);
+  assert.equal(timelinePresentation(e('cleanup',{status:'attempting',streamId:'3'})).chip,'Checking');
+  assert.equal(timelinePresentation(e('error',{code:'CRE_FAILED'})).title,'Run error');
+});
+test('four latest scenario choices stay stable while earlier captures remain selectable', () => {
+  const choices=recordingChoices([...index.runs].reverse());
+  assert.equal(choices.primary.length,4);
+  assert.equal(choices.primary[0].id,'20261029T093933Z-cb8f17b5');
+  assert.equal(new Set(choices.primary.map(recordingScenario)).size,4);
+  assert.equal(choices.primary.length+choices.history.length,index.runs.length);
+  assert.ok(choices.history.some(item=>item.id==='20261025T173241Z-38db9e1a'));
+  assert.equal(new Set(choices.history.map(recordingLabel)).size,choices.history.length);
+  assert.ok(choices.history.every(item=>recordingLabel(item).includes('2026')));
+});
+test('ancillary spend ALLOW does not hide lifecycle CLOSE, while spend BLOCK remains visible', () => {
+  const lifecycle={type:'cre.result',seq:1,data:{target:'stream',decision:'CLOSE',observations:{config:{phase:'shutdown'},health:{serviceAvailable:true}}}};
+  const spend={type:'cre.result',seq:2,data:{target:'spend',decision:'ALLOW',observations:{}}};
+  const allowed=deriveDiagramState([lifecycle,spend]);
+  assert.equal(allowed.decision,'CLOSE');assert.equal(allowed.target,'stream');
+  assert.equal(deriveDiagramState([lifecycle,{...spend,data:{...spend.data,decision:'BLOCK'}}]).decision,'BLOCK');
 });

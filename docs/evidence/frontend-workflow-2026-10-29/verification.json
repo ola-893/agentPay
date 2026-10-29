@@ -1,0 +1,162 @@
+{
+  "date": "2026-10-29",
+  "scope": "Frontend presentation only; no reducer, event schema, server, CLI or contract changes. No live model/CRE/payment execution.",
+  "checks": {
+    "toolingPassed": 71,
+    "presentationTestsPassed": 9,
+    "frontendLint": "passed",
+    "frontendBuild": "passed",
+    "docsCheck": "passed",
+    "receiptConfirmedPendingSettlement": "covered by presentation tests"
+  },
+  "browser": {
+    "viewports": [
+      1440,
+      1024,
+      390
+    ],
+    "fixtureStates": [
+      "requesting shutdown approval",
+      "closing stream",
+      "unresolved confirmation",
+      "interrupted with confirmed settlement"
+    ],
+    "horizontalOverflow": false,
+    "additionalStates": [
+      "shutdown check passed"
+    ],
+    "realReplayRun": "20261029T093933Z-cb8f17b5",
+    "realReplayAmounts": {
+      "fundedRaw": "10000",
+      "earnedRaw": "1200",
+      "refundedRaw": "8800"
+    },
+    "historySelectionVerified": [
+      "20261022T112249Z-556c7ea3",
+      "latest scenario reset"
+    ],
+    "idleLiveEnforcement": "neutral until run evidence"
+  },
+  "fixtureDisclosure": "Fixture screenshots are explicitly labelled. The confirmed interruption view reconstructs display events from saved RPC accounting; it is not original CLI output or a new public run capture.",
+  "sourceSha256": {
+    "scripts/test/workflow-view.test.mjs": "9541f7dd2d0a47b7217f9403f8c17e5e51a8781b1b432d891919b71d468566d3",
+    "vite-project/src/components/WorkflowBits.jsx": "42583d9344c2d1ad93132f52ab4af918a0ea8fc2d6c0b88c460e04ed22d67f85",
+    "vite-project/src/components/WorkflowDashboard.jsx": "a3de74975c622e29a3403d60da62e99f584a54e9f043066aef411c1d07dd405b",
+    "vite-project/src/components/WorkflowDiagram.jsx": "06022619df67f0c808f94bc2e63e8a558088556b329f9e63b092f8fedd01c480",
+    "vite-project/src/components/WorkflowRunStatus.jsx": "cde22871abb102aa0283e962c1a24f2bbe80dc9a65ff07d1797048ff35091e22",
+    "vite-project/src/components/WorkflowTimeline.jsx": "43b9b0b2f305414f168e516da8f63f03f71e2ea2725b718fc2a70be93bdf5fb5",
+    "vite-project/src/hooks/useWorkflowRun.js": "1d61d579c0b7d200542c37b5c66e69dbdf1dd4f6bbab4c7dc8178043de4b889a",
+    "vite-project/src/index.css": "52f62a87df22d758a4ba27e63d323bc5f3b97e8e0a81d414f0f11eb7969f2a44",
+    "vite-project/src/lib/workflow-view.mjs": "c277f50a3ad6a8f1791922e15e47925a408911b2a348ccf390a61c39534da958",
+    "vite-project/src/pages/CREWorkflow.jsx": "3a95ec7bb2805f415322acb807fe3e26523838c58d57311cc38ae0a84f3e225b"
+  },
+  "screenshotSha256": {
+    "fixture-closing-1024.jpg": "512635271ac6f3836faa3980559a8c2d8d3555c826819656ed253a0582a4f399",
+    "fixture-closing-1440.jpg": "1f45cc42b4950e83be0b482753e4dd6cb7cbd61f79218da55a535598a1b6db1a",
+    "fixture-closing-390.jpg": "a06b9a1967ae53b115a8174452f74c4a10ffcb9968761b2336791ad6c39f9890",
+    "fixture-requesting-1024.jpg": "0cd495693b41eecc4a9e77e5e8f98867444ef7eaa44d7fad8621aad45b1fbc38",
+    "fixture-requesting-1440.jpg": "8bee7e1290a321641a9ccdea6970698eeeaf31b4e094f8b9835a4f96dc308946",
+    "fixture-requesting-390.jpg": "d71fb3f53cffa4f8598b16883a33125891f21db83463cc86cc5cd87806236c04",
+    "fixture-settled-1024.jpg": "0c523c59d79f3a7566aba73539521581b90be2533b926ba30e929f2a9aba3770",
+    "fixture-settled-1440.jpg": "50f3b5c7b856374d2273e91caaae236c78d213e8817ef01dfd38f343c916f3b9",
+    "fixture-settled-390.jpg": "46239ead3f87ef955a60d0977f66b4d0ff51322d6210fd58c5e1131d2abb35ca",
+    "fixture-unresolved-1024.jpg": "b2ccac8b4a4cc8e35f9dc3063f3061f1c65661a564bc36da50be62ca5c31e3e4",
+    "fixture-unresolved-1440.jpg": "1a33651469030d968f93288805d4e9545ec5d70245b853621999e07b679eb307",
+    "fixture-unresolved-390.jpg": "709aad5576e6e53825fe980c37b7a0cb7e31619da12de2024d4a86454320b215",
+    "recorded-complete-1440.jpg": "a1247bf5ffd4fefbeb8a15dae10e5f27db3ce13a73f82ae485f8b17d15e10d94",
+    "recorded-complete-390.jpg": "205d591b4cfe0f22aff03ff5459b029a259cb8b798c043423f5755d4f2e8175e",
+    "recorded-price-1024.jpg": "e3d54ab2afea0b150b88c315066280717a2c0b6b1d797555c4b9c89d12a1f4fa"
+  },
+  "screenshotDimensions": {
+    "fixture-closing-1024.jpg": {
+      "contentWidth": 1016,
+      "height": 1330,
+      "viewportWidth": 1024,
+      "format": "jpeg"
+    },
+    "fixture-closing-1440.jpg": {
+      "contentWidth": 1432,
+      "height": 1315,
+      "viewportWidth": 1440,
+      "format": "jpeg"
+    },
+    "fixture-closing-390.jpg": {
+      "contentWidth": 382,
+      "height": 2563,
+      "viewportWidth": 390,
+      "format": "jpeg"
+    },
+    "fixture-requesting-1024.jpg": {
+      "contentWidth": 1016,
+      "height": 1304,
+      "viewportWidth": 1024,
+      "format": "jpeg"
+    },
+    "fixture-requesting-1440.jpg": {
+      "contentWidth": 1432,
+      "height": 1289,
+      "viewportWidth": 1440,
+      "format": "jpeg"
+    },
+    "fixture-requesting-390.jpg": {
+      "contentWidth": 382,
+      "height": 2537,
+      "viewportWidth": 390,
+      "format": "jpeg"
+    },
+    "fixture-settled-1024.jpg": {
+      "contentWidth": 1016,
+      "height": 1304,
+      "viewportWidth": 1024,
+      "format": "jpeg"
+    },
+    "fixture-settled-1440.jpg": {
+      "contentWidth": 1432,
+      "height": 1289,
+      "viewportWidth": 1440,
+      "format": "jpeg"
+    },
+    "fixture-settled-390.jpg": {
+      "contentWidth": 382,
+      "height": 2559,
+      "viewportWidth": 390,
+      "format": "jpeg"
+    },
+    "fixture-unresolved-1024.jpg": {
+      "contentWidth": 1016,
+      "height": 1330,
+      "viewportWidth": 1024,
+      "format": "jpeg"
+    },
+    "fixture-unresolved-1440.jpg": {
+      "contentWidth": 1432,
+      "height": 1315,
+      "viewportWidth": 1440,
+      "format": "jpeg"
+    },
+    "fixture-unresolved-390.jpg": {
+      "contentWidth": 382,
+      "height": 2563,
+      "viewportWidth": 390,
+      "format": "jpeg"
+    },
+    "recorded-complete-1440.jpg": {
+      "contentWidth": 1432,
+      "height": 1348,
+      "viewportWidth": 1440,
+      "format": "jpeg"
+    },
+    "recorded-complete-390.jpg": {
+      "contentWidth": 382,
+      "height": 2699,
+      "viewportWidth": 390,
+      "format": "jpeg"
+    },
+    "recorded-price-1024.jpg": {
+      "contentWidth": 1016,
+      "height": 1202,
+      "viewportWidth": 1024,
+      "format": "jpeg"
+    }
+  }
+}

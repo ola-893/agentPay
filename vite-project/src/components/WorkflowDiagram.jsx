@@ -85,6 +85,7 @@ export default function WorkflowDiagram({
   onReplay,
   replayDisabled,
   mode,
+  guarded,
 }) {
   const idle = state.status === "idle";
   const active = (id) =>
@@ -104,7 +105,7 @@ export default function WorkflowDiagram({
       </span>
       <span className="wf-node-copy">
         <strong>{label}</strong>
-        <span className="wf-node-caption">{caption}</span>
+        <span className="wf-node-caption">{guarded && id === "wallet" ? "Submits approved calls" : guarded && id === "escrow" ? "Verifies then accrues" : caption}</span>
       </span>
       {id === "escrow" && <Gauge state={state} />}
       {id === "service" && state.service === "outage" && (
@@ -138,10 +139,9 @@ export default function WorkflowDiagram({
       aria-label="Deterministic CRE payment guardrails"
     >
       <p className="sr-only">
-        Price feeds, service health and stream state feed CRE. The wallet CLI
-        gates signing, escrow accrues earnings, and API calls reuse a funded
-        stream. CRE does not authorize the contract directly. Use diagram nodes
-        to find their timeline events.
+        Price feeds, service health and stream state feed CRE.
+        {guarded ? " A separate local policy signer signs the checked intent. The wallet submits it and the escrow verifies the policy signature before funding or closure. " : guarded === false ? " This historical path uses CLI policy checks before wallet signing; the escrow enforces accounting. " : " Enforcement details will appear with run evidence. "}
+        API calls reuse a funded stream. Use diagram nodes to find their timeline events.
       </p>
       <div className={`wf-canvas ${idle ? "wf-ghost" : ""}`}>
         <div className="wf-inputs">
@@ -194,7 +194,7 @@ export default function WorkflowDiagram({
               className="wf-supervision-edge"
             />
             <text x="236" y="194">
-              gates signing
+              {guarded ? "policy approval" : "gates signing"}
             </text>
             <text x="467" y="194">
               reads state
@@ -320,11 +320,28 @@ export default function WorkflowDiagram({
           </div>
         )}
       </div>
+      <ol className="wf-authorization" aria-label="Payment authorization flow">
+        {(guarded ? [
+          ["Policy signature", "Separate signer approves intent"],
+          ["Wallet submission", "Agent submits approved action"],
+          ["Contract verification", "Escrow checks signature and bounds"],
+        ] : guarded === false ? [
+          ["CLI policy checks", "Historical local enforcement"],
+          ["Wallet signing", "CLI submits eligible action"],
+          ["Escrow accounting", "Contract accrues and settles"],
+        ] : [
+          ["CRE policy checks", "Evaluate fixed payment rules"],
+          ["Wallet submission", "Follow the checked outcome"],
+          ["Enforcement details", "Awaiting run evidence"],
+        ]).map(([title, detail], index) => (
+          <li key={title}><span aria-hidden="true">{index + 1}</span><div><strong>{title}</strong><small>{detail}</small></div></li>
+        ))}
+      </ol>
       <div className="wf-trust">
         {[
           "CRE: local, deterministic",
           "Wallet CLI gates signing",
-          state.contractPolicySignatures ? "Contract verifies local policy signatures" : "Recorded contract: CLI policy checks",
+          guarded ? "Contract verifies local policy signatures" : guarded === false ? "Recorded contract: CLI policy checks" : "Enforcement awaits run events",
         ].map((label) => (
           <Link key={label} to="/docs/cre" title="Read the trust boundaries">
             <LockKeyhole size={11} aria-hidden="true" />

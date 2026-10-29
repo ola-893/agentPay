@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { reduceRun, validateRun } from "../lib/run-events.mjs";
+import { recordingChoices } from "../lib/workflow-view.mjs";
 const empty = () => ({ events: [], status: "idle" });
 const localDev =
   import.meta.env.DEV &&
@@ -48,9 +49,8 @@ export default function useWorkflowRun() {
       .then((data) => {
         if (data.schemaVersion !== 1 || !Array.isArray(data.runs))
           throw new Error("Invalid recorded run index.");
-        const list = [...data.runs].sort(
-          (a, b) => Number(b.mode === "pay") - Number(a.mode === "pay")
-        );
+        const { primary, history } = recordingChoices(data.runs);
+        const list = [...primary, ...history];
         setManifest(list);
         setSelected(list[0]?.id || "");
         setConnection(

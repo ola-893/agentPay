@@ -11,11 +11,15 @@ import {
 import useWorkflowRun from "../hooks/useWorkflowRun";
 import WorkflowDiagram from "./WorkflowDiagram";
 import WorkflowTimeline from "./WorkflowTimeline";
+import WorkflowRunStatus from "./WorkflowRunStatus";
 import { Address } from "./WorkflowBits";
 import CopyButton from "./ui/CopyButton";
 import {
   deriveDiagramState,
   eventNodes,
+  recordingChoices,
+  recordingScenario,
+  recordingLabel,
   formatEth,
   formatUsdc,
   toRawUsdc,
@@ -72,6 +76,8 @@ function ControlCard({ c }) {
   const profile = c.profile;
   const recorded = c.mode === "recorded";
   const policy = c.policy;
+  const { primary, history } = recordingChoices(c.manifest);
+  const selectedItem = c.manifest.find(item => item.id === c.selected);
   const runnerStatus = c.agent
     ? c.busy || (c.agent.busy && !c.run.summary)
       ? "busy"
@@ -177,24 +183,12 @@ function ControlCard({ c }) {
             role="group"
             aria-label="Recorded scenario"
           >
-            {[...c.manifest]
-              .sort((a, b) => {
-                const order = (item) =>
-                  item.mode === "pay"
-                    ? 0
-                    : item.preset === "tiny-cap"
-                    ? 2
-                    : item.preset === "stale-feed"
-                    ? 3
-                    : 1;
-                return order(a) - order(b);
-              })
-              .map((item) => (
+            {primary.map((item) => (
                 <button
                   type="button"
                   key={item.id}
                   title={item.label}
-                  aria-pressed={c.selected === item.id}
+                  aria-pressed={Boolean(selectedItem && recordingScenario(selectedItem) === recordingScenario(item))}
                   disabled={c.playing}
                   onClick={() => c.setSelected(item.id)}
                 >
@@ -203,11 +197,26 @@ function ControlCard({ c }) {
                 </button>
               ))}
           </div>
+          {history.length > 0 && (
+            <label className="wf-history">
+              Earlier captures
+              <select
+                aria-label="Recording history"
+                disabled={c.playing}
+                value={history.some(item => item.id === c.selected) ? c.selected : ""}
+                onChange={e => c.setSelected(e.target.value || primary.find(item => recordingScenario(item) === recordingScenario(selectedItem || primary[0]))?.id || primary[0].id)}
+              >
+                <option value="">Latest scenario recording</option>
+                {history.map(item => <option key={item.id} value={item.id}>{recordingLabel(item)}</option>)}
+              </select>
+            </label>
+          )}
           <p className="wf-capture-date">
             {c.recording
               ? `Recorded ${new Date(
                   c.recording.item.capturedAt
                 ).toLocaleString(undefined, {
+                  year: "numeric",
                   month: "short",
                   day: "numeric",
                   hour: "2-digit",
@@ -510,6 +519,7 @@ export function WorkflowDashboardView({ c }) {
           onReplay={replay}
           replayDisabled={!c.recording}
           mode={c.mode}
+          guarded={state.status === "idle" ? c.info ? c.info.contractPolicySignatures === true : undefined : state.contractPolicySignatures}
         />
         <div className="wf-playback">
           <span className="wf-playback-label">
@@ -558,6 +568,7 @@ export function WorkflowDashboardView({ c }) {
             )}
           </div>
         </div>
+        <WorkflowRunStatus state={state} />
         <div className="wf-summary" role="group" aria-label="Run summary">
           {summary ? (
             state.unverified ? (
@@ -568,9 +579,9 @@ export function WorkflowDashboardView({ c }) {
                 <span>{formatUsdc(state.earnedRaw)} earned</span>
                 <span>{formatUsdc(state.refundedRaw)} refunded</span>
                 <span
-                  title={`${summary.transactions.length} payment lifecycle + ${state.auditReceipts.length} audit receipt transactions`}
+                  title={`${state.transactions.length} payment lifecycle + ${state.auditReceipts.length} audit receipt transactions`}
                 >
-                  {summary.transactions.length + state.auditReceipts.length} txs
+                  {state.transactions.length + state.auditReceipts.length} txs
                 </span>
                 <span>{state.successfulRequests ?? "—"} calls</span>
               </>

@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: diagram starts empty, shows actual escrow funding mid-run, and settles from the recorded events
+ok 1 - diagram starts empty, shows actual escrow funding mid-run, and settles from the recorded events
+  ---
+  duration_ms: 0.708666
+  type: 'test'
+  ...
+# Subtest: DENY and preview projection never invent a funded stream or paid calls
+ok 2 - DENY and preview projection never invent a funded stream or paid calls
+  ---
+  duration_ms: 2.309917
+  type: 'test'
+  ...
+# Subtest: diagram copies decisions without evaluating prices, handles missing evidence, deduplicates hashes and hides unverified amounts
+ok 3 - diagram copies decisions without evaluating prices, handles missing evidence, deduplicates hashes and hides unverified amounts
+  ---
+  duration_ms: 0.110792
+  type: 'test'
+  ...
+# Subtest: token and price formatters use integer math, preserve USDC precision and truncate ETH to four decimals
+ok 4 - token and price formatters use integer math, preserve USDC precision and truncate ETH to four decimals
+  ---
+  duration_ms: 0.29175
+  type: 'test'
+  ...
+# Subtest: every recorded timeline title stays compact and nodes point back to source events
+ok 5 - every recorded timeline title stays compact and nodes point back to source events
+  ---
+  duration_ms: 2.647125
+  type: 'test'
+  ...
+# Subtest: guarded recorded run carries its own enforcement marker and observed payout amounts
+ok 6 - guarded recorded run carries its own enforcement marker and observed payout amounts
+  ---
+  duration_ms: 0.422666
+  type: 'test'
+  ...
+# Subtest: shutdown progress, confirmed settlement and unresolved transactions remain separate facts
+ok 7 - shutdown progress, confirmed settlement and unresolved transactions remain separate facts
+  ---
+  duration_ms: 0.241542
+  type: 'test'
+  ...
+# Subtest: four latest scenario choices stay stable while earlier captures remain selectable
+ok 8 - four latest scenario choices stay stable while earlier captures remain selectable
+  ---
+  duration_ms: 8.517209
+  type: 'test'
+  ...
+# Subtest: ancillary spend ALLOW does not hide lifecycle CLOSE, while spend BLOCK remains visible
+ok 9 - ancillary spend ALLOW does not hide lifecycle CLOSE, while spend BLOCK remains visible
+  ---
+  duration_ms: 0.299542
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 84.934334

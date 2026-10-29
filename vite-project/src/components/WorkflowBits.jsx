@@ -9,7 +9,7 @@ import CopyButton from "./ui/CopyButton";
 import { shortAddress } from "../lib/workflow-view.mjs";
 export function DecisionBadge({ value }) {
   if (!value) return null;
-  const tone = ["ALLOW", "OPEN", "CONTINUE"].includes(value)
+  const tone = ["ALLOW", "OPEN", "CONTINUE", "Closed"].includes(value)
     ? "allow"
     : ["DENY", "BLOCK", "ERROR"].includes(value)
     ? "deny"

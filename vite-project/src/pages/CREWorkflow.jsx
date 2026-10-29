@@ -6,7 +6,7 @@ export default function CREWorkflow() {
       <div className="workflow-title">
         <div>
           <h1>Fund once. Guard agent spending.</h1>
-          <p>Deterministic CRE rules guard against hallucinated payment actions. The CLI enforces them.</p>
+          <p>CRE checks fixed rules. A separate signer approves the intent; the escrow verifies it.</p>
         </div>
         <a
           href="https://github.com/ola-893/agentPay/tree/main/cre/payment-guard"

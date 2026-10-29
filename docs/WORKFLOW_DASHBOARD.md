@@ -4,11 +4,11 @@ The dashboard visualizes deterministic payment guardrails: the agent proposes wo
 
 Workflow (`/`) contains the CRE diagram, locally registered agent, bounded policy form, execution timeline and amount/transaction summary. Docs remains the only other navigation destination. Agent, stream-management and dashboard routes were not restored.
 
-The diagram has external-input chips feeding CRE above the Agent → Wallet → Escrow → Paid service row. Dashed CRE edges show signing gates, chain reads and health probes; the bottom arc shows session reuse. Its gauge changes only on emitted funding/closure/summary events. The browser copies decisions from events and never evaluates the policy. Monetary values are integer-safe observations, not a simulated earnings counter. Mobile uses a vertical stepper driven by the same presentation state.
+The diagram has external-input chips feeding CRE above the Agent → Wallet → Escrow → Paid service row. A numbered authorization strip distinguishes the separate local policy signature, agent wallet submission and contract verification for guarded runs. Known legacy captures show CLI checks and escrow accounting instead; Live mode without evidence makes no enforcement claim. Dashed CRE edges show signing gates, chain reads and health probes; the bottom arc shows session reuse. Its gauge changes only on emitted funding/closure/summary events. The browser copies decisions from events and never evaluates the policy. Monetary values are integer-safe observations, not a simulated earnings counter. Mobile uses a vertical stepper driven by the same presentation state.
 
 ## Recorded mode
 
-A hosted static page defaults to recorded evidence. Select a scenario chip, replay/pause/step/restart, expand a compact timeline row, copy its exact command and open its original config/transcript. Hover or focus a row to highlight the relevant diagram nodes; click a node to find its most recent visible event. Wallet cards link to Sepolia transactions. Each replay carries its capture date and never submits a transaction. The locked 2×2 “Policy used” summary shows the immutable capture policy; the remaining settings are in Details. There are no policy inputs in Recorded mode. Changing a scenario selects actual different evidence, not a browser-generated decision.
+A hosted static page defaults to the newest funded recording. Four main chips select the latest Funded run, Preview (no txs), Cap DENY and Stale DENY captures. Earlier captures remain in a dated history selector; resetting it selects the latest recording for that scenario. Select a scenario chip, replay/pause/step/restart, expand a compact timeline row, copy its exact command and open its original config/transcript. Hover or focus a row to highlight the relevant diagram nodes; click a node to find its most recent visible event. Wallet cards link to Sepolia transactions. Each replay carries its capture date and never submits a transaction. The locked 2×2 “Policy used” summary shows the immutable capture policy; the remaining settings are in Details. There are no policy inputs in Recorded mode. Changing a scenario selects actual different evidence, not a browser-generated decision.
 
 The browser never contacts a visitor's localhost from a hosted build. Only local Vite development checks its same-origin `/api`, proxied to the loopback run server. A static build supports Recorded execution only, even when served locally. Its Live tab shows local setup instructions without probing localhost.
 
@@ -39,6 +39,17 @@ The dashboard then also requires Pay selection and confirmation for each run, at
 
 The local API enforces exact Host/Origin allowlists, JSON-only mutations with a server-generated session token, a strict request schema and one run at a time. Agent/model credentials stay on the local server/CLI; the policy key is read only by the separate policy process and the recovery key only by operator recovery. All remain on a trusted host. Do not expose this unauthenticated local service through tunnels or a public bind. The intended trust boundary is a user on the same computer. A disconnected browser does not cancel a running CLI; reconnect its timeline before starting another payment. Server shutdown stops new requests and leaves an active child to complete its current flow. Cleanup cannot fabricate a guarded CLOSE if CRE fails: the operator must use `recover:guarded-stream` and its distinct key/gas.
 
+## Execution and payment status
+
+The status panel separates a stopped run from confirmed payment settlement:
+
+- Requesting shutdown approval → Shutdown check passed → Closing stream → Close confirmed / checking settlement → Stream closed and settled.
+- A confirmed `stream.closed` event retains its earned/refund amounts even if the overall run later fails. An interrupted run can therefore say **Run interrupted · stream closed** without rewriting the run's failed status.
+- A signed transaction without a confirmed outcome remains **Confirmation unresolved**, with its transaction link and unverified amounts. A CRE CLOSE decision alone never establishes closure or a refund.
+- A valid shutdown result must say `CLIENT_SHUTDOWN` before the UI labels that check passed. An ancillary spend-review ALLOW does not replace the lifecycle CLOSE badge; spend blocks/errors remain visible. Original decisions remain in the timeline and transcripts.
+
+These are display states, not browser authorization or new controls for stopping a run. Closing a browser does not cancel payment. Reconnect to the local timeline, inspect receipts and use the separate operator recovery procedure when necessary.
+
 ## Publish actual captures
 
 From the repository root, with the same prerequisites:
@@ -60,3 +71,5 @@ CRE is locally simulated; no workflow is deployed to a Chainlink DON. The CLI va
 ## Compact presentation and evidence limits
 
 The trust chips link to the full CRE authority model. Test USDC, simulation/testnet and unaudited/not-full-x402 labels remain visible; detailed prerequisites and limitations stay in Docs. The summary counts lifecycle plus observed audit-receipt transactions, with their split in its tooltip. Audit rows are under Show advanced. Historical captures that omit wallet nonce observations show call counts without inventing a “0 txs” badge. A zero-transaction reuse badge requires that evidence in an event. Animation is event-triggered and disabled by reduced-motion preference; reduced-motion replay applies the captured state instantly.
+
+[October 29 frontend verification and responsive screenshots](evidence/frontend-workflow-2026-10-29/VERIFICATION.md) distinguish actual replay from explicitly reconstructed UI fixtures.

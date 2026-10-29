@@ -243,12 +243,10 @@ export default function WorkflowTimeline({
                   </>
                 )}
                 {event.type === "wallet.tx" && (
-                  <Address
-                    value={d.hash}
-                    label={`${d.kind} transaction`}
-                    kind="tx"
-                    full
-                  />
+                  <>
+                    <p>{d.status === "confirmed" ? "Confirmed transaction receipt." : "Signed locally; confirmation pending. Inspect this hash before retrying. A pending close does not establish settlement."}</p>
+                    <Address value={d.hash} label={`${d.kind} transaction`} kind="tx" full />
+                  </>
                 )}
                 {event.type === "audit.receipt" && (
                   <>
