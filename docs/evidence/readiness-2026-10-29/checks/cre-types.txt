@@ -1,0 +1,5 @@
+
+> agentpay@1.0.0 typecheck:cre
+> cd cre/payment-guard && bun run typecheck
+
+$ tsc --noEmit

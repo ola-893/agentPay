@@ -1,0 +1,8 @@
+{
+  "failedAt": "2026-10-29T09:31:39.610Z",
+  "code": "POLICY_EXPIRED",
+  "message": "CRE admission decision expired.",
+  "streamId": null,
+  "closeAttempted": false,
+  "cleanup": null
+}

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-29T09:47:04.450Z",
+  "runId": "20261029T093933Z-cb8f17b5",
+  "address": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+  "chainId": 11155111,
+  "trust": "local-policy-signature",
+  "creWorkflowDeployed": false,
+  "receipts": [
+    {
+      "kind": "open",
+      "transactionHash": "0x61a4e05b9948535a946cdba8297c1acfe1ec173323808b1245bc4bddb06331ee",
+      "blockNumber": 12018677,
+      "policyNonce": "5",
+      "decisionHash": "0x3ede3aef4d1fc5931e37e2e519823c053825c00db3bef6ebfc73a0647829d412",
+      "signatureVerified": true
+    },
+    {
+      "kind": "close",
+      "transactionHash": "0xde00e19118a8c76e93baa1889f06590c98b512948a928181d13e092bb9d18d01",
+      "blockNumber": 12018687,
+      "policyNonce": "6",
+      "decisionHash": "0x95a1bc93a17f732c9316a45798684b852ea61867d76bcd2d5263c3fc291602db",
+      "signatureVerified": true
+    }
+  ],
+  "rejected": [
+    {
+      "case": "unsigned funding",
+      "reason": "Policy approval required"
+    },
+    {
+      "case": "unsigned closure",
+      "reason": "Policy approval required"
+    },
+    {
+      "case": "agent invokes owner recovery",
+      "reason": "Only recovery owner"
+    },
+    {
+      "case": "agent fabricates policy approval",
+      "reason": "Invalid policy signer"
+    }
+  ],
+  "streamId": "4",
+  "closed": true,
+  "successfulRequests": 10,
+  "earnedRaw": "1200",
+  "refundedRaw": "8800",
+  "recipientBeforeRaw": "39120",
+  "recipientAfterRaw": "40320",
+  "recipientDeltaRaw": "1200"
+}

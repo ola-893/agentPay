@@ -1,0 +1,11 @@
+{
+  "failedAt": "2026-10-29T09:37:28.890Z",
+  "code": "INTERRUPTED",
+  "message": "SIGINT requested; stopping at a safe boundary and checking funded-stream cleanup.",
+  "streamId": "3",
+  "closeAttempted": true,
+  "cleanup": {
+    "failed": true,
+    "message": "close transaction 0xcda771a5bcae39900d15fea049de736d7d8ff22b89c7ad5c3cd79bdb55493ba3 needs inspection. Do not automatically repeat funding."
+  }
+}

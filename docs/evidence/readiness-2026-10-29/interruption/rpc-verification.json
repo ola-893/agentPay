@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "runId": "20261029T093227Z-c3d1c9d8",
+  "verifiedAt": "2026-10-29T09:38:46.656Z",
+  "chainId": 11155111,
+  "address": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+  "trust": "local-policy-signature",
+  "creWorkflowDeployed": false,
+  "signal": "SIGINT",
+  "exitCode": 130,
+  "cliCleanupStatus": "needs-attention",
+  "reconciliation": "independent-rpc",
+  "streamId": "3",
+  "closed": true,
+  "cleanupReason": "CLIENT_SHUTDOWN",
+  "healthyProvider": true,
+  "earnedRaw": "2040",
+  "refundedRaw": "7960",
+  "recipientBeforeRaw": "37080",
+  "recipientAfterRaw": "39120",
+  "recipientDeltaRaw": "2040",
+  "receipts": [
+    {
+      "kind": "open",
+      "transactionHash": "0x4b48ceb79d330621cca26b1cc7fe9a1dd09ff9d61f125d94a20690bb0abe06ec",
+      "blockNumber": 12018635,
+      "policyNonce": "3",
+      "decisionHash": "0x6b26fbc15170b23e6ee9f18dea316a3e89fe7413b7e72763bcbd8e3119c57dba",
+      "signatureVerified": true
+    },
+    {
+      "kind": "close",
+      "transactionHash": "0xcda771a5bcae39900d15fea049de736d7d8ff22b89c7ad5c3cd79bdb55493ba3",
+      "blockNumber": 12018652,
+      "policyNonce": "4",
+      "decisionHash": "0x621706ab17821a75323ffa9ef7758abbf5b8d55c1d990c4a97733fb3141d05ea",
+      "signatureVerified": true
+    }
+  ]
+}

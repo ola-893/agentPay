@@ -1,0 +1,20 @@
+
+> agentpay@1.0.0 build:web
+> npm --prefix vite-project run build
+
+
+> vite-project@0.0.0 build
+> vite build
+
+vite v7.1.1 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 14 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 1608 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.96 kB │ gzip:   0.52 kB
+dist/assets/index-gn8_6NzL.css   41.42 kB │ gzip:   9.46 kB
+dist/assets/index-DK_ZeOC9.js   314.17 kB │ gzip: 100.63 kB
+✓ built in 1.66s

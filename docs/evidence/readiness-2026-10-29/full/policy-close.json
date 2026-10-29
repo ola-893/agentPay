@@ -1,0 +1,19 @@
+{
+  "permit": {
+    "action": 2,
+    "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+    "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+    "amount": "10000",
+    "duration": 1000,
+    "metadataHash": "0x6ce1234355f19bc6680cbe2e34add68efb10a0b1774047520b3dc5c8bdda545d",
+    "sessionId": "0x3949b64498e377780648adec79d11f08ae074a4d4322a55d008e154a48d30ed7",
+    "streamId": "4",
+    "nonce": "6",
+    "deadline": 1793267256,
+    "decisionHash": "0x95a1bc93a17f732c9316a45798684b852ea61867d76bcd2d5263c3fc291602db"
+  },
+  "signature": "0x223dcebd51bfcf5710d704884b683d7f520c7b75a95f92ab0f0f40b3c086cb2162929051a63bfb00ec5a18e7b41acc3a8dfb4e356162d868807848d36b85dba11b",
+  "policySigner": "0x117048651fBd5b5F99071EA67e3fe3fd5b72FE91",
+  "trust": "local-policy-signature",
+  "decision": "CLOSE"
+}

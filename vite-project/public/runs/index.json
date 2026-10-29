@@ -2,6 +2,37 @@
   "schemaVersion": 1,
   "runs": [
     {
+      "id": "20261029T093933Z-cb8f17b5",
+      "label": "Funded stream lifecycle",
+      "mode": "pay",
+      "preset": null,
+      "capturedAt": "2026-10-29T09:45:27.093Z",
+      "file": "20261029T093933Z-cb8f17b5/events.ndjson",
+      "sha256": "f54bbddf10b371bd6725127f9e549e9bbf42f1eb89c20d35dacc28b6e4546b1e",
+      "artifacts": {
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/cre-price.config.json": "artifacts/01-cre-price.config.json",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/cre-price.log": "artifacts/02-cre-price.log",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-open.config.json": "artifacts/03-stream-open.config.json",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-open.log": "artifacts/04-stream-open.log",
+        ".local/sr/71b060300455.json": "artifacts/05-71b060300455.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/71b060300455.log": "artifacts/06-71b060300455.log",
+        ".local/sr/78a991d57c5c.json": "artifacts/07-78a991d57c5c.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/78a991d57c5c.log": "artifacts/08-78a991d57c5c.log",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/cre-renew-1.config.json": "artifacts/09-cre-renew-1.config.json",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/cre-renew-1.log": "artifacts/10-cre-renew-1.log",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-renew-1.config.json": "artifacts/11-stream-renew-1.config.json",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-renew-1.log": "artifacts/12-stream-renew-1.log",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-healthy.config.json": "artifacts/13-stream-healthy.config.json",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-healthy.log": "artifacts/14-stream-healthy.log",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-outage.config.json": "artifacts/15-stream-outage.config.json",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-outage.log": "artifacts/16-stream-outage.log",
+        ".local/sr/9189e97cd9d6.json": "artifacts/17-9189e97cd9d6.json",
+        ".local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26/runs/9189e97cd9d6.log": "artifacts/18-9189e97cd9d6.log",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-deny.config.json": "artifacts/19-stream-deny.config.json",
+        ".local/agent-demo/runs/20261029T093933Z-cb8f17b5/policy/stream-deny.log": "artifacts/20-stream-deny.log"
+      }
+    },
+    {
       "id": "20261025T173241Z-38db9e1a",
       "label": "Funded stream lifecycle",
       "mode": "pay",

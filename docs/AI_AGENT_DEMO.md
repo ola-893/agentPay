@@ -132,8 +132,17 @@ Neither capture promises future availability or constant payout amounts.
 
 ## Recover an interrupted guarded stream
 
-Inspect `open.json`, `close.json` and public hashes first. For an active guarded
-stream, use the separate **operator** command:
+Ctrl+C (`SIGINT`) or `SIGTERM` requests shutdown at the next safe boundary. The
+runner waits for any submitted transaction to resolve, then checks the exact
+funded stream through local CRE with `phase: shutdown`. A matching active stream
+returns `CLOSE / CLIENT_SHUTDOWN`; the separate policy process signs it and the
+usual audited cancellation settles earnings and refunds unused escrow. This does
+not invent a service outage. The command still exits 130 or 143, with cleanup
+recorded in `failure.json`. Ordinary failures use the same signed cleanup path.
+
+An unavailable signer/CRE, mismatched stream, uncertain transaction or hard kill
+can still require manual recovery. Inspect `open.json`, `close.json` and public
+hashes first. For an active guarded stream, use the separate **operator** command:
 
 ```sh
 npm run --silent recover:guarded-stream -- --stream-id 2
@@ -168,3 +177,5 @@ reads are finalized. CRE remains local and the strict DON consumer is unused.
 Historical [unguarded stream](evidence/stream-demo/VERIFICATION.md) and
 [direct-transfer](evidence/agent-demo/VERIFICATION.md) evidence remains unchanged.
 [Guarded source](../contracts/AgentPayGuardedStream.sol) · [Workflow](WORKFLOW.md).
+
+Latest [October 29 live readiness verification](evidence/readiness-2026-10-29/VERIFICATION.md) covers the completed lifecycle, deliberate SIGINT shutdown, independent receipt reconciliation and local hard-stop recovery tests.

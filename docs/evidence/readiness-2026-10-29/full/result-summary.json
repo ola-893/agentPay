@@ -1,0 +1,72 @@
+{
+  "runId": "20261029T093933Z-cb8f17b5",
+  "completedAt": "2026-10-29T09:44:52.780Z",
+  "mode": "local-agent-stream",
+  "provider": "qwen",
+  "model": "qwen3.5-plus",
+  "chainId": 11155111,
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+  "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+  "fundedRaw": "10000",
+  "earnedRaw": "1200",
+  "refundedRaw": "8800",
+  "initial": {
+    "agentBalanceRaw": "39883752",
+    "recipientBalanceRaw": "39120",
+    "nonce": 83
+  },
+  "final": {
+    "agentBalanceRaw": "39882552",
+    "recipientBalanceRaw": "40320",
+    "nonce": 89
+  },
+  "contractPolicySignatures": true,
+  "donAuthenticated": false,
+  "basic": {
+    "status": "stream-completed",
+    "streamId": "4",
+    "admission": "OPEN",
+    "healthyCheckpoint": "CONTINUE",
+    "outageCheckpoint": "CLOSE",
+    "outageInjected": true,
+    "client": {
+      "successfulRequests": 10,
+      "failedRequests": 3
+    },
+    "requestBatches": [
+      {
+        "requests": 5,
+        "walletNonceBefore": 87,
+        "walletNonceAfter": 87,
+        "noPaymentTransactions": true
+      },
+      {
+        "requests": 5,
+        "walletNonceBefore": 87,
+        "walletNonceAfter": 87,
+        "noPaymentTransactions": true
+      },
+      {
+        "requests": 3,
+        "walletNonceBefore": 87,
+        "walletNonceAfter": 87,
+        "noPaymentTransactions": true
+      }
+    ],
+    "closedAccessRejected": true
+  },
+  "premium": {
+    "status": "denied",
+    "policy": {
+      "reason": "AMOUNT_EXCEEDS_POLICY",
+      "amountRaw": "200000",
+      "amountUsdc": "0.2",
+      "capRaw": "100000",
+      "capUsdc": "0.1"
+    },
+    "noTransactionSigned": true
+  }
+}

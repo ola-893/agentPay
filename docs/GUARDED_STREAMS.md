@@ -75,6 +75,24 @@ Paid runs require guarded escrow and do not fall back to legacy. The CLI audits
 exact calldata and requires receipt inclusion before signing. The contract checks
 the lifecycle permit; it does not itself enforce the CLI's separate audit steps.
 
+## Failure and interruption cleanup
+
+The CLI requests a signer-owned `shutdown` workflow evaluation after an ordinary
+failure or graceful SIGINT/SIGTERM. The workflow checks exact stream intent and
+real observation bindings before returning `CLOSE / CLIENT_SHUTDOWN`. The agent
+then submits a signed, audited cancellation. Normal healthy checkpoints still
+return CONTINUE. No contract redeployment is required for this workflow change.
+
+Signals stop new work at safe boundaries rather than abandoning a submitted
+transaction. Cleanup may take a CRE execution plus audit/transaction confirmations;
+it is not instantaneous. Business transactions wait up to five minutes for two
+confirmations, then reconcile the exact hash read-only if polling fails. A missing
+or insufficiently confirmed receipt remains uncertain and is never resubmitted
+automatically. This does not extend permit expiry. The CLI retains interruption
+exit status 130/143. A hard
+kill, unavailable CRE/signer, mismatched observations or uncertain broadcast still
+requires the separate operator recovery below. Accrual continues until closure.
+
 ## Operator recovery
 
 Inspect the stream and submitted transaction hashes first. Fund the recovery
@@ -125,3 +143,5 @@ Earlier October 22 [funded dashboard captures](../vite-project/public/runs/index
 the legacy AgentPayStream and remain historical evidence of CLI enforcement.
 They are not evidence of this new signature gate. Strict AgentPayGuard/Settlement
 and its DON-authenticated report path remain separate.
+
+Latest [October 29 live readiness verification](evidence/readiness-2026-10-29/VERIFICATION.md) covers the completed lifecycle, deliberate SIGINT shutdown, independent receipt reconciliation and local hard-stop recovery tests.
