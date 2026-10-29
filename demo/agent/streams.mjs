@@ -307,12 +307,15 @@ export async function sendStreamTransaction({
     let receipt;
     try {
       const sent = await provider.broadcastTransaction(raw);
-      receipt = await sent.wait(2, 120000);
+      receipt = await sent.wait(2, 300000);
     } catch {
-      throw new cli.CliError(
-        "TRANSACTION_UNCERTAIN",
-        `${kind} transaction ${hash} needs inspection. Do not automatically repeat funding.`
-      );
+      // Polling/broadcast responses can fail after the exact transaction mined.
+      // Reconcile its hash read-only; never resend or infer success from state.
+      receipt = await confirmedReceipt(provider, hash);
+      if (!receipt) throw new cli.CliError(
+          "TRANSACTION_UNCERTAIN",
+          `${kind} transaction ${hash} needs inspection. Do not automatically repeat funding.`
+        );
     }
     if (!receipt || receipt.status !== 1)
       throw new cli.CliError("TRANSACTION_FAILED", `${kind} failed: ${hash}`);
@@ -331,6 +334,13 @@ export async function sendStreamTransaction({
     if (permission) await permission.failed();
     throw error;
   }
+}
+export async function confirmedReceipt(provider, hash) {
+  try {
+    const receipt = await provider.getTransactionReceipt(hash);
+    return receipt?.hash === hash && receipt.status === 1 &&
+      await receipt.confirmations() >= 2 ? receipt : null;
+  } catch { return null; }
 }
 export async function openStream({
   provider,
@@ -384,6 +394,10 @@ export async function openStream({
   const prepare = async () => {
     try {
       gate();
+      // Leave headroom for population, the final simulation and RPC latency.
+      // Keep the actual 120-second gate unchanged; obtain new CRE evidence.
+      if (refreshAdmission && elapsed() >= 90000)
+        throw new cli.CliError("POLICY_EXPIRED", "Refresh admission before the final signing window.");
     } catch (error) {
       if (error.code !== "POLICY_EXPIRED" || !refreshAdmission) throw error;
       // One fresh evaluation, never a reset of the old decision's clock or a

@@ -96,7 +96,7 @@ function supervise(runtime: Runtime<StreamConfig>): string {
     ),
   }).toString();
   let stream: ChainObservation["stream"] = null;
-  if (c.phase === "checkpoint") {
+  if (c.phase !== "admission") {
     const s = decodeFunctionResult({
       abi: ABI,
       functionName: "streams",

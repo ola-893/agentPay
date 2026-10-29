@@ -10,8 +10,9 @@ import {fileURLToPath} from 'node:url';
 import {JsonRpcProvider,Wallet,Contract,ContractFactory,id,keccak256,toUtf8Bytes} from 'ethers';
 import {USDC,startStreamService,openStream,closeStream,sessionMessage,isGuardedStream} from '../../demo/agent/streams.mjs';
 import {PERMIT_TYPES,domain,metadataHash} from '../../demo/policy/permit.mjs';
+import {cleanupFundedStream} from '../../demo/agent/cleanup.mjs';
 const root=fileURLToPath(new URL('../../',import.meta.url));
-test('guarded CLI adapter rejects missing approval before signing, reuses authenticated escrow and reconciles signed closure', {timeout:60000},async()=>{
+test('guarded CLI cleanup requires matching signed closure; hard-stop owner recovery reconciles funds', {timeout:60000},async()=>{
  const dir=await mkdtemp(path.join(os.tmpdir(),'agentpay-guarded-'));
  const socket=net.createServer();await new Promise(r=>socket.listen(0,'127.0.0.1',r));const port=socket.address().port;await new Promise(r=>socket.close(r));
  const configFile=path.join(dir,'hardhat.cjs');
@@ -47,8 +48,42 @@ test('guarded CLI adapter rejects missing approval before signing, reuses authen
   assert.equal(await provider.getTransactionCount(wallet.address),before);
   await assert.rejects(()=>closeStream({provider,wallet,streamAddress:address,streamId:funded.streamId,persist:async()=>{}}),e=>e.code==='POLICY_SIGNATURE_REQUIRED');
   assert.equal(await provider.getTransactionCount(wallet.address),before);
-  const settled=await closeStream({provider,wallet,streamAddress:address,streamId:funded.streamId,persist:async()=>{},policyApproval:await permit(2,funded.streamId)});
+  const cleanupOptions={provider,wallet,streamAddress:address,streamId:funded.streamId,quote:q,guarded:true,persist:async()=>{}};
+  await assert.rejects(()=>cleanupFundedStream({...cleanupOptions,quote:{...q,amountRaw:'9999'},authorizeClose:()=>{throw Error('must not sign');}}));
+  await assert.rejects(()=>cleanupFundedStream({...cleanupOptions,authorizeClose:()=>{throw Error('signer unavailable');}}),/signer unavailable/);
+  assert.equal((await deployed.streams(funded.streamId)).isActive,true);
+  assert.equal(await provider.getTransactionCount(wallet.address),before);
+  const settled=await cleanupFundedStream({...cleanupOptions,authorizeClose:()=>permit(2,funded.streamId)});
   assert.equal(settled.closed,true);assert.equal(BigInt(settled.earnedRaw)+BigInt(settled.refundedRaw),10000n);
   assert.equal(await deployed.nextNonce(),2n);
+  assert.equal(await deployed.activeStreamId(),0n);
+  // A second funded session survives a hard process stop. Recovery is an
+  // independent owner action, not an unsigned agent cleanup or mock CRE claim.
+  const secondSession=id('hard interruption session');
+  const p={action:1,agent:wallet.address,recipient,amount:'10000',duration:1000,
+    metadataHash:keccak256(toUtf8Bytes('{}')),sessionId:secondSession,streamId:'0',
+    nonce:'2',deadline:(await provider.getBlock('latest')).timestamp+300,
+    decisionHash:id('local test fixture; not CRE')};
+  await(await token.approve(address,10000)).wait(2);
+  const approvalSignature=await policy.signTypedData(domain(11155111,address),PERMIT_TYPES,p);
+  const fundingScript=`import {JsonRpcProvider,Contract} from 'ethers';
+    const provider=new JsonRpcProvider(${JSON.stringify(`http://127.0.0.1:${port}`)});
+    const contract=new Contract(${JSON.stringify(address)},${JSON.stringify(a.abi)},await provider.getSigner(0));
+    await(await contract.createStreamWithPermit(${JSON.stringify(p)},'{}',${JSON.stringify(approvalSignature)})).wait(2);
+    process.send('ready');setInterval(()=>{},1000);`;
+  const stopped=spawn(process.execPath,['--input-type=module','-e',fundingScript],{cwd:root,stdio:['ignore','ignore','inherit','ipc']});
+  await new Promise((resolve,reject)=>{stopped.once('message',resolve);stopped.once('exit',()=>reject(Error('Funding subprocess exited before confirmation')));});
+  const exit=new Promise(r=>stopped.once('exit',r));stopped.kill('SIGKILL');await exit;
+  assert.equal((await deployed.streams(2)).isActive,true);
+  await assert.rejects(()=>deployed.recoveryClose.staticCall(2),/Only recovery owner/);
+  const recovery=deployed.connect(await provider.getSigner(3));
+  const payerBefore=await token.balanceOf(wallet.address),recipientBefore=await token.balanceOf(recipient);
+  const receipt=await(await recovery.recoveryClose(2)).wait(2);
+  const event=receipt.logs.map(l=>{try{return deployed.interface.parseLog(l);}catch{return null;}}).find(e=>e?.name==='StreamCancelled');
+  assert.equal(event.args.senderBalance+event.args.recipientBalance,10000n);
+  assert.equal(await token.balanceOf(wallet.address)-payerBefore,event.args.senderBalance);
+  assert.equal(await token.balanceOf(recipient)-recipientBefore,event.args.recipientBalance);
+  assert.equal((await deployed.streams(2)).isActive,false);
+  assert.equal(await deployed.activeStreamId(),0n);
  }finally{if(service)await service.close();provider.destroy();child.kill('SIGTERM');await new Promise(r=>child.exitCode!==null?r():child.once('exit',r));await rm(dir,{recursive:true,force:true});}
 });

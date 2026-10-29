@@ -136,3 +136,17 @@ test("result validation rejects invented decisions or a substituted stream confi
     validateStreamResult(c, { ...result, config: { ...c, amountRaw: "1" } })
   ).toThrow();
 });
+test("shutdown closes an exactly bound healthy stream without inventing an outage", () => {
+  const shutdown = streamConfigSchema.parse({ ...checkpoint(), phase: "shutdown" });
+  expect(evaluateStream(shutdown, c.expectedHealth, active())).toEqual({
+    action: "CLOSE", reason: "CLIENT_SHUTDOWN",
+  });
+  expect(evaluateStream(checkpoint(), c.expectedHealth, active()).action).toBe("CONTINUE");
+  for (const change of [{recipient:c.agent}, {metadata:"{}"}, {totalAmount:"9999"}, {stopTime:"2001"}])
+    expect(evaluateStream(shutdown, c.expectedHealth, {
+      ...active(), stream: {...active().stream, ...change},
+    }).reason).toBe("STREAM_INTENT_MISMATCH");
+  expect(streamConfigSchema.safeParse({...shutdown,streamId:"0"}).success).toBe(false);
+  const health = {...c.expectedHealth,successfulRequests:1};
+  expect(evaluateStream({...shutdown,expectedHealth:health},health,active()).reason).toBe("CLIENT_PROVIDER_DISAGREEMENT");
+});

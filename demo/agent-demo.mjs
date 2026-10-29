@@ -14,6 +14,8 @@ import {
 } from "ethers";
 import cli from "../scripts/lib/cli.cjs";
 import { startPolicyClient } from "./policy/client.mjs";
+import { watchInterruption } from "./agent/interruption.mjs";
+import { cleanupFundedStream } from "./agent/cleanup.mjs";
 import { modelSettings, callModel, runAgent } from "./agent/model.mjs";
 import { runCreIntent, runStreamCheck } from "./agent/cre.mjs";
 import { assertLocalApproval } from "./agent/payments.mjs";
@@ -79,7 +81,9 @@ cancellation transaction is mined. No automatic repeat funding on uncertainty.
 --profile <file>  Registered local profile with bounded existing policy fields.
 --events ndjson   Versioned public events on stdout; human progress on stderr.
                   Incompatible with --json and --close-stream.
-Evidence: .local/agent-demo/runs/. Exit: 0 complete / 1 failed / 2 config or usage.`;
+SIGINT/SIGTERM stop at safe boundaries and request signed shutdown cleanup.
+CRE/signer failure or an uncertain transaction requires separate operator recovery.
+Evidence: .local/agent-demo/runs/. Exit: 0 complete / 1 failed / 2 config or usage / 130 or 143 interrupted.`;
 await cli.cliMain(
   "demo:agent",
   {
@@ -160,7 +164,7 @@ await cli.cliMain(
       service,
       openedId,
       closeAttempted = false,
-      cleanup;
+      cleanup, fundedContext, check;
     let auditor, policyClient, guarded = false;
     const id =
       new Date().toISOString().slice(0, 19).replace(/[-:]/g, "") +
@@ -186,11 +190,14 @@ await cli.cliMain(
     humanOutput.payMode = flags.pay ? "pay" : "preview";
     const output = eventOutput(humanOutput, emit, profile),
       events = [];
+    const interruption = watchInterruption(process, signal =>
+      console.error(`${signal}: stopping at the next safe boundary; submitted transactions will be inspected before cleanup.`));
     let started = false,
       initialSnapshot;
     const persist = async (kind, data) => {
       await save(`${kind}.json`, data);
       if (kind === "open" && data.streamId) openedId = data.streamId;
+      if (kind === "close" && data.state === "submitting") closeAttempted = true;
       if (
         ["approval", "open", "close"].includes(kind) &&
         ["submitting", "confirmed"].includes(data.state)
@@ -335,7 +342,8 @@ await cli.cliMain(
       });
       started = true;
       output.streamContract(streamAddress);
-      const check = async (q, phase, label, client, streamId = "0") => {
+      check = async (q, phase, label, client, streamId = "0") => {
+        if (phase !== "shutdown") interruption.assertRunning();
         const snapshot = service.snapshot();
         const config = {
           chainId: Number(CHAIN_ID),
@@ -369,9 +377,11 @@ await cli.cliMain(
         });
         output.streamEvidence(evidence);
         await auditor.recordPolicy(`stream-${label}`, evidence.result);
+        if (phase !== "shutdown") interruption.assertRunning();
         return { config, decision: evidence.result };
       };
       const purchase = async ({ tier, purpose }) => {
+        interruption.assertRunning();
         output.requested({ tier, purpose });
         const endpoint = `${service.url}/research/${tier}`,
           response = await fetch(endpoint, {
@@ -423,6 +433,7 @@ await cli.cliMain(
             },
           };
           checkPrice = async (label = "price") => {
+            interruption.assertRunning();
             output.streamChecking("USDC price safety");
             const price = policyClient ? await policyClient.price({config,label}) : await runCreIntent({
               config,
@@ -433,6 +444,7 @@ await cli.cliMain(
             });
             output.priceEvidence(price);
             await auditor.recordPolicy("price", price.result);
+            interruption.assertRunning();
             const priceCompleted = performance.now();
             priceGate = () =>
               assertLocalApproval(price, config, {
@@ -505,6 +517,7 @@ await cli.cliMain(
           output.preview();
           return result;
         }
+        fundedContext = { quote: q, client };
         const funded = await openStream({
           provider,
           wallet,
@@ -512,7 +525,7 @@ await cli.cliMain(
           ...admission,
           elapsed: () => performance.now() - completedAt,
           persist,
-          additionalGate: () => priceGate(),
+          additionalGate: () => { interruption.assertRunning(); priceGate(); },
           refreshAdmission: async () => {
             const label = `renew-${++refreshes}`;
             console.log(
@@ -530,6 +543,7 @@ await cli.cliMain(
           authorizePolicy: policyClient ? requestId => policyClient.permit(requestId) : undefined,
         });
         output.streamOpened(funded);
+        interruption.assertRunning();
         const signature = await wallet.signMessage(
           sessionMessage(service.url, q, funded.streamId)
         );
@@ -544,6 +558,7 @@ await cli.cliMain(
             "pending"
           );
           for (let i = 0; i < count; i++) {
+            interruption.assertRunning();
             const res = await fetch(endpoint, {
               headers,
               signal: AbortSignal.timeout(20000),
@@ -602,7 +617,7 @@ await cli.cliMain(
         if (healthy.decision.action !== "CONTINUE")
           throw new cli.CliError(
             "CHECKPOINT",
-            `Healthy checkpoint returned ${healthy.decision.action}; cleanup will close the stream.`
+            `Healthy checkpoint returned ${healthy.decision.action}; cleanup will request signed closure.`
           );
         const second = await batch(5);
         service.injectOutage();
@@ -627,14 +642,14 @@ await cli.cliMain(
           await readStream(provider, streamAddress, funded.streamId),
           q
         );
-        closeAttempted = true;
+        const closeApproval = policyClient ? await policyClient.permit(outage.config.requestId) : undefined;
         const settled = await closeStream({
           provider,
           wallet,
           streamAddress,
           streamId: funded.streamId,
           persist,
-          policyApproval: policyClient ? await policyClient.permit(outage.config.requestId) : undefined,
+          policyApproval: closeApproval,
           audit: auditor,
         });
         output.streamClosed(settled);
@@ -678,6 +693,7 @@ await cli.cliMain(
       const agent = await runAgent({
         model: settings.model,
         modelCall: (args) => {
+          interruption.assertRunning();
           output.thinking(args.complete);
           return callModel({ ...args, ...settings });
         },
@@ -687,6 +703,7 @@ await cli.cliMain(
           if (data.type === "model_response") output.response(data);
         },
       });
+      interruption.assertRunning();
       if (
         agent.purchases.premium?.status !== "denied" ||
         agent.purchases.premium.policy.reason !== "AMOUNT_EXCEEDS_POLICY" ||
@@ -746,6 +763,9 @@ await cli.cliMain(
       );
       return result;
     } catch (error) {
+      // An in-flight RPC/model/child may fail while a stop is pending. Preserve
+      // the requested interruption status while still checking funded cleanup.
+      try { interruption.assertRunning(); } catch (stop) { error = stop; }
       if (started && !openedId && error.code === "PRICE_POLICY_DENIED") {
         try {
           const final = await snapshotWallet(
@@ -789,11 +809,19 @@ await cli.cliMain(
         closeAttempted = true;
         emit("cleanup", { status: "attempting", streamId: openedId });
         try {
-          cleanup = await closeStream({
+          cleanup = await cleanupFundedStream({
             provider,
             wallet,
             streamAddress: process.env.AGENTPAY_USDC_STREAM_ADDRESS,
             streamId: openedId,
+            quote: fundedContext.quote,
+            guarded,
+            authorizeClose: guarded ? async () => {
+              const shutdown = await check(fundedContext.quote, "shutdown", "cleanup", fundedContext.client, openedId);
+              if (shutdown.decision.action !== "CLOSE" || shutdown.decision.reason !== "CLIENT_SHUTDOWN")
+                throw new cli.CliError("CLEANUP_POLICY", "Expected a matching CLIENT_SHUTDOWN approval; inspect the stream before recovery.");
+              return policyClient.permit(shutdown.config.requestId);
+            } : undefined,
             persist,
             audit: auditor,
           });
@@ -851,6 +879,7 @@ await cli.cliMain(
         });
       throw error;
     } finally {
+      interruption.dispose();
       policyClient?.close();
       await appendFile(
         path.join(directory, "events.jsonl"),

@@ -37,7 +37,7 @@ export const streamConfigSchema = z
     spendingCapRaw: positive,
     durationSeconds: z.number().int().min(1).max(3600),
     maxRateRawPerSecond: positive,
-    phase: z.enum(["admission", "checkpoint"]),
+    phase: z.enum(["admission", "checkpoint", "shutdown"]),
     streamId: uint,
     observationBlock: z.number().int().positive(),
     healthUrl: z
@@ -124,6 +124,16 @@ export function evaluateStream(
     health.failedRequests !== c.client.failedRequests
   )
     return reject("CLIENT_PROVIDER_DISAGREEMENT");
+  if (c.phase === "shutdown") {
+    const s = chain.stream;
+    if (!s || !same(s.sender, c.agent) || !same(s.recipient, c.recipient) ||
+        s.totalAmount !== c.amountRaw ||
+        s.metadata !== JSON.stringify({ sessionId: c.sessionId, quoteId: c.quoteId }) ||
+        BigInt(s.stopTime) - BigInt(s.startTime) !== BigInt(c.durationSeconds) ||
+        BigInt(s.flowRate) !== rate)
+      return reject("STREAM_INTENT_MISMATCH");
+    return { action: "CLOSE", reason: s.isActive ? "CLIENT_SHUTDOWN" : "STREAM_INACTIVE" };
+  }
   if (
     !health.serviceAvailable ||
     c.client.failedRequests >= c.maxFailedRequests
