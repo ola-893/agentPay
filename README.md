@@ -144,4 +144,4 @@ CI checks contracts, SDK, gateway, CRE policy, CLI tooling, documentation and th
 - [Documentation](docs/README.md)
 - [AgentPay logo · PNG](vite-project/public/agentpay.png)
 
-AgentPay is an independent, unaudited Sepolia prototype integrating Chainlink technology. CRE executes locally; no workflow is deployed to the Chainlink network. Testnet tokens have no monetary value. [Migration history](MIGRATION.md).
+AgentPay is an independent, unaudited Sepolia prototype integrating Chainlink technology. CRE executes locally; no workflow is deployed to the Chainlink network. Testnet tokens have no monetary value.
