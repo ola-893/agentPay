@@ -1,0 +1,84 @@
+{
+  "source": "/Users/deonorla/Movies/CapCut/1030.mp4",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "duration": 120,
+  "voice": "bm_george",
+  "chapters": [
+    {
+      "id": "01", "start": 0, "duration": 12, "layout": "dashboard",
+      "title": "Fund once. Reuse.",
+      "sentences": ["A thousand paid API calls shouldn't mean a thousand payment transactions.", "AgentPay funds one stream and reuses it across requests."],
+      "clips": [{"in": 664, "out": 676, "speed": 1, "crop": [350, 450, 2600, 1462]}]
+    },
+    {
+      "id": "02", "start": 12, "duration": 11, "layout": "docs",
+      "title": "Intelligence needs guardrails",
+      "sentences": ["But agents can hallucinate: keep paying a broken service, or close a useful stream too early.", "Their money needs deterministic guardrails."],
+      "clips": [{"in": 49, "out": 60, "speed": 1, "crop": [900, 440, 1900, 1068]}]
+    },
+    {
+      "id": "03", "start": 23, "duration": 7, "layout": "diagram",
+      "title": "Chainlink CRE",
+      "sentences": ["Chainlink C R E turns live data into deterministic payment decisions."],
+      "clips": [{"in": 716, "out": 723, "speed": 1, "crop": [1150, 650, 1840, 1036]}]
+    },
+    {
+      "id": "04", "start": 30, "duration": 15, "layout": "cli",
+      "title": "Check before\nyou commit.",
+      "label": "PRICE + ADMISSION", "detail": "USDC price · freshness\nService health · budget · rate", "status": "ALLOW → OPEN",
+      "sentences": ["Here, C R E runs locally.", "It compares Chainlink and Coinbase U S D C prices, checks freshness and price bounds, then checks service health, the deposit, and the stream rate.", "Decision: OPEN."],
+      "clips": [{"in": 340, "out": 355, "speed": 1}]
+    },
+    {
+      "id": "05", "start": 45, "duration": 14, "layout": "cli",
+      "title": "Dry-run.\nRisk-score.\nRecord.",
+      "label": "SPEND REVIEW", "detail": "Durable decision blobs\nHashes anchored onchain", "status": "AUDIT CONFIRMED",
+      "sentences": ["Before signing, the proposed spend is dry-run and risk-scored.", "Decisions are stored as durable blobs, with hashes anchored onchain."],
+      "clips": [{"in": 380, "out": 390, "speed": 2}, {"in": 415, "out": 424, "speed": 1}]
+    },
+    {
+      "id": "06", "start": 59, "duration": 11, "layout": "cli",
+      "title": "Approved.\nVerified.\nFunded.",
+      "label": "CONTRACT ENFORCEMENT", "detail": "Separate policy signer\nEscrow verifies OPEN approval", "status": "0.01 USDC FUNDED",
+      "sentences": ["A separate policy signer approves OPEN.", "The escrow verifies that signature, then accepts one cent of U S D C."],
+      "clips": [{"in": 427, "out": 449, "speed": 2}]
+    },
+    {
+      "id": "07", "start": 70, "duration": 11, "layout": "cli",
+      "title": "One stream.\nTen calls.",
+      "label": "REUSE", "detail": "No payment transaction\nfor each API request", "status": "CONTINUE",
+      "sentences": ["Ten API calls reuse the same stream, with no payment transaction per request.", "C R E returns CONTINUE; the provider earns by the second."],
+      "clips": [{"in": 469, "out": 480, "speed": 1}]
+    },
+    {
+      "id": "08", "start": 81, "duration": 9, "layout": "cli",
+      "title": "Service fails.\nRules respond.",
+      "label": "FAILURE CHECKPOINT", "detail": "Three injected HTTP 503s\nDeterministic failure threshold", "status": "CLOSE REQUESTED",
+      "sentences": ["Now, three service failures.", "C R E applies the failure threshold and returns CLOSE, protecting the remaining deposit."],
+      "clips": [{"in": 529, "out": 547, "speed": 2}]
+    },
+    {
+      "id": "09", "start": 90, "duration": 11, "layout": "cli",
+      "title": "Close.\nSettle.\nRefund.",
+      "label": "VERIFIED CANCELLATION", "detail": "Provider: accrued earnings\nPayer: unused deposit", "status": "REFUND CONFIRMED",
+      "sentences": ["The contract verifies the CLOSE approval.", "Cancellation pays the provider's accrued earnings and refunds the unused balance."],
+      "clips": [{"in": 570, "out": 592, "speed": 2}]
+    },
+    {
+      "id": "10", "start": 101, "duration": 11, "layout": "cli",
+      "title": "Over budget?\nBlocked.",
+      "label": "BUDGET GUARDRAIL", "detail": "No purchase signed\nBlocked decision recorded", "status": "DENY",
+      "sentences": ["A premium request exceeds the spending cap.", "C R E returns DENY.", "No purchase is signed, and the blocked decision gets its own audit receipt."],
+      "clips": [{"in": 619, "out": 641, "speed": 2}]
+    },
+    {
+      "id": "11", "start": 112, "duration": 8, "layout": "cli",
+      "title": "Fund once.\nReuse safely.",
+      "label": "AGENTPAY + CHAINLINK CRE", "detail": "Deterministic payment guardrails\nDecisions you can trace", "status": "RUN COMPLETE",
+      "sentences": ["AgentPay. Fund once. Reuse safely.", "Deterministic Chainlink C R E guardrails, with decisions you can trace."],
+      "clips": [{"in": 642, "out": 650, "speed": 1}]
+    }
+  ]
+}
