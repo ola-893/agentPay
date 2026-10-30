@@ -136,6 +136,12 @@ operator closed stream #2, paying **0.00216 USDC** and refunding **0.00784 USDC*
 [Failure and recovery evidence](evidence/guarded-retest/VERIFICATION.md).
 Neither capture promises future availability or constant payout amounts.
 
+**Successful guarded retest, October 30:** stream #5 served ten calls, passed
+CONTINUE and closed after the injected outage, paying **0.0012 USDC** and
+refunding **0.0088 USDC**. Both policy signatures and seven decision proofs across
+three new audit receipts were verified against Sepolia. The same evidence records
+the earlier RPC failures and their fixes: [verification and reproduction](evidence/cli-rpc-2026-10-30/VERIFICATION.md).
+
 ## Recover an interrupted guarded stream
 
 Ctrl+C (`SIGINT`) or `SIGTERM` requests shutdown at the next safe boundary. The

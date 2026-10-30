@@ -1,0 +1,71 @@
+{
+  "runId": "20261030T081657Z-7368b5c2",
+  "failedAt": "2026-10-30T08:19:04.081Z",
+  "code": "OPERATION_FAILED",
+  "terminalError": "Receipt root or sequence mismatch",
+  "fundingAttempted": false,
+  "receipts": [
+    {
+      "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+      "blockNumber": 12025431,
+      "chainId": 11155111,
+      "entries": [
+        {
+          "blobHash": "0x0fd5de0455830e3ecdf36f4bbe4c11baf866437c54ed9510f0e2df0d69282f30",
+          "intentId": "0xbf6ce3ed092c5b9c8b699970e01b1c1aab3b8a3746171c3e8b0b5d4cbaa2caf0",
+          "proof": [],
+          "sequence": 99
+        }
+      ],
+      "feeWei": "23650640",
+      "firstSequence": 99,
+      "gasUsed": "363856",
+      "root": "0x14e522f45e0df55369cd429503c286414819650cd4186a87392646498ff21d81",
+      "schemaVersion": 1,
+      "state": "anchored",
+      "transactionHash": "0xfc14d6aae56bb381090f604f2ef4a9429d6bd1ccc19697463cda082479dccf13",
+      "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+    },
+    {
+      "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+      "blockNumber": 12025428,
+      "chainId": 11155111,
+      "entries": [
+        {
+          "blobHash": "0x638ca6b39b28f388b898c6c3327669047b1105d7431bdbc1253f2d75ca8e976b",
+          "intentId": "0x2422af3efd1d0474d9780278ee5b1ab7c0efb208d48f0aca03941528b566f0e9",
+          "proof": [
+            "0x82e5869f693c95fcf3a02fe647d54bd5f350c24cd70558a256fae472f27cca35",
+            "0xd37f0e66901acc2bb7c7bd4402a68db96bf4f421468dea74aa37834e7be0e7ff"
+          ],
+          "sequence": 96
+        },
+        {
+          "blobHash": "0xcb2499c9f784892d45f0b6a9472a0393a568e7daf894b82d9823173123176f6d",
+          "intentId": "0x452016591e1778094540813d762f1c1a65586f14f9a48640660277f52c111baf",
+          "proof": [
+            "0x88d7758d66e4a8bdc488c1027c5673b68d71acd074787de410f46b37c93518f8",
+            "0xd37f0e66901acc2bb7c7bd4402a68db96bf4f421468dea74aa37834e7be0e7ff"
+          ],
+          "sequence": 97
+        },
+        {
+          "blobHash": "0x6f16ba729efd1a827bbf25f0ebd5ee7d7333eadeacadb2f73670a9c5eab42278",
+          "intentId": "0xff0b799dd730bf33e687fffd0de7185f6e89551e05e44c0f141762fcba93c5dd",
+          "proof": [
+            "0xf6977ee1359bdb1cc98ce3e4fb1f5cf7e9ee455225b4c84bfd49037979ddd43c",
+            "0x9d2d4e88724b524fe82d669c24f2d1ce2c57317753451444990d9284fd90fdbd"
+          ],
+          "sequence": 98
+        }
+      ],
+      "firstSequence": 96,
+      "root": "0x3221f279944a90485aaff2fafae120ea878917124680b9124c2c16121e33bc3e",
+      "schemaVersion": 1,
+      "state": "anchored",
+      "transactionHash": "0x3f8d4cd4ca1926f8704364825119004ce035f741c8d078a704115b277bb3563a",
+      "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+    }
+  ],
+  "conclusion": "New receipt verification failed on a latest-state read. Failure handling subsequently reconciled the same receipt without rebroadcast. Both receipts were independently verified at their canonical blocks; the original mismatched RPC values were not saved."
+}

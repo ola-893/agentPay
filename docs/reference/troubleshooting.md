@@ -63,6 +63,8 @@ Then rerun `npm run cre:dry-run`. The [before/after evidence](../evidence/networ
 
 Provider failures do not trigger a rules-based agent or automatic provider fallback. Model summaries are untrusted prose; use the host-verified status, raw units and receipt as evidence.
 
+The [October 30 RPC fixes and successful retest](../evidence/cli-rpc-2026-10-30/VERIFICATION.md) include the original failed call, a read-only historical reproducer, canonical audit-receipt verification and the completed stream #5 lifecycle.
+
 ## SDK TypeScript dependency identity
 
 If `Signer`/`Network` types report incompatible private fields, the app and SDK are resolving different copies of ethers. Align or deduplicate the integrating project’s ethers dependency, and construct the signer from the same dependency instance as the SDK. Place the documented fragments in `sdk/`, import `./src` and construct the signer with `ethers` imported there. The guarded reference shows `Wallet`/`JsonRpcProvider` construction with caller-supplied test credentials; verification only compiles it and does not create, fund or use a wallet.

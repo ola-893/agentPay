@@ -1,0 +1,972 @@
+
+> agentpay@1.0.0 test
+> npm run test:contracts && npm run test:sdk && npm run test:server && npm run test:cre && npm run test:tooling
+
+
+> agentpay@1.0.0 test:contracts
+> npx hardhat test
+
+[dotenv@17.2.1] injecting env (15) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+
+
+  Local operator decision receipt journal
+    ✔ anchors batches of ALLOW/BLOCK/ERROR record hashes without changing token balances
+    ✔ rejects another writer, duplicate roots, noncontiguous sequences and oversized batches
+    ✔ binds leaves to chain, receipt contract, writer, intent, blob and sequence
+
+  CRE authorization and token settlement
+    ✔ accepts a workflow report and settles exactly one authorized payment
+    ✔ rejects callers other than the trusted forwarder
+    ✔ rejects another workflow even through the same forwarder
+    ✔ rejects missing workflow metadata
+    ✔ rejects cross-chain and cross-contract replay
+    ✔ rejects a duplicate request report
+    ✔ rejects expired and excessive authorization lifetimes
+    ✔ cannot spend a denied report
+    ✔ binds authorization to the agent, recipient, token, and amount
+    ✔ expires before settlement
+    ✔ only allows the configured settlement contract to consume reports
+    ✔ rolls authorization back if token transfer fails
+    ✔ advertises the CRE receiver and ERC165 interfaces
+    ✔ only lets the owner bind or update a deployed workflow ID
+    ✔ remains closed when deployed before the workflow ID is available
+
+  AgentPayGuardedStream / local policy authority
+    ✔ requires three distinct authorities and a contract token
+    ✔ rejects unsigned legacy entry points even with balance and unlimited allowance
+    ✔ accepts an exact EIP-712 approval and consumes its nonce with escrow only
+    ✔ rejects fabricated, agent-signed, cross-chain and cross-contract approvals
+    ✔ binds every signed action field and metadata; caller cannot change the intent
+    ✔ rejects expired or overlong approvals, nonce substitution and deposit/rate violations
+    ✔ blocks duplicate active funding and session replay after closure
+    ✔ does not let the agent or recipient close early without the separate policy signature
+    ✔ pays accrued earnings and refunds the remainder exactly once after policy closure
+    ✔ allows recipient withdrawals and releases rounding remainder at expiry
+    ✔ keeps recovery unavailable to agent/policy keys and works with the signer offline
+    ✔ reverts nonce/session consumption when the token deposit fails
+
+  isolated CRE simulation receiver
+    ✔ records empty-metadata mock delivery while labeling it as simulation only
+    ✔ requires explicit opt-in and a deployed forwarder
+    ✔ rejects a direct caller even with empty metadata
+    ✔ preserves replay, destination, and expiry bounds
+    ✔ cannot be connected to the settlement payment path
+    ✔ leaves the strict production consumer closed to missing identity
+
+  AgentPayStream
+    Deployment
+      ✔ Should set the right tUSD token address
+    Stream Creation
+      ✔ Should create a stream successfully
+      ✔ Should fail if allowance is insufficient
+    Withdrawal
+      ✔ Should allow withdrawal of accrued tokens
+    Cancellation
+      ✔ Should allow sender to cancel and refund remaining
+    Active Check
+      ✔ Should return true for active stream
+
+  Consequential documented payment bounds
+    ✔ rejects zero, permits a smaller payment, and consumes all remaining authorization
+    ✔ releases division dust after prior withdrawal at expiry; closing then prevents further withdrawal
+
+
+  44 passing (841ms)
+
+····················································································································
+|  [32m[1mSolidity and Network Configuration[22m[39m                                                                              │
+·······························|·················|···············|·················|································
+|  [36mSolidity: 0.8.20[39m            ·  [36mOptim: false[39m   ·  [36mRuns: 200[39m    ·  [36mviaIR: false[39m   ·     [36mBlock: 30,000,000 gas[39m     │
+·······························|·················|···············|·················|································
+|  [32m[1mMethods[22m[39m                                                                                                         │
+·······························|·················|···············|·················|················|···············
+|  [32m[1mContracts / Methods[22m[39m         ·  [1mMin[22m            ·  [1mMax[22m          ·  [1mAvg[22m            ·  [1m# calls[22m       ·  [1musd (avg)[22m   │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayDecisionJournal[22m     ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      anchor                  ·         [36m98,784[39m  ·       [31m98,796[39m  ·         98,793  ·             4  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayGuard[22m               ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      onReport                ·        [36m233,949[39m  ·      [31m233,992[39m  ·        233,983  ·             8  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      setSettlement           ·         [36m48,067[39m  ·       [31m48,079[39m  ·         48,078  ·            16  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      setWorkflowId           ·              [90m-[39m  ·            [90m-[39m  ·         28,291  ·             1  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayGuardedStream[22m       ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      cancelStreamWithPermit  ·              [90m-[39m  ·            [90m-[39m  ·        133,457  ·             3  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      createStreamWithPermit  ·        [36m492,747[39m  ·      [31m509,840[39m  ·        507,640  ·            10  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      recoveryClose           ·              [90m-[39m  ·            [90m-[39m  ·         98,720  ·             2  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      withdrawFromStream      ·         [36m63,703[39m  ·       [31m96,463[39m  ·         80,083  ·             2  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPaySettlement[22m          ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      settle                  ·              [90m-[39m  ·            [90m-[39m  ·        110,333  ·             3  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayStream[22m              ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      cancelStream            ·         [36m38,983[39m  ·       [31m83,099[39m  ·         61,041  ·             2  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      createStream            ·        [36m251,031[39m  ·      [31m251,175[39m  ·        251,151  ·             6  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      withdrawFromStream      ·         [36m54,861[39m  ·       [31m94,409[39m  ·         81,226  ·             3  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mDemoUSDC[22m                    ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      approve                 ·         [36m22,784[39m  ·       [31m44,720[39m  ·         43,152  ·            14  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      mint                    ·              [90m-[39m  ·            [90m-[39m  ·         44,629  ·            12  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mMockCREForwarder[22m            ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      deliver                 ·              [90m-[39m  ·            [90m-[39m  ·        236,986  ·             4  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mMockUSD[22m                     ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      approve                 ·         [36m46,670[39m  ·       [31m46,742[39m  ·         46,728  ·             5  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      mint                    ·              [90m-[39m  ·            [90m-[39m  ·         34,785  ·             6  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mSixDecimalToken[22m             ·                                                                                   │
+·······························|·················|···············|·················|················|···············
+|      approve                 ·         [36m22,761[39m  ·       [31m44,697[39m  ·         43,405  ·            17  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|      mint                    ·         [36m44,649[39m  ·       [31m44,661[39m  ·         44,660  ·            16  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [32m[1mDeployments[22m[39m                                   ·                                 ·  [1m% of limit[22m    ·              │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayDecisionJournal[22m     ·              [90m-[39m  ·            [90m-[39m  ·        730,305  ·         2.4 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayGuard[22m               ·      [36m1,744,019[39m  ·    [31m1,764,303[39m  ·      1,763,176  ·         5.9 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayGuardedStream[22m       ·              [90m-[39m  ·            [90m-[39m  ·      3,518,012  ·        11.7 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPaySettlement[22m          ·        [36m552,970[39m  ·      [31m552,982[39m  ·        552,980  ·         1.8 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPaySimulationReceiver[22m  ·              [90m-[39m  ·            [90m-[39m  ·      1,078,831  ·         3.6 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mAgentPayStream[22m              ·      [36m1,928,699[39m  ·    [31m1,928,711[39m  ·      1,928,705  ·         6.4 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mDemoUSDC[22m                    ·              [90m-[39m  ·            [90m-[39m  ·        674,553  ·         2.2 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mMockCREForwarder[22m            ·              [90m-[39m  ·            [90m-[39m  ·        280,355  ·         0.9 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mMockUSD[22m                     ·              [90m-[39m  ·            [90m-[39m  ·      1,035,189  ·         3.5 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [1mSixDecimalToken[22m             ·              [90m-[39m  ·            [90m-[39m  ·        521,074  ·         1.7 %  ·           [32m[90m-[39m[32m[39m  │
+·······························|·················|···············|·················|················|···············
+|  [32m[1mKey[22m[39m                                                                                                             │
+····················································································································
+|  [35m[1m◯[22m[39m  Execution gas for this method does not include intrinsic gas overhead                                        │
+····················································································································
+|  [35m[1m△[22m[39m  Cost was non-zero but below the precision setting for the currency display (see options)                     │
+····················································································································
+|  [35mToolchain:[39m  hardhat                                                                                             │
+····················································································································
+
+> agentpay@1.0.0 test:sdk
+> npm --prefix sdk run test:all
+
+
+> agentpay-sdk@1.0.0 test:all
+> mocha --exit -r ts-node/register test/*.test.ts
+
+(node:97191) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file://<repo>/sdk/test/calculation.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to <repo>/sdk/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+  AgentPaySDK Real-time Calculations
+    ✔ Should calculate claimable balance correctly over time
+    ✔ Should return 0 remaining when stream is depleted
+    ✔ Should handle micropayments precision ($0.0001/sec)
+
+  Demo Logic Validation (Mocked)
+    ✔ Should correctly handle 402 and create stream (Unit Logic)
+    ✔ Should report correct efficiency metrics
+    ✔ AI Decision should recommend Stream for high volume
+
+  Gemini AI Integration
+    ✔ Should analyze spending metrics
+    ✔ Should decide to Stream for high volume
+    ✔ Should decide to Direct Pay for low volume
+    ✔ Should answer natural language questions
+
+  AgentPaySDK with AI
+[AgentPaySDK] 🤖 Gemini Analysis: High volume justifies open cost.
+    ✔ SDK should use Brain for mode selection
+    ✔ SDK should expose Ask Agent
+
+  CRE guarded payment client
+    ✔ checks onchain authority before approval and settles a confirmed payment
+    ✔ passes 0.01 USDC as exactly 10000 units through authorization, approval and settlement
+    ✔ never approves tokens when CRE authority is absent
+    ✔ stops when authorization expires during token approval
+    ✔ rejects the wrong chain before creating any transaction
+    ✔ rejects a settlement bound to another guard before token approval
+    ✔ does not settle after a reverted approval receipt
+    ✔ rejects malformed payment intent
+
+  AgentPaySDK Hybrid Payment Intelligence
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 1 < 3.
+[Mock] performDirectPayment called
+    ✔ Scenario 1: Small request volume (N=1) -> Should choose Direct Payment
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[Mock] createStream called
+[AgentPaySDK] Stream #STREAM_101 created. Retrying request...
+    ✔ Scenario 2: Large request volume (N=10) -> Should choose Streaming
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[Mock] createStream called
+[AgentPaySDK] Stream #STREAM_101 created. Retrying request...
+    ✔ AI Verification: Should default to Streaming if N is high (default 10)
+
+  AgentPay End-to-End Integration Tests
+    Complete x402 Handshake Flow
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should complete blind request → 402 → stream → success flow
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should reuse stream for subsequent requests (0 additional signatures)
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should handle concurrent requests efficiently
+    Hybrid Payment Mode Selection
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 1 < 3.
+      ✔ should choose direct payment for low volume (N=1)
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 3.6 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should choose streaming for high volume (N=10)
+    N+1 Signature Problem Solution
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #1 created. Retrying request...
+      ✔ should require exactly 2 on-chain transactions for any request volume
+    Agent Metadata and Identification
+      ✔ should include agent ID in stream details
+    Safety Mechanisms
+      ✔ should enforce spending limits
+[AgentPaySDK] 🚨 EMERGENCY STOP ACTIVATED. All payments paused.
+      ✔ should block requests after emergency stop
+    Real-time Calculations
+      ✔ should calculate claimable balance correctly
+
+  x402 Protocol Compliance
+    ✔ should return correct x402 headers on 402 response
+    ✔ should include payment requirements in 402 body
+
+  AgentPaySDK Load & Efficiency Tests
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #STREAM_1 created. Retrying request...
+    ✔ Efficiency: Should only create ONE stream for multiple sequential requests
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[AgentPaySDK] Stream #STREAM_1 created. Retrying request...
+    ✔ Efficiency: Should reuse stream for concurrent requests
+
+  Multi-Agent Service Mesh
+    ✔ Should calculate price with margin correctly
+
+  Stream Metadata System
+    ✔ Should include Agent ID in default metadata
+    ✔ Should return "unknown" Agent ID if not configured
+
+  payment recipient preflight
+    ✔ rejects a missing recipient before signing a stream
+    ✔ rejects a token-contract recipient before signing a stream
+    ✔ rejects invalid raw amounts and fractional/zero-rate durations before RPC or approval
+
+  Safety & Auto-renewal Systems
+    ✔ Should enforce Daily Spending Limit
+[AgentPaySDK] 🚨 EMERGENCY STOP ACTIVATED. All payments paused.
+    ✔ Emergency Stop should block requests
+    ✔ Suspicious Activity (Rapid Renewals) should trigger Emergency Stop
+[AgentPaySDK] Stream balance low (<10%). Triggering renewal...
+    ✔ Auto-Renewal Logic (Low Balance) (134ms)
+
+  AgentPaySDK Integration & Property Tests
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[Mock] createStream called for 360000000000000000 tUSD
+[AgentPaySDK] Stream #12345 created. Retrying request...
+    ✔ Property 4: Should intercept 402, parse headers, and retry with stream ID
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+    ✔ Property 4: Should fail if mode is not streaming
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.36 tUSD for 3600s
+[Mock] createStream called for 360000000000000000 tUSD
+[AgentPaySDK] Stream #12345 created. Retrying request...
+    ✔ Property 9: Should calculate correct stream amount based on Rate header
+[AgentPaySDK] 402 Payment Required intercepted. Negotiating...
+[AgentPaySDK] 🤖 Gemini Analysis: Heuristic: Volume 10 >= 3.
+[AgentPaySDK] Initiating Stream: 0.72 tUSD for 3600s
+[Mock] createStream called for 720000000000000000 tUSD
+[AgentPaySDK] Stream #12345 created. Retrying request...
+    ✔ Property 14: Should send API key and handle 401 if missing/invalid
+    ✔ Property 14: Should fail with 401 if API key is invalid
+
+
+  52 passing (511ms)
+
+
+> agentpay@1.0.0 test:server
+> npm --prefix server test
+
+
+> agentpay-middleware-server@1.0.0 test
+> mocha --exit test/*.test.js
+
+
+
+  x402 Middleware Integration
+    Public Routes
+      ✔ should allow access to public routes without payment
+    Protected Routes (No Payment)
+      ✔ should return 402 for protected route without headers
+      ✔ should return 402 for premium route with correct pricing
+    Protected Routes (With Payment)
+      ✔ rejects an active stream paying another recipient
+      ✔ rejects fabricated transaction hashes instead of accepting their shape
+[AgentPay] Request accepted for /api/weather using Stream #100
+      ✔ should return 200 for valid active stream
+      ✔ should return 402 for inactive stream
+[AgentPay] Stream verification failed: Error: RPC Error
+    at Object.isStreamActive (<repo>/server/test/middleware.test.js:15:23)
+    at <repo>/server/middleware/agentPayMiddleware.js:78:53
+    at Layer.handle [as handle_request] (<repo>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<repo>/server/node_modules/express/lib/router/index.js:328:13)
+    at <repo>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<repo>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<repo>/server/node_modules/express/lib/router/index.js:280:10)
+    at jsonParser (<repo>/server/node_modules/body-parser/lib/types/json.js:113:7)
+    at Layer.handle [as handle_request] (<repo>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<repo>/server/node_modules/express/lib/router/index.js:328:13)
+    at <repo>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<repo>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<repo>/server/node_modules/express/lib/router/index.js:280:10)
+    at cors (<repo>/server/node_modules/cors/lib/index.js:188:7)
+    at <repo>/server/node_modules/cors/lib/index.js:224:17
+    at originCallback (<repo>/server/node_modules/cors/lib/index.js:214:15)
+    at <repo>/server/node_modules/cors/lib/index.js:219:13
+    at optionsCallback (<repo>/server/node_modules/cors/lib/index.js:199:9)
+    at corsMiddleware (<repo>/server/node_modules/cors/lib/index.js:204:7)
+    at Layer.handle [as handle_request] (<repo>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<repo>/server/node_modules/express/lib/router/index.js:328:13)
+    at <repo>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<repo>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<repo>/server/node_modules/express/lib/router/index.js:280:10)
+    at expressInit (<repo>/server/node_modules/express/lib/middleware/init.js:40:5)
+    at Layer.handle [as handle_request] (<repo>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<repo>/server/node_modules/express/lib/router/index.js:328:13)
+    at <repo>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<repo>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<repo>/server/node_modules/express/lib/router/index.js:280:10)
+    at query (<repo>/server/node_modules/express/lib/middleware/query.js:45:5)
+    at Layer.handle [as handle_request] (<repo>/server/node_modules/express/lib/router/layer.js:95:5)
+    at trim_prefix (<repo>/server/node_modules/express/lib/router/index.js:328:13)
+    at <repo>/server/node_modules/express/lib/router/index.js:286:9
+    at Function.process_params (<repo>/server/node_modules/express/lib/router/index.js:346:12)
+    at next (<repo>/server/node_modules/express/lib/router/index.js:280:10)
+    at Function.handle (<repo>/server/node_modules/express/lib/router/index.js:175:3)
+    at Function.handle (<repo>/server/node_modules/express/lib/application.js:181:10)
+    at Server.app (<repo>/server/node_modules/express/lib/express.js:39:9)
+    at Server.emit (node:events:519:28)
+    at parserOnIncoming (node:_http_server:1186:12)
+    at HTTPParser.parserOnHeadersComplete (node:_http_common:125:17)
+      ✔ should fallback to 402/Requirements on system error
+
+
+  8 passing (34ms)
+
+
+> agentpay@1.0.0 test:cre
+> bun test --cwd cre/payment-guard
+
+bun test v1.3.12 (700fc117)
+
+stream-policy.test.ts:
+(pass) admits a healthy funded USDC stream with bounded deposit and rate [2.22ms]
+(pass) denies over-budget, zero-rate and wrong-token admission [0.21ms]
+(pass) checks available USDC balance before opening
+(pass) continues a matching active stream without changing its funded parameters
+(pass) closes on observed service outage, with client and provider counters bound [0.12ms]
+(pass) client/provider disagreement fails closed
+(pass) rejects altered stream party, amount, duration and metadata
+(pass) schema rejects cross-chain, external health endpoints and incorrect phase IDs [1.43ms]
+(pass) result validation rejects invented decisions or a substituted stream config [1.07ms]
+(pass) shutdown closes an exactly bound healthy stream without inventing an outage [0.30ms]
+
+spend-policy.test.ts:
+(pass) spend review gates exact bounded transfer and stream approval calldata [4.42ms]
+(pass) spend review blocks oversized or unlimited approvals and substituted recipients or targets [1.74ms]
+(pass) spend review preserves hard blocks even with a low risk score and errors on unavailable simulation [0.28ms]
+(pass) spend review binds hashes, blocks and freshness; risk uncertainty cannot prevent refund cancellation [1.75ms]
+(pass) guarded stream calldata > reviews exact guarded creation/closure and rejects mismatched permit parties [4.52ms]
+
+toolbuyer-policy.test.ts:
+(pass) ToolBuyer grader has independent integer-unit and constrained-routing vectors [0.16ms]
+(pass) ToolBuyer uses Beta uncertainty and exact two-outcome one-step information value [0.27ms]
+(pass) ToolBuyer stops when information costs more than its one-step benefit without claiming certainty [0.49ms]
+(pass) ToolBuyer obeys onchain eligibility, trial spend caps and abstention before buying trials [0.31ms]
+(pass) ToolBuyer rejects swapped tasks, providers, raw costs, billing modes and duplicate receipts [0.25ms]
+(pass) ToolBuyer task construction separates visible/trial/evaluation inputs for the reported seeds [1.56ms]
+(pass) ToolBuyer schema rejects external provider origins and invalid budget units [0.26ms]
+
+policy.test.ts:
+(pass) deterministic CRE payment policy > allows a bounded payment with fresh matching independent prices
+(pass) deterministic CRE payment policy > rejects divergence beyond the exact basis point boundary
+(pass) deterministic CRE payment policy > rejects stale and future feed observations
+(pass) deterministic CRE payment policy > rejects invalid answers and incomplete rounds
+(pass) deterministic CRE payment policy > enforces the requested token-unit spending cap
+(pass) deterministic CRE payment policy > rejects matching depegged prices above and below $1, including one atomic price unit beyond the boundary
+(pass) deterministic CRE payment policy > checks the peg for each source even when their disagreement is within policy
+(pass) deterministic CRE payment policy > binds the policy to Circle Sepolia USDC, six decimals and the USDC/USD feed/API [0.49ms]
+(pass) deterministic CRE payment policy > rejects API quotes for another asset or quote currency [0.51ms]
+(pass) deterministic CRE payment policy > parses decimal prices without floating-point rounding [0.03ms]
+(pass) deterministic CRE payment policy > validates addresses, uint256 units, lifetimes, and publication destination [0.11ms]
+
+ 33 pass
+ 0 fail
+ 160 expect() calls
+Ran 33 tests across 4 files. [170.00ms]
+
+> agentpay@1.0.0 test:tooling
+> npm run build:sdk && node --test scripts/test/*.test.mjs
+
+
+> agentpay@1.0.0 build:sdk
+> npm --prefix sdk run build
+
+
+> agentpay-sdk@1.0.0 build
+> tsc
+
+TAP version 13
+# Subtest: agent CLI help has no credential, network or wallet use and JSON remains one envelope
+ok 1 - agent CLI help has no credential, network or wallet use and JSON remains one envelope
+  ---
+  duration_ms: 300.543916
+  type: 'test'
+  ...
+# Subtest: preview output cannot present model-invented receipts as verified transactions
+ok 2 - preview output cannot present model-invented receipts as verified transactions
+  ---
+  duration_ms: 3.464541
+  type: 'test'
+  ...
+# Subtest: failure output suggests recovery only when funding may have been submitted
+ok 3 - failure output suggests recovery only when funding may have been submitted
+  ---
+  duration_ms: 0.625292
+  type: 'test'
+  ...
+# Subtest: stream output shows recorded CRE observations and limits without claiming onchain CRE enforcement
+ok 4 - stream output shows recorded CRE observations and limits without claiming onchain CRE enforcement
+  ---
+  duration_ms: 2.912709
+  type: 'test'
+  ...
+# Subtest: terminal styles never leak to JSON, redirected or NO_COLOR output, and model control sequences are stripped
+ok 5 - terminal styles never leak to JSON, redirected or NO_COLOR output, and model control sequences are stripped
+  ---
+  duration_ms: 0.487083
+  type: 'test'
+  ...
+# Subtest: OpenAI alias keys are redacted from diagnostic text
+ok 6 - OpenAI alias keys are redacted from diagnostic text
+  ---
+  duration_ms: 2.510291
+  type: 'test'
+  ...
+# Subtest: Responses API uses real strict tools, disables storage and does not expose keys in API errors
+ok 7 - Responses API uses real strict tools, disables storage and does not expose keys in API errors
+  ---
+  duration_ms: 1.00925
+  type: 'test'
+  ...
+# Subtest: Qwen selection binds credentials to official regional endpoints and never silently falls back
+ok 8 - Qwen selection binds credentials to official regional endpoints and never silently falls back
+  ---
+  duration_ms: 1.319625
+  type: 'test'
+  ...
+# Subtest: agent completes both tool-backed journeys and duplicate calls cannot purchase twice
+ok 9 - agent completes both tool-backed journeys and duplicate calls cannot purchase twice
+  ---
+  duration_ms: 0.99275
+  type: 'test'
+  ...
+# Subtest: model refusal, missing tool journeys and unsupported or financial tool arguments cannot silently succeed
+ok 10 - model refusal, missing tool journeys and unsupported or financial tool arguments cannot silently succeed
+  ---
+  duration_ms: 0.644875
+  type: 'test'
+  ...
+# Subtest: quotes bind token, amount, recipient, chain and invoice identifier outside model control
+ok 11 - quotes bind token, amount, recipient, chain and invoice identifier outside model control
+  ---
+  duration_ms: 0.449542
+  type: 'test'
+  ...
+# Subtest: agent CRE runner uses workflow-relative short paths and strips agent credentials
+ok 12 - agent CRE runner uses workflow-relative short paths and strips agent credentials
+  ---
+  duration_ms: 550.880042
+  type: 'test'
+  ...
+# Subtest: local payment gate rejects denied, expired, stale and exhausted-budget decisions
+ok 13 - local payment gate rejects denied, expired, stale and exhausted-budget decisions
+  ---
+  duration_ms: 3.660208
+  type: 'test'
+  ...
+# Subtest: denied and substituted payment intents stop before provider access or signing
+ok 14 - denied and substituted payment intents stop before provider access or signing
+  ---
+  duration_ms: 1.613167
+  type: 'test'
+  ...
+# Subtest: receipt verification requires the exact new confirmed Circle USDC transfer
+ok 15 - receipt verification requires the exact new confirmed Circle USDC transfer
+  ---
+  duration_ms: 7.748375
+  type: 'test'
+  ...
+# Subtest: paid resource stays locked without a matching onchain receipt
+ok 16 - paid resource stays locked without a matching onchain receipt
+  ---
+  duration_ms: 24.655583
+  type: 'test'
+  ...
+# Subtest: local signed payment unlocks only its quoted resource and cannot buy a denied or replayed quote
+ok 17 - local signed payment unlocks only its quoted resource and cannot buy a denied or replayed quote
+  ---
+  duration_ms: 5397.011541
+  type: 'test'
+  ...
+# Subtest: help and JSON help match the public contract without credentials, spawning CRE or starting a listener
+ok 18 - help and JSON help match the public contract without credentials, spawning CRE or starting a listener
+  ---
+  duration_ms: 6909.644083
+  type: 'test'
+  ...
+# Subtest: unknown, positional, duplicate and missing-value flags fail before operation
+ok 19 - unknown, positional, duplicate and missing-value flags fail before operation
+  ---
+  duration_ms: 3086.663125
+  type: 'test'
+  ...
+# Subtest: missing keys and demo opt-in produce stable one-object JSON failures with nonzero exit codes
+ok 20 - missing keys and demo opt-in produce stable one-object JSON failures with nonzero exit codes
+  ---
+  duration_ms: 2672.967709
+  type: 'test'
+  ...
+# Subtest: recording-window bounds reject malformed values without executing CRE
+ok 21 - recording-window bounds reject malformed values without executing CRE
+  ---
+  duration_ms: 520.516459
+  type: 'test'
+  ...
+# Subtest: missing CRE executable fails as a dependency error rather than a successful result
+ok 22 - missing CRE executable fails as a dependency error rather than a successful result
+  ---
+  duration_ms: 237.611959
+  type: 'test'
+  ...
+# Subtest: subprocess timeout is bounded and rejected even when a child ignores SIGTERM
+ok 23 - subprocess timeout is bounded and rejected even when a child ignores SIGTERM
+  ---
+  duration_ms: 2156.787458
+  type: 'test'
+  ...
+# Subtest: result validation binds full intent, policy, scale and encoded report before evidence can be saved
+ok 24 - result validation binds full intent, policy, scale and encoded report before evidence can be saved
+  ---
+  duration_ms: 5.841458
+  type: 'test'
+  ...
+# Subtest: JSON success and child failure are one object; mismatched results cannot replace captures
+ok 25 - JSON success and child failure are one object; mismatched results cannot replace captures
+  ---
+  duration_ms: 1812.196542
+  type: 'test'
+  ...
+# Subtest: legacy CLI validates a real local deployment, rejects wrong chain/units/binding/gas, and emits stable JSON
+ok 26 - legacy CLI validates a real local deployment, rejects wrong chain/units/binding/gas, and emits stable JSON
+  ---
+  duration_ms: 20605.870625
+  type: 'test'
+  ...
+# Subtest: guarded SDK settles through real local contracts and preserves authority on insufficient allowance/balance
+ok 27 - guarded SDK settles through real local contracts and preserves authority on insufficient allowance/balance
+  ---
+  duration_ms: 1411.810958
+  type: 'test'
+  ...
+# Subtest: requires the exact receiver event and labels verified receipts as unverified workflow identity
+ok 28 - requires the exact receiver event and labels verified receipts as unverified workflow identity
+  ---
+  duration_ms: 20.01925
+  type: 'test'
+  ...
+# Subtest: does not claim publication for reverted or unrelated transactions
+ok 29 - does not claim publication for reverted or unrelated transactions
+  ---
+  duration_ms: 5.976292
+  type: 'test'
+  ...
+# Subtest: a successful write for another report is not evidence of this authorization
+ok 30 - a successful write for another report is not evidence of this authorization
+  ---
+  duration_ms: 5.989292
+  type: 'test'
+  ...
+# Subtest: parses the full escaped CLI result after truncated user logs
+ok 31 - parses the full escaped CLI result after truncated user logs
+  ---
+  duration_ms: 2.550375
+  type: 'test'
+  ...
+# Subtest: does not treat a user log or failed compilation as a successful simulation
+ok 32 - does not treat a user log or failed compilation as a successful simulation
+  ---
+  duration_ms: 0.395333
+  type: 'test'
+  ...
+# Subtest: requires freshness headroom for the full recording window
+ok 33 - requires freshness headroom for the full recording window
+  ---
+  duration_ms: 0.183375
+  type: 'test'
+  ...
+# Subtest: rejects unexpected outcomes even when the feed is fresh
+ok 34 - rejects unexpected outcomes even when the feed is fresh
+  ---
+  duration_ms: 0.103083
+  type: 'test'
+  ...
+# Subtest: rejects stale, future and malformed freshness data
+ok 35 - rejects stale, future and malformed freshness data
+  ---
+  duration_ms: 0.124125
+  type: 'test'
+  ...
+# Subtest: backs up old JSON and transcripts without mutating or overwriting them
+ok 36 - backs up old JSON and transcripts without mutating or overwriting them
+  ---
+  duration_ms: 30.18325
+  type: 'test'
+  ...
+# Subtest: current documentation proof validates and rejects changed signatures, result, nonce, destination or payout
+ok 37 - current documentation proof validates and rejects changed signatures, result, nonce, destination or payout
+  ---
+  duration_ms: 103.078625
+  type: 'test'
+  ...
+# Subtest: guarded CLI cleanup requires matching signed closure; hard-stop owner recovery reconciles funds
+ok 38 - guarded CLI cleanup requires matching signed closure; hard-stop owner recovery reconciles funds
+  ---
+  duration_ms: 30526.976042
+  type: 'test'
+  ...
+# Subtest: SIGINT reaches the safe-boundary cleanup path and preserves interruption status
+ok 39 - SIGINT reaches the safe-boundary cleanup path and preserves interruption status
+  ---
+  duration_ms: 160.768292
+  type: 'test'
+  ...
+# Subtest: SIGTERM reaches the safe-boundary cleanup path and preserves interruption status
+ok 40 - SIGTERM reaches the safe-boundary cleanup path and preserves interruption status
+  ---
+  duration_ms: 141.09325
+  type: 'test'
+  ...
+# Subtest: policy signer rejects caller-supplied weaker rules, changed parties and targets
+ok 41 - policy signer rejects caller-supplied weaker rules, changed parties and targets
+  ---
+  duration_ms: 1.92075
+  type: 'test'
+  ...
+# Subtest: local policy typed data binds action, exact intent, nonce, expiry, chain and escrow
+ok 42 - local policy typed data binds action, exact intent, nonce, expiry, chain and escrow
+  ---
+  duration_ms: 116.850542
+  type: 'test'
+  ...
+# Subtest: final simulation retries transient reads with identical calldata, saving every attempt
+ok 43 - final simulation retries transient reads with identical calldata, saving every attempt
+  ---
+  duration_ms: 13.411334
+  type: 'test'
+  ...
+# Subtest: unavailable final simulation fails closed after three read-only attempts
+ok 44 - unavailable final simulation fails closed after three read-only attempts
+  ---
+  duration_ms: 2.5705
+  type: 'test'
+  ...
+# Subtest: EVM reverts stop immediately, including wrapped errors with revert data
+ok 45 - EVM reverts stop immediately, including wrapped errors with revert data
+  ---
+  duration_ms: 1.131875
+  type: 'test'
+  ...
+# Subtest: a changed block stops immediately before signing
+ok 46 - a changed block stops immediately before signing
+  ---
+  duration_ms: 0.251208
+  type: 'test'
+  ...
+# Subtest: expiry or mutation during a read-only retry stops the next attempt
+ok 47 - expiry or mutation during a read-only retry stops the next attempt
+  ---
+  duration_ms: 0.470416
+  type: 'test'
+  ...
+# Subtest: expiry after a successful RPC and a failed evidence write both stop signing
+ok 48 - expiry after a successful RPC and a failed evidence write both stop signing
+  ---
+  duration_ms: 0.456083
+  type: 'test'
+  ...
+# Subtest: latest-block RPC failures are bounded and an initial CRE observation is never retried
+ok 49 - latest-block RPC failures are bounded and an initial CRE observation is never retried
+  ---
+  duration_ms: 0.394875
+  type: 'test'
+  ...
+# Subtest: audit receipt verification binds state and event to its exact canonical confirmed block
+ok 50 - audit receipt verification binds state and event to its exact canonical confirmed block
+  ---
+  duration_ms: 15.341833
+  type: 'test'
+  ...
+# Subtest: a reorganization before or during the receipt state read fails closed
+ok 51 - a reorganization before or during the receipt state read fails closed
+  ---
+  duration_ms: 4.424959
+  type: 'test'
+  ...
+# Subtest: wrong receipt, sender, destination, event, state or confirmations cannot authorize signing
+ok 52 - wrong receipt, sender, destination, event, state or confirmations cannot authorize signing
+  ---
+  duration_ms: 12.103083
+  type: 'test'
+  ...
+# Subtest: a lost broadcast response reconciles only the exact confirmed hash without resubmission
+ok 53 - a lost broadcast response reconciles only the exact confirmed hash without resubmission
+  ---
+  duration_ms: 4.410584
+  type: 'test'
+  ...
+# Subtest: policy form accepts only bounded existing fields; quote and destinations are not request inputs
+ok 54 - policy form accepts only bounded existing fields; quote and destinations are not request inputs
+  ---
+  duration_ms: 1.929042
+  type: 'test'
+  ...
+# Subtest: event validation rejects secrets, absolute paths, invalid amounts, forged explorer links and missing sequence
+ok 55 - event validation rejects secrets, absolute paths, invalid amounts, forged explorer links and missing sequence
+  ---
+  duration_ms: 1.718042
+  type: 'test'
+  ...
+# Subtest: event reducer uses decisions from events, deduplicates SSE replay and retains real amounts
+ok 56 - event reducer uses decisions from events, deduplicates SSE replay and retains real amounts
+  ---
+  duration_ms: 0.568583
+  type: 'test'
+  ...
+# Subtest: local HTTP runner enforces Host, Origin, CSRF, schema, Pay opt-in and single-run lock; SSE replays actual events
+ok 57 - local HTTP runner enforces Host, Origin, CSRF, schema, Pay opt-in and single-run lock; SSE replays actual events
+  ---
+  duration_ms: 160.406208
+  type: 'test'
+  ...
+# Subtest: durable blobs are immutable, content addressed and detect tampering
+ok 58 - durable blobs are immutable, content addressed and detect tampering
+  ---
+  duration_ms: 190.726959
+  type: 'test'
+  ...
+# Subtest: recovery repairs the blob/pointer crash window and reports undecided intents
+ok 59 - recovery repairs the blob/pointer crash window and reports undecided intents
+  ---
+  duration_ms: 64.361042
+  type: 'test'
+  ...
+# Subtest: Merkle proofs bind every decision and fail for changed data or receipt domains
+ok 60 - Merkle proofs bind every decision and fail for changed data or receipt domains
+  ---
+  duration_ms: 6.370416
+  type: 'test'
+  ...
+# Subtest: spend-review CLI help and incompatible resume flags need no wallet or RPC
+ok 61 - spend-review CLI help and incompatible resume flags need no wallet or RPC
+  ---
+  duration_ms: 169.782041
+  type: 'test'
+  ...
+# Subtest: real local RPC reviews ALLOW/BLOCK/ERROR, anchors every decision, gates signing and reconciles USDC
+ok 62 - real local RPC reviews ALLOW/BLOCK/ERROR, anchors every decision, gates signing and reconciles USDC
+  ---
+  duration_ms: 52241.148625
+  type: 'test'
+  ...
+# Subtest: real local stream escrow, authenticated request reuse, cancellation earnings and refund reconcile without per-request transactions
+ok 63 - real local stream escrow, authenticated request reuse, cancellation earnings and refund reconcile without per-request transactions
+  ---
+  duration_ms: 17975.603834
+  type: 'test'
+  ...
+# Subtest: denied or substituted stream admission stops before any wallet/provider interaction
+ok 64 - denied or substituted stream admission stops before any wallet/provider interaction
+  ---
+  duration_ms: 565.734042
+  type: 'test'
+  ...
+# Subtest: renders guarded USDC raw units exactly at six decimals
+ok 65 - renders guarded USDC raw units exactly at six decimals
+  ---
+  duration_ms: 2.89125
+  type: 'test'
+  ...
+# Subtest: does not round large integer balances through floating point
+ok 66 - does not round large integer balances through floating point
+  ---
+  duration_ms: 0.354292
+  type: 'test'
+  ...
+# Subtest: ToolBuyer help and malformed seeds use one JSON envelope before network or listeners
+ok 67 - ToolBuyer help and malformed seeds use one JSON envelope before network or listeners
+  ---
+  duration_ms: 809.813458
+  type: 'test'
+  ...
+# Subtest: ToolBuyer held-out benchmark counts trials and every answer, reports the strong baseline honestly
+ok 68 - ToolBuyer held-out benchmark counts trials and every answer, reports the strong baseline honestly
+  ---
+  duration_ms: 431.370584
+  type: 'test'
+  ...
+# Subtest: ToolBuyer synthetic providers charge idempotently and reject substituted task reuse
+ok 69 - ToolBuyer synthetic providers charge idempotently and reject substituted task reuse
+  ---
+  duration_ms: 116.187917
+  type: 'test'
+  ...
+# Subtest: ToolBuyer evidence verifier rejects altered labels, costs, provider choices and decision traces
+ok 70 - ToolBuyer evidence verifier rejects altered labels, costs, provider choices and decision traces
+  ---
+  duration_ms: 115.591875
+  type: 'test'
+  ...
+# Subtest: claimable estimates subtract prior withdrawals and release the final integer remainder at expiry
+ok 71 - claimable estimates subtract prior withdrawals and release the final integer remainder at expiry
+  ---
+  duration_ms: 1.247542
+  type: 'test'
+  ...
+# Subtest: stream form validates the actual default duration, balance and exact raw-unit flow rate
+ok 72 - stream form validates the actual default duration, balance and exact raw-unit flow rate
+  ---
+  duration_ms: 12.086417
+  type: 'test'
+  ...
+# Subtest: validates current evidence and rejects a mismatched asset, scale or missing price before rendering
+ok 73 - validates current evidence and rejects a mismatched asset, scale or missing price before rendering
+  ---
+  duration_ms: 0.402583
+  type: 'test'
+  ...
+# Subtest: diagram starts empty, shows actual escrow funding mid-run, and settles from the recorded events
+ok 74 - diagram starts empty, shows actual escrow funding mid-run, and settles from the recorded events
+  ---
+  duration_ms: 1.801166
+  type: 'test'
+  ...
+# Subtest: DENY and preview projection never invent a funded stream or paid calls
+ok 75 - DENY and preview projection never invent a funded stream or paid calls
+  ---
+  duration_ms: 12.222666
+  type: 'test'
+  ...
+# Subtest: diagram copies decisions without evaluating prices, handles missing evidence, deduplicates hashes and hides unverified amounts
+ok 76 - diagram copies decisions without evaluating prices, handles missing evidence, deduplicates hashes and hides unverified amounts
+  ---
+  duration_ms: 0.540791
+  type: 'test'
+  ...
+# Subtest: token and price formatters use integer math, preserve USDC precision and truncate ETH to four decimals
+ok 77 - token and price formatters use integer math, preserve USDC precision and truncate ETH to four decimals
+  ---
+  duration_ms: 1.014459
+  type: 'test'
+  ...
+# Subtest: every recorded timeline title stays compact and nodes point back to source events
+ok 78 - every recorded timeline title stays compact and nodes point back to source events
+  ---
+  duration_ms: 20.789625
+  type: 'test'
+  ...
+# Subtest: guarded recorded run carries its own enforcement marker and observed payout amounts
+ok 79 - guarded recorded run carries its own enforcement marker and observed payout amounts
+  ---
+  duration_ms: 1.533333
+  type: 'test'
+  ...
+# Subtest: shutdown progress, confirmed settlement and unresolved transactions remain separate facts
+ok 80 - shutdown progress, confirmed settlement and unresolved transactions remain separate facts
+  ---
+  duration_ms: 0.524041
+  type: 'test'
+  ...
+# Subtest: four latest scenario choices stay stable while earlier captures remain selectable
+ok 81 - four latest scenario choices stay stable while earlier captures remain selectable
+  ---
+  duration_ms: 40.671458
+  type: 'test'
+  ...
+# Subtest: ancillary spend ALLOW does not hide lifecycle CLOSE, while spend BLOCK remains visible
+ok 82 - ancillary spend ALLOW does not hide lifecycle CLOSE, while spend BLOCK remains visible
+  ---
+  duration_ms: 0.597291
+  type: 'test'
+  ...
+1..82
+# tests 82
+# suites 0
+# pass 82
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 53348.007458

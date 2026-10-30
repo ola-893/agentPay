@@ -1,0 +1,24 @@
+{
+  "verifiedAt": "2026-10-30T08:24:56.445Z",
+  "runId": "20261030T081657Z-7368b5c2",
+  "checks": [
+    {
+      "transactionHash": "0xfc14d6aae56bb381090f604f2ef4a9429d6bd1ccc19697463cda082479dccf13",
+      "root": "0x14e522f45e0df55369cd429503c286414819650cd4186a87392646498ff21d81",
+      "firstSequence": 99,
+      "count": 1,
+      "blockNumber": 12025431,
+      "blockHash": "0x32e68f475d55efe8f6a4828e87ac8b749f75e438eda078534fdec9781886888f",
+      "canonicalReceiptVerified": true
+    },
+    {
+      "transactionHash": "0x3f8d4cd4ca1926f8704364825119004ce035f741c8d078a704115b277bb3563a",
+      "root": "0x3221f279944a90485aaff2fafae120ea878917124680b9124c2c16121e33bc3e",
+      "firstSequence": 96,
+      "count": 3,
+      "blockNumber": 12025428,
+      "blockHash": "0xd707567a051a3d141e90eaab2de1a3c78f492ff6a8a9fe326315eeea8e599c98",
+      "canonicalReceiptVerified": true
+    }
+  ]
+}

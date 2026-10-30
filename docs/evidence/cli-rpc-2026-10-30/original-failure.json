@@ -1,0 +1,60 @@
+{
+  "runId": "20261029T153720Z-a8c308af",
+  "failedAt": "2026-10-29T15:41:18.674Z",
+  "code": "OPERATION_FAILED",
+  "message": "Stream demo failed; inspect evidence.",
+  "streamId": null,
+  "closeAttempted": false,
+  "underlyingRpcErrorSaved": false,
+  "readOnlyDiagnosis": [
+    {
+      "network": "11155111",
+      "activeStreamId": "0",
+      "nextPolicyNonce": "7",
+      "usdcBalanceRaw": "39882552",
+      "allowanceRaw": "10000",
+      "savedSignerMatches": true,
+      "permitDeadline": 1793288652
+    },
+    {
+      "blockNumber": 12020461,
+      "timestamp": 1793288352,
+      "secondsBeforePermitDeadline": 300,
+      "eth_call": {
+        "ok": true,
+        "result": "0x"
+      },
+      "eth_estimateGas": {
+        "ok": true,
+        "result": "0x22387b"
+      }
+    },
+    {
+      "blockNumber": 12020466,
+      "timestamp": 1793288412,
+      "secondsBeforePermitDeadline": 240,
+      "eth_call": {
+        "ok": true,
+        "result": "0x"
+      },
+      "eth_estimateGas": {
+        "ok": true,
+        "result": "0x22387b"
+      }
+    },
+    {
+      "blockNumber": 12020470,
+      "timestamp": 1793288460,
+      "secondsBeforePermitDeadline": 192,
+      "eth_call": {
+        "ok": true,
+        "result": "0x"
+      },
+      "eth_estimateGas": {
+        "ok": true,
+        "result": "0x22387b"
+      }
+    }
+  ],
+  "conclusion": "Historical eth_call and eth_estimateGas succeeded at all three saved blocks. The original underlying RPC error was discarded, so its exact cause cannot be established. No stream was opened; nonce 7 remained unused and USDC unchanged at the diagnostic check."
+}
