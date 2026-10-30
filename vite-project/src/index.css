@@ -741,6 +741,8 @@ summary {
 .wf-policy-heading { display: flex; justify-content: space-between; align-items: center; margin: 8px 0; font-size: 12px; }
 .wf-field { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 16px; min-width: 0; }
 .wf-field input { display: block; width: 100%; min-width: 0; padding: 8px; margin-top: 8px; height: 40px; border: 1px solid #ffffff26; border-radius: 8px; background: transparent; font-size: 13px; color: #f1f5f9; }
+.wf-controls .wf-field input:disabled { opacity: 1; color: #e2e8f0; -webkit-text-fill-color: #e2e8f0; cursor: wait; }
+.wf-field-error { display: block; margin-top: 6px; color: #fca5a5; font-size: 11px; }
 .wf-field-pair { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; }
 .wf-advanced-policy { font-size: 11px; color: #94a3b8; }
 .wf-advanced-policy > summary { cursor: pointer; min-height: 32px; align-content: center; }

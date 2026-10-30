@@ -28,6 +28,7 @@ import { formatTokenUnits } from "../lib/token-units.mjs";
 const scenarios = { "tiny-cap": "Cap DENY", "stale-feed": "Stale DENY" };
 function AmountInput({ raw, onChange, label, max, disabled }) {
   const [text, setText] = useState(() => (raw ? formatTokenUnits(raw, 6) : ""));
+  const [error,setError] = useState("");
   const emitted = useRef(raw);
   const input = useRef(null);
   useEffect(() => {
@@ -35,6 +36,7 @@ function AmountInput({ raw, onChange, label, max, disabled }) {
       setText(raw ? formatTokenUnits(raw, 6) : "");
       emitted.current = raw;
       input.current?.setCustomValidity("");
+      setError("");
     }
   }, [raw]);
   return (
@@ -61,20 +63,24 @@ function AmountInput({ raw, onChange, label, max, disabled }) {
             if (BigInt(next) < 1n || BigInt(next) > BigInt(max))
               throw new Error(`Use 0.000001–${formatTokenUnits(max, 6)} USDC.`);
             e.target.setCustomValidity("");
+            setError("");
           } catch (error) {
             next = "";
             e.target.setCustomValidity(error.message);
+            setError(error.message);
           }
           emitted.current = next;
           onChange(next);
         }}
       />
+      {error && <span className="wf-field-error" role="alert">{error}</span>}
     </label>
   );
 }
 function ControlCard({ c }) {
   const profile = c.profile;
   const recorded = c.mode === "recorded";
+  const displayedPay = c.working && c.run.start ? c.run.start.mode === "pay" : c.pay;
   const policy = c.policy;
   const { primary, history } = recordingChoices(c.manifest);
   const selectedItem = c.manifest.find(item => item.id === c.selected);
@@ -93,6 +99,7 @@ function ControlCard({ c }) {
   const runDisabled = recorded
     ? !c.recording
     : c.working ||
+      Boolean(c.agent?.busy && !c.run.summary) ||
       !c.agent ||
       !policy?.depositCapRaw ||
       !policy?.maxRateRawPerSecond ||
@@ -109,13 +116,13 @@ function ControlCard({ c }) {
       <div className="wf-balances">
         <span
           title={`${c.balances?.usdcRaw ?? "Unknown"} raw units; ${
-            recorded ? "at recorded run start" : "observed at preflight"
+            recorded ? "at recorded run start" : c.balances?.usdcSource || "observed at preflight"
           }`}
         >
           {formatUsdc(c.balances?.usdcRaw).replace(" USDC", "")}{" "}
           <small>test USDC</small>
         </span>
-        <span title={`${c.balances?.ethRaw ?? "Unknown"} wei`}>
+        <span title={`${c.balances?.ethRaw ?? "Unknown"} wei; ${recorded ? "at recorded run start" : c.balances?.ethSource || "observed at preflight"}`}>
           {formatEth(c.balances?.ethRaw)}
         </span>
       </div>
@@ -140,11 +147,11 @@ function ControlCard({ c }) {
               the CLI scenario.
             </p>
             <p>
-              Balances are{" "}
+              USDC balance is{" "}
               {recorded
                 ? "historical run-start observations"
-                : `observations from ${c.agent?.observedAt || "preflight"}`}
-              . ETH is truncated to four decimals.
+                : c.balances?.usdcSource || "observed at preflight"}
+              . ETH is a preflight/run-start observation, truncated to four decimals.
             </p>
             {recorded && (
               <pre tabIndex={0}>{JSON.stringify(profile.policy, null, 2)}</pre>
@@ -409,7 +416,7 @@ function ControlCard({ c }) {
             <div className="wf-mode" role="group" aria-label="Payment mode">
               <button
                 type="button"
-                aria-pressed={!c.pay}
+                aria-pressed={!displayedPay}
                 disabled={c.working}
                 onClick={() => {
                   c.setPay(false);
@@ -420,7 +427,7 @@ function ControlCard({ c }) {
               </button>
               <button
                 type="button"
-                aria-pressed={c.pay}
+                aria-pressed={displayedPay}
                 disabled={c.working || !c.agent.payEnabled || !c.agent.payReady}
                 title={
                   !c.agent.payEnabled
@@ -437,13 +444,13 @@ function ControlCard({ c }) {
                 Pay
               </button>
             </div>
-            {c.pay && (
+            {displayedPay && (
               <label className="wf-confirm">
                 <input
                   type="checkbox"
                   required
                   disabled={c.working}
-                  checked={c.confirmed}
+                  checked={c.confirmed || (c.working && c.run.start?.mode === "pay")}
                   onChange={(e) => c.setConfirmed(e.target.checked)}
                 />
                 Authorize 0.01 test USDC + gas.
@@ -460,7 +467,7 @@ function ControlCard({ c }) {
           disabled={runDisabled}
         >
           <Play size={15} />{" "}
-          {c.busy ? "Running…" : c.pay ? "Run Pay" : "Run Preview"}
+          {c.busy ? c.run.events.length ? "Running…" : "Starting…" : c.pay ? "Run Pay" : "Run Preview"}
         </button>
       )}
       {!recorded && (c.activeId || c.agent?.activeRunId) && (
@@ -592,7 +599,7 @@ export function WorkflowDashboardView({ c }) {
                 ? `${c.run.events.length} events · ${
                     state.decision || "Running"
                   }`
-                : "Waiting for events"}
+                : c.busy ? "Checking local runner and wallet…" : "Waiting for events"}
             </span>
           )}
         </div>

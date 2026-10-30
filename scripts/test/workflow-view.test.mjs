@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
   deriveDiagramState,
+  liveBalanceObservation,
   formatUsdc,
   formatEth,
   formatPrice,
@@ -62,7 +63,7 @@ test("DENY and preview projection never invent a funded stream or paid calls", a
     if (item.preset) assert.equal(state.decision, "DENY");
     assert.equal(state.fundedRaw, "0");
     assert.equal(state.closed, false);
-    assert.equal(state.successfulRequests, null);
+    assert.equal(state.successfulRequests, 0);
     assert.equal(state.reuseTransactions, null);
     assert.equal(state.transaction, null);
   }
@@ -151,6 +152,42 @@ test("token and price formatters use integer math, preserve USDC precision and t
     shortAddress("0xe26468ae02368a75DBDBea58F367B7313942ad26"),
     "0xe264…ad26"
   );
+});
+test("live balance labels distinguish preflight, run-start ETH and run-end USDC", () => {
+  const agent={balances:{usdcRaw:"10000",ethRaw:"1000"}};
+  assert.equal(liveBalanceObservation(agent,{}).usdcRaw,"10000");
+  const run={start:{balances:{payerUsdcRaw:"9000",payerEthRaw:"900"}},summary:{balances:{after:{agentBalanceRaw:"8000"}}}};
+  const shown=liveBalanceObservation(agent,run);
+  assert.equal(shown.usdcRaw,"8000");assert.equal(shown.ethRaw,"900");
+  assert.equal(shown.usdcSource,"at run end");assert.match(shown.ethSource,/run start/);
+});
+test("running status explains spend-review and signed-funding waits without claiming confirmation",()=>{
+  const e=(type,data)=>({type,data,seq:1});
+  const review=deriveDiagramState([e("cre.result",{target:"spend",decision:"ALLOW"})]);
+  assert.equal(workflowStatus(review).title,"Spend review passed · anchoring audit receipts");
+  const pending=deriveDiagramState([e("wallet.tx",{kind:"open",hash:"0x"+"b".repeat(64),status:"submitting"})]);
+  assert.equal(workflowStatus(pending).title,"Funding stream · awaiting confirmations");
+  assert.equal(pending.fundedRaw,null);
+});
+test("completed preview is explicit and never labels a failed preview complete", () => {
+  const start={type:"run.start",data:{mode:"preview"},seq:1};
+  const end={type:"run.end",data:{status:"completed",fundedRaw:"0",earnedRaw:"0",refundedRaw:"0"},seq:2};
+  const state=deriveDiagramState([start,end]);
+  assert.equal(state.successfulRequests,0);
+  assert.equal(workflowStatus(state).title,"Preview complete · no payment signed");
+  assert.equal(workflowStatus(deriveDiagramState([start,{...end,data:{...end.data,status:"failed"}}])).title,"Run failed");
+});
+test("failed unsigned account checks show no funding instead of recovery or uncertain escrow",()=>{
+  const events=[{type:"run.start",data:{mode:"preview"},seq:1},
+    {type:"error",data:{code:"CRE_ACCOUNT_UNAVAILABLE"},seq:2},
+    {type:"run.end",data:{status:"failed",cleanup:"not-funded",amountsVerified:false,fundedRaw:"0",earnedRaw:null,refundedRaw:null},seq:3}];
+  const state=deriveDiagramState(events);
+  assert.equal(state.notFunded,true);assert.equal(state.unverified,false);
+  assert.equal(state.earnedRaw,"0");assert.equal(state.refundedRaw,"0");
+  assert.match(workflowStatus(state).title,/no stream funded/);
+  assert.doesNotMatch(workflowStatus(state).detail,/recovery/);
+  const submitted=deriveDiagramState([events[0],{type:"wallet.tx",seq:2,data:{kind:"open",hash:"0x"+"a".repeat(64),status:"submitting"}},...events.slice(1)]);
+  assert.equal(submitted.notFunded,false);assert.equal(submitted.unverified,true);
 });
 test("every recorded timeline title stays compact and nodes point back to source events", async () => {
   for (const item of index.runs)

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { reduceRun, validateRun } from "../lib/run-events.mjs";
-import { recordingChoices } from "../lib/workflow-view.mjs";
+import { recordingChoices,liveBalanceObservation } from "../lib/workflow-view.mjs";
 const empty = () => ({ events: [], status: "idle" });
 const localDev =
   import.meta.env.DEV &&
@@ -81,6 +81,7 @@ export default function useWorkflowRun() {
         );
       const data = await response.json();
       setAgent(data);
+      setError("");
       setConnection(
         "Local server connected. CRE and signing run on this computer."
       );
@@ -154,7 +155,7 @@ export default function useWorkflowRun() {
     run.start || (mode === "recorded" ? recording?.events[0].data : null);
   const balances =
     mode === "live"
-      ? agent?.balances
+      ? liveBalanceObservation(agent,run)
       : {
           usdcRaw: info?.balances.payerUsdcRaw,
           ethRaw: info?.balances.payerEthRaw,
@@ -173,6 +174,7 @@ export default function useWorkflowRun() {
   }
   function listen(id) {
     source.current?.close();
+    setError("");
     setRun(empty());
     setActiveId(id);
     setBusy(true);

@@ -67,6 +67,7 @@ export function eventNodes(event) {
 export function deriveDiagramState(events = []) {
   const state = {
     status: "idle",
+    mode: null,
     contractPolicySignatures: false,
     decision: null,
     target: null,
@@ -82,6 +83,7 @@ export function deriveDiagramState(events = []) {
     interrupted: false,
     errorCode: null,
     unverified: false,
+    notFunded: false,
     successfulRequests: null,
     failedRequests: null,
     reuseTransactions: null,
@@ -93,14 +95,20 @@ export function deriveDiagramState(events = []) {
     summary: null,
     packet: null,
     lastSeq: 0,
+    latestEvent: null,
   };
   const transactions = new Map(),
     receipts = new Map();
   for (const event of events) {
     const d = event.data;
-    if (event.type === "run.start") state.contractPolicySignatures = d.contractPolicySignatures === true;
+    if (event.type === "run.start") {
+      state.contractPolicySignatures = d.contractPolicySignatures === true;
+      state.mode = d.mode;
+      if (d.mode === "preview") { state.successfulRequests = 0; state.failedRequests = 0; }
+    }
     state.status = "running";
     state.lastSeq = event.seq;
+    state.latestEvent = event;
     state.active = eventNodes(event);
     state.inputs = [];
     state.packet = null;
@@ -159,13 +167,14 @@ export function deriveDiagramState(events = []) {
     if (event.type === "run.end") {
       state.status = d.status;
       state.summary = d;
-      state.unverified = d.amountsVerified === false && !state.settlementVerified;
+      state.notFunded = d.cleanup === "not-funded" && transactions.size === 0 && state.fundedRaw == null;
+      state.unverified = d.amountsVerified === false && !state.settlementVerified && !state.notFunded;
       // An interrupted run may lack a complete summary while an earlier
       // stream.closed event already established its settlement amounts.
       if (!state.settlementVerified) {
         state.fundedRaw = state.unverified ? null : d.fundedRaw;
-        state.earnedRaw = state.unverified ? null : d.earnedRaw;
-        state.refundedRaw = state.unverified ? null : d.refundedRaw;
+        state.earnedRaw = state.unverified ? null : state.notFunded ? "0" : d.earnedRaw;
+        state.refundedRaw = state.unverified ? null : state.notFunded ? "0" : d.refundedRaw;
       }
       state.inputs = [];
       state.active = [];
@@ -283,6 +292,11 @@ export function workflowStatus(state) {
     tone: "allow",
   };
   const pending = [...state.transactions].reverse().find(t => t.status !== "confirmed");
+  if (state.status === "failed" && state.notFunded) return {
+    title: ["CRE_ACCOUNT_UNAVAILABLE","CRE_AUTH_REQUIRED"].includes(state.errorCode) ? "CRE account check failed · no stream funded" : "Run stopped before stream funding",
+    detail: ["CRE_ACCOUNT_UNAVAILABLE","CRE_AUTH_REQUIRED"].includes(state.errorCode) ? "Check cre whoami in the local terminal. Reauthenticate with cre login only if needed, then retry when the account is reachable." : "No stream transaction was observed. Check the local CLI evidence before retrying.",
+    tone: "warn",
+  };
   if (state.cleanup === "needs-attention" || state.status === "failed") return {
     title: pending ? "Confirmation unresolved" : state.cleanup === "needs-attention" ? "Cleanup needs inspection" : stop,
     detail: pending ? "Inspect the signed transaction before retrying. Its final outcome is not confirmed here." : "Check the CLI evidence and stream state. An active stream may need separate operator recovery.",
@@ -299,7 +313,48 @@ export function workflowStatus(state) {
     detail: "The policy process must approve and sign the exact stream closure before audited cancellation.",
     tone: "neutral",
   };
+  if (state.summary && state.status === "completed" && state.mode === "preview") return {
+    title: "Preview complete · no payment signed",
+    detail: "Live model and CRE checks finished. Escrow was not funded; paid service access stayed locked.",
+    tone: "allow",
+  };
+  if (state.summary && state.status === "denied" && state.fundedRaw === "0") return {
+    title: "Policy stopped funding",
+    detail: "CRE rejected the proposal before any stream was funded. Inspect the decision in the timeline.",
+    tone: "warn",
+  };
+  if (state.status === "running") {
+    const event=state.latestEvent, d=event?.data || {};
+    if (pending) return {
+      title: pending.kind === "approval" ? "Approving USDC · awaiting confirmations" : "Funding stream · awaiting confirmations",
+      detail: "The wallet signed this transaction. Wait for the confirmed receipt before starting another run.",
+      tone: "neutral",hash:pending.hash,
+    };
+    if (event?.type === "cre.result" && d.target === "spend" && d.decision === "ALLOW") return {
+      title: "Spend review passed · anchoring audit receipts",
+      detail: "The exact transaction passed dry-run and risk checks. Audit receipt verification must finish before wallet signing.",
+      tone: "neutral",
+    };
+    if (event?.type === "audit.receipt") return {
+      title: "Audit receipt confirmed",
+      detail: "The local runner is verifying proofs and preparing the next safe step.",tone:"neutral",
+    };
+    if (event?.type === "step.start" && d.stage === "cre") return {
+      title: "Running local CRE checks",
+      detail: "Reading external inputs and Sepolia state. The workflow result will appear in the timeline.",tone:"neutral",
+    };
+  }
   return null;
+}
+export function liveBalanceObservation(agent,run) {
+  const after = run.summary?.balances?.after?.agentBalanceRaw;
+  const start = run.start?.balances;
+  return {
+    usdcRaw: after ?? start?.payerUsdcRaw ?? agent?.balances?.usdcRaw,
+    ethRaw: start?.payerEthRaw ?? agent?.balances?.ethRaw,
+    usdcSource: after != null ? "at run end" : start ? "at run start" : "observed at preflight",
+    ethSource: start ? "at run start; gas spend is not included" : "observed at preflight",
+  };
 }
 export const recordingScenario = item => item.mode === "pay" ? "funded" : item.preset || "preview";
 export function recordingChoices(items) {
