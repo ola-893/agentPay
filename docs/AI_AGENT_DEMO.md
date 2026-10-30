@@ -136,6 +136,13 @@ from DON authentication. `--json` emits one result envelope on stdout and progre
 on stderr; `--events ndjson` emits public versioned events. No secret or signed
 transaction payload is saved.
 
+A pre-execution organization-lookup failure gets one retry with unchanged inputs;
+invalid credentials, compilation/execution failures and policy results do not.
+Completed failed authentication attempts are retained as sibling `*.attempt-N.log`
+files. If both account lookups fail, `CRE_ACCOUNT_UNAVAILABLE` reports `cre whoami`
+and conditional `cre login` instructions with the exact transcript path. Named
+CLI errors survive the separate policy-process boundary. [Troubleshooting](reference/troubleshooting.md#ai-cli-demo).
+
 Each `.local/agent-demo/runs/<id>/` contains original `policy/` CRE evidence,
 `policy-open.json` / `policy-close.json` public permits, transaction journals,
 `settlement.json`, model events and either `result.json` or `failure.json`.

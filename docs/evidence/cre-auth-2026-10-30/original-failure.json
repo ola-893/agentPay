@@ -1,0 +1,9 @@
+{
+  "runId": "20261030T095647Z-d1fc6ff4",
+  "failedAt": "2026-10-30T09:58:05.507Z",
+  "code": "POLICY_SIGNER",
+  "message": "Stream demo failed; inspect evidence.",
+  "streamId": null,
+  "fundingAttempted": false,
+  "diagnosis": "CRE credential validation could not retrieve organization information; no stream-policy result was produced."
+}

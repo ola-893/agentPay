@@ -1,0 +1,74 @@
+
+  AGENTPAY
+  Deterministic payment guardrails with Chainlink CRE
+  ------------------------------------------------------------------------------------
+  Working        Checking Sepolia deployment and wallet...
+  Mode           PREVIEW / no transactions
+  Agent          Qwen / qwen3.5-plus
+  Wallet         0xe26468ae…42ad26 / 39.881352 USDC
+  Recipient      0x9950D895…fE79f7
+  CRE            Local CLI execution / deterministic rules
+  Authority      Separate policy signer; contract verifies OPEN / CLOSE
+  Budget         Live AI + CRE checks; no funding or paid access
+  Details        Full commands, addresses and evidence: --verbose
+  Escrow         0x35f5F69A…4dfA09
+  Working        Agent choosing the next service request...
+
+  01  AGENT / Basic research
+  Request        Buy service access through a reusable payment stream
+  Quote          0.01 USDC / 16m 40s stream
+  Rate           0.00001 USDC/s
+
+  02  CRE / PRICE SAFETY
+  CRE CLI        payment-guard / staging-settings
+  Working        Executing the local CRE workflow...
+  Chainlink      $0.9996608 USDC/USD / finalized read
+  Coinbase       $1.00 USDC/USD / HTTP
+  Price rules    Peg within 1%; source gap at most 1%
+  Freshness      57m 52s old / limit 24h 0m
+  Decision       ALLOW / Within payment policy
+
+  03  CRE / STREAM ADMISSION
+  CRE CLI        payment-guard / stream-settings
+  Working        Executing the local CRE workflow...
+  Health         Available / 0 successful / 0 failed
+  Budget         0.01 USDC deposit / max 0.10 USDC
+  Rate limit     0.0001 USDC/s
+  Failure limit  3 failed requests
+  Sepolia        Read block 12025963 / USDC balance and decimals
+  Decision       OPEN / Service healthy and within budget
+  Payment        Skipped in preview; content remains locked
+  Working        Agent choosing the next service request...
+
+  04  AGENT / Premium research
+  Request        Evaluate the higher-cost service against the same guardrails
+  Quote          0.20 USDC / 16m 40s stream
+  Rate           0.0002 USDC/s
+
+  05  CRE / BUDGET CHECK
+  CRE CLI        payment-guard / stream-settings
+  Working        Executing the local CRE workflow...
+  Health         Available / 0 successful / 0 failed
+  Budget         0.20 USDC deposit / max 0.10 USDC
+  Rate limit     0.0001 USDC/s
+  Failure limit  3 failed requests
+  Sepolia        Read block 12025964 / USDC balance and decimals
+  Decision       DENY / Deposit exceeds spending cap
+  Wallet         No transaction signed; balances and nonce unchanged
+  Working        Agent summarizing verified results...
+
+  ------------------------------------------------------------------------------------
+  COMPLETE  Run checks passed
+
+  Basic          OPEN approved / preview only
+  Premium        DENIED / deposit exceeds 0.1 USDC cap
+  Funded         0.00 USDC
+  Earned         0.00 USDC to recipient
+  Refunded       0.00 USDC to payer
+  Payer          39.881352 -> 39.881352 USDC
+  Transaction    None / stream was not funded
+
+  Audit          3 decisions pending
+  Gas            Audit receipt transactions are additional to stream transactions
+  Evidence       .local/agent-demo/runs/20261030T100514Z-bca07ce4
+

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-10-30T10:12:38.673Z",
+  "runId": "20261030T100514Z-bca07ce4",
+  "files": {
+    "VERIFICATION.md": "05507893f305a0e3320d99129931edd2a6ba40514dcb6232301cce223fe781f8",
+    "original-failure.json": "d4cef70c74d65d02f66816437e3a0d3a1f402af4f4c2c8f02164682da6574db7",
+    "original-stream-open.log": "ad9eb7c5f8f59c5f9855b8f373f97531adb3c7f27af8c21bd9afbb67cf127940",
+    "preview-policy/cre-price.config.json": "e7f0b0378214fb75e6cc1ad16a0ff21393fa889c539c936391c65c45738157af",
+    "preview-policy/cre-price.json": "4835f684a9a61f157caebdfa48bc6a8344e93d0dffb2c799f7fbc2e7873624cb",
+    "preview-policy/cre-price.log": "5ec44f317dbd36194dbaabc7b755bbf9137312bab67f1ac9d80f3b58d59ba4a4",
+    "preview-policy/stream-deny.config.json": "9f80dc09d181fa107615a4910f83bf1c76a625723372b36c01550acc3b1a2b8e",
+    "preview-policy/stream-deny.json": "890f1c8e087878b87e0c8ce4b588fe2a6febfa8fb97ee779a95edcead3b68bc6",
+    "preview-policy/stream-deny.log": "4cd15185140bcb52c117e067b01589a4597f5c1587919774159bbe03f76455e3",
+    "preview-policy/stream-open.config.json": "bc1a6e4535328ec1367397d59c81ba8266701bb6b7113e246b7426f12f42906d",
+    "preview-policy/stream-open.json": "ddb5e4b3862e191da2b688af6ef7796fd02f1881e1de9d4f9fd342d129a413db",
+    "preview-policy/stream-open.log": "32520276b4ad41096bd1f5548059e3300cbe4da8d6aece431e91561654434213",
+    "preview-result.json": "c6d31aedabeb3f3eb5f80ee680f4b06876748c811d5203b68ffc50740c5c2359",
+    "preview-terminal.log": "fd9641770c0a23c4ee34070a018905aacf3498e603774c4a96a2b14e17e4d677",
+    "wallet-rpc.json": "b6bd7f7a596a43e0028be5aa65ab775bf1c5fb4d9a601d93153205ccdc37b113"
+  }
+}

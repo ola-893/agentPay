@@ -57,6 +57,8 @@ Then rerun `npm run cre:dry-run`. The [before/after evidence](../evidence/networ
 | `PRESIGN_INTENT_EXPIRED` / `PRESIGN_INTENT_CHANGED` | Signing stopped because the exact reviewed intent is no longer valid. Do not extend its expiry or replace its calldata. Inspect saved transaction hashes and active stream state before starting a new run. |
 | Payment confirmation uncertain | Inspect this run's `approval.json`, `open.json` and `close.json` before another paid run. A new `--pay` can fund another stream. For guarded escrow use `npm run recover:guarded-stream -- --stream-id <id>` with its separate owner key/ETH. `--close-stream` is legacy-only. |
 | CRE authentication fails after funding | No fresh policy permit can be issued. Inspect the active stream and use separate operator recovery; do not invent CLOSE, retry funding or loosen policy. [Actual failure/recovery](../evidence/guarded-retest/VERIFICATION.md). |
+| `CRE_ACCOUNT_UNAVAILABLE` | The CRE CLI could not retrieve account/organization information during credential validation. AgentPay retries once only when this occurs before compilation/execution; completed failed attempts remain in `*.attempt-1.log` / `*.attempt-2.log` beside the main transcript. Run `cre whoami`. If it reports invalid credentials, run `cre login`; otherwise wait and retry when the service is reachable. This is separate from workflow deployment access. |
+| `CRE_AUTH_REQUIRED` | Missing/invalid CRE credentials stop immediately. Run `cre whoami`, then `cre login` if needed. A failed credential check is not a policy DENY and produces no accepted workflow decision. |
 | `POLICY_SIGNATURE_REQUIRED` / `OPERATOR_RECOVERY_REQUIRED` | The agent cannot cancel guarded escrow without approval. Use the operator recovery key, never the agent key. |
 | `EXISTING_DEPLOYMENT` | The helper refuses the committed deployment record. It is not an independent-checkout bootstrap; inspect [operator limitations](../GUARDED_STREAMS.md#deploy-and-run). |
 | Strict SDK says unauthorized | The AI CLI uses local policy signatures on its separate guarded escrow. Its simulation cannot authorize the closed public strict guard. |
@@ -64,6 +66,8 @@ Then rerun `npm run cre:dry-run`. The [before/after evidence](../evidence/networ
 Provider failures do not trigger a rules-based agent or automatic provider fallback. Model summaries are untrusted prose; use the host-verified status, raw units and receipt as evidence.
 
 The [October 30 RPC fixes and successful retest](../evidence/cli-rpc-2026-10-30/VERIFICATION.md) include the original failed call, a read-only historical reproducer, canonical audit-receipt verification and the completed stream #5 lifecycle.
+
+The separate [CRE account-validation incident](../evidence/cre-auth-2026-10-30/VERIFICATION.md) includes the original credential error, successful unsigned OPEN/DENY retest and unchanged-USDC/no-active-stream verification.
 
 ## SDK TypeScript dependency identity
 
