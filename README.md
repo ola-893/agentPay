@@ -104,9 +104,9 @@ To escrow up to 0.01 test USDC and demonstrate the full lifecycle:
 npm run --silent demo:agent -- --pay
 ```
 
-The paid demo reuses one stream for ten successful API requests, observes CRE `CONTINUE`, injects three labeled service failures, then obtains `CLOSE` and cancels with verified earnings/refund. Premium proposes a 0.2 deposit against a 0.1 cap and must be denied. Each paid invocation is a new stream and uses test ETH gas. `--verbose` shows model details; `--json` preserves structured output. Recovery uses `--close-stream <id>`.
+The paid demo reuses one stream for ten successful API requests, observes CRE `CONTINUE`, injects three labeled service failures, then obtains `CLOSE` and cancels with verified earnings/refund. Premium proposes a 0.2 deposit against a 0.1 cap and must be denied. Each paid invocation is a new stream and uses test ETH gas. Default output follows numbered stages with readable USDC amounts, CRE decisions and confirmation updates. `--verbose` adds full commands, raw units, paths, addresses, hashes and model details; `--json` preserves structured output. Guarded recovery uses `npm run recover:guarded-stream -- --stream-id <id>`; `--close-stream <id>` is legacy-only.
 
-The CLI displays the exact CRE command, HTTP observations, Sepolia read block, policy limits and transcript paths. [Inspect the recorded CRE work](docs/CRE_SUBMISSION.md#inspect-the-cre-work).
+The CLI displays live oracle and health observations, Sepolia read blocks and policy limits. Full CRE commands and original transcript paths are available with `--verbose` and are always saved with the run evidence. [Inspect the recorded CRE work](docs/CRE_SUBMISSION.md#inspect-the-cre-work).
 
 The CLI gates wallet signing on local CRE results. **AgentPayGuardedStream independently requires a separate local policy signature for OPEN/CLOSE**, bound to exact intent, nonce and expiry. Older AgentPayStream captures demonstrate CLI-only enforcement. No DON authentication or closed AgentPayGuard/AgentPaySettlement contract is used. This is an AgentPay HTTP 402 streaming protocol, not full x402. The dashboard delegates live execution to the CLI on the same computer; recorded replay and SDK reference material do not authorize payments.
 

@@ -210,6 +210,7 @@ test("stream output shows recorded CRE observations and limits without claiming 
   const lines = [];
   const output = createAgentOutput({
     stream: { isTTY: false, columns: 200 },
+    verbose: true,
     write: (line) => lines.push(line),
   });
   output.start({
@@ -246,16 +247,16 @@ test("stream output shows recorded CRE observations and limits without claiming 
     assert.ok(text.includes(value), `Missing output: ${value}`);
   assert.doesNotMatch(
     text,
-    /onchain CRE authorization accepted|Config SHA256|\x1b/
+    /onchain CRE authorization accepted|\x1b/
   );
-  assert.equal(text.includes(load("stream-open").config.healthUrl), true);
+  assert.equal(text.replace(/\s+/g, "").includes(load("stream-open").config.healthUrl), true);
   const verbose = [];
   createAgentOutput({
     verbose: true,
     write: (line) => verbose.push(line),
     stream: { isTTY: false },
   }).streamEvidence(load("stream-open"));
-  assert.ok(verbose.join("\n").includes(load("stream-open").logSha256));
+  assert.ok(verbose.join("").replace(/\s+/g, "").includes(load("stream-open").logSha256));
 });
 test("terminal styles never leak to JSON, redirected or NO_COLOR output, and model control sequences are stripped", () => {
   for (const options of [
@@ -528,11 +529,12 @@ test("agent CRE runner uses workflow-relative short paths and strips agent crede
     });
     const lines = [];
     createAgentOutput({
+      verbose: true,
       stream: { isTTY: false },
       write: (line) => lines.push(line),
     }).creInvocation(invocation);
-    const text = lines.join("\n").replace(/\s+/g, " ");
-    assert.ok(text.includes(invocation.command.join(" ")));
+    const text = lines.join("").replace(/\s+/g, "");
+    assert.ok(text.includes(invocation.command.join("").replace(/\s+/g, "")));
     assert.ok(text.includes(invocation.transcriptPath));
   } finally {
     for (const key of keys)

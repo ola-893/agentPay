@@ -53,7 +53,8 @@ Default: real AI + deterministic local CRE admission preview; no signing or fund
            then cancel: earned funds go to the recipient and unused funds refund.
            A new paid run can fund another stream and uses test ETH for gas.
 --close-stream <id>  Legacy stream recovery. Guarded recovery uses recover:guarded-stream.
---verbose  Add response IDs, CRE evidence hashes and unverified model text.
+--verbose  Show full CRE commands, paths, raw units, addresses, evidence hashes
+           and unverified model text. Default output follows the demo stages.
 --json     One result envelope on stdout; plain progress on stderr.
 --help     No credentials, API calls, network or transactions.
 
@@ -71,7 +72,9 @@ OPENAI_MODEL=gpt-4.1-mini. Model calls may incur charges; no model/rules fallbac
 CRE uses deterministic rules for price, health, session, budget and rate checks.
 Model-generated text is not payment authorization. The CLI reuses validated sessions
 and follows checked lifecycle outcomes to reduce avoidable spending.
-CRE commands, observed inputs, policy limits and transcript paths are shown.
+Default output shows CRE stages, live inputs, policy limits and decisions.
+Full CRE commands and original transcript paths are available with --verbose
+and are always saved in the run evidence.
 Every business transaction requires dry-run, risk review, durable blob and receipt.
 Preview logs decisions locally without signing; --pay also spends audit gas.
 CRE stays local. CLI checks gate wallet signing; the contract enforces escrow
@@ -214,6 +217,7 @@ await cli.cliMain(
       if (data.state === "submitting") output.streamTransaction(kind, data);
     };
     try {
+      output.preflight();
       const streamAddress = process.env.AGENTPAY_USDC_STREAM_ADDRESS;
       await verifyStreamDeployment(provider, streamAddress);
       guarded = await isGuardedStream(provider, streamAddress);
@@ -244,8 +248,9 @@ await cli.cliMain(
           process.env.AGENTPAY_DECISION_JOURNAL_ADDRESS ||
           journalDeployment?.address,
         anchorEnabled: Boolean(flags.pay || flags["close-stream"]),
-        onProgress: (line) => console.log(`  ${line}`),
+        onProgress: (line) => output.auditProgress(line),
         onReview: (event) => {
+          output.spendReview(event);
           if (event.phase === "start")
             emit("step.start", {
               label: "Dry-running and risk-scoring spend",
@@ -263,13 +268,15 @@ await cli.cliMain(
               source: event.record.source,
             });
         },
-        onReceipt: (batch) =>
+        onReceipt: (batch) => {
+          output.auditReceipt(batch);
           emit("audit.receipt", {
             hash: batch.transactionHash,
             root: batch.root,
             count: batch.entries.length,
             blockNumber: batch.blockNumber,
-          }),
+          });
+        },
       });
       if (flags["close-stream"]) {
         const result = await closeStream({
@@ -530,9 +537,7 @@ await cli.cliMain(
           additionalGate: () => { interruption.assertRunning(); priceGate(); },
           refreshAdmission: async () => {
             const label = `renew-${++refreshes}`;
-            console.log(
-              "  Admission expired during setup; refreshing CRE price and stream checks before signing."
-            );
+            output.refreshing();
             await checkPrice(label);
             admission = await check(q, "admission", label, client);
             completedAt = performance.now();
@@ -884,6 +889,7 @@ await cli.cliMain(
         });
       throw error;
     } finally {
+      humanOutput.dispose();
       interruption.dispose();
       policyClient?.close();
       await appendFile(

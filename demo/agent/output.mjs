@@ -18,7 +18,7 @@ export function createAgentOutput({
   verbose = false,
   stream = json ? process.stderr : process.stdout,
   env = process.env,
-  write = (line) => console.log(line),
+  write: writeLine = (line) => console.log(line),
 } = {}) {
   const color =
     !json &&
@@ -33,6 +33,14 @@ export function createAgentOutput({
   const ok = (text) => paint(text, "32");
   const warning = (text) => paint(text, "33");
   const accent = (text) => paint(text, "36");
+  let waiting;
+  const stopWaiting = () => {
+    if (!waiting) return;
+    clearInterval(waiting);
+    waiting = undefined;
+    stream.write("\r\x1b[2K");
+  };
+  const write = line => { stopWaiting(); writeLine(line); };
   const separator = () =>
     write(`  ${muted((unicode ? "─" : "-").repeat(width))}`);
   const dot = unicode ? " · " : " / ";
@@ -40,28 +48,96 @@ export function createAgentOutput({
     const lines = [];
     for (const paragraph of clean(text).split("\n")) {
       let line = "";
-      for (const word of paragraph.split(/\s+/).filter(Boolean)) {
-        if (line && line.length + word.length + 1 > available) {
-          lines.push(line);
-          line = "";
+      for (const token of paragraph.split(/\s+/).filter(Boolean)) {
+        const words = token.match(new RegExp(`.{1,${available}}`, "gu")) || [token];
+        for (const word of words) {
+          if (line && line.length + word.length + 1 > available) {
+            lines.push(line);
+            line = "";
+          }
+          line += (line ? " " : "") + word;
         }
-        line += (line ? " " : "") + word;
       }
       lines.push(line);
     }
     return lines;
   };
   const field = (label, value, style = (text) => text) => {
-    const lines = wrap(value, Math.max(20, width - 16));
+    const lines = wrap(value, Math.max(12, width - 17));
     lines.forEach((line, index) =>
       write(
-        `  ${index ? " ".repeat(14) : muted(label.padEnd(14))}${style(line)}`
+        `  ${index ? " ".repeat(15) : muted(label.padEnd(15))}${style(line)}`
       )
     );
   };
-  let requestCount = 0;
+  const short = value => verbose ? clean(value) : clean(value).replace(/^(0x[\da-f]{8})[\da-f]+([\da-f]{6})$/i, "$1…$2");
+  const elapsed = seconds => {
+    const n = Math.max(0, Math.floor(seconds));
+    if (n >= 3600) return `${Math.floor(n / 3600)}h ${Math.floor(n % 3600 / 60)}m`;
+    if (n >= 60) return `${Math.floor(n / 60)}m ${n % 60}s`;
+    return `${n}s`;
+  };
+  const reason = value => ({
+    WITHIN_POLICY: "Within payment policy",
+    HEALTHY_WITHIN_BUDGET: "Service healthy and within budget",
+    SERVICE_HEALTHY: "Reuse the funded stream",
+    SERVICE_UNAVAILABLE: "Service unavailable; closure requested",
+    AMOUNT_EXCEEDS_POLICY: "Deposit exceeds spending cap",
+    CLIENT_SHUTDOWN: "Client stopping; closure requested",
+  }[value] || clean(value).replaceAll("_", " ").toLowerCase());
+  let requestCount = 0, stageCount = 0, bannerShown = false, reuseShown = false, reviewActive = false, awaitingBusiness = false;
+  const receiptHashes = new Set();
+  const banner = () => {
+    if (bannerShown) return;
+    bannerShown = true;
+    write("");
+    write(`  ${accent(bold("AGENTPAY"))}`);
+    for (const line of wrap("Deterministic payment guardrails with Chainlink CRE", width)) write(`  ${muted(line)}`);
+    separator();
+  };
+  const stage = label => {
+    write("");
+    const prefix = `${String(++stageCount).padStart(2, "0")}  `;
+    wrap(label, width - prefix.length).forEach((line, index) =>
+      write(`  ${accent(index ? " ".repeat(prefix.length) : prefix)}${bold(line)}`));
+  };
+  const waitFor = label => {
+    stopWaiting();
+    // Only animate a real colored terminal. Logs, JSON, NO_COLOR and dumb
+    // terminals receive stable text, with no cursor control or timer.
+    if (!color || typeof stream.write !== "function") { field("Working", label); return; }
+    const started = Date.now(), frames = unicode ? ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"] : ["-", "\\", "|", "/"];
+    let frame = 0;
+    const render = () => {
+      const time = elapsed((Date.now() - started) / 1000);
+      const available = Math.max(8, width - time.length - 5);
+      const text = clean(label);
+      const visible = text.length > available ? text.slice(0, available - 1) + "…" : text;
+      stream.write(`\r\x1b[2K  ${accent(frames[frame++ % frames.length])} ${visible} ${time}`);
+    };
+    render();
+    waiting = setInterval(render, 120);
+    waiting.unref();
+  };
   return {
+    preflight() {
+      if (!verbose) banner();
+      waitFor("Checking Sepolia deployment and wallet...");
+    },
+    dispose: stopWaiting,
     start({ settings, payer, recipient, balanceRaw, guarded = false }) {
+      if (!verbose) {
+        banner();
+        field("Mode", pay ? "LIVE PAYMENT / Ethereum Sepolia" : "PREVIEW / no transactions", pay ? accent : warning);
+        field("Agent", `${title(settings.provider)} / ${settings.model}`);
+        field("Wallet", `${short(payer)}${dot}${amount(balanceRaw)} USDC`);
+        field("Recipient", short(recipient));
+        field("CRE", "Local CLI execution / deterministic rules");
+        field("Authority", guarded ? "Separate policy signer; contract verifies OPEN / CLOSE" : "CLI signing checks; contract enforces escrow accounting");
+        field("Budget", pay ? "Up to 0.01 USDC escrow + gas for stream and audit transactions" : "Live AI + CRE checks; no funding or paid access");
+        field("Details", "Full commands, addresses and evidence: --verbose");
+        return;
+      }
       write("");
       write(`  ${accent(bold("AgentPay"))}  ${muted("Deterministic CRE payment guardrails")}`);
       separator();
@@ -91,6 +167,10 @@ export function createAgentOutput({
       write("");
     },
     thinking(complete) {
+      if (!verbose) {
+        waitFor(complete ? "Agent summarizing verified results..." : "Agent choosing the next service request...");
+        return;
+      }
       field(
         "Agent",
         complete
@@ -102,6 +182,12 @@ export function createAgentOutput({
       if (verbose) field("Response ID", data.id);
     },
     requested({ tier, purpose }) {
+      if (!verbose) {
+        requestCount++;
+        stage(`AGENT / ${title(tier)} research`);
+        field("Request", tier === "premium" ? "Evaluate the higher-cost service against the same guardrails" : "Buy service access through a reusable payment stream");
+        return;
+      }
       write("");
       write(
         `  ${accent(String(++requestCount).padStart(2, "0"))}  ${bold(
@@ -155,9 +241,14 @@ export function createAgentOutput({
       field("Access", "Research unlocked; receipt verified", ok);
     },
     streamContract(address) {
-      field("Escrow", address);
+      field("Escrow", short(address));
     },
     streamQuote(q) {
+      if (!verbose) {
+        field("Quote", `${amount(q.amountRaw)} USDC${dot}${elapsed(q.durationSeconds)} stream`);
+        field("Rate", `${amount(q.rateRawPerSecond)} USDC/s`);
+        return;
+      }
       field(
         "Deposit",
         `${amount(q.amountRaw)} USDC over ${q.durationSeconds}s`
@@ -165,9 +256,21 @@ export function createAgentOutput({
       field("Rate", `${q.rateRawPerSecond} raw units / second`);
     },
     streamChecking(label) {
+      if (!verbose) {
+        const labels = {"USDC price safety": "PRICE SAFETY", open: "STREAM ADMISSION", healthy: "HEALTHY CHECKPOINT", outage: "FAILURE CHECKPOINT", deny: "BUDGET CHECK", cleanup: "SHUTDOWN CHECK"};
+        stage(`CRE / ${labels[label] || clean(label).replaceAll("-", " ").toUpperCase()}`);
+        return;
+      }
       field("CRE", `Applying ${label} rules to HTTP + Sepolia observations...`);
     },
     creInvocation({ command, cwd, configPath, transcriptPath }) {
+      if (!verbose) {
+        const target = command.indexOf("--target");
+        const simulate = command.indexOf("simulate");
+        field("CRE CLI", `${command[simulate + 1]}${dot}${target >= 0 ? command[target + 1] : "workflow simulation"}`);
+        waitFor("Executing the local CRE workflow...");
+        return;
+      }
       field("Run from", `${cwd}/ (repository root relative)`);
       field(
         "Command",
@@ -181,6 +284,14 @@ export function createAgentOutput({
       field("Transcript", `${transcriptPath} (saved when CRE exits)`);
     },
     priceEvidence({ result: r, capturedAt, configSha256, logSha256 }) {
+      if (!verbose) {
+        field("Chainlink", `$${amount(r.chainlinkPriceUsd8, 8)} USDC/USD / finalized read`);
+        field("Coinbase", `$${amount(r.externalPriceUsd8, 8)} USDC/USD / HTTP`);
+        field("Price rules", `Peg within ${r.maxPegDeviationBps / 100}%; source gap at most ${r.maxDeviationBps / 100}%`);
+        field("Freshness", `${elapsed(r.observedAt - r.feedUpdatedAt)} old / limit ${elapsed(r.maxFeedAgeSeconds)}`);
+        this.decision(r, {prices: false});
+        return;
+      }
       field("HTTP GET", r.marketApiUrl);
       field("Coinbase", `$${amount(r.externalPriceUsd8, 8)} USDC/USD`);
       field("Feed", r.feedAddress);
@@ -218,6 +329,17 @@ export function createAgentOutput({
       configSha256,
       logSha256,
     }) {
+      if (!verbose) {
+        field("Health", `${r.health.serviceAvailable ? "Available" : "Unavailable"}${dot}${r.health.successfulRequests} successful / ${r.health.failedRequests} failed`);
+        if (c.phase === "admission") {
+          field("Budget", `${amount(c.amountRaw)} USDC deposit / max ${amount(c.spendingCapRaw)} USDC`);
+          field("Rate limit", `${amount(c.maxRateRawPerSecond)} USDC/s`);
+        }
+        field("Failure limit", `${c.maxFailedRequests} failed requests`);
+        field("Sepolia", `Read block ${c.observationBlock}${r.onchain.stream ? ` / stream #${c.streamId}` : " / USDC balance and decimals"}`);
+        this.streamDecision(r);
+        return;
+      }
       field("HTTP GET", c.healthUrl);
       field(
         "Provider",
@@ -287,6 +409,11 @@ export function createAgentOutput({
       }
     },
     streamDecision(result) {
+      if (!verbose) {
+        field("Decision", `${result.action}${dot}${reason(result.reason)}`, ["OPEN", "CONTINUE"].includes(result.action) ? ok : warning);
+        if (result.action === "CLOSE") field("Next", "Obtain policy approval and confirm cancellation");
+        return;
+      }
       field(
         "Decision",
         `${result.action}${dot}${result.reason
@@ -296,10 +423,23 @@ export function createAgentOutput({
       );
     },
     streamTransaction(kind, data) {
+      awaitingBusiness = false;
+      if (!verbose) {
+        const labels = {approval: "USDC approval", open: "Stream funding", close: "Stream closure"};
+        field("Wallet", `${labels[kind] || clean(kind)} signed${dot}${short(data.transactionHash)}`);
+        waitFor("Waiting for 2 Sepolia confirmations...");
+        return;
+      }
       field("Wallet", `${kind}: signed; awaiting 2 confirmations...`);
       if (verbose) field("Tx hash", data.transactionHash);
     },
     streamOpened(value) {
+      if (!verbose) {
+        stage(`FUNDED / Stream #${value.streamId}`);
+        field("Confirmed", `${amount(value.fundedRaw)} USDC deposited in escrow`, ok);
+        field("How it works", "Fund once. Earnings accrue with time. Reuse the stream for API calls.");
+        return;
+      }
       field(
         "Escrow",
         `Stream #${value.streamId} funded with ${amount(value.fundedRaw)} USDC`,
@@ -311,15 +451,29 @@ export function createAgentOutput({
       );
     },
     streamRequests(client, id) {
+      if (!verbose) {
+        if (!reuseShown) { stage("REUSE / One stream, many API calls"); reuseShown = true; }
+        field("API calls", `${client.successfulRequests} successful / ${client.failedRequests} failed${dot}stream #${id}`);
+        field("Payments", "0 payment transactions during these requests", ok);
+        return;
+      }
       field(
         "API reuse",
         `Stream #${id}${dot}${client.successfulRequests} successes${dot}${client.failedRequests} failures${dot}no payment transactions`
       );
     },
     streamOutage() {
+      if (!verbose) stage("PROTECT / Service failure");
       field("Demo fault", "Injecting a provider outage (HTTP 503)", warning);
     },
     streamClosed(value) {
+      if (!verbose) {
+        stage(`CLOSED / Stream #${value.streamId}`);
+        field("Confirmed", "Cancellation mined; earnings and refund verified", ok);
+        field("Service earned", `${amount(value.earnedRaw)} USDC`);
+        field("Payer refunded", `${amount(value.refundedRaw)} USDC`, ok);
+        return;
+      }
       field("Escrow", `Stream #${value.streamId} CLOSED`, ok);
       field("Earned", `${amount(value.earnedRaw)} USDC paid on cancellation`);
       field(
@@ -343,7 +497,7 @@ export function createAgentOutput({
           ok
         );
         field("Premium", `DENIED / deposit exceeds ${result.purchases.premium.policy.capUsdc} USDC cap`, warning);
-        field("Funded", `${amount(result.fundedRaw)} test USDC`);
+        field("Funded", `${amount(result.fundedRaw)} USDC`);
         field("Earned", `${amount(result.earnedRaw)} USDC to recipient`);
         field("Refunded", `${amount(result.refundedRaw)} USDC to payer`);
         field(
@@ -367,28 +521,31 @@ export function createAgentOutput({
           );
           field(
             "Open tx",
-            `https://sepolia.etherscan.io/tx/${
-              basic.funded.transactions.at(-1).transactionHash
-            }`
+            verbose ? `https://sepolia.etherscan.io/tx/${basic.funded.transactions.at(-1).transactionHash}` : short(basic.funded.transactions.at(-1).transactionHash)
           );
           field(
             "Close tx",
-            `https://sepolia.etherscan.io/tx/${basic.settlement.transaction.transactionHash}`
+            verbose ? `https://sepolia.etherscan.io/tx/${basic.settlement.transaction.transactionHash}` : short(basic.settlement.transaction.transactionHash)
           );
         } else field("Transaction", "None / stream was not funded");
         write("");
         if (result.audit) {
-          field(
-            "Audit blobs",
-            `${result.audit.decisions} decisions / ${result.audit.directory}`
-          );
-          field(
-            "Audit receipts",
-            `${result.audit.receiptTransactions.length} cumulative receipt transactions (test ETH); ${result.audit.pendingReceipts} pending decisions`
-          );
+          if (!verbose) {
+            field("Audit", `${receiptHashes.size ? `${receiptHashes.size} receipts confirmed here; ` : ""}${result.audit.pendingReceipts} decisions pending`);
+            field("Gas", "Audit receipt transactions are additional to stream transactions");
+          } else {
+            field(
+              "Audit blobs",
+              `${result.audit.decisions} decisions / ${result.audit.directory}`
+            );
+            field(
+              "Audit receipts",
+              `${result.audit.receiptTransactions.length} cumulative receipt transactions (test ETH); ${result.audit.pendingReceipts} pending decisions`
+            );
+          }
         }
         field("Evidence", result.evidenceDirectory);
-        field("Agent notes", `${result.evidenceDirectory}/result.json`);
+        if (verbose) field("Agent notes", `${result.evidenceDirectory}/result.json`);
         if (verbose) {
           write("");
           write(
@@ -443,6 +600,34 @@ export function createAgentOutput({
         for (const line of wrap(result.summary, width - 2)) write(`  ${line}`);
       }
       write("");
+    },
+    spendReview(event) {
+      if (event.phase === "start") {
+        reviewActive = true;
+        if (!verbose) stage("CRE / SPEND REVIEW");
+        this.creInvocation(event.invocation);
+        return;
+      }
+      const r = event.record;
+      reviewActive = false;
+      field("Dry-run", `${(r.simulation?.status || "unavailable").toUpperCase()}${r.observedBlock ? `${dot}Sepolia block ${r.observedBlock}` : ""}`);
+      field("Risk score", `${r.decision.riskScore}/100${r.intent?.policy?.maxRiskScore !== undefined ? ` (limit ${r.intent.policy.maxRiskScore})` : ""}`);
+      field("Spend decision", `${r.decision.action}${dot}${reason(r.decision.reason)}`, r.decision.action === "ALLOW" ? ok : warning);
+      awaitingBusiness = pay && r.decision.action === "ALLOW";
+      if (awaitingBusiness) waitFor("Anchoring audit receipts before signing...");
+    },
+    auditProgress(line) {
+      // Structured review callbacks print these facts without raw commands or hashes.
+      if (/^CRE spend review:/.test(line) || (reviewActive && /^Spend (ALLOW|BLOCK|ERROR):/.test(line))) return;
+      field("Audit", line, warning);
+    },
+    auditReceipt(batch) {
+      receiptHashes.add(batch.transactionHash);
+      field("Audit receipt", `CONFIRMED${dot}${batch.entries.length} decision record${batch.entries.length === 1 ? "" : "s"}${dot}${short(batch.transactionHash)}`, ok);
+      if (awaitingBusiness) waitFor("Verifying receipt and final transaction dry-run...");
+    },
+    refreshing() {
+      field("Freshness", "Refreshing CRE price and admission checks before signing", warning);
     },
     failed(directory, { fundingAttempted } = {}) {
       write("");

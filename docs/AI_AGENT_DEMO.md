@@ -116,12 +116,25 @@ but does not automatically execute a refund. Recipient withdrawals remain availa
 
 ## Output and evidence
 
-The CLI prints exact CRE commands, original config/transcript paths, observed
-price/feed age, budget/rate limits, health counters and Sepolia blocks. It reports
-local policy-signature enforcement separately from DON authentication. Use
-`--verbose` for model IDs, hashes and unverified model prose; `--json` emits one
-result envelope on stdout and progress on stderr. `--events ndjson` emits public
-versioned events. No secret or signed transaction payload is saved.
+Default output follows numbered stages: agent request, CRE price/admission checks,
+spend dry-run and risk score, funding, stream reuse, outage protection, closure/refund
+and budget denial. It shows USDC amounts, live oracle prices, feed freshness, policy
+limits and observed Sepolia blocks. Signed transactions are marked as waiting;
+funding and closure are confirmed only after the checks succeed. Audit receipt
+transactions are reported separately from stream transactions.
+
+For a live presentation, use `npm run --silent demo:agent -- --pay` in a terminal
+around 80–100 columns wide with a readable font. Color and elapsed-time spinners
+appear automatically in an interactive terminal. Redirected output, `NO_COLOR`,
+`TERM=dumb`, JSON and event streams use stable text without animation. Each paid
+invocation starts a new stream and spends gas.
+
+Use `--verbose` for full CRE commands, config/transcript paths, raw units, addresses,
+evidence hashes, model IDs and unverified model prose. Those original artifacts
+remain saved in either mode. Local policy signatures are identified separately
+from DON authentication. `--json` emits one result envelope on stdout and progress
+on stderr; `--events ndjson` emits public versioned events. No secret or signed
+transaction payload is saved.
 
 Each `.local/agent-demo/runs/<id>/` contains original `policy/` CRE evidence,
 `policy-open.json` / `policy-close.json` public permits, transaction journals,
