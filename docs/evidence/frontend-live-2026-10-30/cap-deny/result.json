@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 2,
+  "runId": "20261030T115437Z-6165bc6e",
+  "status": "denied",
+  "fundedRaw": "0",
+  "earnedRaw": "0",
+  "refundedRaw": "0",
+  "initial": {
+    "agentBalanceRaw": "39876072",
+    "recipientBalanceRaw": "46800",
+    "nonce": 132
+  },
+  "final": {
+    "agentBalanceRaw": "39876072",
+    "recipientBalanceRaw": "46800",
+    "nonce": 132
+  },
+  "reason": "USDC admission blocked: AMOUNT_EXCEEDS_POLICY"
+}

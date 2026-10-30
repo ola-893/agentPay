@@ -1,0 +1,100 @@
+{
+  "capturedAt": "2026-10-30T12:16:09.969Z",
+  "configSha256": "79fda65412d51dfd97e2360997d57c71bab147a28d682db76494abdb6a5dbedb",
+  "logSha256": "db2f32b69a73c7d2a0cb4d2e3d62a7d87c0a339fd85cc4cfbbca1b73a919a27d",
+  "config": {
+    "chainId": 11155111,
+    "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "tokenDecimals": 6,
+    "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+    "requestId": "0x5c8ac1bdfcb32bd439221e5bf8932aa2774e5f5b016ee565a61867e1d523c3b3",
+    "quoteId": "0x2bc0444ec60715e3a91f11c7d1fbfb2a5da57ce413e0d213bb10f6bf840c217a",
+    "sessionId": "0xa88ec40f11341256b55b240dfa4caecc5fc74e7bc1bbebd473a10c34916af633",
+    "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+    "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+    "amountRaw": "10000",
+    "spendingCapRaw": "100000",
+    "durationSeconds": 1000,
+    "maxRateRawPerSecond": "100",
+    "phase": "checkpoint",
+    "streamId": "10",
+    "observationBlock": 12026612,
+    "healthUrl": "http://127.0.0.1:50160/health/e9f838e1dae2fe5c6f9db6ad9a047879513d1acce0d9f95b02d16aafa5335a48",
+    "expectedHealth": {
+      "sessionId": "0xa88ec40f11341256b55b240dfa4caecc5fc74e7bc1bbebd473a10c34916af633",
+      "observationId": "0xe9f838e1dae2fe5c6f9db6ad9a047879513d1acce0d9f95b02d16aafa5335a48",
+      "serviceAvailable": false,
+      "successfulRequests": 10,
+      "failedRequests": 3
+    },
+    "client": {
+      "successfulRequests": 10,
+      "failedRequests": 3
+    },
+    "maxFailedRequests": 3
+  },
+  "result": {
+    "schemaVersion": 1,
+    "workflow": "agentpay-stream-supervisor",
+    "mode": "local-simulation",
+    "config": {
+      "chainId": 11155111,
+      "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      "tokenDecimals": 6,
+      "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+      "requestId": "0x5c8ac1bdfcb32bd439221e5bf8932aa2774e5f5b016ee565a61867e1d523c3b3",
+      "quoteId": "0x2bc0444ec60715e3a91f11c7d1fbfb2a5da57ce413e0d213bb10f6bf840c217a",
+      "sessionId": "0xa88ec40f11341256b55b240dfa4caecc5fc74e7bc1bbebd473a10c34916af633",
+      "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+      "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+      "amountRaw": "10000",
+      "spendingCapRaw": "100000",
+      "durationSeconds": 1000,
+      "maxRateRawPerSecond": "100",
+      "phase": "checkpoint",
+      "streamId": "10",
+      "observationBlock": 12026612,
+      "healthUrl": "http://127.0.0.1:50160/health/e9f838e1dae2fe5c6f9db6ad9a047879513d1acce0d9f95b02d16aafa5335a48",
+      "expectedHealth": {
+        "sessionId": "0xa88ec40f11341256b55b240dfa4caecc5fc74e7bc1bbebd473a10c34916af633",
+        "observationId": "0xe9f838e1dae2fe5c6f9db6ad9a047879513d1acce0d9f95b02d16aafa5335a48",
+        "serviceAvailable": false,
+        "successfulRequests": 10,
+        "failedRequests": 3
+      },
+      "client": {
+        "successfulRequests": 10,
+        "failedRequests": 3
+      },
+      "maxFailedRequests": 3
+    },
+    "health": {
+      "sessionId": "0xa88ec40f11341256b55b240dfa4caecc5fc74e7bc1bbebd473a10c34916af633",
+      "observationId": "0xe9f838e1dae2fe5c6f9db6ad9a047879513d1acce0d9f95b02d16aafa5335a48",
+      "serviceAvailable": false,
+      "successfulRequests": 10,
+      "failedRequests": 3
+    },
+    "onchain": {
+      "paymentToken": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      "tokenDecimals": 6,
+      "agentBalanceRaw": "39866072",
+      "stream": {
+        "sender": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+        "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+        "totalAmount": "10000",
+        "flowRate": "10",
+        "startTime": "1793362524",
+        "stopTime": "1793363524",
+        "amountWithdrawn": "0",
+        "isActive": true,
+        "metadata": "{\"sessionId\":\"0xa88ec40f11341256b55b240dfa4caecc5fc74e7bc1bbebd473a10c34916af633\",\"quoteId\":\"0x2bc0444ec60715e3a91f11c7d1fbfb2a5da57ce413e0d213bb10f6bf840c217a\"}",
+        "claimableRaw": "240"
+      }
+    },
+    "action": "CLOSE",
+    "reason": "SERVICE_UNAVAILABLE",
+    "observedAt": 1793362569,
+    "donAuthenticated": false
+  }
+}

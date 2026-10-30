@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 2,
+  "runId": "20261030T121320Z-a696d4d4",
+  "mode": "local-agent-stream",
+  "completedAt": "2026-10-30T12:18:06.878Z",
+  "provider": "qwen",
+  "model": "qwen3.5-plus",
+  "chainId": 11155111,
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+  "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+  "fundedRaw": "10000",
+  "earnedRaw": "1200",
+  "refundedRaw": "8800",
+  "initial": {
+    "agentBalanceRaw": "39876072",
+    "recipientBalanceRaw": "46800",
+    "nonce": 132
+  },
+  "final": {
+    "agentBalanceRaw": "39874872",
+    "recipientBalanceRaw": "48000",
+    "nonce": 136
+  },
+  "responses": [
+    {
+      "id": "resp_0ef3a190-3ebe-98d5-bda1-2f379ad31c01",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 657,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 94,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 751,
+        "x_details": [
+          {
+            "input_tokens": 657,
+            "output_tokens": 94,
+            "total_tokens": 751,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"basic\", \"purpose\": \"Demonstrate local CRE OPEN, stream reuse, CONTINUE and outage-triggered CLOSE/refund\"}",
+          "call_id": "call_4cc345c86f404a3c974b33b0",
+          "id": "msg_c8c53b46-932c-4460-8981-ced8a50432ae",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_752792fe-6195-967e-abb0-6dde55e0dcab",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1638,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 37,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1675,
+        "x_details": [
+          {
+            "input_tokens": 1638,
+            "output_tokens": 37,
+            "total_tokens": 1675,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"premium\", \"purpose\": \"Attempt premium session to demonstrate budget denial\"}",
+          "call_id": "call_461149fd558c42a69b42e9a2",
+          "id": "msg_ccceb9d9-554f-4ce7-9618-67c829cc867d",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_8114baec-b14a-9552-adf6-e7c1f1e12971",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1501,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 403,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1904,
+        "x_details": [
+          {
+            "input_tokens": 1501,
+            "output_tokens": 403,
+            "total_tokens": 1904,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "content": [
+            {
+              "annotations": [],
+              "text": "### Factual Summary\n\n**Basic Tier Session (Stream ID: 10)**\n*   **Funded:** The stream was successfully opened with a deposit of **0.01 USDC** (10,000 raw units). Transaction hash: `0xa408fc411f55137b36a6f4e2b5114bce65dca1902381e1df861fee8df12d86e3`.\n*   **Operation:** The session demonstrated stream reuse where 10 successful requests were processed without additional payment transactions (nonces remained static during request batches). A `CONTINUE` checkpoint was reached before a simulated demo outage triggered a `CLOSE`.\n*   **Settlement:** Upon closure, the system calculated time-accrued earnings of **0.0012 USDC** (1,200 raw) for the recipient. The remaining **0.0088 USDC** (8,800 raw) was refunded to the agent wallet. Settlement transaction hash: `0x5045e4a57b11ffeae4270096b967c9439a3afda267d3891d214b3660dcb76ecf`.\n*   **Note:** The full deposit was not paid to the recipient; only the earned portion was transferred.\n\n**Premium Tier Session**\n*   **Result:** Denied.\n*   **Reason:** The requested amount of **0.2 USDC** (200,000 raw) exceeded the policy cap of **0.1 USDC** (100,000 raw).\n*   **Impact:** No transaction was signed, and wallet balances/nonces remained unchanged.",
+              "type": "output_text"
+            }
+          ],
+          "id": "msg_8fb4d99b-1d72-4039-9410-cc31662286d0",
+          "role": "assistant",
+          "status": "completed",
+          "type": "message"
+        }
+      ]
+    }
+  ],
+  "summary": "### Factual Summary\n\n**Basic Tier Session (Stream ID: 10)**\n*   **Funded:** The stream was successfully opened with a deposit of **0.01 USDC** (10,000 raw units). Transaction hash: `0xa408fc411f55137b36a6f4e2b5114bce65dca1902381e1df861fee8df12d86e3`.\n*   **Operation:** The session demonstrated stream reuse where 10 successful requests were processed without additional payment transactions (nonces remained static during request batches). A `CONTINUE` checkpoint was reached before a simulated demo outage triggered a `CLOSE`.\n*   **Settlement:** Upon closure, the system calculated time-accrued earnings of **0.0012 USDC** (1,200 raw) for the recipient. The remaining **0.0088 USDC** (8,800 raw) was refunded to the agent wallet. Settlement transaction hash: `0x5045e4a57b11ffeae4270096b967c9439a3afda267d3891d214b3660dcb76ecf`.\n*   **Note:** The full deposit was not paid to the recipient; only the earned portion was transferred.\n\n**Premium Tier Session**\n*   **Result:** Denied.\n*   **Reason:** The requested amount of **0.2 USDC** (200,000 raw) exceeded the policy cap of **0.1 USDC** (100,000 raw).\n*   **Impact:** No transaction was signed, and wallet balances/nonces remained unchanged.",
+  "purchases": {
+    "basic": {
+      "status": "stream-completed",
+      "tier": "basic",
+      "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+      "streamId": "10",
+      "fundedRaw": "10000",
+      "earnedRaw": "1200",
+      "refundedRaw": "8800",
+      "admission": "OPEN",
+      "healthyCheckpoint": "CONTINUE",
+      "outageCheckpoint": "CLOSE",
+      "outageInjected": true,
+      "client": {
+        "successfulRequests": 10,
+        "failedRequests": 3
+      },
+      "requestBatches": [
+        {
+          "requests": 5,
+          "walletNonceBefore": 134,
+          "walletNonceAfter": 134,
+          "noPaymentTransactions": true
+        },
+        {
+          "requests": 5,
+          "walletNonceBefore": 134,
+          "walletNonceAfter": 134,
+          "noPaymentTransactions": true
+        },
+        {
+          "requests": 3,
+          "walletNonceBefore": 134,
+          "walletNonceAfter": 134,
+          "noPaymentTransactions": true
+        }
+      ],
+      "funded": {
+        "streamId": "10",
+        "state": {
+          "sender": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+          "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+          "totalAmount": "10000",
+          "flowRate": "10",
+          "startTime": "1793362524",
+          "stopTime": "1793363524",
+          "amountWithdrawn": "0",
+          "isActive": true,
+          "metadata": "{\"sessionId\":\"0xa88ec40f11341256b55b240dfa4caecc5fc74e7bc1bbebd473a10c34916af633\",\"quoteId\":\"0x2bc0444ec60715e3a91f11c7d1fbfb2a5da57ce413e0d213bb10f6bf840c217a\"}"
+        },
+        "before": {
+          "agentBalanceRaw": "39876072",
+          "recipientBalanceRaw": "46800",
+          "nonce": 132
+        },
+        "after": {
+          "agentBalanceRaw": "39866072",
+          "recipientBalanceRaw": "46800",
+          "nonce": 134
+        },
+        "transactions": [
+          {
+            "state": "confirmed",
+            "transactionHash": "0xa408fc411f55137b36a6f4e2b5114bce65dca1902381e1df861fee8df12d86e3",
+            "blockNumber": 12026610,
+            "confirmations": 2,
+            "gasUsed": "2097681",
+            "feeWei": "138446946"
+          }
+        ],
+        "fundedRaw": "10000"
+      },
+      "settlement": {
+        "streamId": "10",
+        "closed": true,
+        "earnedRaw": "1200",
+        "refundedRaw": "8800",
+        "before": {
+          "agentBalanceRaw": "39866072",
+          "recipientBalanceRaw": "46800",
+          "nonce": 134
+        },
+        "after": {
+          "agentBalanceRaw": "39874872",
+          "recipientBalanceRaw": "48000",
+          "nonce": 136
+        },
+        "transaction": {
+          "state": "confirmed",
+          "transactionHash": "0x5045e4a57b11ffeae4270096b967c9439a3afda267d3891d214b3660dcb76ecf",
+          "blockNumber": 12026620,
+          "confirmations": 2,
+          "gasUsed": "151097",
+          "feeWei": "9972402"
+        }
+      },
+      "closedAccessRejected": true,
+      "research": {
+        "source": "AgentPay stream demo (sample operational guidance)",
+        "content": "A funded stream amortizes payment transactions across service requests; earnings accrue with time until cancellation or expiry."
+      },
+      "donAuthenticated": false
+    },
+    "premium": {
+      "status": "denied",
+      "tier": "premium",
+      "policy": {
+        "reason": "AMOUNT_EXCEEDS_POLICY",
+        "amountRaw": "200000",
+        "amountUsdc": "0.2",
+        "capRaw": "100000",
+        "capUsdc": "0.1"
+      },
+      "noTransactionSigned": true,
+      "before": {
+        "agentBalanceRaw": "39874872",
+        "recipientBalanceRaw": "48000",
+        "nonce": 136
+      },
+      "after": {
+        "agentBalanceRaw": "39874872",
+        "recipientBalanceRaw": "48000",
+        "nonce": 136
+      }
+    }
+  },
+  "donAuthenticated": false,
+  "strictGuardUsed": false,
+  "contractPolicySignatures": true,
+  "evidenceDirectory": ".local/agent-demo/runs/20261030T121320Z-a696d4d4",
+  "audit": {
+    "directory": "<repo>/.local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26",
+    "decisions": 167,
+    "pendingIntents": 0,
+    "pendingReceipts": 0,
+    "receiptTransactions": [
+      "0x3c12029dc9c3ff0de5db2e1b964c77a65387e91d2c16f2f27597e0f7d7b83bfa",
+      "0x050cdb856764b2a3fc32e3911dd1ac2ada449b6d66da80e7035eb2559a181697",
+      "0xfc14d6aae56bb381090f604f2ef4a9429d6bd1ccc19697463cda082479dccf13",
+      "0x37a77f2f3343d77f7387d4889694dc6186073f5ecae8a04fe998fe02d00b23b6",
+      "0xb027268887609707de866cb834db975a11497d4befd80300cc046cddfff037e0",
+      "0xd75e36b70b13f9e412f5800cdc1f508280c6c20b63c9ebf165b20c8f9fcaf47f",
+      "0xb3b1443e60bcafb0d5ab8dad2edd81bfa799a451be7d6a76a81bb9f68a8e01c0",
+      "0x0815380e0bafd36db8829b060bc0239042d9a71e84d7850271bc20e2175b311b",
+      "0x2cfc7429733a4e84d85c4dc061ee9993386d3b1650e21d574024ba620c92f830",
+      "0x5b4125d7b5ae7427fce4aeae72bd37ffb23f5e73586dd79451a27256d7adb0d5",
+      "0x6c42028aec13b817ae6f045ba9d74c6ce9eb2276498eb05414f7cc1144fd8530",
+      "0x487594871681e3f778ff1d7ec84bca8312eb0db14a1c0c742d1678ab355a5d5d",
+      "0x3f8d4cd4ca1926f8704364825119004ce035f741c8d078a704115b277bb3563a",
+      "0xe6fc3a6da14aa5a458d1529bdb6a3cd01bb5bb8b6df1fe13fae6657e6f2aae63",
+      "0x194be56cacba962b54df82d47ca01f8b8ba45ab71ca68ce659dabdedb85dee4c",
+      "0x9da5ffce3ef1796184be876b04db08f75508193eea2b871d1244f58a9b77bc89",
+      "0xe5dcdf163aa78d366fb656a7a7c2d38af8be940be94aaf9e3599b5e48a897b3d",
+      "0xc9136ea428525fd8016f370a4bbce25d5d33a727d00efc3dea6f607b58ce92f0",
+      "0x7552aa9b68edf3b2ac3cdf52b2f0c2fb0a8d298050d6bb56f8a2e1b24952606e",
+      "0x81363c9a200a4c05a03540584627d79e052fda5ff2586f87f4c8beaf44c28894",
+      "0xf2a66878e5b8d4ff6a146d784b6201d03922f9200587155188bdd79ad32f5689",
+      "0x95a161cf889b4610a333fb4fd5ea7339d14ac106ae5d4d9bccd17d2ef20a85a8",
+      "0xa123c6c8e6c5127a3c2a1b1a24813d4503ac9242a77dc3fdccf3ec8a55c44d12",
+      "0xd92a52ea2beebef9c6e13dcb610bec02b01ec30780f36ede692377741aaec150",
+      "0x8231f252293167fb33bbaa828bb3e839922e99e854ed34b4e406cff38df31d72",
+      "0xd218220ab4148077f47c2f4ecf1567eb079587bf8492d1e69645f8ab0476e8ab",
+      "0x91f63860c2de2672b2f14c339dea0d2cba09e17d5bf79dc4b2287234ad2394f7",
+      "0xf11a10d90d0ad37267c16fc2fb301e6470c673861536af89b4195afbe88e57b0",
+      "0xa400de1de830bb7259d31f6e7cfde446733c44ae3121f9f73b66e9e4180ef486",
+      "0x75e314040e5950e801cd110fe24595073bdf270d9443ef4dd15acb6b450b7097",
+      "0x0ce60924b49c8706fb7613b833ecd9c61fcfa6185d44648a74fcfc753047917a",
+      "0x68ab2fb05969658527845a17c6d27969a0a835ced87e3e8eb27f6de518222da6",
+      "0xb8570c63cba318ebdbadbb86b241b959c171f1d820cadf993edd999c9625ef2a",
+      "0x68fdc295b9c362edad2c9ad632aa29bc80df626f2470664ba0792c4b59334e62",
+      "0x30ab29d9d400218eaf2fe5f4615d6039056d485181a0fb3aa9369001f20392df",
+      "0x664a7c3a67ded72f7a2af065c950e00260fa366879563c6ca979c669d87f3622",
+      "0x813ac50cad06e875aaf58ab4e222619913ac1e8c0726c545e8573bd4f421f457",
+      "0x4a55e70d7c7f41d902cc3293e5b16b7f3e629b841f41c678e317f0828f15d924",
+      "0xbdcddd37afa36f0d34574bb0f558c34500429ff9d8e0ca6968c74c9a79366863",
+      "0x5adc8724375054f6b2f3f451636b6c0bdc268e6014994b85bf1d27282556c098",
+      "0x8baeabf8bddacf9f4b08a81cae6190932dacce7627816272c2fa8fa410467905",
+      "0x49341b9abd71e457c19ee2fb5f7326c0409224fe2d49488a00c2f736685004e6",
+      "0xa82dac76179d4c60e3a6115fe43aa3d3ccc39113a15802f454dbcb7bc4dadf4c",
+      "0x609e91cbc1e926953fc82ac978b1727813087f0054092a1fc96af0dcc9f35183",
+      "0xa8bcb055b33b6c7e9eba212a08127f0e3fa1d19b249570757fd0c18749b80535",
+      "0x4e1e52c4797283a1fca6aec6bdae6f6ea6355d14aff0ec4774bf88495a2d8916",
+      "0xc0c090076b5e3f3757e342266975372a3d84eaca9684937924723bbe708b81bb",
+      "0x7be1478b8d1815bf1b1e23bcd6d2b36eee041497b6085dd0d06571e757b0b5e9",
+      "0x3c75379f1cbaae065b00479d03454fbdca10a06af3268e43ee8bef3560c168b3",
+      "0x5349394afc8fc1938afb6de7ebb730a0de0ec05a6db7132a94cced1d489a3e53",
+      "0x4041986dc88b6f9a8ba224ea821b8d5be3fddea8fcb8fb94c2022141e5b65be8",
+      "0x0d0e57cef241e6ddbc148ae2f3e277e419677ba73ca7f636a756d2c19c07f841",
+      "0xbc07e1a162f84872618a28c4b98c73ada3dc0a4b04d180f203a80de94b67c7c4",
+      "0xee0fa2868afc82b5c281072ceae4db1c381eabcdb2fc46e61efbbcde2bb8bdf3",
+      "0xf9ebe4adf2eb76d464244f3b598cc35774dc7757dbaf06bed06fdf7a96bc4151",
+      "0xb14e4df637d60e343789f9e8e6b2f6ab74044ba5c4651b8780da3ca648d16d52",
+      "0x86f24ca2cb7000c15c97c0cf293acb5bfbb21c7e1518922d2784e723b5c6ff08",
+      "0xbc497805a620d39d3ac4e01d60497251e26b6214d0e859a9e30250e25e26e524",
+      "0x19d254ebbf03bf20e39260576319ded4947ed018ffb7bb5bfe3101e19b13d121",
+      "0xd0fa7902122d6ad5aa2232c1ae8b58253546ec146f1d6a122762769f0717da5a",
+      "0x7984e8639dbc739bc775e9f94c451f802b95af7d94fa031211672659cf5bd9e9",
+      "0x66c8727c9ab7d889494c060e1deeef4dc1fcfd9dbf447702e4087d11f38c0ab5"
+    ],
+    "receipts": [
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 12026607,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x8e9aefa37a9cee9a2015eed2cdbf1e29f0aa965103ede35db03d02705b105d83",
+            "intentId": "0x6b330330d8ac7e7082ee04d43298b0d179673ba7f0f7627775fdc929e4d4acd2",
+            "proof": [
+              "0x627400affd0d1a0ec535e74a7ec98a21503894a1841bdf46fe211aeef7cbecab",
+              "0x0f1875edd701ff998a02f3505d3e54495cc7c0f55d71bf957b541756c28d4ce2",
+              "0xc7d1a5b66e2c4b6dde2d00d605b3eff096de05a35151e857ab5f3a3a46016740"
+            ],
+            "sequence": 157
+          },
+          {
+            "blobHash": "0x80fa556a323c2d39854e3a18ce1c6fa61cb76003a4e9368740d5b530612dc32d",
+            "intentId": "0x7aeaa6a427290ff960d49e8e35ab78f95d969c2f4c78dadc4dba22891e49475c",
+            "proof": [
+              "0x14bc69c034bb74f35b6294cadfea42fc0f83bb2166444621a5067f71b0c5a4f4",
+              "0x0f1875edd701ff998a02f3505d3e54495cc7c0f55d71bf957b541756c28d4ce2",
+              "0xc7d1a5b66e2c4b6dde2d00d605b3eff096de05a35151e857ab5f3a3a46016740"
+            ],
+            "sequence": 158
+          },
+          {
+            "blobHash": "0x8cfb59a1349f4dd38b051c1d6ee98d165bea48aa991b777daf4f18495e3471b2",
+            "intentId": "0xa4a7ca0230adceac579ae8662f2f8354c9962f7b1ff881c60ac997092a9f1ac8",
+            "proof": [
+              "0x2f68fe6f7c52523e066b4f3b6daa91d4c614eadb2013ae9401ea9e55d91db163",
+              "0x67f67014606128b6f0f2537343235b3280381cd6901c2f83fdfc80f9a4a208d1",
+              "0xc7d1a5b66e2c4b6dde2d00d605b3eff096de05a35151e857ab5f3a3a46016740"
+            ],
+            "sequence": 159
+          },
+          {
+            "blobHash": "0x58c5ba7ff449d7550f15d66db561e72c302e25e7152d65c24edd3c944255fde0",
+            "intentId": "0xbea91c7a9645c5e79780fdb6e9bfde48f93a6644d75ecb66194c2fc969d2959f",
+            "proof": [
+              "0xc3e9220022d3627b499977fc99958cb9c3885b7efb2562e8064f8c3f37ec3a27",
+              "0x67f67014606128b6f0f2537343235b3280381cd6901c2f83fdfc80f9a4a208d1",
+              "0xc7d1a5b66e2c4b6dde2d00d605b3eff096de05a35151e857ab5f3a3a46016740"
+            ],
+            "sequence": 160
+          },
+          {
+            "blobHash": "0x17c9e95bbbf7bc0cfbe274b2994d387554dd2dcc535f81689d877048c8226107",
+            "intentId": "0xcc97a3758651f06b5fb5e82330cfcb9fee212fa8a2d7929689173447397417f6",
+            "proof": [
+              "0x697d6ac785d3068d39547505797aa47b17245887e5fdb0bd7d47e8625b885a4d",
+              "0x1102558fa061cc954dd346ae37d35f096b264eae73a5e94fd738acbae756916b",
+              "0x088281e6f9dcbc176686e88f530843c6f242665445244f6a9961115ba68317ed"
+            ],
+            "sequence": 161
+          },
+          {
+            "blobHash": "0x9c84438b35054ccef043e31075ba47dfc77b602f7e6dfd895ca42d2009e56be0",
+            "intentId": "0xda8fdfa8567728b51bfc44c488b8ccce077f48710897fdbbced1078698cf34fc",
+            "proof": [
+              "0xb0cb43a419954c5f598eebed1e267eddaa5e5117c6537d2532e343f86da14d1a",
+              "0x1102558fa061cc954dd346ae37d35f096b264eae73a5e94fd738acbae756916b",
+              "0x088281e6f9dcbc176686e88f530843c6f242665445244f6a9961115ba68317ed"
+            ],
+            "sequence": 162
+          },
+          {
+            "blobHash": "0xaca8642572d101b8a16755f14319b1a9a68d3c4ef0d870893f2b664c4b255f6c",
+            "intentId": "0xde694dd8b962143937862796f5cbc6580442fa24a884eaf46239fcbfa1e7ddef",
+            "proof": [
+              "0xc6f2ad7ca24bcd79d7be41466b68c2a0668bfd13f56415d21106e09f5fe4c674",
+              "0xb41ee8056765888d5d994e09c08b86cb6ffdacf10a80e22e76dbea4259ac45dd",
+              "0x088281e6f9dcbc176686e88f530843c6f242665445244f6a9961115ba68317ed"
+            ],
+            "sequence": 163
+          }
+        ],
+        "feeWei": "24014496",
+        "firstSequence": 157,
+        "gasUsed": "363856",
+        "root": "0x2b975676df4949f81133a7a9f36d13582ce5458fd65370f4fbc5d043dfb7b203",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x2cfc7429733a4e84d85c4dc061ee9993386d3b1650e21d574024ba620c92f830",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 12026617,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0xd88715240a230f3a6f8f015492526e8759fd6a86049e2e2cd8030fd2bcab5393",
+            "intentId": "0x07432cdb2842d4418fdb2e034977d852db9dd855ce2372e08c670b46b38b8dcd",
+            "proof": [
+              "0x30b758c0c3c03eb56d1b13c6c8693a87fc5f227b91374d4d750837e7b718a423",
+              "0x0635ddfbaf513ece14911f63afcfc805069d2ff06f0bc7556403566ef7f574ee"
+            ],
+            "sequence": 164
+          },
+          {
+            "blobHash": "0x5d686a33ff3d6890e95b8d03123eb8d4b53c7393816f2a16aed816771dbe3a46",
+            "intentId": "0x0e1f0077dab8a051ddbbaa4e37bd514631267d79cc48041578ad6f166c5413b9",
+            "proof": [
+              "0x5aa15f6bb43dd42e9266ac65cf67b1621becdc60b4abe9ceaffeea5dd377447c",
+              "0x0635ddfbaf513ece14911f63afcfc805069d2ff06f0bc7556403566ef7f574ee"
+            ],
+            "sequence": 165
+          },
+          {
+            "blobHash": "0x4cf205c105277c64d47b9bb7bc579f5b9efb55789682a0efcd53aba97a350f47",
+            "intentId": "0x20ece1ae793aecf69e226ab272b0603ab7b11f9795b696e58d16728b6f5ad643",
+            "proof": [
+              "0x9db9cae77c5e7199fae5d4a70546334428ece3ab698181ea459ac6895ad2bef9",
+              "0xd67771b3f2a4f0f1b5c575f8b882cc431b3345cdae1ef78ed3a4b44b97d10517"
+            ],
+            "sequence": 166
+          }
+        ],
+        "feeWei": "24014496",
+        "firstSequence": 164,
+        "gasUsed": "363856",
+        "root": "0x6393109fad3b502b104e296613696c3826d288bc0565adbd5c0b6a65eda3a335",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0xd92a52ea2beebef9c6e13dcb610bec02b01ec30780f36ede692377741aaec150",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 12026626,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0xada5b49d1b6c1b28fde0dda19577546f8452cf5fcae2bc85fc6d6f2d27307554",
+            "intentId": "0xa41d660dc894cdb8ac3a5b0306bb641b64172bc8a7a8160f2907c705094a8a0d",
+            "proof": [],
+            "sequence": 167
+          }
+        ],
+        "feeWei": "24014496",
+        "firstSequence": 167,
+        "gasUsed": "363856",
+        "root": "0x65302f21be88fd064ffe979bfaa175958a44c57de743cb5b850e24fdb8d3982b",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0xd218220ab4148077f47c2f4ecf1567eb079587bf8492d1e69645f8ab0476e8ab",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      }
+    ],
+    "receiptScope": "Only receipts emitted in this run; original counts remain cumulative."
+  }
+}

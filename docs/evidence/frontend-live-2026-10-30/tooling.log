@@ -1,0 +1,661 @@
+
+> agentpay@1.0.0 test:tooling
+> npm run build:sdk && node --test scripts/test/*.test.mjs
+
+
+> agentpay@1.0.0 build:sdk
+> npm --prefix sdk run build
+
+
+> agentpay-sdk@1.0.0 build
+> tsc
+
+TAP version 13
+# Subtest: agent CLI help has no credential, network or wallet use and JSON remains one envelope
+ok 1 - agent CLI help has no credential, network or wallet use and JSON remains one envelope
+  ---
+  duration_ms: 315.9735
+  type: 'test'
+  ...
+# Subtest: preview output cannot present model-invented receipts as verified transactions
+ok 2 - preview output cannot present model-invented receipts as verified transactions
+  ---
+  duration_ms: 3.836292
+  type: 'test'
+  ...
+# Subtest: failure output suggests recovery only when funding may have been submitted
+ok 3 - failure output suggests recovery only when funding may have been submitted
+  ---
+  duration_ms: 0.506125
+  type: 'test'
+  ...
+# Subtest: stream output shows recorded CRE observations and limits without claiming onchain CRE enforcement
+ok 4 - stream output shows recorded CRE observations and limits without claiming onchain CRE enforcement
+  ---
+  duration_ms: 4.075959
+  type: 'test'
+  ...
+# Subtest: terminal styles never leak to JSON, redirected or NO_COLOR output, and model control sequences are stripped
+ok 5 - terminal styles never leak to JSON, redirected or NO_COLOR output, and model control sequences are stripped
+  ---
+  duration_ms: 0.692333
+  type: 'test'
+  ...
+# Subtest: OpenAI alias keys are redacted from diagnostic text
+ok 6 - OpenAI alias keys are redacted from diagnostic text
+  ---
+  duration_ms: 0.5145
+  type: 'test'
+  ...
+# Subtest: Responses API uses real strict tools, disables storage and does not expose keys in API errors
+ok 7 - Responses API uses real strict tools, disables storage and does not expose keys in API errors
+  ---
+  duration_ms: 1.15375
+  type: 'test'
+  ...
+# Subtest: Qwen selection binds credentials to official regional endpoints and never silently falls back
+ok 8 - Qwen selection binds credentials to official regional endpoints and never silently falls back
+  ---
+  duration_ms: 1.505791
+  type: 'test'
+  ...
+# Subtest: agent completes both tool-backed journeys and duplicate calls cannot purchase twice
+ok 9 - agent completes both tool-backed journeys and duplicate calls cannot purchase twice
+  ---
+  duration_ms: 1.180583
+  type: 'test'
+  ...
+# Subtest: model refusal, missing tool journeys and unsupported or financial tool arguments cannot silently succeed
+ok 10 - model refusal, missing tool journeys and unsupported or financial tool arguments cannot silently succeed
+  ---
+  duration_ms: 0.689542
+  type: 'test'
+  ...
+# Subtest: quotes bind token, amount, recipient, chain and invoice identifier outside model control
+ok 11 - quotes bind token, amount, recipient, chain and invoice identifier outside model control
+  ---
+  duration_ms: 0.5455
+  type: 'test'
+  ...
+# Subtest: agent CRE runner uses workflow-relative short paths and strips agent credentials
+ok 12 - agent CRE runner uses workflow-relative short paths and strips agent credentials
+  ---
+  duration_ms: 529.641084
+  type: 'test'
+  ...
+# Subtest: local payment gate rejects denied, expired, stale and exhausted-budget decisions
+ok 13 - local payment gate rejects denied, expired, stale and exhausted-budget decisions
+  ---
+  duration_ms: 5.514042
+  type: 'test'
+  ...
+# Subtest: denied and substituted payment intents stop before provider access or signing
+ok 14 - denied and substituted payment intents stop before provider access or signing
+  ---
+  duration_ms: 1.8395
+  type: 'test'
+  ...
+# Subtest: receipt verification requires the exact new confirmed Circle USDC transfer
+ok 15 - receipt verification requires the exact new confirmed Circle USDC transfer
+  ---
+  duration_ms: 6.942583
+  type: 'test'
+  ...
+# Subtest: paid resource stays locked without a matching onchain receipt
+ok 16 - paid resource stays locked without a matching onchain receipt
+  ---
+  duration_ms: 32.297375
+  type: 'test'
+  ...
+# Subtest: local signed payment unlocks only its quoted resource and cannot buy a denied or replayed quote
+ok 17 - local signed payment unlocks only its quoted resource and cannot buy a denied or replayed quote
+  ---
+  duration_ms: 9479.970292
+  type: 'test'
+  ...
+# Subtest: help and JSON help match the public contract without credentials, spawning CRE or starting a listener
+ok 18 - help and JSON help match the public contract without credentials, spawning CRE or starting a listener
+  ---
+  duration_ms: 6869.062458
+  type: 'test'
+  ...
+# Subtest: unknown, positional, duplicate and missing-value flags fail before operation
+ok 19 - unknown, positional, duplicate and missing-value flags fail before operation
+  ---
+  duration_ms: 3018.696458
+  type: 'test'
+  ...
+# Subtest: missing keys and demo opt-in produce stable one-object JSON failures with nonzero exit codes
+ok 20 - missing keys and demo opt-in produce stable one-object JSON failures with nonzero exit codes
+  ---
+  duration_ms: 2690.313916
+  type: 'test'
+  ...
+# Subtest: recording-window bounds reject malformed values without executing CRE
+ok 21 - recording-window bounds reject malformed values without executing CRE
+  ---
+  duration_ms: 534.699875
+  type: 'test'
+  ...
+# Subtest: missing CRE executable fails as a dependency error rather than a successful result
+ok 22 - missing CRE executable fails as a dependency error rather than a successful result
+  ---
+  duration_ms: 243.036333
+  type: 'test'
+  ...
+# Subtest: subprocess timeout is bounded and rejected even when a child ignores SIGTERM
+ok 23 - subprocess timeout is bounded and rejected even when a child ignores SIGTERM
+  ---
+  duration_ms: 2156.107208
+  type: 'test'
+  ...
+# Subtest: result validation binds full intent, policy, scale and encoded report before evidence can be saved
+ok 24 - result validation binds full intent, policy, scale and encoded report before evidence can be saved
+  ---
+  duration_ms: 5.720666
+  type: 'test'
+  ...
+# Subtest: JSON success and child failure are one object; mismatched results cannot replace captures
+ok 25 - JSON success and child failure are one object; mismatched results cannot replace captures
+  ---
+  duration_ms: 1798.107959
+  type: 'test'
+  ...
+# (node:28312) ExperimentalWarning: The MockTimers API is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: judge-facing output matches the recorded workflow snapshot
+ok 26 - judge-facing output matches the recorded workflow snapshot
+  ---
+  duration_ms: 8.652875
+  type: 'test'
+  ...
+# Subtest: default output fits narrow and wide terminals, including NO_COLOR and JSON progress
+ok 27 - default output fits narrow and wide terminals, including NO_COLOR and JSON progress
+  ---
+  duration_ms: 19.577167
+  type: 'test'
+  ...
+# Subtest: colored terminal output preserves the same facts and never trusts model control sequences
+ok 28 - colored terminal output preserves the same facts and never trusts model control sequences
+  ---
+  duration_ms: 3.308167
+  type: 'test'
+  ...
+# Subtest: spinner shows elapsed time only on an interactive terminal and is disposed
+ok 29 - spinner shows elapsed time only on an interactive terminal and is disposed
+  ---
+  duration_ms: 1.464375
+  type: 'test'
+  ...
+# Subtest: an audit error before a structured callback is still visible
+ok 30 - an audit error before a structured callback is still visible
+  ---
+  duration_ms: 0.40625
+  type: 'test'
+  ...
+# Subtest: human spend-review formatting does not add duplicate machine events
+ok 31 - human spend-review formatting does not add duplicate machine events
+  ---
+  duration_ms: 0.446042
+  type: 'test'
+  ...
+# Subtest: legacy CLI validates a real local deployment, rejects wrong chain/units/binding/gas, and emits stable JSON
+ok 32 - legacy CLI validates a real local deployment, rejects wrong chain/units/binding/gas, and emits stable JSON
+  ---
+  duration_ms: 20678.228
+  type: 'test'
+  ...
+# Subtest: guarded SDK settles through real local contracts and preserves authority on insufficient allowance/balance
+ok 33 - guarded SDK settles through real local contracts and preserves authority on insufficient allowance/balance
+  ---
+  duration_ms: 1430.66
+  type: 'test'
+  ...
+# Subtest: pre-execution organization lookup retries once with identical inputs and keeps both logs
+ok 34 - pre-execution organization lookup retries once with identical inputs and keeps both logs
+  ---
+  duration_ms: 31.603334
+  type: 'test'
+  ...
+# Subtest: persistent organization failure remains unauthorized and gives account recovery instructions
+ok 35 - persistent organization failure remains unauthorized and gives account recovery instructions
+  ---
+  duration_ms: 7.924459
+  type: 'test'
+  ...
+# Subtest: expired credentials, execution errors and workflow results never trigger an auth retry
+ok 36 - expired credentials, execution errors and workflow results never trigger an auth retry
+  ---
+  duration_ms: 33.024666
+  type: 'test'
+  ...
+# Subtest: diagnostic write failures stop before any retry
+ok 37 - diagnostic write failures stop before any retry
+  ---
+  duration_ms: 2.085416
+  type: 'test'
+  ...
+# Subtest: authentication retry stays inside the original subprocess time budget
+ok 38 - authentication retry stays inside the original subprocess time budget
+  ---
+  duration_ms: 4.765125
+  type: 'test'
+  ...
+# Subtest: typed CRE failures survive the policy process boundary and keep CLI exit codes
+ok 39 - typed CRE failures survive the policy process boundary and keep CLI exit codes
+  ---
+  duration_ms: 0.369417
+  type: 'test'
+  ...
+# Subtest: spend-review command strings render in normal and verbose modes
+ok 40 - spend-review command strings render in normal and verbose modes
+  ---
+  duration_ms: 1.196208
+  type: 'test'
+  ...
+# Subtest: requires the exact receiver event and labels verified receipts as unverified workflow identity
+ok 41 - requires the exact receiver event and labels verified receipts as unverified workflow identity
+  ---
+  duration_ms: 11.657209
+  type: 'test'
+  ...
+# Subtest: does not claim publication for reverted or unrelated transactions
+ok 42 - does not claim publication for reverted or unrelated transactions
+  ---
+  duration_ms: 4.135041
+  type: 'test'
+  ...
+# Subtest: a successful write for another report is not evidence of this authorization
+ok 43 - a successful write for another report is not evidence of this authorization
+  ---
+  duration_ms: 1.882292
+  type: 'test'
+  ...
+# Subtest: parses the full escaped CLI result after truncated user logs
+ok 44 - parses the full escaped CLI result after truncated user logs
+  ---
+  duration_ms: 4.433292
+  type: 'test'
+  ...
+# Subtest: does not treat a user log or failed compilation as a successful simulation
+ok 45 - does not treat a user log or failed compilation as a successful simulation
+  ---
+  duration_ms: 0.291917
+  type: 'test'
+  ...
+# Subtest: requires freshness headroom for the full recording window
+ok 46 - requires freshness headroom for the full recording window
+  ---
+  duration_ms: 0.140958
+  type: 'test'
+  ...
+# Subtest: rejects unexpected outcomes even when the feed is fresh
+ok 47 - rejects unexpected outcomes even when the feed is fresh
+  ---
+  duration_ms: 0.080834
+  type: 'test'
+  ...
+# Subtest: rejects stale, future and malformed freshness data
+ok 48 - rejects stale, future and malformed freshness data
+  ---
+  duration_ms: 0.100875
+  type: 'test'
+  ...
+# Subtest: backs up old JSON and transcripts without mutating or overwriting them
+ok 49 - backs up old JSON and transcripts without mutating or overwriting them
+  ---
+  duration_ms: 25.684834
+  type: 'test'
+  ...
+# Subtest: current documentation proof validates and rejects changed signatures, result, nonce, destination or payout
+ok 50 - current documentation proof validates and rejects changed signatures, result, nonce, destination or payout
+  ---
+  duration_ms: 82.328125
+  type: 'test'
+  ...
+# Subtest: initial observation retries use one exact fixed block and unchanged transaction
+ok 51 - initial observation retries use one exact fixed block and unchanged transaction
+  ---
+  duration_ms: 15.723625
+  type: 'test'
+  ...
+# Subtest: permanent unavailability remains ERROR-capable; reverts and changed blocks are never retried
+ok 52 - permanent unavailability remains ERROR-capable; reverts and changed blocks are never retried
+  ---
+  duration_ms: 3.842417
+  type: 'test'
+  ...
+# Subtest: fixed-block attempts are durable and a failed evidence write prevents retry
+ok 53 - fixed-block attempts are durable and a failed evidence write prevents retry
+  ---
+  duration_ms: 273.196417
+  type: 'test'
+  ...
+# Subtest: concurrent HTTP requests share one immutable observation and its retries
+ok 54 - concurrent HTTP requests share one immutable observation and its retries
+  ---
+  duration_ms: 308.439417
+  type: 'test'
+  ...
+# Subtest: guarded CLI cleanup requires matching signed closure; hard-stop owner recovery reconciles funds
+ok 55 - guarded CLI cleanup requires matching signed closure; hard-stop owner recovery reconciles funds
+  ---
+  duration_ms: 30679.056375
+  type: 'test'
+  ...
+# Subtest: SIGINT reaches the safe-boundary cleanup path and preserves interruption status
+ok 56 - SIGINT reaches the safe-boundary cleanup path and preserves interruption status
+  ---
+  duration_ms: 118.812417
+  type: 'test'
+  ...
+# Subtest: SIGTERM reaches the safe-boundary cleanup path and preserves interruption status
+ok 57 - SIGTERM reaches the safe-boundary cleanup path and preserves interruption status
+  ---
+  duration_ms: 136.913
+  type: 'test'
+  ...
+# Subtest: policy signer rejects caller-supplied weaker rules, changed parties and targets
+ok 58 - policy signer rejects caller-supplied weaker rules, changed parties and targets
+  ---
+  duration_ms: 1.564583
+  type: 'test'
+  ...
+# Subtest: local policy typed data binds action, exact intent, nonce, expiry, chain and escrow
+ok 59 - local policy typed data binds action, exact intent, nonce, expiry, chain and escrow
+  ---
+  duration_ms: 90.027125
+  type: 'test'
+  ...
+# Subtest: final simulation retries transient reads with identical calldata, saving every attempt
+ok 60 - final simulation retries transient reads with identical calldata, saving every attempt
+  ---
+  duration_ms: 10.118083
+  type: 'test'
+  ...
+# Subtest: unavailable final simulation fails closed after three read-only attempts
+ok 61 - unavailable final simulation fails closed after three read-only attempts
+  ---
+  duration_ms: 2.803041
+  type: 'test'
+  ...
+# Subtest: EVM reverts stop immediately, including wrapped errors with revert data
+ok 62 - EVM reverts stop immediately, including wrapped errors with revert data
+  ---
+  duration_ms: 2.057708
+  type: 'test'
+  ...
+# Subtest: a changed block stops immediately before signing
+ok 63 - a changed block stops immediately before signing
+  ---
+  duration_ms: 0.302708
+  type: 'test'
+  ...
+# Subtest: expiry or mutation during a read-only retry stops the next attempt
+ok 64 - expiry or mutation during a read-only retry stops the next attempt
+  ---
+  duration_ms: 0.541708
+  type: 'test'
+  ...
+# Subtest: expiry after a successful RPC and a failed evidence write both stop signing
+ok 65 - expiry after a successful RPC and a failed evidence write both stop signing
+  ---
+  duration_ms: 0.537917
+  type: 'test'
+  ...
+# Subtest: latest-block RPC failures are bounded and an initial CRE observation is never retried
+ok 66 - latest-block RPC failures are bounded and an initial CRE observation is never retried
+  ---
+  duration_ms: 0.444875
+  type: 'test'
+  ...
+# Subtest: audit receipt verification binds state and event to its exact canonical confirmed block
+ok 67 - audit receipt verification binds state and event to its exact canonical confirmed block
+  ---
+  duration_ms: 12.434833
+  type: 'test'
+  ...
+# Subtest: a reorganization before or during the receipt state read fails closed
+ok 68 - a reorganization before or during the receipt state read fails closed
+  ---
+  duration_ms: 14.232875
+  type: 'test'
+  ...
+# Subtest: wrong receipt, sender, destination, event, state or confirmations cannot authorize signing
+ok 69 - wrong receipt, sender, destination, event, state or confirmations cannot authorize signing
+  ---
+  duration_ms: 10.080416
+  type: 'test'
+  ...
+# Subtest: a lost broadcast response reconciles only the exact confirmed hash without resubmission
+ok 70 - a lost broadcast response reconciles only the exact confirmed hash without resubmission
+  ---
+  duration_ms: 3.515666
+  type: 'test'
+  ...
+# Subtest: policy form accepts only bounded existing fields; quote and destinations are not request inputs
+ok 71 - policy form accepts only bounded existing fields; quote and destinations are not request inputs
+  ---
+  duration_ms: 2.250334
+  type: 'test'
+  ...
+# Subtest: event validation rejects secrets, absolute paths, invalid amounts, forged explorer links and missing sequence
+ok 72 - event validation rejects secrets, absolute paths, invalid amounts, forged explorer links and missing sequence
+  ---
+  duration_ms: 1.675917
+  type: 'test'
+  ...
+# Subtest: event reducer uses decisions from events, deduplicates SSE replay and retains real amounts
+ok 73 - event reducer uses decisions from events, deduplicates SSE replay and retains real amounts
+  ---
+  duration_ms: 0.562125
+  type: 'test'
+  ...
+# Subtest: local HTTP runner enforces Host, Origin, CSRF, schema, Pay opt-in and single-run lock; SSE replays actual events
+ok 74 - local HTTP runner enforces Host, Origin, CSRF, schema, Pay opt-in and single-run lock; SSE replays actual events
+  ---
+  duration_ms: 92.937917
+  type: 'test'
+  ...
+# Local SSE journal write failed; inspect the CLI's private run.ndjson evidence.
+# Subtest: durable blobs are immutable, content addressed and detect tampering
+ok 75 - durable blobs are immutable, content addressed and detect tampering
+  ---
+  duration_ms: 114.501417
+  type: 'test'
+  ...
+# Subtest: recovery repairs the blob/pointer crash window and reports undecided intents
+ok 76 - recovery repairs the blob/pointer crash window and reports undecided intents
+  ---
+  duration_ms: 86.5985
+  type: 'test'
+  ...
+# Subtest: Merkle proofs bind every decision and fail for changed data or receipt domains
+ok 77 - Merkle proofs bind every decision and fail for changed data or receipt domains
+  ---
+  duration_ms: 6.066417
+  type: 'test'
+  ...
+# Subtest: spend-review CLI help and incompatible resume flags need no wallet or RPC
+ok 78 - spend-review CLI help and incompatible resume flags need no wallet or RPC
+  ---
+  duration_ms: 208.844791
+  type: 'test'
+  ...
+# Subtest: real local RPC reviews ALLOW/BLOCK/ERROR, anchors every decision, gates signing and reconciles USDC
+ok 79 - real local RPC reviews ALLOW/BLOCK/ERROR, anchors every decision, gates signing and reconciles USDC
+  ---
+  duration_ms: 49797.407625
+  type: 'test'
+  ...
+# Subtest: real local stream escrow, authenticated request reuse, cancellation earnings and refund reconcile without per-request transactions
+ok 80 - real local stream escrow, authenticated request reuse, cancellation earnings and refund reconcile without per-request transactions
+  ---
+  duration_ms: 13961.917125
+  type: 'test'
+  ...
+# Subtest: denied or substituted stream admission stops before any wallet/provider interaction
+ok 81 - denied or substituted stream admission stops before any wallet/provider interaction
+  ---
+  duration_ms: 550.941917
+  type: 'test'
+  ...
+# Subtest: renders guarded USDC raw units exactly at six decimals
+ok 82 - renders guarded USDC raw units exactly at six decimals
+  ---
+  duration_ms: 1.203541
+  type: 'test'
+  ...
+# Subtest: does not round large integer balances through floating point
+ok 83 - does not round large integer balances through floating point
+  ---
+  duration_ms: 0.207875
+  type: 'test'
+  ...
+# Subtest: ToolBuyer help and malformed seeds use one JSON envelope before network or listeners
+ok 84 - ToolBuyer help and malformed seeds use one JSON envelope before network or listeners
+  ---
+  duration_ms: 728.654
+  type: 'test'
+  ...
+# Subtest: ToolBuyer held-out benchmark counts trials and every answer, reports the strong baseline honestly
+ok 85 - ToolBuyer held-out benchmark counts trials and every answer, reports the strong baseline honestly
+  ---
+  duration_ms: 431.315958
+  type: 'test'
+  ...
+# Subtest: ToolBuyer synthetic providers charge idempotently and reject substituted task reuse
+ok 86 - ToolBuyer synthetic providers charge idempotently and reject substituted task reuse
+  ---
+  duration_ms: 122.555625
+  type: 'test'
+  ...
+# Subtest: ToolBuyer evidence verifier rejects altered labels, costs, provider choices and decision traces
+ok 87 - ToolBuyer evidence verifier rejects altered labels, costs, provider choices and decision traces
+  ---
+  duration_ms: 113.905542
+  type: 'test'
+  ...
+# Subtest: claimable estimates subtract prior withdrawals and release the final integer remainder at expiry
+ok 88 - claimable estimates subtract prior withdrawals and release the final integer remainder at expiry
+  ---
+  duration_ms: 1.275208
+  type: 'test'
+  ...
+# Subtest: stream form validates the actual default duration, balance and exact raw-unit flow rate
+ok 89 - stream form validates the actual default duration, balance and exact raw-unit flow rate
+  ---
+  duration_ms: 7.716625
+  type: 'test'
+  ...
+# Subtest: validates current evidence and rejects a mismatched asset, scale or missing price before rendering
+ok 90 - validates current evidence and rejects a mismatched asset, scale or missing price before rendering
+  ---
+  duration_ms: 0.395417
+  type: 'test'
+  ...
+# Subtest: wallet balances and nonce are read at one block at or above the last confirmed transaction
+ok 91 - wallet balances and nonce are read at one block at or above the last confirmed transaction
+  ---
+  duration_ms: 8.382083
+  type: 'test'
+  ...
+# Subtest: advancing blocks with unchanged state preserve equality, but real wallet changes remain visible
+ok 92 - advancing blocks with unchanged state preserve equality, but real wallet changes remain visible
+  ---
+  duration_ms: 7.904916
+  type: 'test'
+  ...
+# Subtest: reorganizations and unavailable snapshots fail instead of inventing a wallet state
+ok 93 - reorganizations and unavailable snapshots fail instead of inventing a wallet state
+  ---
+  duration_ms: 3.440792
+  type: 'test'
+  ...
+# Subtest: diagram starts empty, shows actual escrow funding mid-run, and settles from the recorded events
+ok 94 - diagram starts empty, shows actual escrow funding mid-run, and settles from the recorded events
+  ---
+  duration_ms: 1.861542
+  type: 'test'
+  ...
+# Subtest: DENY and preview projection never invent a funded stream or paid calls
+ok 95 - DENY and preview projection never invent a funded stream or paid calls
+  ---
+  duration_ms: 9.904042
+  type: 'test'
+  ...
+# Subtest: diagram copies decisions without evaluating prices, handles missing evidence, deduplicates hashes and hides unverified amounts
+ok 96 - diagram copies decisions without evaluating prices, handles missing evidence, deduplicates hashes and hides unverified amounts
+  ---
+  duration_ms: 0.378292
+  type: 'test'
+  ...
+# Subtest: token and price formatters use integer math, preserve USDC precision and truncate ETH to four decimals
+ok 97 - token and price formatters use integer math, preserve USDC precision and truncate ETH to four decimals
+  ---
+  duration_ms: 0.839583
+  type: 'test'
+  ...
+# Subtest: live balance labels distinguish preflight, run-start ETH and run-end USDC
+ok 98 - live balance labels distinguish preflight, run-start ETH and run-end USDC
+  ---
+  duration_ms: 0.366666
+  type: 'test'
+  ...
+# Subtest: running status explains spend-review and signed-funding waits without claiming confirmation
+ok 99 - running status explains spend-review and signed-funding waits without claiming confirmation
+  ---
+  duration_ms: 0.28025
+  type: 'test'
+  ...
+# Subtest: completed preview is explicit and never labels a failed preview complete
+ok 100 - completed preview is explicit and never labels a failed preview complete
+  ---
+  duration_ms: 0.226
+  type: 'test'
+  ...
+# Subtest: failed unsigned account checks show no funding instead of recovery or uncertain escrow
+ok 101 - failed unsigned account checks show no funding instead of recovery or uncertain escrow
+  ---
+  duration_ms: 0.1795
+  type: 'test'
+  ...
+# Subtest: every recorded timeline title stays compact and nodes point back to source events
+ok 102 - every recorded timeline title stays compact and nodes point back to source events
+  ---
+  duration_ms: 6.582875
+  type: 'test'
+  ...
+# Subtest: guarded recorded run carries its own enforcement marker and observed payout amounts
+ok 103 - guarded recorded run carries its own enforcement marker and observed payout amounts
+  ---
+  duration_ms: 2.170417
+  type: 'test'
+  ...
+# Subtest: shutdown progress, confirmed settlement and unresolved transactions remain separate facts
+ok 104 - shutdown progress, confirmed settlement and unresolved transactions remain separate facts
+  ---
+  duration_ms: 0.572167
+  type: 'test'
+  ...
+# Subtest: four latest scenario choices stay stable while earlier captures remain selectable
+ok 105 - four latest scenario choices stay stable while earlier captures remain selectable
+  ---
+  duration_ms: 16.594083
+  type: 'test'
+  ...
+# Subtest: ancillary spend ALLOW does not hide lifecycle CLOSE, while spend BLOCK remains visible
+ok 106 - ancillary spend ALLOW does not hide lifecycle CLOSE, while spend BLOCK remains visible
+  ---
+  duration_ms: 0.111
+  type: 'test'
+  ...
+1..106
+# tests 106
+# suites 0
+# pass 106
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 50890.211375

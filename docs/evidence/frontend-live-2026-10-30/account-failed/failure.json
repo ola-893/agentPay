@@ -1,0 +1,7 @@
+{
+  "failedAt": "2026-10-30T11:45:06.291Z",
+  "code": "CRE_ACCOUNT_UNAVAILABLE",
+  "message": "Chainlink CRE could not verify your account/organization. Run cre whoami. If credentials are invalid, run cre login; otherwise wait and retry. Transcript: .local/agent-demo/runs/20261030T114437Z-03847749/policy/cre-price.log",
+  "fundingAttempted": false,
+  "streamId": null
+}

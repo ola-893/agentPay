@@ -1,0 +1,225 @@
+{
+  "schemaVersion": 2,
+  "runId": "20261030T113652Z-ab2565c6",
+  "mode": "local-stream-preview",
+  "completedAt": "2026-10-30T11:38:17.177Z",
+  "provider": "qwen",
+  "model": "qwen3.5-plus",
+  "chainId": 11155111,
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+  "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+  "fundedRaw": "0",
+  "earnedRaw": "0",
+  "refundedRaw": "0",
+  "initial": {
+    "agentBalanceRaw": "39876072",
+    "recipientBalanceRaw": "46800",
+    "nonce": 132
+  },
+  "final": {
+    "agentBalanceRaw": "39876072",
+    "recipientBalanceRaw": "46800",
+    "nonce": 132
+  },
+  "responses": [
+    {
+      "id": "resp_9b4e1ffe-0078-99cc-aa0c-55424c4c8800",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 657,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 94,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 751,
+        "x_details": [
+          {
+            "input_tokens": 657,
+            "output_tokens": 94,
+            "total_tokens": 751,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"basic\", \"purpose\": \"Demonstrate local CRE OPEN, stream reuse, CONTINUE and outage-triggered CLOSE/refund\"}",
+          "call_id": "call_c7fd38e0b54b4894b4853a9c",
+          "id": "msg_b4e25e91-a60b-409e-a42f-04263159b8b5",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_daf6a453-6467-9cb1-a395-19ce87a81724",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1708,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 40,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1748,
+        "x_details": [
+          {
+            "input_tokens": 1708,
+            "output_tokens": 40,
+            "total_tokens": 1748,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"premium\", \"purpose\": \"Demonstrate premium budget denial due to deposit cap policy\"}",
+          "call_id": "call_59d1ba9cc363401da580766b",
+          "id": "msg_282c0347-caff-4515-8558-b5b29bf66936",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_d8e171b8-6899-9069-80b6-f6eafdce106b",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1574,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 548,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 2122,
+        "x_details": [
+          {
+            "input_tokens": 1574,
+            "output_tokens": 548,
+            "total_tokens": 2122,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "content": [
+            {
+              "annotations": [],
+              "text": "### Factual Summary of Streaming Research Session Results\n\n**1. Basic Tier Session (Status: Preview/Admission)**\n*   **Action:** The `buy_research` tool was called for the **basic** tier with a quote of **0.01 USDC** (`10000` raw units) over **1000 seconds**.\n*   **Result:** The system returned a `preview` status with an `OPEN` action recommendation based on healthy budget parameters.\n    *   **Funds Escrowed:** $0$ USDC. The result explicitly states `\"paymentSent\": false` and `\"resourceUnlocked\": false`. No transaction receipt exists yet; this is a simulation admission.\n    *   **Configuration:** The stream is configured for a max rate of `100` raw units/second against a spending cap of `100000` raw units (0.1 USDC).\n    *   **Simulation Context:** The mode is `local-simulation` on Chain ID `11155111` (Sepolia testnet). Test tokens have no monetary value.\n    *   **Operational Flow:** In a live execution following this preview, the CRE (Continuous Research Engine) would open the stream, allow up to 10 real requests to reuse the single stream connection, and handle `CONTINUE` signals. If a demo outage were injected, the CRE would trigger a `CLOSE`, calculating time-accrued earnings to pay the recipient and refunding the unused portion of the deposit to the wallet.\n\n**2. Premium Tier Session (Status: Denied)**\n*   **Action:** The `buy_research` tool was called for the **premium** tier requesting **0.2 USDC** (`200000` raw units).\n*   **Result:** The request was **denied** immediately due to policy constraints.\n    *   **Policy Violation:** The requested amount (`0.2` USDC) exceeded the hard deposit cap of `0.1` USDC (`100000` raw units).\n    *   **Financial Impact:** No funds were moved. The agent balance remained at `39876072` raw units before and after the call. `\"noTransactionSigned\": true`.\n    *   **Authorization:** There was no DON or onchain CRE authorization granted for this transaction.\n\n**Conclusion:** The basic session successfully generated a valid admission preview for a low-cost stream, while the premium session was correctly blocked by the system's deposit cap policy without executing any on-chain transactions.",
+              "type": "output_text"
+            }
+          ],
+          "id": "msg_0e27dc5f-935c-45dd-895a-9a35f15c164a",
+          "role": "assistant",
+          "status": "completed",
+          "type": "message"
+        }
+      ]
+    }
+  ],
+  "summary": "### Factual Summary of Streaming Research Session Results\n\n**1. Basic Tier Session (Status: Preview/Admission)**\n*   **Action:** The `buy_research` tool was called for the **basic** tier with a quote of **0.01 USDC** (`10000` raw units) over **1000 seconds**.\n*   **Result:** The system returned a `preview` status with an `OPEN` action recommendation based on healthy budget parameters.\n    *   **Funds Escrowed:** $0$ USDC. The result explicitly states `\"paymentSent\": false` and `\"resourceUnlocked\": false`. No transaction receipt exists yet; this is a simulation admission.\n    *   **Configuration:** The stream is configured for a max rate of `100` raw units/second against a spending cap of `100000` raw units (0.1 USDC).\n    *   **Simulation Context:** The mode is `local-simulation` on Chain ID `11155111` (Sepolia testnet). Test tokens have no monetary value.\n    *   **Operational Flow:** In a live execution following this preview, the CRE (Continuous Research Engine) would open the stream, allow up to 10 real requests to reuse the single stream connection, and handle `CONTINUE` signals. If a demo outage were injected, the CRE would trigger a `CLOSE`, calculating time-accrued earnings to pay the recipient and refunding the unused portion of the deposit to the wallet.\n\n**2. Premium Tier Session (Status: Denied)**\n*   **Action:** The `buy_research` tool was called for the **premium** tier requesting **0.2 USDC** (`200000` raw units).\n*   **Result:** The request was **denied** immediately due to policy constraints.\n    *   **Policy Violation:** The requested amount (`0.2` USDC) exceeded the hard deposit cap of `0.1` USDC (`100000` raw units).\n    *   **Financial Impact:** No funds were moved. The agent balance remained at `39876072` raw units before and after the call. `\"noTransactionSigned\": true`.\n    *   **Authorization:** There was no DON or onchain CRE authorization granted for this transaction.\n\n**Conclusion:** The basic session successfully generated a valid admission preview for a low-cost stream, while the premium session was correctly blocked by the system's deposit cap policy without executing any on-chain transactions.",
+  "purchases": {
+    "basic": {
+      "status": "preview",
+      "tier": "basic",
+      "admission": {
+        "schemaVersion": 1,
+        "workflow": "agentpay-stream-supervisor",
+        "mode": "local-simulation",
+        "config": {
+          "chainId": 11155111,
+          "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+          "tokenDecimals": 6,
+          "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+          "requestId": "0x5d128ae33d1a82718a3d8b33cc0d18a3d24fd43e0f4a0344974c731f895ef6b2",
+          "quoteId": "0x1d350940fd154eac60fcb7f61033c9f22a04cb9e42f178091fcbceea78714e97",
+          "sessionId": "0x2226e29308f9e65377565beb39e1e0559ae3fe99a385c662b90c15321a29d00a",
+          "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+          "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+          "amountRaw": "10000",
+          "spendingCapRaw": "100000",
+          "durationSeconds": 1000,
+          "maxRateRawPerSecond": "100",
+          "phase": "admission",
+          "streamId": "0",
+          "observationBlock": 12026419,
+          "healthUrl": "http://127.0.0.1:62848/health/c6cbcc7ac66e09d6732697c89936c1ea60eb444e4ea21ff3fe159628e8a1f8e4",
+          "expectedHealth": {
+            "sessionId": "0x2226e29308f9e65377565beb39e1e0559ae3fe99a385c662b90c15321a29d00a",
+            "observationId": "0xc6cbcc7ac66e09d6732697c89936c1ea60eb444e4ea21ff3fe159628e8a1f8e4",
+            "serviceAvailable": true,
+            "successfulRequests": 0,
+            "failedRequests": 0
+          },
+          "client": {
+            "successfulRequests": 0,
+            "failedRequests": 0
+          },
+          "maxFailedRequests": 3
+        },
+        "health": {
+          "sessionId": "0x2226e29308f9e65377565beb39e1e0559ae3fe99a385c662b90c15321a29d00a",
+          "observationId": "0xc6cbcc7ac66e09d6732697c89936c1ea60eb444e4ea21ff3fe159628e8a1f8e4",
+          "serviceAvailable": true,
+          "successfulRequests": 0,
+          "failedRequests": 0
+        },
+        "onchain": {
+          "paymentToken": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+          "tokenDecimals": 6,
+          "agentBalanceRaw": "39876072",
+          "stream": null
+        },
+        "action": "OPEN",
+        "reason": "HEALTHY_WITHIN_BUDGET",
+        "observedAt": 1793360245,
+        "donAuthenticated": false
+      },
+      "paymentSent": false,
+      "resourceUnlocked": false
+    },
+    "premium": {
+      "status": "denied",
+      "tier": "premium",
+      "policy": {
+        "reason": "AMOUNT_EXCEEDS_POLICY",
+        "amountRaw": "200000",
+        "amountUsdc": "0.2",
+        "capRaw": "100000",
+        "capUsdc": "0.1"
+      },
+      "noTransactionSigned": true,
+      "before": {
+        "agentBalanceRaw": "39876072",
+        "recipientBalanceRaw": "46800",
+        "nonce": 132
+      },
+      "after": {
+        "agentBalanceRaw": "39876072",
+        "recipientBalanceRaw": "46800",
+        "nonce": 132
+      }
+    }
+  },
+  "donAuthenticated": false,
+  "strictGuardUsed": false,
+  "contractPolicySignatures": true,
+  "evidenceDirectory": ".local/agent-demo/runs/20261030T113652Z-ab2565c6",
+  "audit": {
+    "decisions": 159,
+    "pendingReceipts": 3
+  }
+}

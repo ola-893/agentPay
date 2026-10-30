@@ -1,0 +1,179 @@
+{
+  "runId": "20261030T121320Z-a696d4d4",
+  "verifiedAt": "2026-10-30T12:20:22.143Z",
+  "chainId": 11155111,
+  "receiptContract": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+  "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "receiptTransactions": 3,
+  "proofsVerified": 11,
+  "receipts": [
+    {
+      "transactionHash": "0x2cfc7429733a4e84d85c4dc061ee9993386d3b1650e21d574024ba620c92f830",
+      "blockNumber": 12026607,
+      "root": "0x2b975676df4949f81133a7a9f36d13582ce5458fd65370f4fbc5d043dfb7b203",
+      "proofsVerified": 7
+    },
+    {
+      "transactionHash": "0xd92a52ea2beebef9c6e13dcb610bec02b01ec30780f36ede692377741aaec150",
+      "blockNumber": 12026617,
+      "root": "0x6393109fad3b502b104e296613696c3826d288bc0565adbd5c0b6a65eda3a335",
+      "proofsVerified": 3
+    },
+    {
+      "transactionHash": "0xd218220ab4148077f47c2f4ecf1567eb079587bf8492d1e69645f8ab0476e8ab",
+      "blockNumber": 12026626,
+      "root": "0x65302f21be88fd064ffe979bfaa175958a44c57de743cb5b850e24fdb8d3982b",
+      "proofsVerified": 1
+    }
+  ],
+  "batches": [
+    {
+      "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+      "blockNumber": 12026607,
+      "chainId": 11155111,
+      "entries": [
+        {
+          "blobHash": "0x8e9aefa37a9cee9a2015eed2cdbf1e29f0aa965103ede35db03d02705b105d83",
+          "intentId": "0x6b330330d8ac7e7082ee04d43298b0d179673ba7f0f7627775fdc929e4d4acd2",
+          "proof": [
+            "0x627400affd0d1a0ec535e74a7ec98a21503894a1841bdf46fe211aeef7cbecab",
+            "0x0f1875edd701ff998a02f3505d3e54495cc7c0f55d71bf957b541756c28d4ce2",
+            "0xc7d1a5b66e2c4b6dde2d00d605b3eff096de05a35151e857ab5f3a3a46016740"
+          ],
+          "sequence": 157
+        },
+        {
+          "blobHash": "0x80fa556a323c2d39854e3a18ce1c6fa61cb76003a4e9368740d5b530612dc32d",
+          "intentId": "0x7aeaa6a427290ff960d49e8e35ab78f95d969c2f4c78dadc4dba22891e49475c",
+          "proof": [
+            "0x14bc69c034bb74f35b6294cadfea42fc0f83bb2166444621a5067f71b0c5a4f4",
+            "0x0f1875edd701ff998a02f3505d3e54495cc7c0f55d71bf957b541756c28d4ce2",
+            "0xc7d1a5b66e2c4b6dde2d00d605b3eff096de05a35151e857ab5f3a3a46016740"
+          ],
+          "sequence": 158
+        },
+        {
+          "blobHash": "0x8cfb59a1349f4dd38b051c1d6ee98d165bea48aa991b777daf4f18495e3471b2",
+          "intentId": "0xa4a7ca0230adceac579ae8662f2f8354c9962f7b1ff881c60ac997092a9f1ac8",
+          "proof": [
+            "0x2f68fe6f7c52523e066b4f3b6daa91d4c614eadb2013ae9401ea9e55d91db163",
+            "0x67f67014606128b6f0f2537343235b3280381cd6901c2f83fdfc80f9a4a208d1",
+            "0xc7d1a5b66e2c4b6dde2d00d605b3eff096de05a35151e857ab5f3a3a46016740"
+          ],
+          "sequence": 159
+        },
+        {
+          "blobHash": "0x58c5ba7ff449d7550f15d66db561e72c302e25e7152d65c24edd3c944255fde0",
+          "intentId": "0xbea91c7a9645c5e79780fdb6e9bfde48f93a6644d75ecb66194c2fc969d2959f",
+          "proof": [
+            "0xc3e9220022d3627b499977fc99958cb9c3885b7efb2562e8064f8c3f37ec3a27",
+            "0x67f67014606128b6f0f2537343235b3280381cd6901c2f83fdfc80f9a4a208d1",
+            "0xc7d1a5b66e2c4b6dde2d00d605b3eff096de05a35151e857ab5f3a3a46016740"
+          ],
+          "sequence": 160
+        },
+        {
+          "blobHash": "0x17c9e95bbbf7bc0cfbe274b2994d387554dd2dcc535f81689d877048c8226107",
+          "intentId": "0xcc97a3758651f06b5fb5e82330cfcb9fee212fa8a2d7929689173447397417f6",
+          "proof": [
+            "0x697d6ac785d3068d39547505797aa47b17245887e5fdb0bd7d47e8625b885a4d",
+            "0x1102558fa061cc954dd346ae37d35f096b264eae73a5e94fd738acbae756916b",
+            "0x088281e6f9dcbc176686e88f530843c6f242665445244f6a9961115ba68317ed"
+          ],
+          "sequence": 161
+        },
+        {
+          "blobHash": "0x9c84438b35054ccef043e31075ba47dfc77b602f7e6dfd895ca42d2009e56be0",
+          "intentId": "0xda8fdfa8567728b51bfc44c488b8ccce077f48710897fdbbced1078698cf34fc",
+          "proof": [
+            "0xb0cb43a419954c5f598eebed1e267eddaa5e5117c6537d2532e343f86da14d1a",
+            "0x1102558fa061cc954dd346ae37d35f096b264eae73a5e94fd738acbae756916b",
+            "0x088281e6f9dcbc176686e88f530843c6f242665445244f6a9961115ba68317ed"
+          ],
+          "sequence": 162
+        },
+        {
+          "blobHash": "0xaca8642572d101b8a16755f14319b1a9a68d3c4ef0d870893f2b664c4b255f6c",
+          "intentId": "0xde694dd8b962143937862796f5cbc6580442fa24a884eaf46239fcbfa1e7ddef",
+          "proof": [
+            "0xc6f2ad7ca24bcd79d7be41466b68c2a0668bfd13f56415d21106e09f5fe4c674",
+            "0xb41ee8056765888d5d994e09c08b86cb6ffdacf10a80e22e76dbea4259ac45dd",
+            "0x088281e6f9dcbc176686e88f530843c6f242665445244f6a9961115ba68317ed"
+          ],
+          "sequence": 163
+        }
+      ],
+      "feeWei": "24014496",
+      "firstSequence": 157,
+      "gasUsed": "363856",
+      "root": "0x2b975676df4949f81133a7a9f36d13582ce5458fd65370f4fbc5d043dfb7b203",
+      "schemaVersion": 1,
+      "state": "anchored",
+      "transactionHash": "0x2cfc7429733a4e84d85c4dc061ee9993386d3b1650e21d574024ba620c92f830",
+      "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+    },
+    {
+      "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+      "blockNumber": 12026617,
+      "chainId": 11155111,
+      "entries": [
+        {
+          "blobHash": "0xd88715240a230f3a6f8f015492526e8759fd6a86049e2e2cd8030fd2bcab5393",
+          "intentId": "0x07432cdb2842d4418fdb2e034977d852db9dd855ce2372e08c670b46b38b8dcd",
+          "proof": [
+            "0x30b758c0c3c03eb56d1b13c6c8693a87fc5f227b91374d4d750837e7b718a423",
+            "0x0635ddfbaf513ece14911f63afcfc805069d2ff06f0bc7556403566ef7f574ee"
+          ],
+          "sequence": 164
+        },
+        {
+          "blobHash": "0x5d686a33ff3d6890e95b8d03123eb8d4b53c7393816f2a16aed816771dbe3a46",
+          "intentId": "0x0e1f0077dab8a051ddbbaa4e37bd514631267d79cc48041578ad6f166c5413b9",
+          "proof": [
+            "0x5aa15f6bb43dd42e9266ac65cf67b1621becdc60b4abe9ceaffeea5dd377447c",
+            "0x0635ddfbaf513ece14911f63afcfc805069d2ff06f0bc7556403566ef7f574ee"
+          ],
+          "sequence": 165
+        },
+        {
+          "blobHash": "0x4cf205c105277c64d47b9bb7bc579f5b9efb55789682a0efcd53aba97a350f47",
+          "intentId": "0x20ece1ae793aecf69e226ab272b0603ab7b11f9795b696e58d16728b6f5ad643",
+          "proof": [
+            "0x9db9cae77c5e7199fae5d4a70546334428ece3ab698181ea459ac6895ad2bef9",
+            "0xd67771b3f2a4f0f1b5c575f8b882cc431b3345cdae1ef78ed3a4b44b97d10517"
+          ],
+          "sequence": 166
+        }
+      ],
+      "feeWei": "24014496",
+      "firstSequence": 164,
+      "gasUsed": "363856",
+      "root": "0x6393109fad3b502b104e296613696c3826d288bc0565adbd5c0b6a65eda3a335",
+      "schemaVersion": 1,
+      "state": "anchored",
+      "transactionHash": "0xd92a52ea2beebef9c6e13dcb610bec02b01ec30780f36ede692377741aaec150",
+      "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+    },
+    {
+      "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+      "blockNumber": 12026626,
+      "chainId": 11155111,
+      "entries": [
+        {
+          "blobHash": "0xada5b49d1b6c1b28fde0dda19577546f8452cf5fcae2bc85fc6d6f2d27307554",
+          "intentId": "0xa41d660dc894cdb8ac3a5b0306bb641b64172bc8a7a8160f2907c705094a8a0d",
+          "proof": [],
+          "sequence": 167
+        }
+      ],
+      "feeWei": "24014496",
+      "firstSequence": 167,
+      "gasUsed": "363856",
+      "root": "0x65302f21be88fd064ffe979bfaa175958a44c57de743cb5b850e24fdb8d3982b",
+      "schemaVersion": 1,
+      "state": "anchored",
+      "transactionHash": "0xd218220ab4148077f47c2f4ecf1567eb079587bf8492d1e69645f8ab0476e8ab",
+      "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+    }
+  ]
+}

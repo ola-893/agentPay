@@ -25,7 +25,32 @@ npm run dev:live
 
 Open `http://127.0.0.1:5317/`. The local server binds `127.0.0.1:5318`; the Vite proxy keeps browser requests same-origin. Stop an existing Vite instance on port 5317 before starting the combined command.
 
-Choose **Live local**, then **Run · Preview**. Preview performs real model/CRE/HTTP/Sepolia reads and persists decision blobs without signing. Try **Tiny cap** (9999 raw against the fixed 10000 request) or **Stale feed** (60 seconds); the latter depends on observed feed age. A policy DENY is a completed policy outcome, not an execution error. CLI executions now return success for a validated price-policy denial; network, SDK and execution/validation failures remain failures.
+Choose **Live**, then **Run Preview**. Preview performs real model/CRE/HTTP/Sepolia reads and persists decision blobs without signing. Try **Tiny cap** (9999 raw against the fixed 10000 request) or **Stale feed** (60 seconds); the latter depends on observed feed age. A policy DENY is a completed policy outcome, not an execution error. CLI executions now return success for a validated price-policy denial; network, SDK and execution/validation failures remain failures.
+
+For a local presentation, open `http://127.0.0.1:5317/`, choose **Live**, and wait
+for its green runner dot. Use **Reset policy** before the normal demo. Select
+**Pay**, check **Authorize 0.01 test USDC + gas**, then **Run Pay**. The run disables
+policy edits and duplicate submission. Keep the browser open for the live timeline;
+**Reconnect timeline** replays that run's existing events without starting another
+payment. A page reload during an active run can rediscover it from the local runner;
+select Live and reconnect before starting anything else. A static preview/build
+cannot run this path.
+
+Preview completion explicitly shows no payment signed and zero paid calls. A
+failed unsigned account check shows no stream funded rather than operator-recovery
+instructions. During a paid run, separate status messages identify CRE checks,
+audit anchoring, pending funding and pending closure; only verified settlement
+shows a refund. USDC switches from its labeled run-start observation to run-end
+balance; ETH remains explicitly labeled as preflight/run-start because gas is not
+reconciled into the card. Original transcript/config links open the actual local
+artifacts. Invalid USDC inputs show an inline error, and disabled policy values
+remain readable.
+
+The [October 30 computer-use verification](evidence/frontend-live-2026-10-30/VERIFICATION.md)
+records a real browser preview, cap denial, funded stream #10, reconnect and
+responsive screenshots. CRE CLI was updated locally from v1.37.0 to v1.39.0 after
+a repeated pre-execution organization lookup failure. That incident remains
+recorded; the update does not guarantee future authentication availability.
 
 Live mode puts deposit cap, maximum feed age and failure threshold first; rate and both basis-point tolerances are under Advanced. USDC cap/rate inputs use six-decimal amounts converted to integer strings; the backend request is unchanged. ETH balances are truncated to four decimal places, with full wei in a tooltip. The six editable policy fields are bounded server-side: deposit cap 1–100000 raw, rate 1–100 raw/s, peg and disagreement tolerances 1–100 bps, maximum feed age 60–86400 seconds, failure threshold 1–3. The quote stays fixed at 0.01 USDC over 1000 seconds; recipient, token, escrow and planner are not form inputs. Reset restores the registered defaults. No sub-basis-point peg preset is offered.
 

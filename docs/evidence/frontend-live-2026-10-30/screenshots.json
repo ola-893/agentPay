@@ -1,0 +1,87 @@
+[
+  {
+    "file": "cap-deny-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "completed-viewport-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "invalid-cap-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "live-close-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "live-close-390.jpg",
+    "width": 382,
+    "height": 827
+  },
+  {
+    "file": "live-closing-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "live-completed-1024.jpg",
+    "width": 1016,
+    "height": 893
+  },
+  {
+    "file": "live-completed-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "live-completed-390.jpg",
+    "width": 382,
+    "height": 827
+  },
+  {
+    "file": "live-funded-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "live-open-1024.jpg",
+    "width": 1016,
+    "height": 893
+  },
+  {
+    "file": "live-price-open-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "live-reuse-1024.jpg",
+    "width": 1016,
+    "height": 893
+  },
+  {
+    "file": "live-settled-before-summary-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "live-start-390.jpg",
+    "width": 382,
+    "height": 827
+  },
+  {
+    "file": "preview-1440.jpg",
+    "width": 1432,
+    "height": 994
+  },
+  {
+    "file": "ready-local-dashboard.jpg",
+    "width": 1432,
+    "height": 994
+  }
+]
