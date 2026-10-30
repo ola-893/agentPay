@@ -10,6 +10,36 @@ export const JOURNAL_ABI = [
   "event DecisionsAnchored(bytes32 indexed root,uint256 firstSequence,uint256 count)",
 ];
 const iface = new Interface(JOURNAL_ABI);
+export async function verifyBatchReceipt(provider, contract, batch, receipt) {
+  if (!receipt || receipt.hash !== batch.transactionHash || receipt.status !== 1 ||
+      (await receipt.confirmations()) < 2)
+    throw new Error("Journal receipt pending confirmations");
+  if (receipt.to?.toLowerCase() !== batch.address.toLowerCase() ||
+      receipt.from?.toLowerCase() !== batch.writer.toLowerCase())
+    throw new Error("Journal receipt domain mismatch");
+  const matchesBlock = async () => {
+    const block = await provider.getBlock(receipt.blockNumber);
+    if (!block || block.hash !== receipt.blockHash)
+      throw new Error("Journal receipt block changed or unavailable");
+  };
+  await matchesBlock();
+  const events = receipt.logs
+    .filter(log => log.address.toLowerCase() === batch.address.toLowerCase())
+    .map(log => iface.parseLog(log));
+  const event = events.find(log => log?.name === "DecisionsAnchored" &&
+    log.args.root === batch.root &&
+    log.args.firstSequence === BigInt(batch.firstSequence) &&
+    log.args.count === BigInt(batch.entries.length));
+  if (!event) throw new Error("Journal receipt anchor event mismatch");
+  // A load-balanced RPC's latest node can lag the node that confirmed the
+  // receipt. Read its exact block and bind it to the canonical receipt hash.
+  const anchored = await contract.batches(batch.root, {blockTag: receipt.blockNumber});
+  await matchesBlock();
+  if (anchored.firstSequence !== BigInt(batch.firstSequence) ||
+      anchored.count !== BigInt(batch.entries.length))
+    throw new Error("Receipt root or sequence mismatch at confirmed block");
+  return receipt.blockNumber;
+}
 export async function verifyDeployment(provider, address, writer) {
   if ((await provider.getNetwork()).chainId !== 11155111n)
     throw new Error("Journal requires Sepolia");
@@ -55,27 +85,21 @@ export async function anchorPending({ journal, provider, wallet, address }) {
   // broadcasts are never silently retried with another nonce.
   const uncertain = status.batches.filter((b) => b.state !== "anchored");
   for (const batch of uncertain) {
-    const onchain = await contract.batches(batch.root);
-    if (
-      onchain.count === BigInt(batch.entries.length) &&
-      onchain.firstSequence === BigInt(batch.firstSequence)
-    ) {
+    try {
       const receipt = await provider.getTransactionReceipt(
         batch.transactionHash
       );
-      if (
-        !receipt ||
-        receipt.status !== 1 ||
-        (await receipt.confirmations()) < 2
-      )
-        throw new Error("Journal receipt pending confirmations");
+      await verifyBatchReceipt(provider, contract, batch, receipt);
       batch.state = "anchored";
       batch.blockNumber = receipt.blockNumber;
+      batch.gasUsed = receipt.gasUsed.toString();
+      batch.feeWei = receipt.fee.toString();
       await durableWrite(journal.file("batches", batch.root), batch);
-    } else
+    } catch {
       throw new Error(
         `Journal broadcast uncertain: inspect ${batch.transactionHash}; no automatic resubmission`
       );
+    }
   }
   const current = await journal.status();
   if (!current.pendingReceipts.length) return current.batches;
@@ -127,12 +151,7 @@ export async function anchorPending({ journal, provider, wallet, address }) {
     }
     if (!receipt || receipt.status !== 1)
       throw new Error(`Journal anchor failed: ${hash}`);
-    const anchored = await contract.batches(tree.root);
-    if (
-      anchored.firstSequence !== BigInt(sequence) ||
-      anchored.count !== BigInt(entries.length)
-    )
-      throw new Error("Receipt root or sequence mismatch");
+    await verifyBatchReceipt(provider, contract, batch, receipt);
     batch.state = "anchored";
     batch.blockNumber = receipt.blockNumber;
     batch.gasUsed = receipt.gasUsed.toString();
@@ -170,12 +189,9 @@ export async function assertAnchored(
   if (!verifyProof(leaf, entry.proof, batch.root))
     throw new Error("Decision inclusion proof invalid");
   const contract = await verifyDeployment(provider, address, writer);
-  const onchain = await contract.batches(batch.root);
-  if (
-    onchain.firstSequence !== BigInt(batch.firstSequence) ||
-    onchain.count !== BigInt(batch.entries.length) ||
-    !(await contract.verify(batch.root, leaf, entry.proof))
-  )
+  const receipt = await provider.getTransactionReceipt(batch.transactionHash);
+  const blockTag = await verifyBatchReceipt(provider, contract, batch, receipt);
+  if (!(await contract.verify(batch.root, leaf, entry.proof, {blockTag})))
     throw new Error("Receipt no longer verifies onchain");
   await journal.blob(pointer.blobHash);
   return batch;

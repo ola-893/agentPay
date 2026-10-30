@@ -168,9 +168,23 @@ try {
   // Inject a transient RPC error only in the final populated-transaction
   // check, after the original review and receipt have succeeded.
   let recoveredPreSignReads = 0, transferIntentId;
+  const existingRoots = new Set((await audit.journal.status()).batches.map(value => value.root));
+  const batchSelector = new Interface(["function batches(bytes32) view returns(uint256,uint256,uint256)"])
+    .getFunction("batches").selector;
+  const laggingLatest = async (method, args) => {
+    if (method === "eth_call" && args[1] === "latest" &&
+        args[0].data.startsWith(batchSelector) && !existingRoots.has("0x" + args[0].data.slice(10))) {
+      // A backend behind the receipt's block has not observed this new root.
+      return "0x" + "0".repeat(192);
+    }
+    return send(method, args);
+  };
   const retryingAudit = {
     async authorize(tx) {
-      const permission = await audit.authorize(tx);
+      rpc.send = laggingLatest;
+      let permission;
+      try { permission = await audit.authorize(tx); }
+      finally { rpc.send = send; }
       transferIntentId = permission.intent.id;
       return {
         ...permission,
