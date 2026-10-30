@@ -22,6 +22,7 @@ import { assertLocalApproval } from "./agent/payments.mjs";
 import { loadProfile } from "./agent/profile.mjs";
 import { createRunEvents, eventOutput, runSummary } from "./agent/events.mjs";
 import { createAgentOutput } from "./agent/output.mjs";
+import {readWalletSnapshot} from "./agent/wallet-snapshot.mjs";
 import { createAuditor } from "./audit/controller.mjs";
 import {
   USDC,
@@ -33,7 +34,6 @@ import {
   validateStreamQuote,
   openStream,
   closeStream,
-  snapshotWallet,
   sessionMessage,
   readStream,
   assertStreamIntent,
@@ -169,6 +169,13 @@ await cli.cliMain(
       fundingAttempted = false,
       closeAttempted = false,
       cleanup, fundedContext, check;
+    let walletBlockFloor=0, verifiedClosure;
+    const walletObservation=async(agent,recipient)=>{
+      const observed=await readWalletSnapshot(provider,agent,recipient,{minimumBlock:walletBlockFloor});
+      walletBlockFloor=Math.max(walletBlockFloor,observed.blockNumber);
+      return observed;
+    };
+    const walletSnapshot=async(agent,recipient)=>(await walletObservation(agent,recipient)).snapshot;
     let auditor, policyClient, guarded = false;
     const id =
       new Date().toISOString().slice(0, 19).replace(/[-:]/g, "") +
@@ -199,6 +206,8 @@ await cli.cliMain(
     let started = false,
       initialSnapshot;
     const persist = async (kind, data) => {
+      if(data.state==="confirmed" && Number.isSafeInteger(data.blockNumber))walletBlockFloor=Math.max(walletBlockFloor,data.blockNumber);
+      if(kind==="settlement" && data.closed)verifiedClosure=data;
       if (kind === "open" && data.state === "submitting") fundingAttempted = true;
       await save(`${kind}.json`, data);
       if (kind === "open" && data.streamId) openedId = data.streamId;
@@ -269,6 +278,7 @@ await cli.cliMain(
             });
         },
         onReceipt: (batch) => {
+          if(Number.isSafeInteger(batch.blockNumber))walletBlockFloor=Math.max(walletBlockFloor,batch.blockNumber);
           output.auditReceipt(batch);
           emit("audit.receipt", {
             hash: batch.transactionHash,
@@ -321,7 +331,7 @@ await cli.cliMain(
           "Set a distinct nonzero USDC recipient.",
           2
         );
-      const initial = await snapshotWallet(provider, wallet.address, recipient);
+      const initial = await walletSnapshot(wallet.address, recipient);
       if (
         flags.pay &&
         (BigInt(initial.agentBalanceRaw) < 10000n ||
@@ -467,11 +477,11 @@ await cli.cliMain(
           };
           await checkPrice();
         }
-        const before = await snapshotWallet(
-          provider,
+        const beforeObservation = await walletObservation(
           wallet.address,
           recipient
         );
+        const before=beforeObservation.snapshot;
         let admission = await check(
             q,
             "admission",
@@ -481,11 +491,12 @@ await cli.cliMain(
           completedAt = performance.now();
         let refreshes = 0;
         if (admission.decision.action === "DENY") {
-          const after = await snapshotWallet(
-            provider,
+          const afterObservation = await walletObservation(
             wallet.address,
             recipient
           );
+          const after=afterObservation.snapshot;
+          await save("deny-verification.json",{tier,before:beforeObservation,after:afterObservation});
           if (JSON.stringify(before) !== JSON.stringify(after))
             throw new cli.CliError(
               "DENY_VERIFICATION",
@@ -722,7 +733,7 @@ await cli.cliMain(
           "DEMO_INCOMPLETE",
           "Expected both streaming basic and over-budget denial outcomes."
         );
-      const final = await snapshotWallet(provider, wallet.address, recipient),
+      const final = await walletSnapshot(wallet.address, recipient),
         basic = agent.purchases.basic;
       const earned = BigInt(basic.earnedRaw || "0");
       if (
@@ -775,8 +786,7 @@ await cli.cliMain(
       try { interruption.assertRunning(); } catch (stop) { error = stop; }
       if (started && !openedId && error.code === "PRICE_POLICY_DENIED") {
         try {
-          const final = await snapshotWallet(
-            provider,
+          const final = await walletSnapshot(
             wallet.address,
             process.env.AGENTPAY_AGENT_RECIPIENT ||
               process.env.CRE_PAYMENT_RECIPIENT_ADDRESS
@@ -868,11 +878,13 @@ await cli.cliMain(
         closeAttempted,
         fundingAttempted,
         cleanup,
+        settlement:verifiedClosure,
         audit: auditor ? await auditor.summary() : null,
       });
       output.failed(path.relative(root, directory), {
         fundingAttempted: flags["close-stream"] ? undefined : fundingAttempted,
         cleanupClosed: Boolean(cleanup?.closed),streamId:openedId,
+        closureVerified:Boolean(verifiedClosure?.closed),
       });
       if (started)
         emit("run.end", {

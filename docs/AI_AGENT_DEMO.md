@@ -148,6 +148,12 @@ Each `.local/agent-demo/runs/<id>/` contains original `policy/` CRE evidence,
 `settlement.json`, model events and either `result.json` or `failure.json`.
 `settlement.json` describes escrow cancellation, not AgentPaySettlement.
 
+CLI admission-denial and final-balance checks read both USDC balances and the
+confirmed nonce at one block, verify its hash and never read behind an already
+confirmed business/audit transaction. `deny-verification.json` saves both block
+references and snapshots before comparing wallet state. These checks do not attest
+to third-party pending transactions in a mempool.
+
 **Successful guarded run, October 25:** stream #1 funded 0.01 USDC, served ten calls,
 continued, closed after the injected outage, paid **0.00132 USDC** and refunded
 **0.00868 USDC**. [Verification](evidence/guarded-stream/VERIFICATION.md).
