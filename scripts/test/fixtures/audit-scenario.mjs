@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, writeFile, readFile, rm } from "node:fs/promises";
+import { mkdtemp, writeFile, readFile, readdir, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import net from "node:net";
@@ -165,16 +165,49 @@ try {
     wallet.address
   );
   const before = await token.balanceOf(recipient);
+  // Inject a transient RPC error only in the final populated-transaction
+  // check, after the original review and receipt have succeeded.
+  let recoveredPreSignReads = 0, transferIntentId;
+  const retryingAudit = {
+    async authorize(tx) {
+      const permission = await audit.authorize(tx);
+      transferIntentId = permission.intent.id;
+      return {
+        ...permission,
+        async assertFresh(populated) {
+          let failOnce = true;
+          rpc.send = async (method, args) => {
+            if (method === "eth_call" && args[0].data === tx.data && failOnce) {
+              failOnce = false;
+              recoveredPreSignReads++;
+              assert.equal(signedBusiness, 0, "No business signature before successful simulation");
+              throw Object.assign(new Error("RPC timeout (test only)"), {code: "TIMEOUT"});
+            }
+            return send(method, args);
+          };
+          try { await permission.assertFresh(populated); }
+          finally { rpc.send = send; }
+        },
+      };
+    },
+  };
   await sendStreamTransaction({
     provider: rpc,
     wallet,
     transaction: transaction(10000),
     kind: "transfer",
     persist: async () => {},
-    audit,
+    audit: retryingAudit,
   });
+  assert.equal(recoveredPreSignReads, 1);
   assert.equal(signedBusiness, 1);
   assert.equal((await token.balanceOf(recipient)) - before, 10000n);
+  const preSignFiles = (await readdir(path.join(dir, "journal/presign")))
+    .filter(name => name.startsWith(transferIntentId));
+  assert.equal(preSignFiles.length, 3, "Initial check plus failed and recovered final attempts are durable");
+  const attempts = await Promise.all(preSignFiles.map(name => readFile(path.join(dir, "journal/presign", name), "utf8").then(JSON.parse)));
+  assert.equal(attempts.filter(value => value.observation.status === "success").length, 2);
+  assert.equal(attempts.filter(value => value.failure?.errorCode === "RPC_UNAVAILABLE").length, 1);
   streamService = await startStreamService({
     provider: rpc,
     agent: wallet.address,

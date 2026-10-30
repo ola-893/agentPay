@@ -8,6 +8,7 @@ import { stripAnsi } from "../../scripts/lib/cre-evidence.mjs";
 import { LocalJournal, digest, durableWrite } from "./journal.mjs";
 import { startAuditService, simulateIntent } from "./service.mjs";
 import { anchorPending, assertAnchored, verifyDeployment } from "./anchor.mjs";
+import { checkPreSignSimulation } from "./presign.mjs";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const token = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
 export async function createAuditor({
@@ -303,12 +304,16 @@ export async function createAuditor({
       throw new Error(
         `Spend ${review.record.decision.action}: ${review.record.decision.reason}`
       );
-    const failed = async () => {
+    const preSignChecks = [];
+    let checkSequence = 0;
+    const failed = async (error) => {
       const intent = {
         id: "0x" + randomBytes(32).toString("hex"),
         chainId: 11155111,
         payer: wallet.address,
         relatedIntentId: review.intent.id,
+        preSignChecks: [...preSignChecks],
+        errorCode: error instanceof cli.CliError ? error.code : "SIGNING_OR_EXECUTION_INCOMPLETE",
         type: "signing-or-execution-error",
       };
       await journal.accept(intent);
@@ -319,6 +324,8 @@ export async function createAuditor({
         intentId: intent.id,
         intentHash: digest(intent),
         relatedIntentId: review.intent.id,
+        preSignChecks: intent.preSignChecks,
+        errorCode: intent.errorCode,
         decision: {
           action: "ERROR",
           reason: "RECEIPT_SIGNING_OR_EXECUTION_INCOMPLETE",
@@ -338,7 +345,7 @@ export async function createAuditor({
         wallet.address
       );
     } catch (error) {
-      await failed();
+      await failed(error);
       throw error;
     }
     const assertFresh = async (populated) => {
@@ -361,23 +368,36 @@ export async function createAuditor({
         throw new Error(
           "Business transaction gas exposure exceeds 0.01 test ETH"
         );
-      if (
-        digest({
+      const assertIntent = () => {
+        if (digest({
           to: transaction.to,
           data: transaction.data || "0x",
           value: BigInt(transaction.value || 0).toString(),
-        }) !== digest(review.intent.transaction) ||
-        Math.floor(Date.now() / 1000) >= review.intent.expiresAt
-      )
-        throw new Error("Spend intent changed or expired");
+        }) !== digest(review.intent.transaction))
+          throw new cli.CliError("PRESIGN_INTENT_CHANGED", "Spend intent changed; no signing authorized.");
+        if (Math.floor(Date.now() / 1000) >= review.intent.expiresAt)
+          throw new cli.CliError("PRESIGN_INTENT_EXPIRED", "Spend intent expired; no signing authorized.");
+      };
+      assertIntent();
       const status = await journal.status();
       if (status.pendingIntents.includes(review.intent.id))
         throw new Error("Audit decision missing");
       await journal.blob(review.pointer.blobHash);
-      const block = await provider.getBlock("latest");
-      const simulation = await simulateIntent(provider, review.intent, block);
-      if (simulation.status !== "success")
-        throw new Error("Fresh pre-sign simulation failed");
+      const check = ++checkSequence;
+      const simulation = await checkPreSignSimulation({
+        provider, intent: review.intent, assertIntent,
+        onRetry: attempt => onProgress(`Final simulation RPC unavailable; read-only check ${attempt}/3. This transaction is not signed.`),
+        onAttempt: async attempt => {
+          const record = {schemaVersion: 1, intentId: review.intent.id, intentHash: review.record.intentHash, check, ...attempt};
+          const name = `${review.intent.id}-check-${check}-attempt-${attempt.attempt}`;
+          await durableWrite(journal.file("presign", name), record, true);
+          preSignChecks.push({file:`presign/${name}.json`, hash:digest(record)});
+        },
+      }).catch(error => {
+        if (error instanceof cli.CliError)
+          error.message += ` Inspect ${path.relative(root, path.join(directory, "presign"))} for saved diagnostics.`;
+        throw error;
+      });
       if (
         ["approve", "transfer"].includes(review.record.decision.operation) &&
         simulation.returnData !== "0x" + "0".repeat(63) + "1"
@@ -387,7 +407,7 @@ export async function createAuditor({
     try {
       await assertFresh();
     } catch (error) {
-      await failed();
+      await failed(error);
       throw error;
     }
     return {

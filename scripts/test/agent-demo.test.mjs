@@ -188,6 +188,18 @@ test("preview output cannot present model-invented receipts as verified transact
   assert.match(verbose.join("\n"), /unverified model text/);
   assert.ok(verbose.join("\n").includes(quote.id));
 });
+test("failure output suggests recovery only when funding may have been submitted", () => {
+  const render = options => {
+    const lines = [];
+    createAgentOutput({stream: {isTTY: false}, write: line => lines.push(line)})
+      .failed(".local/example", options);
+    return lines.join(" ");
+  };
+  assert.match(render({fundingAttempted: false}), /Stopped before stream funding/);
+  assert.doesNotMatch(render({fundingAttempted: false}), /recover:guarded-stream/);
+  assert.match(render({fundingAttempted: true}), /recover:guarded-stream/);
+  assert.match(render(), /recover:guarded-stream/);
+});
 test("stream output shows recorded CRE observations and limits without claiming onchain CRE enforcement", () => {
   const load = (name) =>
     JSON.parse(

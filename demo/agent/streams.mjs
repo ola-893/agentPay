@@ -331,7 +331,7 @@ export async function sendStreamTransaction({
     if (permission) await permission.confirmed(hash);
     return { receipt, record };
   } catch (error) {
-    if (permission) await permission.failed();
+    if (permission) await permission.failed(error);
     throw error;
   }
 }

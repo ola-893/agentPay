@@ -163,6 +163,7 @@ await cli.cliMain(
     let settings,
       service,
       openedId,
+      fundingAttempted = false,
       closeAttempted = false,
       cleanup, fundedContext, check;
     let auditor, policyClient, guarded = false;
@@ -195,6 +196,7 @@ await cli.cliMain(
     let started = false,
       initialSnapshot;
     const persist = async (kind, data) => {
+      if (kind === "open" && data.state === "submitting") fundingAttempted = true;
       await save(`${kind}.json`, data);
       if (kind === "open" && data.streamId) openedId = data.streamId;
       if (kind === "close" && data.state === "submitting") closeAttempted = true;
@@ -859,10 +861,13 @@ await cli.cliMain(
             : "Stream demo failed; inspect evidence.",
         streamId: openedId || null,
         closeAttempted,
+        fundingAttempted,
         cleanup,
         audit: auditor ? await auditor.summary() : null,
       });
-      output.failed(path.relative(root, directory));
+      output.failed(path.relative(root, directory), {
+        fundingAttempted: flags["close-stream"] ? undefined : fundingAttempted,
+      });
       if (started)
         emit("run.end", {
           ...runSummary({}, "failed"),

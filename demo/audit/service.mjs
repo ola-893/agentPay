@@ -4,7 +4,9 @@ import { toQuantity } from "ethers";
 import { fileURLToPath } from "node:url";
 import cli from "../../scripts/lib/cli.cjs";
 import { digest } from "./journal.mjs";
-export async function simulateIntent(provider, intent, block) {
+export async function simulateIntent(
+  provider, intent, block, { onFailure = () => {} } = {}
+) {
   const base = {
     intentHash: digest(intent),
     blockNumber: block.number,
@@ -19,19 +21,23 @@ export async function simulateIntent(provider, intent, block) {
     data: intent.transaction.data,
     value: toQuantity(BigInt(intent.transaction.value)),
   };
+  let operation = "block-check";
   try {
     if ((await provider.getBlock(block.number)).hash !== block.hash)
-      throw new Error("Observation block changed");
+      throw Object.assign(new Error("Observation block changed"), { code: "BLOCK_CHANGED" });
+    operation = "eth_call";
     const returnData = await provider.send("eth_call", [
       tx,
       toQuantity(block.number),
     ]);
+    operation = "eth_estimateGas";
     const gas = await provider.send("eth_estimateGas", [
       tx,
       toQuantity(block.number),
     ]);
+    operation = "block-check";
     if ((await provider.getBlock(block.number)).hash !== block.hash)
-      throw new Error("Observation block changed");
+      throw Object.assign(new Error("Observation block changed"), { code: "BLOCK_CHANGED" });
     return {
       ...base,
       status: "success",
@@ -39,16 +45,26 @@ export async function simulateIntent(provider, intent, block) {
       gasEstimate: BigInt(gas).toString(),
     };
   } catch (error) {
+    const rpc = error.info?.error || error.error;
+    const message = rpc?.message || error.reason || error.shortMessage || error.message || "";
     const reverted =
-      error.code === "CALL_EXCEPTION" ||
-      error.info?.error?.code === 3 ||
-      /revert|execution reverted/i.test(
-        error.shortMessage || error.message || ""
-      );
+      rpc?.code === 3 ||
+      (/revert/i.test(message) && !/missing revert data/i.test(message)) ||
+      (error.code === "CALL_EXCEPTION" && /^0x[0-9a-fA-F]{8,}$/.test(error.data || ""));
+    const errorCode = error.code === "BLOCK_CHANGED" ? "BLOCK_CHANGED" : reverted ? "EVM_REVERT" : "RPC_UNAVAILABLE";
+    // Save only stable codes and the RPC operation, never raw provider errors,
+    // endpoint URLs, credentials or full calldata embedded in error messages.
+    onFailure({
+      operation, errorCode,
+      rpcCode: Number.isInteger(rpc?.code) ? rpc.code : null,
+      providerCode: ["CALL_EXCEPTION", "TIMEOUT", "NETWORK_ERROR", "SERVER_ERROR",
+        "UNKNOWN_ERROR", "BAD_DATA", "BLOCK_CHANGED"].includes(error.code)
+        ? error.code : "RPC_ERROR",
+    });
     return {
       ...base,
       status: reverted ? "reverted" : "unavailable",
-      errorCode: reverted ? "EVM_REVERT" : "RPC_UNAVAILABLE",
+      errorCode,
     };
   }
 }

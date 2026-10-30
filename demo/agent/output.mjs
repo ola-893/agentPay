@@ -444,14 +444,16 @@ export function createAgentOutput({
       }
       write("");
     },
-    failed(directory) {
+    failed(directory, { fundingAttempted } = {}) {
       write("");
       separator();
       write(`  ${warning(bold("RUN INCOMPLETE"))}`);
       field("Evidence", directory);
       field(
         "",
-        "Inspect transaction hashes before retrying. Guarded recovery: npm run recover:guarded-stream -- --stream-id <id>. Legacy: --close-stream <id>."
+        fundingAttempted === false
+          ? "Stopped before stream funding. Approval and audit transactions may have spent gas; inspect the saved evidence before retrying."
+          : "Inspect transaction hashes before retrying. Guarded recovery: npm run recover:guarded-stream -- --stream-id <id>. Legacy: --close-stream <id>."
       );
       write("");
     },

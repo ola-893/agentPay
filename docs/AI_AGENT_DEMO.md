@@ -104,6 +104,12 @@ transaction. A signed permit lasts five minutes; expiry during later review stop
 execution rather than bypassing the contract. Funding is not automatically retried
 on uncertain confirmation. Inspect hashes before another paid run.
 
+The final pre-sign check retries RPC availability failures at most three times,
+using read-only calls and unchanged transaction data. A contract revert or expired
+intent stops signing. Inspect `PRESIGN_*` errors and the diagnostic path printed
+by the CLI; [troubleshooting](reference/troubleshooting.md#ai-cli-demo) explains
+the distinction from an uncertain submitted transaction.
+
 Earnings are time-based, not a charge per request. Accrual continues until closure
 is mined, including observation, CRE and receipt latency. Expiry bounds earnings
 but does not automatically execute a refund. Recipient withdrawals remain available.
