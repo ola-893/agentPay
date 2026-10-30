@@ -6,7 +6,11 @@ The supported CRE journey is local CLI simulation. Workflow deployment to Chainl
 
 Recorded evidence and read-only CRE simulation require no deployed AgentPay contracts. Follow [README](README.md). The RPC is in `cre/project.yaml`; use a reliable Sepolia HTTPS endpoint if the public RPC is busy.
 
-`npm run build:web` produces `vite-project/dist`, a static React app with evidence JSON from `public/evidence`. Preserve the SPA fallback (`_redirects` / `netlify.toml`) when hosting. No hosting deployment is included in the recorded evidence.
+`npm run build:web` produces `vite-project/dist`, a static React app with saved evidence and CLI recordings. The root [Netlify configuration](netlify.toml) sets the build base to `vite-project`, runs `npm run build`, publishes `dist` relative to that base and uses Node 22. Its SPA fallback preserves direct visits to `/docs` and nested documentation routes.
+
+For Netlify continuous deployment, import `ola-893/agentPay`, select `main`, and use the committed root configuration. For a manual deployment, build from the repository root and deploy the resulting `vite-project/dist` folder to the intended Netlify site. The included `public/_redirects` is copied to that folder for manual uploads.
+
+The hosted frontend provides **Recorded** workflow replay and documentation without credentials. Its **Live** tab explains how to start the local runner; a production build does not contact a visitor's localhost. Configure signing keys and model credentials only in the ignored root `.env` for local CLI use; the hosted replay needs no environment variables. See [dashboard setup](docs/WORKFLOW_DASHBOARD.md).
 
 ## AI agent USDC streaming demo
 

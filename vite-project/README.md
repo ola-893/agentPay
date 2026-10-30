@@ -44,6 +44,6 @@ npm run build:web
 npm run docs:check
 ```
 
-Deploy `vite-project/dist` as a static SPA. Preserve the included hosting fallback so nested documentation routes resolve to `index.html`. [Repository docs](../docs/README.md).
+Deploy `vite-project/dist` as a static SPA. The root [Netlify configuration](../netlify.toml) selects this package as its build base, builds with Node 22 and publishes `dist`. The included hosting fallback lets nested documentation routes resolve to `index.html`. Hosted mode provides Recorded replay and Docs; Live runs use the local runner. No frontend credentials are required. [Deployment setup](../DEPLOYMENT.md#simulation-and-frontend) · [Repository docs](../docs/README.md).
 
 [Dashboard modes and local API security](../docs/WORKFLOW_DASHBOARD.md) · [Event schema and captures](../docs/EVENT_SCHEMA.md).
