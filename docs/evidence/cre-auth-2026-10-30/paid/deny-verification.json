@@ -1,0 +1,21 @@
+{
+  "tier": "premium",
+  "before": {
+    "blockNumber": 12026218,
+    "blockHash": "0x13bfb5c2984e48586b72e9fd967ce9cc538a7549845ad6a09ca54c9df043a601",
+    "snapshot": {
+      "agentBalanceRaw": "39877392",
+      "recipientBalanceRaw": "45480",
+      "nonce": 121
+    }
+  },
+  "after": {
+    "blockNumber": 12026219,
+    "blockHash": "0xdcac87d7c6edfbdf6f97d298d504bc47a41b741394636eab8cf6c07d243074ca",
+    "snapshot": {
+      "agentBalanceRaw": "39877392",
+      "recipientBalanceRaw": "45480",
+      "nonce": 121
+    }
+  }
+}

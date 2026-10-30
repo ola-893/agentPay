@@ -1,0 +1,159 @@
+
+  AGENTPAY
+  Deterministic payment guardrails with Chainlink CRE
+  ------------------------------------------------------------------------------------
+  Working        Checking Sepolia deployment and wallet...
+  Mode           LIVE PAYMENT / Ethereum Sepolia
+  Agent          Qwen / qwen3.5-plus
+  Wallet         0xe26468ae…42ad26 / 39.881352 USDC
+  Recipient      0x9950D895…fE79f7
+  CRE            Local CLI execution / deterministic rules
+  Authority      Separate policy signer; contract verifies OPEN / CLOSE
+  Budget         Up to 0.01 USDC escrow + gas for stream and audit transactions
+  Details        Full commands, addresses and evidence: --verbose
+  Escrow         0x35f5F69A…4dfA09
+  Working        Agent choosing the next service request...
+
+  01  AGENT / Basic research
+  Request        Buy service access through a reusable payment stream
+  Quote          0.01 USDC / 16m 40s stream
+  Rate           0.00001 USDC/s
+
+  02  CRE / PRICE SAFETY
+  CRE CLI        payment-guard / staging-settings
+  Working        Executing the local CRE workflow...
+  Chainlink      $0.9996608 USDC/USD / finalized read
+  Coinbase       $1.00 USDC/USD / HTTP
+  Price rules    Peg within 1%; source gap at most 1%
+  Freshness      1h 11m old / limit 24h 0m
+  Decision       ALLOW / Within payment policy
+
+  03  CRE / STREAM ADMISSION
+  CRE CLI        payment-guard / stream-settings
+  Working        Executing the local CRE workflow...
+  Health         Available / 0 successful / 0 failed
+  Budget         0.01 USDC deposit / max 0.10 USDC
+  Rate limit     0.0001 USDC/s
+  Failure limit  3 failed requests
+  Sepolia        Read block 12026029 / USDC balance and decimals
+  Decision       OPEN / Service healthy and within budget
+
+  04  CRE / SPEND REVIEW
+  CRE CLI        payment-guard / spend-settings
+  Working        Executing the local CRE workflow...
+  Dry-run        SUCCESS / Sepolia block 12026030
+  Risk score     5/100 (limit 49)
+  Spend decision ALLOW / Within payment policy
+  Working        Anchoring audit receipts before signing...
+  Audit receipt  CONFIRMED / 6 decision records / 0x5b4125d7…adb0d5
+  Working        Verifying receipt and final transaction dry-run...
+  Audit          Final simulation RPC unavailable; read-only check 2/3. This
+                 transaction is not signed.
+  Wallet         USDC approval signed / 0x3e344fc6…0d9764
+  Working        Waiting for 2 Sepolia confirmations...
+  Freshness      Refreshing CRE price and admission checks before signing
+
+  05  CRE / PRICE SAFETY
+  CRE CLI        payment-guard / staging-settings
+  Working        Executing the local CRE workflow...
+  Chainlink      $0.9996608 USDC/USD / finalized read
+  Coinbase       $1.00 USDC/USD / HTTP
+  Price rules    Peg within 1%; source gap at most 1%
+  Freshness      1h 13m old / limit 24h 0m
+  Decision       ALLOW / Within payment policy
+
+  06  CRE / RENEW 1
+  CRE CLI        payment-guard / stream-settings
+  Working        Executing the local CRE workflow...
+  Health         Available / 0 successful / 0 failed
+  Budget         0.01 USDC deposit / max 0.10 USDC
+  Rate limit     0.0001 USDC/s
+  Failure limit  3 failed requests
+  Sepolia        Read block 12026039 / USDC balance and decimals
+  Decision       OPEN / Service healthy and within budget
+
+  07  CRE / SPEND REVIEW
+  CRE CLI        payment-guard / spend-settings
+  Working        Executing the local CRE workflow...
+  Dry-run        SUCCESS / Sepolia block 12026040
+  Risk score     5/100 (limit 49)
+  Spend decision ALLOW / Within payment policy
+  Working        Anchoring audit receipts before signing...
+  Audit receipt  CONFIRMED / 3 decision records / 0x4e1e52c4…2d8916
+  Working        Verifying receipt and final transaction dry-run...
+  Wallet         Stream funding signed / 0xf408d049…e7ad22
+  Working        Waiting for 2 Sepolia confirmations...
+
+  08  FUNDED / Stream #6
+  Confirmed      0.01 USDC deposited in escrow
+  How it works   Fund once. Earnings accrue with time. Reuse the stream for API
+                 calls.
+
+  09  REUSE / One stream, many API calls
+  API calls      5 successful / 0 failed / stream #6
+  Payments       0 payment transactions during these requests
+
+  10  CRE / HEALTHY CHECKPOINT
+  CRE CLI        payment-guard / stream-settings
+  Working        Executing the local CRE workflow...
+  Health         Available / 5 successful / 0 failed
+  Failure limit  3 failed requests
+  Sepolia        Read block 12026048 / stream #6
+  Decision       CONTINUE / Reuse the funded stream
+  API calls      10 successful / 0 failed / stream #6
+  Payments       0 payment transactions during these requests
+
+  11  PROTECT / Service failure
+  Demo fault     Injecting a provider outage (HTTP 503)
+  API calls      10 successful / 3 failed / stream #6
+  Payments       0 payment transactions during these requests
+
+  12  CRE / FAILURE CHECKPOINT
+  CRE CLI        payment-guard / stream-settings
+  Working        Executing the local CRE workflow...
+  Health         Unavailable / 10 successful / 3 failed
+  Failure limit  3 failed requests
+  Sepolia        Read block 12026049 / stream #6
+  Decision       CLOSE / Service unavailable; closure requested
+  Next           Obtain policy approval and confirm cancellation
+
+  13  CRE / SPEND REVIEW
+  CRE CLI        payment-guard / spend-settings
+  Working        Executing the local CRE workflow...
+  Dry-run        UNAVAILABLE / Sepolia block 12026050
+  Risk score     100/100 (limit 49)
+  Spend decision ERROR / simulation unavailable
+
+  14  CRE / SHUTDOWN CHECK
+  CRE CLI        payment-guard / stream-settings
+  Working        Executing the local CRE workflow...
+  Health         Unavailable / 10 successful / 3 failed
+  Failure limit  3 failed requests
+  Sepolia        Read block 12026051 / stream #6
+  Decision       CLOSE / Client stopping; closure requested
+  Next           Obtain policy approval and confirm cancellation
+
+  15  CRE / SPEND REVIEW
+  CRE CLI        payment-guard / spend-settings
+  Working        Executing the local CRE workflow...
+  Dry-run        SUCCESS / Sepolia block 12026052
+  Risk score     5/100 (limit 49)
+  Spend decision ALLOW / Within payment policy
+  Working        Anchoring audit receipts before signing...
+  Audit receipt  CONFIRMED / 5 decision records / 0xb0272688…f037e0
+  Working        Verifying receipt and final transaction dry-run...
+  Wallet         Stream closure signed / 0x952c9cf7…bbbfbc
+  Working        Waiting for 2 Sepolia confirmations...
+
+  16  CLOSED / Stream #6
+  Confirmed      Cancellation mined; earnings and refund verified
+  Service earned 0.00144 USDC
+  Payer refunded 0.00856 USDC
+
+  ------------------------------------------------------------------------------------
+  RUN INCOMPLETE
+  Evidence       .local/agent-demo/runs/20261030T101840Z-b204a1c0
+                 Inspect transaction hashes before retrying. Guarded recovery: npm
+                 run recover:guarded-stream -- --stream-id <id>. Legacy:
+                 --close-stream <id>.
+

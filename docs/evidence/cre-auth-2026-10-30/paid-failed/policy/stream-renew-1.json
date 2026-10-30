@@ -1,0 +1,89 @@
+{
+  "capturedAt": "2026-10-30T10:21:14.288Z",
+  "configSha256": "cf5bb596f6739fbcd0f3c4419fb5ebd69e503aa1120febb01b1ff92a296e59ef",
+  "logSha256": "b923ef30cda4698038080fc76898f566e8f6a22e7951273851432b58e8477d07",
+  "config": {
+    "chainId": 11155111,
+    "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "tokenDecimals": 6,
+    "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+    "requestId": "0x831ebd83228445ceebb4fab1c11801d199f122618a60e41f233500fa60844d14",
+    "quoteId": "0x0b8723a7751385d24c26813292e7827d7d3afaa081ed2f95e2e1bb11ad7d632d",
+    "sessionId": "0x228309f672e99654a57ddca90a46ff4fac5d811bef5ea12a1a20f6c3be09fe28",
+    "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+    "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+    "amountRaw": "10000",
+    "spendingCapRaw": "100000",
+    "durationSeconds": 1000,
+    "maxRateRawPerSecond": "100",
+    "phase": "admission",
+    "streamId": "0",
+    "observationBlock": 12026039,
+    "healthUrl": "http://127.0.0.1:53254/health/6040955c7d30e701c3eed36fc36c8a8774cc697a4096f3e0ed0735a1036a58c9",
+    "expectedHealth": {
+      "sessionId": "0x228309f672e99654a57ddca90a46ff4fac5d811bef5ea12a1a20f6c3be09fe28",
+      "observationId": "0x6040955c7d30e701c3eed36fc36c8a8774cc697a4096f3e0ed0735a1036a58c9",
+      "serviceAvailable": true,
+      "successfulRequests": 0,
+      "failedRequests": 0
+    },
+    "client": {
+      "successfulRequests": 0,
+      "failedRequests": 0
+    },
+    "maxFailedRequests": 3
+  },
+  "result": {
+    "schemaVersion": 1,
+    "workflow": "agentpay-stream-supervisor",
+    "mode": "local-simulation",
+    "config": {
+      "chainId": 11155111,
+      "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      "tokenDecimals": 6,
+      "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+      "requestId": "0x831ebd83228445ceebb4fab1c11801d199f122618a60e41f233500fa60844d14",
+      "quoteId": "0x0b8723a7751385d24c26813292e7827d7d3afaa081ed2f95e2e1bb11ad7d632d",
+      "sessionId": "0x228309f672e99654a57ddca90a46ff4fac5d811bef5ea12a1a20f6c3be09fe28",
+      "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+      "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+      "amountRaw": "10000",
+      "spendingCapRaw": "100000",
+      "durationSeconds": 1000,
+      "maxRateRawPerSecond": "100",
+      "phase": "admission",
+      "streamId": "0",
+      "observationBlock": 12026039,
+      "healthUrl": "http://127.0.0.1:53254/health/6040955c7d30e701c3eed36fc36c8a8774cc697a4096f3e0ed0735a1036a58c9",
+      "expectedHealth": {
+        "sessionId": "0x228309f672e99654a57ddca90a46ff4fac5d811bef5ea12a1a20f6c3be09fe28",
+        "observationId": "0x6040955c7d30e701c3eed36fc36c8a8774cc697a4096f3e0ed0735a1036a58c9",
+        "serviceAvailable": true,
+        "successfulRequests": 0,
+        "failedRequests": 0
+      },
+      "client": {
+        "successfulRequests": 0,
+        "failedRequests": 0
+      },
+      "maxFailedRequests": 3
+    },
+    "health": {
+      "sessionId": "0x228309f672e99654a57ddca90a46ff4fac5d811bef5ea12a1a20f6c3be09fe28",
+      "observationId": "0x6040955c7d30e701c3eed36fc36c8a8774cc697a4096f3e0ed0735a1036a58c9",
+      "serviceAvailable": true,
+      "successfulRequests": 0,
+      "failedRequests": 0
+    },
+    "onchain": {
+      "paymentToken": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+      "tokenDecimals": 6,
+      "agentBalanceRaw": "39881352",
+      "stream": null
+    },
+    "action": "OPEN",
+    "reason": "HEALTHY_WITHIN_BUDGET",
+    "observedAt": 1793355674,
+    "donAuthenticated": false
+  }
+}

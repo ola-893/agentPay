@@ -1,0 +1,17 @@
+{
+  "runId": "20261030T103347Z-808717e0",
+  "checkedAt": "2026-10-30T10:49:37.823Z",
+  "streamId": "7",
+  "failureCode": "DENY_VERIFICATION",
+  "closeHash": "0xf5df5dab5fe6545aebb47f31f7076a2f63159c48f91ca0a445421c820e886432",
+  "closeBlock": 12026133,
+  "closed": true,
+  "policySignatureVerified": true,
+  "earnedRaw": "1320",
+  "refundedRaw": "8680",
+  "recipientDeltaRaw": "1320",
+  "activeStreamId": "0",
+  "nextPolicyNonce": "13",
+  "payerUsdcRaw": "39878592",
+  "replay": {}
+}

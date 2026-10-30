@@ -1,0 +1,24 @@
+{
+  "streamId": "8",
+  "closed": true,
+  "earnedRaw": "1200",
+  "refundedRaw": "8800",
+  "before": {
+    "agentBalanceRaw": "39868592",
+    "recipientBalanceRaw": "44280",
+    "nonce": 119
+  },
+  "after": {
+    "agentBalanceRaw": "39877392",
+    "recipientBalanceRaw": "45480",
+    "nonce": 121
+  },
+  "transaction": {
+    "state": "confirmed",
+    "transactionHash": "0xe9793498fab33d7a5e964da9bca0f41ac7b576285d1a6d47a670fa83d4e78a96",
+    "blockNumber": 12026217,
+    "confirmations": 2,
+    "gasUsed": "151074",
+    "feeWei": "11783772"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "runId": "20261030T103347Z-808717e0",
+  "failedAt": "2026-10-30T10:41:06.981Z",
+  "code": "DENY_VERIFICATION",
+  "message": "Wallet changed during denied admission.",
+  "streamId": "7",
+  "fundingAttempted": true
+}

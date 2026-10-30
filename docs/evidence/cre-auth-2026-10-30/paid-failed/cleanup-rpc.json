@@ -1,0 +1,80 @@
+{
+  "runId": "20261030T101840Z-b204a1c0",
+  "checkedAt": "2026-10-30T10:31:08.931Z",
+  "streamId": "6",
+  "closeHash": "0x952c9cf75194a1bb53f912c0113476f6fc2872096e798122142847eb7fbbbfbc",
+  "closeBlock": 12026059,
+  "closed": true,
+  "policySignatureVerified": true,
+  "earnedRaw": "1440",
+  "refundedRaw": "8560",
+  "recipientDeltaRaw": "1440",
+  "activeStreamId": "0",
+  "nextPolicyNonce": "11",
+  "payerUsdcRaw": "39879912",
+  "failedReview": {
+    "schemaVersion": 1,
+    "type": "spend-review",
+    "source": "local-cre-simulation",
+    "donAuthenticated": false,
+    "intentId": "0x97be882003f82996d5cab511cafc4da3398a91ac53789c317c5463118f49a68b",
+    "intentHash": "0x1815f04274a47e037874e6e55393d4b879e3302d208f281be9bf446d8e39667e",
+    "intent": {
+      "id": "0x97be882003f82996d5cab511cafc4da3398a91ac53789c317c5463118f49a68b",
+      "chainId": 11155111,
+      "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+      "transaction": {
+        "to": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+        "data": "0x30d11e030000000000000000000000000000000000000000000000000000000000000002000000000000000000000000e26468ae02368a75dbdbea58f367b7313942ad260000000000000000000000009950d8950bf80722860f2b6a9e120893a0fe79f7000000000000000000000000000000000000000000000000000000000000271000000000000000000000000000000000000000000000000000000000000003e89aa1776b602da3a52925fa80744cb979d8a7348675ac789af134521363d58048228309f672e99654a57ddca90a46ff4fac5d811bef5ea12a1a20f6c3be09fe280000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000006ae4713c689beb073c8c9f35b4ec5607f65fbd9292da98a11966f7450c0daaa66933965f0000000000000000000000000000000000000000000000000000000000000180000000000000000000000000000000000000000000000000000000000000004168f7f49ae24e005fa296d17484a664559c04dc1bd4eb5f901b6f856568199b5e2954674b2bf492e016aa44dd46f0cee78cf6dbfea9b86cb442e8bf72d573f22f1c00000000000000000000000000000000000000000000000000000000000000",
+        "value": "0"
+      },
+      "createdAt": 1793355798,
+      "expiresAt": 1793356098,
+      "policy": {
+        "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+        "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+        "recipients": [
+          "0x9950D8950BF80722860f2B6a9e120893a0fE79f7"
+        ],
+        "maxAmountRaw": "10000",
+        "maxRiskScore": 49,
+        "qualityRiskScore": 0,
+        "maxDurationSeconds": 3600
+      }
+    },
+    "observedBlock": 12026050,
+    "blockHash": "0x5976ec14ecf4ebef3f87cafb4343dfc64a8b635d8792806e79d62fd9480ea13b",
+    "simulation": {
+      "intentHash": "0x1815f04274a47e037874e6e55393d4b879e3302d208f281be9bf446d8e39667e",
+      "blockNumber": 12026050,
+      "blockHash": "0x5976ec14ecf4ebef3f87cafb4343dfc64a8b635d8792806e79d62fd9480ea13b",
+      "status": "unavailable",
+      "returnData": "0x",
+      "gasEstimate": null,
+      "errorCode": "RPC_UNAVAILABLE"
+    },
+    "chain": {
+      "tokenDecimals": 6,
+      "balanceRaw": "39871352"
+    },
+    "evaluatedAt": 1793355808,
+    "decision": {
+      "action": "ERROR",
+      "reason": "SIMULATION_UNAVAILABLE",
+      "riskScore": 100,
+      "operation": "cancelStreamWithPermit"
+    },
+    "policyVersion": "spend-risk-v1",
+    "expiresAt": 1793356098
+  },
+  "replay": {
+    "eth_call": {
+      "ok": true,
+      "result": "0x"
+    },
+    "eth_estimateGas": {
+      "ok": true,
+      "result": "0x471d9"
+    }
+  }
+}

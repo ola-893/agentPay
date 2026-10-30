@@ -1,0 +1,485 @@
+{
+  "schemaVersion": 2,
+  "runId": "20261030T105037Z-247a7f68",
+  "mode": "local-agent-stream",
+  "completedAt": "2026-10-30T10:57:21.192Z",
+  "provider": "qwen",
+  "model": "qwen3.5-plus",
+  "chainId": 11155111,
+  "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+  "tokenDecimals": 6,
+  "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+  "payer": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+  "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+  "fundedRaw": "10000",
+  "earnedRaw": "1200",
+  "refundedRaw": "8800",
+  "initial": {
+    "agentBalanceRaw": "39878592",
+    "recipientBalanceRaw": "44280",
+    "nonce": 115
+  },
+  "final": {
+    "agentBalanceRaw": "39877392",
+    "recipientBalanceRaw": "45480",
+    "nonce": 121
+  },
+  "responses": [
+    {
+      "id": "resp_8736dc7f-f79e-9196-b4d1-5c49f181519b",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 657,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 94,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 751,
+        "x_details": [
+          {
+            "input_tokens": 657,
+            "output_tokens": 94,
+            "total_tokens": 751,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"basic\", \"purpose\": \"Demonstrate local CRE OPEN, stream reuse, CONTINUE and outage-triggered CLOSE/refund\"}",
+          "call_id": "call_bc5c949498ff44a284e7461f",
+          "id": "msg_ad753be4-b088-48c0-9975-f3bba80a95f2",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_a187466f-31a0-961d-8df4-358189d2179f",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1750,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 37,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 1787,
+        "x_details": [
+          {
+            "input_tokens": 1750,
+            "output_tokens": 37,
+            "total_tokens": 1787,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "arguments": "{\"tier\": \"premium\", \"purpose\": \"Attempt premium session to demonstrate budget denial\"}",
+          "call_id": "call_9dda6ee7eaf04ebebb2bd4b8",
+          "id": "msg_92b09a13-5f73-4ada-8e3f-5d10c26c5ec4",
+          "name": "buy_research",
+          "status": "completed",
+          "type": "function_call"
+        }
+      ]
+    },
+    {
+      "id": "resp_bd5548dc-8a38-902a-a283-dd0000a3d652",
+      "model": "qwen3.5-plus",
+      "usage": {
+        "input_tokens": 1613,
+        "input_tokens_details": {
+          "cached_tokens": 0
+        },
+        "output_tokens": 518,
+        "output_tokens_details": {
+          "reasoning_tokens": 0
+        },
+        "total_tokens": 2131,
+        "x_details": [
+          {
+            "input_tokens": 1613,
+            "output_tokens": 518,
+            "total_tokens": 2131,
+            "x_billing_type": "response_api"
+          }
+        ]
+      },
+      "output": [
+        {
+          "content": [
+            {
+              "annotations": [],
+              "text": "### Factual Summary\n\n**Basic Streaming Session (Tier: Basic)**\n*   **Status:** Stream-completed.\n*   **Funding:** A deposit of **10,000 raw units (0.01 USDC)** was successfully escrowed to stream address `0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09` (Stream ID: 8). The funding transaction hash is `0xab29300d79a611e238eb5fe0d855c3f69c682f5380c8ea9a63a798ea374328f7`.\n*   **Operation:** The session demonstrated local CRE OPEN and CONTINUE states. The client successfully reused the single funded stream for **10 real requests** across three batches without additional payment transactions (nonces remained static during request batches).\n*   **Outage & Closure:** A demo outage was injected, triggering a CLOSE checkpoint. The wallet cancelled the stream, resulting in a settlement transaction (`0xe9793498fab33d7a5e964da9bca0f41ac7b576285d1a6d47a670fa83d4e78a96`).\n*   **Financial Outcome:**\n    *   **Earned:** 1,200 raw units (0.0012 USDC) accrued based on time elapsed.\n    *   **Refunded:** 8,800 raw units (0.0088 USDC) returned to the sender as unused deposit.\n    *   The full deposit was not paid to the recipient; only the time-accrued portion was settled.\n\n**Premium Streaming Session (Tier: Premium)**\n*   **Status:** Denied.\n*   **Reason:** The requested amount of **200,000 raw units (0.2 USDC)** exceeded the policy cap of **100,000 raw units (0.1 USDC)**.\n*   **Transaction:** No transaction was signed or executed; agent and recipient balances remained unchanged.\n\nNo DON or onchain CRE authorization was claimed or required for these test token operations.",
+              "type": "output_text"
+            }
+          ],
+          "id": "msg_a6c04cab-0390-4420-b40a-298a09a8b61f",
+          "role": "assistant",
+          "status": "completed",
+          "type": "message"
+        }
+      ]
+    }
+  ],
+  "summary": "### Factual Summary\n\n**Basic Streaming Session (Tier: Basic)**\n*   **Status:** Stream-completed.\n*   **Funding:** A deposit of **10,000 raw units (0.01 USDC)** was successfully escrowed to stream address `0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09` (Stream ID: 8). The funding transaction hash is `0xab29300d79a611e238eb5fe0d855c3f69c682f5380c8ea9a63a798ea374328f7`.\n*   **Operation:** The session demonstrated local CRE OPEN and CONTINUE states. The client successfully reused the single funded stream for **10 real requests** across three batches without additional payment transactions (nonces remained static during request batches).\n*   **Outage & Closure:** A demo outage was injected, triggering a CLOSE checkpoint. The wallet cancelled the stream, resulting in a settlement transaction (`0xe9793498fab33d7a5e964da9bca0f41ac7b576285d1a6d47a670fa83d4e78a96`).\n*   **Financial Outcome:**\n    *   **Earned:** 1,200 raw units (0.0012 USDC) accrued based on time elapsed.\n    *   **Refunded:** 8,800 raw units (0.0088 USDC) returned to the sender as unused deposit.\n    *   The full deposit was not paid to the recipient; only the time-accrued portion was settled.\n\n**Premium Streaming Session (Tier: Premium)**\n*   **Status:** Denied.\n*   **Reason:** The requested amount of **200,000 raw units (0.2 USDC)** exceeded the policy cap of **100,000 raw units (0.1 USDC)**.\n*   **Transaction:** No transaction was signed or executed; agent and recipient balances remained unchanged.\n\nNo DON or onchain CRE authorization was claimed or required for these test token operations.",
+  "purchases": {
+    "basic": {
+      "status": "stream-completed",
+      "tier": "basic",
+      "streamAddress": "0x35f5F69A68D703d70e661b5a0fDe282B3c4dfA09",
+      "streamId": "8",
+      "fundedRaw": "10000",
+      "earnedRaw": "1200",
+      "refundedRaw": "8800",
+      "admission": "OPEN",
+      "healthyCheckpoint": "CONTINUE",
+      "outageCheckpoint": "CLOSE",
+      "outageInjected": true,
+      "client": {
+        "successfulRequests": 10,
+        "failedRequests": 3
+      },
+      "requestBatches": [
+        {
+          "requests": 5,
+          "walletNonceBefore": 119,
+          "walletNonceAfter": 119,
+          "noPaymentTransactions": true
+        },
+        {
+          "requests": 5,
+          "walletNonceBefore": 119,
+          "walletNonceAfter": 119,
+          "noPaymentTransactions": true
+        },
+        {
+          "requests": 3,
+          "walletNonceBefore": 119,
+          "walletNonceAfter": 119,
+          "noPaymentTransactions": true
+        }
+      ],
+      "funded": {
+        "streamId": "8",
+        "state": {
+          "sender": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+          "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+          "totalAmount": "10000",
+          "flowRate": "10",
+          "startTime": "1793357676",
+          "stopTime": "1793358676",
+          "amountWithdrawn": "0",
+          "isActive": true,
+          "metadata": "{\"sessionId\":\"0x16283546d2e6491157525ed467aff5db1dcfcab9b97d90923f56755cb6761d59\",\"quoteId\":\"0xd3f2b36e6507b951498e6f0de50a54c71a6a3120b618cfff21b836f749fe99ba\"}"
+        },
+        "before": {
+          "agentBalanceRaw": "39878592",
+          "recipientBalanceRaw": "44280",
+          "nonce": 115
+        },
+        "after": {
+          "agentBalanceRaw": "39868592",
+          "recipientBalanceRaw": "44280",
+          "nonce": 119
+        },
+        "transactions": [
+          {
+            "state": "confirmed",
+            "transactionHash": "0xab29300d79a611e238eb5fe0d855c3f69c682f5380c8ea9a63a798ea374328f7",
+            "blockNumber": 12026196,
+            "confirmations": 2,
+            "gasUsed": "137745",
+            "feeWei": "10744110"
+          },
+          {
+            "state": "confirmed",
+            "transactionHash": "0x23d7e8f7bf014995141712ed554ace9fb5a0e0ebd4077411974ea5ea31643488",
+            "blockNumber": 12026207,
+            "confirmations": 2,
+            "gasUsed": "2097681",
+            "feeWei": "161521437"
+          }
+        ],
+        "fundedRaw": "10000"
+      },
+      "settlement": {
+        "streamId": "8",
+        "closed": true,
+        "earnedRaw": "1200",
+        "refundedRaw": "8800",
+        "before": {
+          "agentBalanceRaw": "39868592",
+          "recipientBalanceRaw": "44280",
+          "nonce": 119
+        },
+        "after": {
+          "agentBalanceRaw": "39877392",
+          "recipientBalanceRaw": "45480",
+          "nonce": 121
+        },
+        "transaction": {
+          "state": "confirmed",
+          "transactionHash": "0xe9793498fab33d7a5e964da9bca0f41ac7b576285d1a6d47a670fa83d4e78a96",
+          "blockNumber": 12026217,
+          "confirmations": 2,
+          "gasUsed": "151074",
+          "feeWei": "11783772"
+        }
+      },
+      "closedAccessRejected": true,
+      "research": {
+        "source": "AgentPay stream demo (sample operational guidance)",
+        "content": "A funded stream amortizes payment transactions across service requests; earnings accrue with time until cancellation or expiry."
+      },
+      "donAuthenticated": false
+    },
+    "premium": {
+      "status": "denied",
+      "tier": "premium",
+      "policy": {
+        "reason": "AMOUNT_EXCEEDS_POLICY",
+        "amountRaw": "200000",
+        "amountUsdc": "0.2",
+        "capRaw": "100000",
+        "capUsdc": "0.1"
+      },
+      "noTransactionSigned": true,
+      "before": {
+        "agentBalanceRaw": "39877392",
+        "recipientBalanceRaw": "45480",
+        "nonce": 121
+      },
+      "after": {
+        "agentBalanceRaw": "39877392",
+        "recipientBalanceRaw": "45480",
+        "nonce": 121
+      }
+    }
+  },
+  "donAuthenticated": false,
+  "strictGuardUsed": false,
+  "contractPolicySignatures": true,
+  "evidenceDirectory": ".local/agent-demo/runs/20261030T105037Z-247a7f68",
+  "audit": {
+    "directory": "<repo>/.local/audit/0xe26468ae02368a75dbdbea58f367b7313942ad26",
+    "decisions": 141,
+    "pendingIntents": 0,
+    "pendingReceipts": 0,
+    "receiptTransactions": [
+      "0x3c12029dc9c3ff0de5db2e1b964c77a65387e91d2c16f2f27597e0f7d7b83bfa",
+      "0x050cdb856764b2a3fc32e3911dd1ac2ada449b6d66da80e7035eb2559a181697",
+      "0xfc14d6aae56bb381090f604f2ef4a9429d6bd1ccc19697463cda082479dccf13",
+      "0x37a77f2f3343d77f7387d4889694dc6186073f5ecae8a04fe998fe02d00b23b6",
+      "0xb027268887609707de866cb834db975a11497d4befd80300cc046cddfff037e0",
+      "0xd75e36b70b13f9e412f5800cdc1f508280c6c20b63c9ebf165b20c8f9fcaf47f",
+      "0xb3b1443e60bcafb0d5ab8dad2edd81bfa799a451be7d6a76a81bb9f68a8e01c0",
+      "0x0815380e0bafd36db8829b060bc0239042d9a71e84d7850271bc20e2175b311b",
+      "0x5b4125d7b5ae7427fce4aeae72bd37ffb23f5e73586dd79451a27256d7adb0d5",
+      "0x6c42028aec13b817ae6f045ba9d74c6ce9eb2276498eb05414f7cc1144fd8530",
+      "0x3f8d4cd4ca1926f8704364825119004ce035f741c8d078a704115b277bb3563a",
+      "0xe6fc3a6da14aa5a458d1529bdb6a3cd01bb5bb8b6df1fe13fae6657e6f2aae63",
+      "0x194be56cacba962b54df82d47ca01f8b8ba45ab71ca68ce659dabdedb85dee4c",
+      "0x9da5ffce3ef1796184be876b04db08f75508193eea2b871d1244f58a9b77bc89",
+      "0xe5dcdf163aa78d366fb656a7a7c2d38af8be940be94aaf9e3599b5e48a897b3d",
+      "0xc9136ea428525fd8016f370a4bbce25d5d33a727d00efc3dea6f607b58ce92f0",
+      "0x7552aa9b68edf3b2ac3cdf52b2f0c2fb0a8d298050d6bb56f8a2e1b24952606e",
+      "0x81363c9a200a4c05a03540584627d79e052fda5ff2586f87f4c8beaf44c28894",
+      "0xf2a66878e5b8d4ff6a146d784b6201d03922f9200587155188bdd79ad32f5689",
+      "0x95a161cf889b4610a333fb4fd5ea7339d14ac106ae5d4d9bccd17d2ef20a85a8",
+      "0x8231f252293167fb33bbaa828bb3e839922e99e854ed34b4e406cff38df31d72",
+      "0xf11a10d90d0ad37267c16fc2fb301e6470c673861536af89b4195afbe88e57b0",
+      "0xa400de1de830bb7259d31f6e7cfde446733c44ae3121f9f73b66e9e4180ef486",
+      "0x75e314040e5950e801cd110fe24595073bdf270d9443ef4dd15acb6b450b7097",
+      "0x0ce60924b49c8706fb7613b833ecd9c61fcfa6185d44648a74fcfc753047917a",
+      "0x68ab2fb05969658527845a17c6d27969a0a835ced87e3e8eb27f6de518222da6",
+      "0xb8570c63cba318ebdbadbb86b241b959c171f1d820cadf993edd999c9625ef2a",
+      "0x68fdc295b9c362edad2c9ad632aa29bc80df626f2470664ba0792c4b59334e62",
+      "0x30ab29d9d400218eaf2fe5f4615d6039056d485181a0fb3aa9369001f20392df",
+      "0x664a7c3a67ded72f7a2af065c950e00260fa366879563c6ca979c669d87f3622",
+      "0x813ac50cad06e875aaf58ab4e222619913ac1e8c0726c545e8573bd4f421f457",
+      "0x4a55e70d7c7f41d902cc3293e5b16b7f3e629b841f41c678e317f0828f15d924",
+      "0xbdcddd37afa36f0d34574bb0f558c34500429ff9d8e0ca6968c74c9a79366863",
+      "0x5adc8724375054f6b2f3f451636b6c0bdc268e6014994b85bf1d27282556c098",
+      "0x8baeabf8bddacf9f4b08a81cae6190932dacce7627816272c2fa8fa410467905",
+      "0xa82dac76179d4c60e3a6115fe43aa3d3ccc39113a15802f454dbcb7bc4dadf4c",
+      "0x609e91cbc1e926953fc82ac978b1727813087f0054092a1fc96af0dcc9f35183",
+      "0xa8bcb055b33b6c7e9eba212a08127f0e3fa1d19b249570757fd0c18749b80535",
+      "0x4e1e52c4797283a1fca6aec6bdae6f6ea6355d14aff0ec4774bf88495a2d8916",
+      "0xc0c090076b5e3f3757e342266975372a3d84eaca9684937924723bbe708b81bb",
+      "0x7be1478b8d1815bf1b1e23bcd6d2b36eee041497b6085dd0d06571e757b0b5e9",
+      "0x3c75379f1cbaae065b00479d03454fbdca10a06af3268e43ee8bef3560c168b3",
+      "0x5349394afc8fc1938afb6de7ebb730a0de0ec05a6db7132a94cced1d489a3e53",
+      "0x0d0e57cef241e6ddbc148ae2f3e277e419677ba73ca7f636a756d2c19c07f841",
+      "0xbc07e1a162f84872618a28c4b98c73ada3dc0a4b04d180f203a80de94b67c7c4",
+      "0xee0fa2868afc82b5c281072ceae4db1c381eabcdb2fc46e61efbbcde2bb8bdf3",
+      "0xf9ebe4adf2eb76d464244f3b598cc35774dc7757dbaf06bed06fdf7a96bc4151",
+      "0xb14e4df637d60e343789f9e8e6b2f6ab74044ba5c4651b8780da3ca648d16d52",
+      "0x86f24ca2cb7000c15c97c0cf293acb5bfbb21c7e1518922d2784e723b5c6ff08",
+      "0xbc497805a620d39d3ac4e01d60497251e26b6214d0e859a9e30250e25e26e524",
+      "0x19d254ebbf03bf20e39260576319ded4947ed018ffb7bb5bfe3101e19b13d121",
+      "0x7984e8639dbc739bc775e9f94c451f802b95af7d94fa031211672659cf5bd9e9",
+      "0x66c8727c9ab7d889494c060e1deeef4dc1fcfd9dbf447702e4087d11f38c0ab5"
+    ],
+    "receipts": [
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 12026214,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x9bfbb72b7693bbf686152c93d593a2c0f25cef24590ba72c0b3234ed1463b1b1",
+            "intentId": "0x0db84a4400674feaa091c2a64c75be012451916a38249f6bea24e7f9e020a01f",
+            "proof": [
+              "0xfd19e3f2cd250ff087c9fcf30f2e894851fa94b0adb6c1ce5c3e2d9270820a5d",
+              "0x0a3fc5b27724c69c5f9e6e46d5aec9e43fafb21a07a11b1085b5121cb2dde327",
+              "0x60fd3578b2c4603f36aa37b2b2a2769640fa620e0288d897cc40d1dc08785906"
+            ],
+            "sequence": 136
+          },
+          {
+            "blobHash": "0x06593eea550e730703e0cf207b4c3338d707f5091a3c8aecfc749769b5069f17",
+            "intentId": "0x14673045165e75f402767e259fd4fbf59484170bfebf411eca6ef77a27d3bc50",
+            "proof": [
+              "0x32353bc1eb8b05ed51c06e96c99181d2b4d7eab822eb066b13ec2f7477df80c7",
+              "0x0a3fc5b27724c69c5f9e6e46d5aec9e43fafb21a07a11b1085b5121cb2dde327",
+              "0x60fd3578b2c4603f36aa37b2b2a2769640fa620e0288d897cc40d1dc08785906"
+            ],
+            "sequence": 137
+          },
+          {
+            "blobHash": "0xfade2bda471a7760da3b6e4833eb1658eb4a69a78f56ad229947b88ac399e9b7",
+            "intentId": "0x369695e1332390f41696af7bd10cc72d5f03792eb2336a3c2303e857dd75a81d",
+            "proof": [
+              "0x58490d2a8dbd073894224503803cc35846fd1b22d89a7664d385129d3a4c9f4d",
+              "0xd0c3a2a2eabdd2615e92efe5f8ff070549226bb0932d289ea6ef0810ff91835c",
+              "0x60fd3578b2c4603f36aa37b2b2a2769640fa620e0288d897cc40d1dc08785906"
+            ],
+            "sequence": 138
+          },
+          {
+            "blobHash": "0xa14e9a9ce38a4982999de9321ecfcefefbbdb8c7a28262fc987a4e00e17c93c6",
+            "intentId": "0x84b5527282e4620584e0f3216691caab2d4c9ad5972e2340b65289963f312e99",
+            "proof": [
+              "0x0d87fd70450dd9c804cc43f41a0db963bd4254f1a596c64839f6d5daab23f6b0",
+              "0xd0c3a2a2eabdd2615e92efe5f8ff070549226bb0932d289ea6ef0810ff91835c",
+              "0x60fd3578b2c4603f36aa37b2b2a2769640fa620e0288d897cc40d1dc08785906"
+            ],
+            "sequence": 139
+          },
+          {
+            "blobHash": "0xb57617ff3b670b4e0f1d44853ff54ff5529c5c7ef3bd19d83ae3b9e4c0d55354",
+            "intentId": "0xe99d78b5385f585f13b7c80add9a2270261e83918b2e38ac2df1d658e61c7035",
+            "proof": [
+              "0x08c90654858143348bd90fe54e843d488c32eb0182128dc2a5e74ba09ea4b77a",
+              "0x07fe03dbe6ba59e19c0ac60c7a1717d64d94df99cadab10173b9e04793b856f6",
+              "0xe145c5336c2361dea967bf258df0023a52de2efe309c4d15350dd55016c309c2"
+            ],
+            "sequence": 140
+          }
+        ],
+        "feeWei": "29471364",
+        "firstSequence": 136,
+        "gasUsed": "363844",
+        "root": "0x0b2a6168ca25ecd08d0499483ec4d835ee60143a90886d691f580094f75b5d1a",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x050cdb856764b2a3fc32e3911dd1ac2ada449b6d66da80e7035eb2559a181697",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 12026201,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x29590ffc8cb3d571498fc646dd49023a4d72a6633c05ce751ec862e8f4417f15",
+            "intentId": "0x353e7806c33213c351ac72f7a86b415146adf36dd30a2d162acc559ca844fa14",
+            "proof": [],
+            "sequence": 135
+          }
+        ],
+        "feeWei": "28016912",
+        "firstSequence": 135,
+        "gasUsed": "363856",
+        "root": "0x1a38df464841bdaffb9f9a5bd5e6793ff05e86587024f72f23fdf2a473b571fc",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x37a77f2f3343d77f7387d4889694dc6186073f5ecae8a04fe998fe02d00b23b6",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 12026193,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x634d5286c25277cc3c43e99a964c88f3fc86c978b4ca8dce9919a246bd521ab3",
+            "intentId": "0x291cfb90c0f1eef559c4d962d2f3372836ad51b0a12bff226e4df34ca00dede1",
+            "proof": [
+              "0x600ee0c84415b99f8b34952640d78b9817dc63fabd129e71d3a730f5a44a047e",
+              "0x3682ebbf4b73580d43f8ec761cbedc35748c68ebc78ac3410c17becb5ed93eaa"
+            ],
+            "sequence": 132
+          },
+          {
+            "blobHash": "0xf4e7df303486718279923b8ae33b0c41da9b350ed0eb6fb72eba1be07a525e73",
+            "intentId": "0xd7337c73c7f66abf35d4682bafcb7698a85fb86eb7ea28eedd332ecfa2b927cc",
+            "proof": [
+              "0x467ede45a3b2525f1c2e148f8e1c27eae5e32beec88558950733d2bf23e8d312",
+              "0x3682ebbf4b73580d43f8ec761cbedc35748c68ebc78ac3410c17becb5ed93eaa"
+            ],
+            "sequence": 133
+          },
+          {
+            "blobHash": "0x0ca277dcd48f2255a7382bb073401ee609bd2e287f7639b1314edb5d3919aab2",
+            "intentId": "0xff834c6eb1824ac5c4f35b19cf6c42dee0debc0ca57142fe5da601109bf890e1",
+            "proof": [
+              "0x6648bb2e3de93b75b78626478713b2bd844169284c8888f9c6d999e6051b422b",
+              "0xc53b796211df89dbc91c0ace8862123bba2c51e977bc895a8796de5bba6d4978"
+            ],
+            "sequence": 134
+          }
+        ],
+        "feeWei": "28744624",
+        "firstSequence": 132,
+        "gasUsed": "363856",
+        "root": "0x8fce9c20a838f96db95e945c834cb9d83763d821db1cd01113b9e793a1bce8b1",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0x8baeabf8bddacf9f4b08a81cae6190932dacce7627816272c2fa8fa410467905",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      },
+      {
+        "address": "0xa1A5BA33bebdDe7EcA55BDe252568C9D16C4Da87",
+        "blockNumber": 12026223,
+        "chainId": 11155111,
+        "entries": [
+          {
+            "blobHash": "0x5ec3ac02d033524800770180095b1d3fe71eac7169810ff810b7313e6d7bf3bf",
+            "intentId": "0x69ca715e0c347d2b30f8e0ac3067f9f44dc7496e439adb2960b680d8f02ae485",
+            "proof": [],
+            "sequence": 141
+          }
+        ],
+        "feeWei": "27289200",
+        "firstSequence": 141,
+        "gasUsed": "363856",
+        "root": "0xb41e30390fdd3be108d3719d0a51eb0ddea61d36f0e7ffede4e2a6224d2522ab",
+        "schemaVersion": 1,
+        "state": "anchored",
+        "transactionHash": "0xc0c090076b5e3f3757e342266975372a3d84eaca9684937924723bbe708b81bb",
+        "writer": "0xe26468ae02368a75DBDBea58F367B7313942ad26"
+      }
+    ],
+    "receiptScope": "Only this run's receipt subset; original journal totals remain cumulative."
+  }
+}

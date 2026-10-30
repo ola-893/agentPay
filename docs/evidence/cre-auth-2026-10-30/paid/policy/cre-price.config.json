@@ -1,0 +1,23 @@
+{
+  "schedule": "0 */5 * * * *",
+  "chainName": "ethereum-testnet-sepolia",
+  "chainId": 11155111,
+  "priceFeedAddress": "0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E",
+  "marketApiUrl": "https://api.coinbase.com/v2/prices/USDC-USD/spot",
+  "maxFeedAgeSeconds": 86400,
+  "maxDeviationBps": 100,
+  "authorizationTtlSeconds": 300,
+  "request": {
+    "requestId": "0xd3f2b36e6507b951498e6f0de50a54c71a6a3120b618cfff21b836f749fe99ba",
+    "agent": "0xe26468ae02368a75DBDBea58F367B7313942ad26",
+    "recipient": "0x9950D8950BF80722860f2B6a9e120893a0fE79f7",
+    "token": "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238",
+    "amount": "10000",
+    "spendingCap": "100000"
+  },
+  "receiverAddress": "0x0000000000000000000000000000000000000000",
+  "publishReport": false,
+  "tokenSymbol": "USDC",
+  "tokenDecimals": 6,
+  "maxPegDeviationBps": 100
+}

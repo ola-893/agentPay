@@ -168,6 +168,11 @@ refunding **0.0088 USDC**. Both policy signatures and seven decision proofs acro
 three new audit receipts were verified against Sepolia. The same evidence records
 the earlier RPC failures and their fixes: [verification and reproduction](evidence/cli-rpc-2026-10-30/VERIFICATION.md).
 
+A later complete CLI retest on October 30 funded **stream #8**, passed all lifecycle
+and denial checks, paid **0.0012 USDC**, refunded **0.0088 USDC**, and exited 0 after
+the account/RPC/snapshot fixes. Four new audit receipts verified ten decision proofs.
+[Complete readiness retest and prior failure records](evidence/cre-auth-2026-10-30/VERIFICATION.md).
+
 ## Recover an interrupted guarded stream
 
 Ctrl+C (`SIGINT`) or `SIGTERM` requests shutdown at the next safe boundary. The

@@ -1,0 +1,32 @@
+{
+  "runId": "20261030T101840Z-b204a1c0",
+  "failedAt": "2026-10-30T10:25:32.091Z",
+  "code": "OPERATION_FAILED",
+  "message": "Stream demo failed; inspect evidence.",
+  "streamId": "6",
+  "fundingAttempted": true,
+  "cleanup": {
+    "streamId": "6",
+    "closed": true,
+    "earnedRaw": "1440",
+    "refundedRaw": "8560",
+    "before": {
+      "agentBalanceRaw": "39871352",
+      "recipientBalanceRaw": "41520",
+      "nonce": 106
+    },
+    "after": {
+      "agentBalanceRaw": "39879912",
+      "recipientBalanceRaw": "42960",
+      "nonce": 108
+    },
+    "transaction": {
+      "state": "confirmed",
+      "transactionHash": "0x952c9cf75194a1bb53f912c0113476f6fc2872096e798122142847eb7fbbbfbc",
+      "blockNumber": 12026059,
+      "confirmations": 2,
+      "gasUsed": "151055",
+      "feeWei": "9969630"
+    }
+  }
+}
