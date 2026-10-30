@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-10-30T17:12:36.037818+00:00",
+  "provider": "Netlify",
+  "siteName": "agentpay-cre",
+  "siteId": "90b25ae7-7210-458c-9c43-772f0a36f30f",
+  "deployId": "6ae4cd45a686d8c3a5da7446",
+  "url": "https://agentpay-cre.netlify.app",
+  "immutableUrl": "https://6ae4cd45a686d8c3a5da7446--agentpay-cre.netlify.app",
+  "state": "ready",
+  "publishedAt": "2026-10-30T17:01:11.433Z",
+  "frontendCommit": "c31181c108fdc190e7576f4c6555825ab3064694",
+  "method": "manual-cli",
+  "continuousDeploymentConnected": false,
+  "publicAccessVerified": true,
+  "hostedMode": "recorded-replay-and-docs",
+  "liveExecution": "local-runner-only",
+  "verification": {
+    "http": {
+      "/": {
+        "status": 200,
+        "sha256": "6a66ff4595afec2f1c3a4f2a15836bfe1c795fd1361850c9321c7f82e8afe719"
+      },
+      "/docs": {
+        "status": 200,
+        "spa_fallback": true
+      },
+      "/docs/cre": {
+        "status": 200,
+        "spa_fallback": true
+      },
+      "/docs/cli": {
+        "status": 200,
+        "spa_fallback": true
+      },
+      "/docs/setup": {
+        "status": 200,
+        "spa_fallback": true
+      },
+      "/runs/20261029T093933Z-cb8f17b5/events.ndjson": {
+        "status": 200,
+        "sha256_verified": true
+      },
+      "/runs/20261025T173241Z-38db9e1a/events.ndjson": {
+        "status": 200,
+        "sha256_verified": true
+      },
+      "/runs/20261022T113645Z-8920114f/events.ndjson": {
+        "status": 200,
+        "sha256_verified": true
+      },
+      "/runs/20261022T112249Z-556c7ea3/events.ndjson": {
+        "status": 200,
+        "sha256_verified": true
+      },
+      "/runs/20261022T112017Z-489d72f7/events.ndjson": {
+        "status": 200,
+        "sha256_verified": true
+      },
+      "/runs/20261022T111851Z-44992c90/events.ndjson": {
+        "status": 200,
+        "sha256_verified": true
+      },
+      "/assets/index-CgcQgmOY.css": {
+        "status": 200,
+        "matches_local_build": true
+      },
+      "/assets/index-DO6T3O1c.js": {
+        "status": 200,
+        "matches_local_build": true
+      }
+    },
+    "buildSha256": {
+      "index.html": "f416fae5388964d1c5b6614662ea2791c31a06bfade905a42dcde2abbb8ba38f",
+      "agentpay.svg": "7393be2d8d7ca4b57f28ba3a1b46f3385c8466897f5d38a3eb40ec5972057d97",
+      "_redirects": "66584af744075248a042165adbdbd6a0551fa708a85650ea1e3e777eee17080c",
+      "vite.svg": "4a748afd443918bb16591c834c401dae33e87861ab5dbad0811c3a3b4a9214fb",
+      "evidence/cre-deny-budget.json": "8e5bee6461f76668cc1c58f203dfd592a54288dfbd30df59289ad45529073c94",
+      "evidence/cre-allow.json": "4fc807a284a7495c7b138e3b181683137738ee1242a9022b49712f3604c5c6ed",
+      "assets/index-CgcQgmOY.css": "a67068914841b38a1f70ae8b140024c0320b84280e0776fccbc14237f98d66fe",
+      "assets/index-DO6T3O1c.js": "2d42969fbcfc06fec1ebd8220ef3da0bd7023bf8fdf7cae4553d79c6a64c19be",
+      "runs/index.json": "039df83d792928b3d49d72e499d951c3dfdd710b12e287076442465d8d482b41",
+      "runs/20261022T112017Z-489d72f7/events.ndjson": "481c58023db2fa6d03efa76e928064a1e120c4e05d0548ab469e06da93727fe7",
+      "runs/20261029T093933Z-cb8f17b5/events.ndjson": "f54bbddf10b371bd6725127f9e549e9bbf42f1eb89c20d35dacc28b6e4546b1e",
+      "runs/20261022T111851Z-44992c90/events.ndjson": "af5a75db57d3829ed453e730f8efd78a9064b43726a2f68a604ddac1d396b184",
+      "runs/20261022T112249Z-556c7ea3/events.ndjson": "9841484515a3e387c1b1fdceca1fd35952e3b9e73874dec8549f6309c19ed5c0",
+      "runs/20261022T113645Z-8920114f/events.ndjson": "5ff92b889962e8db7f0d9e402caf501202511ba8da2a22b9cb876c8fa76862e2",
+      "runs/20261025T173241Z-38db9e1a/events.ndjson": "cf58b7a1ae5170f48bb4030d4ff34e3a6e181d154f7dc9eb922ba6b16f2d2cb7",
+      "runs/20261025T173241Z-38db9e1a/artifacts/14-stream-healthy.log": "a2a165eef8c0a76bb30a23a55bd246037f636cd3fa4cd0d58c915b21d03d689d",
+      "runs/20261025T173241Z-38db9e1a/artifacts/01-cre-price.config.json": "414ea8e89d522fcd9f82c7ce232eee3170c30ac4ed7b011b915e9f5f6161fa6e",
+      "runs/20261025T173241Z-38db9e1a/artifacts/16-stream-outage.log": "b3576ac4b26999d6c4aecb82d09a3725714ff9a5290e3dbf4913abc9370ce9a1",
+      "runs/20261025T173241Z-38db9e1a/artifacts/17-ebefab553aa4.json": "04633ee35503f005f52a457502e4caedc69d7d858445987d40f97d79d470f7ba",
+      "runs/20261025T173241Z-38db9e1a/artifacts/03-stream-open.config.json": "5db6d80cdf36ec310d0d9c04ad4c80aa0bd98a3edf06088e80c1ba188873d2c0",
+      "runs/20261025T173241Z-38db9e1a/artifacts/12-stream-renew-1.log": "50161995f7b67b5ae819f17d13541220b255838843d5b929a0573b5dfa1f9406",
+      "runs/20261025T173241Z-38db9e1a/artifacts/11-stream-renew-1.config.json": "f910fa0f10dbb724240c1ffce6d621d75b3b111cf1481f3de504edb9f5c45107",
+      "runs/20261025T173241Z-38db9e1a/artifacts/19-stream-deny.config.json": "0f13cd1c59b09fd0902879369f0bf444f78d6a34f08ec3e9f2afc88181530f91",
+      "runs/20261025T173241Z-38db9e1a/artifacts/02-cre-price.log": "06d79fe534437395e79c7b1986033423401b8b141ac25db5113459df57395329",
+      "runs/20261025T173241Z-38db9e1a/artifacts/15-stream-outage.config.json": "42b224c9ec6b938807ab8806b89fe9164d070cfdf5478883b548b335644ed57b",
+      "runs/20261025T173241Z-38db9e1a/artifacts/05-064d8aef0d6e.json": "ecb8fd9b45fee2930261a219ff95a89cb228809b4e6f86b08acd0b36f7b5dd79",
+      "runs/20261025T173241Z-38db9e1a/artifacts/07-d4f8e0d4d89d.json": "a30ca668c656553d1b3fc1e2d0bb661e9dacaabc927d6561efed00068a8cc33a",
+      "runs/20261025T173241Z-38db9e1a/artifacts/20-stream-deny.log": "a4666130bb7ab42c48df60eeb681a93a5701ea14b89c86e15005b889ed30748a",
+      "runs/20261025T173241Z-38db9e1a/artifacts/18-ebefab553aa4.log": "8e81513d6bacf0cfaf9beb499ae059ae579e17dca8ab51b530eeda3f0c68f846",
+      "runs/20261025T173241Z-38db9e1a/artifacts/06-064d8aef0d6e.log": "cf43c29869b89afb8aeaadf94f7540e33fa996a8067d025bc90420ff5d18ee13",
+      "runs/20261025T173241Z-38db9e1a/artifacts/10-cre-renew-1.log": "56b7fa75bf87822271c025ff385850e128a984f065ff7edf8dc64f5725ee6d30",
+      "runs/20261025T173241Z-38db9e1a/artifacts/13-stream-healthy.config.json": "e9bcebde8a80d1f98876450c5a2f3a98d4b564ae3f8f16b0c5e3f7101f2336ed",
+      "runs/20261025T173241Z-38db9e1a/artifacts/09-cre-renew-1.config.json": "414ea8e89d522fcd9f82c7ce232eee3170c30ac4ed7b011b915e9f5f6161fa6e",
+      "runs/20261025T173241Z-38db9e1a/artifacts/04-stream-open.log": "e63b24bc0d6c73fd9259f44bac0917049d84f8c12bf77650fed148aeee2ea77d",
+      "runs/20261025T173241Z-38db9e1a/artifacts/08-d4f8e0d4d89d.log": "c0773b9d250cd04344d9fcc0433440a3d68b8beb762e74a381d75e47c567be49",
+      "runs/20261022T113645Z-8920114f/artifacts/01-cre-price.config.json": "a61726fcf0ab364007d02354659a6da9f4d58168548c4cac1ab85c9b7da4fb92",
+      "runs/20261022T113645Z-8920114f/artifacts/02-cre-price.log": "6a308405a1a84cd4f1791f209306c4d77c50bd9c570851764c4a1d7c68598d47",
+      "runs/20261022T112249Z-556c7ea3/artifacts/07-43d7e017c048.json": "10454c711bf3f6336041a818048e00d990207700afece83b3553cdb9844b8293",
+      "runs/20261022T112249Z-556c7ea3/artifacts/14-stream-healthy.log": "631261bbf65d15bb685d788b4f7bcd52592bff6b11f72dae1eadf1a3daa926f1",
+      "runs/20261022T112249Z-556c7ea3/artifacts/01-cre-price.config.json": "6e86aeb7c11b1223d5130a743d45b38978f339f8bf25e2ec155ae42ef9292366",
+      "runs/20261022T112249Z-556c7ea3/artifacts/16-stream-outage.log": "a875bfd9171ca2dda88f866df238f99caddf0a850b61e945fee6b233966b50c0",
+      "runs/20261022T112249Z-556c7ea3/artifacts/05-9d41f6570197.json": "7afdfe44da7c227c6831809adf9ef1e05347cb26233c52d8df464a22092b599e",
+      "runs/20261022T112249Z-556c7ea3/artifacts/03-stream-open.config.json": "df8d86c650cc147618fad05fc92dc164c64f6c9a4bf739563ddd88c974c0b7dc",
+      "runs/20261022T112249Z-556c7ea3/artifacts/12-stream-renew-1.log": "925cc1a0ae2a51fe3cf755873340683c4b921518b9b6468e20bb9a16b23b2d18",
+      "runs/20261022T112249Z-556c7ea3/artifacts/11-stream-renew-1.config.json": "cb5a28e3df52ed748db6d526d722c55f66f408044fdec3bc43d022519a51acbe",
+      "runs/20261022T112249Z-556c7ea3/artifacts/19-stream-deny.config.json": "6b2bf800bff8ce3525cee5fd538766b03df136ce195ab4d074b533bc26d06a3c",
+      "runs/20261022T112249Z-556c7ea3/artifacts/17-79331b433c65.json": "601269d645b0e5523fb01798bc9a7767206447a7b1b51d82e15a5a5f066e9291",
+      "runs/20261022T112249Z-556c7ea3/artifacts/02-cre-price.log": "24ff2e98f692398df699ce50cc29937503b9c4eb052506c63e93f5bede87a6ad",
+      "runs/20261022T112249Z-556c7ea3/artifacts/08-43d7e017c048.log": "5443c67c3b6a4ad0d8a9f696fae89595c89d3dddee89f108d45a4a038bd6189f",
+      "runs/20261022T112249Z-556c7ea3/artifacts/15-stream-outage.config.json": "5fd320976c60e7e27e30d9630ccc91cd3b09d93c48b9d8a62020a28f8a2bd197",
+      "runs/20261022T112249Z-556c7ea3/artifacts/20-stream-deny.log": "c834298a195409b8bd7efc179ad6d2fb2331d454a9c88c2eaf4bf17594ac7926",
+      "runs/20261022T112249Z-556c7ea3/artifacts/06-9d41f6570197.log": "1c12102bd5b42b99934bcdd10321f6606084d2df680acb559a0e270f11caf8f4",
+      "runs/20261022T112249Z-556c7ea3/artifacts/18-79331b433c65.log": "b2f7e6dded0c453419b03e4ef94b1187826a14daad6eb4c4b21c2bef9c5c53aa",
+      "runs/20261022T112249Z-556c7ea3/artifacts/10-cre-renew-1.log": "fffbdfbdf8ba9c1767bb69d356e7c215d332bfd27b36282ee7fe15f2f0ed7fb4",
+      "runs/20261022T112249Z-556c7ea3/artifacts/13-stream-healthy.config.json": "6f15151ad8b2ecc397e2484346789e8e46ad8e5291d96ccc3ae29bcc1c776ebf",
+      "runs/20261022T112249Z-556c7ea3/artifacts/09-cre-renew-1.config.json": "6e86aeb7c11b1223d5130a743d45b38978f339f8bf25e2ec155ae42ef9292366",
+      "runs/20261022T112249Z-556c7ea3/artifacts/04-stream-open.log": "3cf54c7e4440a86a7d0dac16b94d5b728cfd1abdf358ed79ff7aa7818bb81dbf",
+      "runs/20261022T111851Z-44992c90/artifacts/01-cre-price.config.json": "c4f710a1318d3fffa2deaf33c9b24ce8456f3aa58acf77f0245b0e0446ec27aa",
+      "runs/20261022T111851Z-44992c90/artifacts/02-cre-price.log": "a6564c5f16d0f516993a5a363d7347e10d748884ed58b1b0fd59418d90e11a89",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/14-stream-healthy.log": "8f8b78a58d18838298e3e93d0c28d020fff71c6efd6a907064ed15ac797d294a",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/01-cre-price.config.json": "11cfb3553b8a1c2852704e122f09f86a82c87f6c9e04b4ca4143ebbf54c53f47",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/06-71b060300455.log": "fd25d2b71570a30a8f09f51d1475feee3f4a0c5f9b62bc6f9c9b3925d5551d8a",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/16-stream-outage.log": "ee51c0cba61aa1d8d1abef81deb9ba1858bcc381dc0ee84f00c32d66744d0e64",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/05-71b060300455.json": "1e0a2f6d4d0b756c4afee0fe0dc529c5d33e9d1808bdabfbafa6d88cf84d6201",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/03-stream-open.config.json": "46d85a1551b1b7011c3ee70a8479868b518f4e30f553f6ad12030de8153844bd",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/17-9189e97cd9d6.json": "d8e889c4a140ebbb28d2dfc9cd231eaa0a4c6a0c616b04a3826f60c7459d7d72",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/12-stream-renew-1.log": "ebedefd2186eefe24a9d13d16e3839f0f532c46a64a5401148694add14c7c113",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/11-stream-renew-1.config.json": "7920e9fdefd04bc6a728a231008b772fb052507d5d1d73c2a138b9da72502e62",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/19-stream-deny.config.json": "5397d4fe9538e9cb8e439361ea644d2f325a2c3c1e332237197471ed036879da",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/02-cre-price.log": "ef612da8cba1b4c9610572960ed958e81efe2d1151223505003eaf2aeaebda5d",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/15-stream-outage.config.json": "f898145e56d8cefb7c38189cc65a6246fb6753b0b666fbd5e0849fc3ae62727c",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/07-78a991d57c5c.json": "161c31cd809ffdc009d5562982a910074aadcd7786808bc32c6dd180ea6458f1",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/20-stream-deny.log": "a6d3872d7efa12829ec7aee96b6b61e21ec13063836ebc980dc105d7e163e86d",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/08-78a991d57c5c.log": "188ca40946ddac6c67d0f671451734ec7749ed96c80db0136048eab6e4a0ef48",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/10-cre-renew-1.log": "6eb2a3bf21ddf65b9b20aabea907a1f41f71c7b38f6df9860a705ef63a838e73",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/13-stream-healthy.config.json": "5cb2ab6f3e1d009fef133dd2311b89e90af1b8ba4f9dc2524ef792c23583341d",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/18-9189e97cd9d6.log": "b14a16bc9a5ed33949f649ee0062f9e2d0aa12fdc9b9d6aba8755defef95cd03",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/09-cre-renew-1.config.json": "11cfb3553b8a1c2852704e122f09f86a82c87f6c9e04b4ca4143ebbf54c53f47",
+      "runs/20261029T093933Z-cb8f17b5/artifacts/04-stream-open.log": "0813594380504a2e4bfd323a205973161ed6dc081e85125ae34ddcfc697eb7d5",
+      "runs/20261022T112017Z-489d72f7/artifacts/01-cre-price.config.json": "7fa456f6c2e05005b49c9b4fb6b7b559d4f83d5c75d3802ded008f418f66f4c2",
+      "runs/20261022T112017Z-489d72f7/artifacts/03-stream-open.config.json": "25937986a882e7d376c7fd818864441f8eb439c5640a6e80dcd5c7d34f77349a",
+      "runs/20261022T112017Z-489d72f7/artifacts/06-stream-deny.log": "4cd59f69ef5775f03149321a74b831d7cef83324c3f8ab048ce4ba39ad17bd42",
+      "runs/20261022T112017Z-489d72f7/artifacts/02-cre-price.log": "235a81bf7a3ce408d2e1809378668f862492576fb8658093fa7316a1eb276763",
+      "runs/20261022T112017Z-489d72f7/artifacts/05-stream-deny.config.json": "9d048bceb38ff07ea05c5934ec8263c28bda197ab0179f86d7b622cf60c09013",
+      "runs/20261022T112017Z-489d72f7/artifacts/04-stream-open.log": "c06b242e5288501b1740426467a6b6baabf9e479a6538aa1d52ccee898421ac8"
+    },
+    "browserVerification": "not-performed; browser access disabled in Work settings",
+    "ci": "https://github.com/ola-893/agentPay/actions/runs/41093104416"
+  }
+}

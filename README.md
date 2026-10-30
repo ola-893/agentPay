@@ -2,6 +2,8 @@
 
 **Deterministic payment guardrails for AI agents, built with Chainlink CRE.**
 
+**Live frontend:** [agentpay-cre.netlify.app](https://agentpay-cre.netlify.app) — recorded workflow replay and documentation; live CLI execution runs locally.
+
 AgentPay began with the N+1 payment problem: hundreds of paid API requests should reuse one funded session instead of requiring a payment transaction for every call. HTTP 402 and x402 inspired the prepaid stream. But cheaper payments still need guardrails: an agent can hallucinate a payment action, propose duplicate funding, keep paying an unavailable service, or suggest closing a useful session too early.
 
 The agent already supplies the reasoning. A separate policy process runs local Chainlink CRE to evaluate explicit payment rules against service observations and blockchain state. It signs eligible OPEN/CLOSE actions; AgentPayGuardedStream verifies those signatures when the agent submits a transaction. This separation reduces avoidable financial loss from model-driven payment mistakes. **The agent proposes. CRE checks the rules. The CLI executes eligible actions.**

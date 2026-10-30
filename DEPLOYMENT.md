@@ -2,6 +2,8 @@
 
 ## Simulation and frontend
 
+**Published frontend:** [agentpay-cre.netlify.app](https://agentpay-cre.netlify.app). The October 30, 2026 production deploy was uploaded with the Netlify CLI from commit `c31181c`. [Deployment and HTTP verification record](docs/deployment/netlify-frontend.json). This site uses manual CLI deployment; GitHub continuous deployment has not been connected.
+
 The supported CRE journey is local CLI simulation. Workflow deployment to Chainlink's network and the DON-authorized public USDC payment test are outside scope; deployment approval is not a prerequisite for running the project.
 
 Recorded evidence and read-only CRE simulation require no deployed AgentPay contracts. Follow [README](README.md). The RPC is in `cre/project.yaml`; use a reliable Sepolia HTTPS endpoint if the public RPC is busy.
