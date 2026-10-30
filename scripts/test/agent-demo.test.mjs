@@ -199,6 +199,9 @@ test("failure output suggests recovery only when funding may have been submitted
   assert.doesNotMatch(render({fundingAttempted: false}), /recover:guarded-stream/);
   assert.match(render({fundingAttempted: true}), /recover:guarded-stream/);
   assert.match(render(), /recover:guarded-stream/);
+  const closed=render({fundingAttempted:true,cleanupClosed:true,streamId:"6"});
+  assert.match(closed,/Stream #6 closed during cleanup/);
+  assert.doesNotMatch(closed,/recover:guarded-stream/);
 });
 test("stream output shows recorded CRE observations and limits without claiming onchain CRE enforcement", () => {
   const load = (name) =>

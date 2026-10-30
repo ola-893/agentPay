@@ -630,14 +630,16 @@ export function createAgentOutput({
     refreshing() {
       field("Freshness", "Refreshing CRE price and admission checks before signing", warning);
     },
-    failed(directory, { fundingAttempted } = {}) {
+    failed(directory, { fundingAttempted, cleanupClosed, streamId } = {}) {
       write("");
       separator();
       write(`  ${warning(bold("RUN INCOMPLETE"))}`);
       field("Evidence", directory);
       field(
         "",
-        fundingAttempted === false
+        cleanupClosed
+          ? `Stream #${streamId} closed during cleanup; earnings and refund verified. Inspect the original failure before starting a new paid run.`
+          : fundingAttempted === false
           ? "Stopped before stream funding. Approval and audit transactions may have spent gas; inspect the saved evidence before retrying."
           : "Inspect transaction hashes before retrying. Guarded recovery: npm run recover:guarded-stream -- --stream-id <id>. Legacy: --close-stream <id>."
       );

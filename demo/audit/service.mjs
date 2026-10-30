@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { toQuantity } from "ethers";
 import { fileURLToPath } from "node:url";
 import cli from "../../scripts/lib/cli.cjs";
-import { digest } from "./journal.mjs";
+import { digest, durableWrite } from "./journal.mjs";
 export async function simulateIntent(
   provider, intent, block, { onFailure = () => {} } = {}
 ) {
@@ -68,6 +68,23 @@ export async function simulateIntent(
     };
   }
 }
+export async function simulateFixedIntent(provider,intent,block,{onAttempt=async()=>{},
+  wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}) {
+  for(let attempt=1;attempt<=3;attempt++) {
+    let failure=null;
+    const observation=await simulateIntent(provider,intent,block,{onFailure:value=>{failure=value;}});
+    await onAttempt({attempt,checkedAt:new Date().toISOString(),observation,failure});
+    if(observation.errorCode!=="RPC_UNAVAILABLE" || attempt===3) return observation;
+    await wait(200*attempt);
+  }
+}
+export async function observeIntent(journal,provider,intent,block) {
+  return simulateFixedIntent(provider,intent,block,{onAttempt:async attempt=>{
+    await durableWrite(journal.file("simulation",`${intent.id}-attempt-${attempt.attempt}`),{
+      schemaVersion:1,intentId:intent.id,intentHash:digest(intent),...attempt,
+    },true);
+  }});
+}
 export async function startAuditService({ journal, provider }) {
   const token = randomBytes(8).toString("hex"),
     configs = new Map(),
@@ -98,12 +115,12 @@ export async function startAuditService({ journal, provider }) {
         if (!simulations.has(value.intentId))
           simulations.set(
             value.intentId,
-            await simulateIntent(provider, c.intent, {
+            observeIntent(journal, provider, c.intent, {
               number: c.observationBlock,
               hash: c.blockHash,
             })
           );
-        return respond(200, simulations.get(value.intentId));
+        return respond(200, await simulations.get(value.intentId));
       }
       if (route === "/decisions") {
         const c = configs.get(value.intentId);
@@ -119,7 +136,7 @@ export async function startAuditService({ journal, provider }) {
           digest(value.intent) !== c.intentHash ||
           value.observedBlock !== c.observationBlock ||
           value.blockHash !== c.blockHash ||
-          digest(value.simulation) !== digest(simulations.get(value.intentId))
+          digest(value.simulation) !== digest(await simulations.get(value.intentId))
         )
           throw new Error("Observation substitution");
         const validation = await cli.runChild(

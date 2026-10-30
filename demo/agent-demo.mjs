@@ -872,6 +872,7 @@ await cli.cliMain(
       });
       output.failed(path.relative(root, directory), {
         fundingAttempted: flags["close-stream"] ? undefined : fundingAttempted,
+        cleanupClosed: Boolean(cleanup?.closed),streamId:openedId,
       });
       if (started)
         emit("run.end", {

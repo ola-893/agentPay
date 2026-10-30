@@ -149,12 +149,14 @@ try {
   assert.equal(signedBusiness, 0);
   const send = rpc.send.bind(rpc);
   rpc.send = async (method, args) => {
-    if (method === "eth_call")
+    if (method === "eth_call" && args[0].data === transaction(10000).data)
       throw new Error("Injected unavailable RPC (test only)");
     return send(method, args);
   };
   const error = await audit.reviewTransaction(transaction(10000));
   assert.equal(error.record.decision.action, "ERROR");
+  await assert.rejects(sendStreamTransaction({provider:rpc,wallet,transaction:transaction(10000),kind:"unavailable",persist:async()=>{},audit}),{code:"SPEND_RPC_UNAVAILABLE"});
+  assert.equal(signedBusiness,0,"Unavailable initial simulations must never sign a business transaction");
   rpc.send = send;
   await audit.flush();
   await assertAnchored(
@@ -268,7 +270,7 @@ try {
   assert.equal(BigInt(closed.earnedRaw) + BigInt(closed.refundedRaw), 10000n);
   const summary = await audit.summary();
   assert.equal(summary.pendingReceipts, 0);
-  assert.equal(summary.decisions, 9);
+  assert.equal(summary.decisions, 10);
   assert.equal(summary.receiptTransactions.length, 5);
   await audit.flush();
   assert.equal((await audit.summary()).receiptTransactions.length, 5);

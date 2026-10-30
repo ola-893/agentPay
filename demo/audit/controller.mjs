@@ -5,7 +5,7 @@ import { mkdir, writeFile, open, unlink } from "node:fs/promises";
 import { Contract } from "ethers";
 import cli from "../../scripts/lib/cli.cjs";
 import { LocalJournal, digest, durableWrite } from "./journal.mjs";
-import { startAuditService, simulateIntent } from "./service.mjs";
+import { startAuditService, observeIntent } from "./service.mjs";
 import { anchorPending, assertAnchored, verifyDeployment } from "./anchor.mjs";
 import { checkPreSignSimulation } from "./presign.mjs";
 import {runCreProcess,creFailure} from "../agent/cre-process.mjs";
@@ -145,7 +145,7 @@ export async function createAuditor({
       };
       await durableWrite(file, config);
       if (offline) {
-        const simulation = await simulateIntent(provider, intent, block);
+        const simulation = await observeIntent(journal, provider, intent, block);
         const { evaluate } = await import(
           "../../cre/payment-guard/spend-policy.ts"
         );
@@ -300,6 +300,8 @@ export async function createAuditor({
     const review = await reviewTransaction(transaction);
     if (["CRE_AUTH_REQUIRED","CRE_ACCOUNT_UNAVAILABLE"].includes(review.record.errorCode))
       throw creFailure(review.record.errorCode,path.relative(root,path.join(runDirectory,`${review.intent.id.slice(2,14)}.log`)));
+    if (review.record.decision.action === "ERROR" && review.record.simulation?.errorCode === "RPC_UNAVAILABLE")
+      throw new cli.CliError("SPEND_RPC_UNAVAILABLE",`Spend dry-run unavailable after three read-only attempts at block ${review.record.observedBlock}. This transaction was not signed. Check RPC connectivity and inspect ${path.relative(root,path.join(directory,"simulation"))}.`);
     if (review.record.decision.action !== "ALLOW")
       throw new Error(
         `Spend ${review.record.decision.action}: ${review.record.decision.reason}`
