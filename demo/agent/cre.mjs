@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { createHash } from "node:crypto";
 import cli from "../../scripts/lib/cli.cjs";
+import {runCreProcess} from "./cre-process.mjs";
 import {
   validateConfig,
   validateResult,
@@ -11,7 +12,7 @@ import {
   stripAnsi,
 } from "../../scripts/lib/cre-evidence.mjs";
 
-export async function runCreIntent({ config, root, directory, tier, onStart }) {
+export async function runCreIntent({ config, root, directory, tier, onStart, onProgress }) {
   await mkdir(directory, { recursive: true });
   const text = JSON.stringify(config, null, 2) + "\n";
   const file = path.join(directory, `cre-${tier}.config.json`);
@@ -52,24 +53,16 @@ export async function runCreIntent({ config, root, directory, tier, onStart }) {
       path.join(directory, `cre-${tier}.log`)
     ),
   });
-  const { code, output } = await cli.runChild(
-    process.env.CRE_BIN || "cre",
-    args,
-    {
+  const { output, log } = await runCreProcess({
+    root,args,logFile:path.join(directory,`cre-${tier}.log`),onProgress,
+    options: {
       cwd: path.join(root, "cre"),
       env,
       quiet: true,
       label: "Agent CRE policy",
       timeoutMs: 180000,
-    }
-  );
-  const log = stripAnsi(output).split(root).join("<repo>");
-  await writeFile(path.join(directory, `cre-${tier}.log`), log);
-  if (code !== 0)
-    throw new cli.CliError(
-      "CRE_FAILED",
-      `CRE failed for ${tier} (exit ${code}); no payment was authorized. See the run's CRE transcript.`
-    );
+    },
+  });
   const result = parseSimulationResult(output);
   validateResult(result, config);
   await validateConfig(file, root, result);
@@ -93,6 +86,7 @@ export async function runStreamCheck({
   directory,
   label,
   onStart,
+  onProgress,
 }) {
   await mkdir(directory, { recursive: true });
   const file = path.join(directory, `stream-${label}.config.json`),
@@ -141,20 +135,14 @@ export async function runStreamCheck({
       path.join(directory, `stream-${label}.log`)
     ),
   });
-  const run = await cli.runChild(process.env.CRE_BIN || "cre", args, {
+  const run = await runCreProcess({root,args,logFile:path.join(directory,`stream-${label}.log`),onProgress,options:{
     cwd: path.join(root, "cre"),
     env,
     quiet: true,
     label: "CRE stream supervisor",
     timeoutMs: 180000,
-  });
-  const log = stripAnsi(run.output).split(root).join("<repo>");
-  await writeFile(path.join(directory, `stream-${label}.log`), log);
-  if (run.code !== 0)
-    throw new cli.CliError(
-      "CRE_FAILED",
-      `CRE stream supervisor failed (${label}); inspect its transcript.`
-    );
+  }});
+  const log = run.log;
   const lines = stripAnsi(run.output).split("\n");
   const marker = lines.findIndex((line) =>
     line.includes("Workflow Simulation Result:")

@@ -25,7 +25,7 @@ export function renderRecordedOutput({columns = 80, verbose = false, ...options}
     }
     if (type === "step.start" && d.stage === "cre") {
       const invocation = {...d,command:d.command.split(" ")};
-      if (d.label.includes("risk-scoring")) output.spendReview({phase:"start",invocation});
+      if (d.label.includes("risk-scoring")) output.spendReview({phase:"start",invocation:{...invocation,command:d.command}});
       else {
         const filename = path.basename(d.configPath);
         const label = filename.startsWith("cre-price") ? "USDC price safety" : filename.replace("stream-", "").replace(".config.json", "");

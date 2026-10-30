@@ -7,6 +7,7 @@ import {runCreIntent,runStreamCheck} from '../agent/cre.mjs';
 import {assertLocalApproval,USDC} from '../agent/payments.mjs';
 import {validatePolicy,loadProfile} from '../agent/profile.mjs';
 import {PERMIT_TYPES,domain,metadataHash} from './permit.mjs';
+import {serializePolicyError} from './errors.mjs';
 const root=fileURLToPath(new URL('../../',import.meta.url));
 const same=(a,b)=>a?.toLowerCase()===b?.toLowerCase();
 let context;
@@ -56,8 +57,8 @@ async function handle(operation,params){
     checkPolicyBounds(config,c.policy,operation,c.agent,c.recipient,c.streamAddress);
     if(operation==='stream' && !config.healthUrl.startsWith(c.serviceOrigin+'/health/'))throw Error('Unregistered health service');
     const evidence=operation==='price'
-      ?await runCreIntent({config,root,directory:c.directory,tier:params.label,onStart:value=>process.send?.({event:'invocation',value})})
-      :await runStreamCheck({config,root,directory:c.directory,label:params.label,onStart:value=>process.send?.({event:'invocation',value})});
+      ?await runCreIntent({config,root,directory:c.directory,tier:params.label,onStart:value=>process.send?.({event:'invocation',value}),onProgress:value=>process.send?.({event:'progress',value})})
+      :await runStreamCheck({config,root,directory:c.directory,label:params.label,onStart:value=>process.send?.({event:'invocation',value}),onProgress:value=>process.send?.({event:'progress',value})});
     const checked={evidence,completed:performance.now()};
     if(operation==='price')prices.set(config.request.requestId,checked);
     else decisions.set(config.requestId,checked);
@@ -85,6 +86,6 @@ async function handle(operation,params){
 let queue=Promise.resolve();
 process.on('message',m=>{queue=queue.then(async()=>{
   try{const value=await handle(m.operation,m.params);process.send?.({id:m.id,value});}
-  catch(error){process.send?.({id:m.id,error:{code:'POLICY_SIGNER',message:String(error.message).replace(/0x[0-9a-fA-F]{64}/g,'[hash]')}});}
+  catch(error){process.send?.({id:m.id,error:serializePolicyError(error)});}
 });});
 process.on('disconnect',()=>{context?.provider.destroy();process.exit(0);});

@@ -4,11 +4,11 @@ import { randomBytes } from "node:crypto";
 import { mkdir, writeFile, open, unlink } from "node:fs/promises";
 import { Contract } from "ethers";
 import cli from "../../scripts/lib/cli.cjs";
-import { stripAnsi } from "../../scripts/lib/cre-evidence.mjs";
 import { LocalJournal, digest, durableWrite } from "./journal.mjs";
 import { startAuditService, simulateIntent } from "./service.mjs";
 import { anchorPending, assertAnchored, verifyDeployment } from "./anchor.mjs";
 import { checkPreSignSimulation } from "./presign.mjs";
+import {runCreProcess,creFailure} from "../agent/cre-process.mjs";
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const token = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
 export async function createAuditor({
@@ -213,15 +213,13 @@ export async function createAuditor({
         ];
         onProgress(`CRE spend review: cre ${args.join(" ")}`);
         onReview({ phase: "start", invocation });
-        const child = await cli.runChild(process.env.CRE_BIN || "cre", args, {
+        const child = await runCreProcess({root,args,logFile:path.join(runDirectory,`${short}.log`),onProgress,options:{
           cwd: path.join(root, "cre"),
           env,
           quiet: true,
           timeoutMs: 180000,
-        });
-        const log = stripAnsi(child.output);
-        await writeFile(path.join(runDirectory, `${short}.log`), log);
-        if (child.code !== 0) throw new Error("CRE_EXECUTION_FAILED");
+        }});
+        const log = child.log;
         const lines = log.split("\n"),
           index = lines.findIndex((s) =>
             s.includes("Workflow Simulation Result:")
@@ -287,7 +285,7 @@ export async function createAuditor({
           reason: "CRE_EXECUTION_OR_VALIDATION_FAILED",
           riskScore: 100,
         },
-        errorCode: "REVIEW_UNAVAILABLE",
+        errorCode: ["CRE_AUTH_REQUIRED","CRE_ACCOUNT_UNAVAILABLE"].includes(error.code) ? error.code : "REVIEW_UNAVAILABLE",
       };
       pointer = await journal.commit(record);
     }
@@ -300,6 +298,8 @@ export async function createAuditor({
   }
   async function authorize(transaction) {
     const review = await reviewTransaction(transaction);
+    if (["CRE_AUTH_REQUIRED","CRE_ACCOUNT_UNAVAILABLE"].includes(review.record.errorCode))
+      throw creFailure(review.record.errorCode,path.relative(root,path.join(runDirectory,`${review.intent.id.slice(2,14)}.log`)));
     if (review.record.decision.action !== "ALLOW")
       throw new Error(
         `Spend ${review.record.decision.action}: ${review.record.decision.reason}`

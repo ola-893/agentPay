@@ -265,16 +265,17 @@ export function createAgentOutput({
     },
     creInvocation({ command, cwd, configPath, transcriptPath }) {
       if (!verbose) {
-        const target = command.indexOf("--target");
-        const simulate = command.indexOf("simulate");
-        field("CRE CLI", `${command[simulate + 1]}${dot}${target >= 0 ? command[target + 1] : "workflow simulation"}`);
+        const args = Array.isArray(command) ? command : command.split(/\s+/);
+        const target = args.indexOf("--target");
+        const simulate = args.indexOf("simulate");
+        field("CRE CLI", `${args[simulate + 1]}${dot}${target >= 0 ? args[target + 1] : "workflow simulation"}`);
         waitFor("Executing the local CRE workflow...");
         return;
       }
       field("Run from", `${cwd}/ (repository root relative)`);
       field(
         "Command",
-        command
+        typeof command === "string" ? command : command
           .map((arg) =>
             /^[a-zA-Z0-9_./=-]+$/.test(arg) ? arg : JSON.stringify(arg)
           )
@@ -619,7 +620,7 @@ export function createAgentOutput({
     auditProgress(line) {
       // Structured review callbacks print these facts without raw commands or hashes.
       if (/^CRE spend review:/.test(line) || (reviewActive && /^Spend (ALLOW|BLOCK|ERROR):/.test(line))) return;
-      field("Audit", line, warning);
+      field(line.startsWith("CRE account lookup") ? "CRE retry" : "Audit", line, warning);
     },
     auditReceipt(batch) {
       receiptHashes.add(batch.transactionHash);

@@ -340,7 +340,7 @@ await cli.cliMain(
         streamAddress,
         sessionId,
       });
-      if (guarded) policyClient = await startPolicyClient({root,directory,policy,streamAddress,serviceOrigin:service.url,onInvocation:invocation=>output.creInvocation(invocation)});
+      if (guarded) policyClient = await startPolicyClient({root,directory,policy,streamAddress,serviceOrigin:service.url,onInvocation:invocation=>output.creInvocation(invocation),onProgress:line=>output.auditProgress(line)});
       output.start({
         settings,
         payer: wallet.address,
